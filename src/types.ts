@@ -102,10 +102,34 @@ export type StationInput = {
   id: string;
   kind?: "tide" | "current";
   current?: CurrentData;
+  quality?: StationQuality;
 } & Partial<StationData>;
+
+// Quality evaluation for a station (tools/evaluate-quality.ts). `accepted` is
+// the default filter applied to the `stations` export; `score` is 0-100.
+export interface StationQuality {
+  accepted: boolean;
+  score: number;
+  /** Scoring factors, each 0-1. */
+  factors?: {
+    epoch: number;
+    recency: number;
+    source: number;
+    quality: number;
+    amplitude: number;
+    coverage: number;
+  };
+  /** Human-readable findings, e.g. "MLW (3.827) < LAT (3.831)". */
+  issues?: string[];
+  /** Rejection category ("duplicate", "datum", "constituents", ...), if rejected. */
+  reason?: string;
+  /** Id of the station that makes this one redundant, if any. */
+  redundant?: string;
+}
 
 export interface Station extends StationData {
   id: string;
+  quality?: StationQuality;
 }
 
 // The light fields the search/geo/list paths need. Used at build time to

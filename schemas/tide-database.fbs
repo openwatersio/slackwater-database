@@ -98,6 +98,26 @@ table Epoch {
   end: string;
 }
 
+/// Quality-evaluation detail (tools/evaluate-quality.ts). The gate itself —
+/// `accepted` and `score` — lives inline on Station so an identity scan can
+/// filter and rank without touching this table; the builder writes Quality
+/// tables at the tail of the file with the other lookup data.
+table Quality {
+  /// Scoring factors, each 0–1.
+  epoch: float;
+  recency: float;
+  source: float;
+  quality: float;
+  amplitude: float;
+  coverage: float;
+  /// Human-readable findings, e.g. "MLW (3.827) < LAT (3.831)".
+  issues: [string];
+  /// Rejection category ("duplicate", "datum", "constituents", ...), if rejected.
+  reason: string;
+  /// Station.id of the station that makes this one redundant, if any.
+  redundant: string;
+}
+
 table Station {
   // ---- identity: what a scan reads ----
   id: string (key, required);
@@ -114,6 +134,11 @@ table Station {
   continent: string;
   /// Alternate names and slugs for search. Lower-cased, deduplicated.
   aliases: [string];
+  /// Quality gate: whether the station passes the default filter, and its
+  /// 0–100 score. Inline so an identity scan reads them from head pages;
+  /// the detail behind them is in `quality`.
+  accepted: bool;
+  score: ubyte;
 
   // ---- prediction data: what a lookup reads ----
   /// Empty for subordinates; predict from `offsets.reference`.
@@ -126,6 +151,7 @@ table Station {
   offsets: TideOffsets;   // subordinate tides only
   current: Current;       // Kind == Current only
   epoch: Epoch;
+  quality: Quality;
 
   // ---- provenance ----
   source: Source;

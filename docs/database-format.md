@@ -19,6 +19,7 @@ Per-record JSON decode was never the cost (4 ms for 200 records); the cost is de
 - Constituents are a struct vector: a `ushort` index into the root name table plus two `float` values — 12 bytes per constituent, contiguous, versus ~28 for a table per constituent. Float32 holds seven significant digits; sources publish three decimal places. Datums use the same struct-plus-name-table pattern.
 - Identical `source` and `license` tables are written once and shared; repeated strings (timezones, countries, epochs) are deduplicated with shared strings.
 - A `Current` sub-table and `Kind` enum give current stations a place in the same `stations` vector — one key space, one lookup. This repo ships no current data; downstream catalogs can write theirs through `buildDatabase`.
+- Quality evaluation (`quality.json`) rides along: the gate — `accepted` and `score` — is inline on `Station` so an identity scan can filter and rank from head pages, and the detail (factors, issues, reason, redundant) is a `Quality` sub-table written at the tail with the other lookup data. The file carries all stations, rejected ones included; readers apply the `accepted` filter.
 - `file_identifier "NEAP"`, `file_extension "neaps"`.
 
 ## Build order and locality
@@ -28,6 +29,8 @@ The one thing the schema cannot express: FlatBuffers writes back to front, and a
 ## The reader
 
 `src/stations.ts` opens the buffer once, materializes identity fields into plain objects (`allStations`), and attaches lazy getters for `harmonic_constituents`, `datums`, and `epoch` that decode one station's data from the buffer on access. Subordinate stations resolve their reference station's harmonics and datums; their own offsets still apply. No caching — a persistent cache on module-level objects would pull the data back onto the heap.
+
+The quality gate comes from the same file: `station.quality` carries `accepted` and `score` eagerly (read inline during the identity scan) with lazy getters for the detail, `qualityMap` indexes those objects by id, and the `stations` export filters `allStations` on `accepted`. The module does not bundle `quality.json`; it stays in the repo as the artifact `tools/evaluate-quality.ts` writes and the build embeds.
 
 The bytes come from a per-build source behind the `#database-bytes` subpath import:
 

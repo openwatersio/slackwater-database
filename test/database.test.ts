@@ -55,6 +55,9 @@ describe("the shipped database file", () => {
           lowestPrediction,
           station.datums(0)!.bb_pos,
         );
+      const quality = station.quality();
+      if (quality)
+        lowestPrediction = Math.min(lowestPrediction, quality.bb_pos);
     }
     expect(lowestPrediction).toBeGreaterThan(highestTable);
   });
@@ -80,11 +83,30 @@ describe("buildDatabase", () => {
         { name: "S2", amplitude: 0.268, phase: 25.2 },
       ],
       datums: { MLLW: 2.419, MSL: 4.443 },
+      quality: {
+        accepted: true,
+        score: 87,
+        factors: {
+          epoch: 1,
+          recency: 0.75,
+          source: 1,
+          quality: 1,
+          amplitude: 0.5,
+          coverage: 1,
+        },
+        issues: ["MLW (3.827) < LAT (3.831)"],
+      },
     },
     {
       id: "test/1",
       name: "Subordinate",
       type: "subordinate",
+      quality: {
+        accepted: false,
+        score: 0,
+        reason: "duplicate",
+        redundant: "test/2",
+      },
       offsets: {
         reference: "test/2",
         time: { high: 12, low: -6 },
@@ -137,6 +159,24 @@ describe("buildDatabase", () => {
     // Aliases are lower-cased per the schema contract.
     expect(station.aliases(0)).toBe("elliott bay");
     expect(station.aliases(1)).toBe("seattle");
+  });
+
+  test("round-trips quality, gate inline and detail in the table", () => {
+    const accepted = db.stations(1)!;
+    expect(accepted.accepted()).toBe(true);
+    expect(accepted.score()).toBe(87);
+    const detail = accepted.quality()!;
+    expect(detail.recency()).toBeCloseTo(0.75, 6);
+    expect(detail.amplitude()).toBeCloseTo(0.5, 6);
+    expect(detail.issuesLength()).toBe(1);
+    expect(detail.issues(0)).toBe("MLW (3.827) < LAT (3.831)");
+    expect(detail.reason()).toBeNull();
+
+    const rejected = db.stations(0)!;
+    expect(rejected.accepted()).toBe(false);
+    expect(rejected.score()).toBe(0);
+    expect(rejected.quality()!.reason()).toBe("duplicate");
+    expect(rejected.quality()!.redundant()).toBe("test/2");
   });
 
   test("round-trips subordinate offsets", () => {

@@ -8,6 +8,7 @@ import { Epoch } from "../generated/fbs/neaps/epoch.ts";
 import { HeightOffsetType } from "../generated/fbs/neaps/height-offset-type.ts";
 import { Kind } from "../generated/fbs/neaps/kind.ts";
 import { License } from "../generated/fbs/neaps/license.ts";
+import { Quality } from "../generated/fbs/neaps/quality.ts";
 import { Root } from "../generated/fbs/neaps/root.ts";
 import { Source } from "../generated/fbs/neaps/source.ts";
 import { Station } from "../generated/fbs/neaps/station.ts";
@@ -46,8 +47,11 @@ export function buildDatabase(
   );
 
   const builder = new flatbuffers.Builder(1 << 22);
+  const str = (v: string | undefined): number =>
+    v === undefined ? 0 : builder.createSharedString(v);
 
-  // Phase 1: prediction data, together at the tail of the file.
+  // Phase 1: lookup data — prediction vectors and quality detail — together at
+  // the tail of the file.
   const prediction = sorted.map((s) => {
     let constituents = 0;
     const hcs = s.harmonic_constituents ?? [];
@@ -76,7 +80,34 @@ export function buildDatabase(
       datums = builder.endVector();
     }
 
-    return { constituents, datums };
+    let quality = 0;
+    if (s.quality) {
+      const q = s.quality;
+      let issues = 0;
+      if (q.issues?.length) {
+        issues = Quality.createIssuesVector(
+          builder,
+          q.issues.map((issue) => builder.createSharedString(issue)),
+        );
+      }
+      const reason = str(q.reason);
+      const redundant = str(q.redundant);
+      Quality.startQuality(builder);
+      if (q.factors) {
+        Quality.addEpoch(builder, q.factors.epoch);
+        Quality.addRecency(builder, q.factors.recency);
+        Quality.addSource(builder, q.factors.source);
+        Quality.addQuality(builder, q.factors.quality);
+        Quality.addAmplitude(builder, q.factors.amplitude);
+        Quality.addCoverage(builder, q.factors.coverage);
+      }
+      Quality.addIssues(builder, issues);
+      Quality.addReason(builder, reason);
+      Quality.addRedundant(builder, redundant);
+      quality = Quality.endQuality(builder);
+    }
+
+    return { constituents, datums, quality };
   });
 
   // Phase 2: identity — strings, sub-tables, and the station tables themselves —
@@ -85,8 +116,6 @@ export function buildDatabase(
   const sourceOffsets = new Map<string, number>();
   const licenseOffsets = new Map<string, number>();
   const epochOffsets = new Map<string, number>();
-  const str = (v: string | undefined): number =>
-    v === undefined ? 0 : builder.createSharedString(v);
 
   const stationOffsets = sorted.map((s, i) => {
     const id = builder.createString(s.id);
@@ -206,6 +235,8 @@ export function buildDatabase(
     Station.addCountry(builder, country);
     Station.addContinent(builder, continent);
     Station.addAliases(builder, aliases);
+    if (s.quality?.accepted) Station.addAccepted(builder, true);
+    if (s.quality?.score) Station.addScore(builder, s.quality.score);
     Station.addConstituents(builder, prediction[i]!.constituents);
     Station.addDatums(builder, prediction[i]!.datums);
     if (s.datums_source === "observed")
@@ -216,6 +247,7 @@ export function buildDatabase(
     Station.addOffsets(builder, offsets);
     Station.addCurrent(builder, current);
     Station.addEpoch(builder, epoch);
+    Station.addQuality(builder, prediction[i]!.quality);
     Station.addSource(builder, source);
     Station.addLicense(builder, license);
     Station.addDisclaimers(builder, disclaimers);

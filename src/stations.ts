@@ -6,8 +6,12 @@ import { DatumsSource } from "./generated/fbs/neaps/datums-source.ts";
 import { HeightOffsetType } from "./generated/fbs/neaps/height-offset-type.ts";
 import { StationType } from "./generated/fbs/neaps/station-type.ts";
 import { Root } from "./generated/fbs/neaps/root.ts";
-import quality from "../quality.json" with { type: "json" };
-import type { HarmonicConstituent, Station, StationData } from "./types.js";
+import type {
+  HarmonicConstituent,
+  Station,
+  StationData,
+  StationQuality,
+} from "./types.js";
 
 // The whole database is one FlatBuffers file (schemas/tide-database.fbs). On
 // Node the bytes are a Buffer — external memory, off the V8 heap; in the
@@ -66,6 +70,56 @@ function readDatums(index: number): Record<string, number> {
     result[datums[datum.name()]!] = datum.value();
   }
   return result;
+}
+
+// The quality gate (accepted, score) is inline on the station table, so the
+// identity scan reads it from head pages; the detail behind it lives in a
+// Quality table at the tail and decodes only on access, like prediction data.
+function readQuality(
+  index: number,
+  accepted: boolean,
+  score: number,
+): StationQuality {
+  const detail = () => db.stations(index)!.quality();
+  const quality = { accepted, score } as StationQuality;
+  Object.defineProperties(quality, {
+    factors: {
+      enumerable: true,
+      configurable: true,
+      get: () => {
+        const t = detail();
+        if (!t) return undefined;
+        return {
+          epoch: t.epoch(),
+          recency: t.recency(),
+          source: t.source(),
+          quality: t.quality(),
+          amplitude: t.amplitude(),
+          coverage: t.coverage(),
+        };
+      },
+    },
+    issues: {
+      enumerable: true,
+      configurable: true,
+      get: () => {
+        const t = detail();
+        if (!t) return undefined;
+        return Array.from({ length: t.issuesLength() }, (_, i) => t.issues(i));
+      },
+    },
+    reason: {
+      enumerable: true,
+      configurable: true,
+      get: () => detail()?.reason() ?? undefined,
+    },
+    redundant: {
+      enumerable: true,
+      configurable: true,
+      get: () => detail()?.redundant() ?? undefined,
+    },
+  });
+  return quality;
 }
 
 function readEpoch(index: number): StationData["epoch"] {
@@ -138,6 +192,11 @@ function readStation(index: number): Station {
     );
   }
 
+  // Presence check only: following the field offset stays on head pages.
+  if (t.quality() !== null) {
+    station.quality = readQuality(index, t.accepted(), t.score());
+  }
+
   // Getters keep the sync API: reading these fields decodes one station's data
   // from the buffer. No caching — a persistent cache on these module-level
   // objects would pull the heavy data back onto the heap.
@@ -171,7 +230,9 @@ allStations.forEach((station, i) => indexById.set(station.id, i));
 
 export const stationsById = new Map(allStations.map((s) => [s.id, s]));
 
-export const qualityMap = new Map(quality.map((s) => [s.id, s]));
+export const qualityMap = new Map<string, StationQuality>(
+  allStations.flatMap((s) => (s.quality ? [[s.id, s.quality]] : [])),
+);
 
 export function qualityFilter(station: Station): boolean {
   return qualityMap.get(station.id)?.accepted ?? false;

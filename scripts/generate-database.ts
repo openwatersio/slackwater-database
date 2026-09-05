@@ -52,11 +52,23 @@ function walk(dir: string): string[] {
   });
 }
 
+// Quality records ride along in the file (accepted/score inline on Station,
+// detail in a Quality table), so the module no longer bundles quality.json.
+const quality = new Map<string, { id: string }>(
+  JSON.parse(readFileSync(join(root, "quality.json"), "utf8")).map(
+    (q: { id: string }) => [q.id, q],
+  ),
+);
+
 const dataDir = join(root, "data");
-const stations = walk(dataDir).map((file) => ({
-  id: file.slice(dataDir.length + 1).replace(/\.json$/, ""),
-  ...JSON.parse(readFileSync(file, "utf8")),
-}));
+const stations = walk(dataDir).map((file) => {
+  const id = file.slice(dataDir.length + 1).replace(/\.json$/, "");
+  return {
+    id,
+    ...JSON.parse(readFileSync(file, "utf8")),
+    quality: quality.get(id),
+  };
+});
 
 // Fail the build if any subordinate points at a missing reference — otherwise
 // it would only surface at prediction time as a runtime error.
