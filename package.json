@@ -22,9 +22,9 @@
   "module": "./dist/node/index.js",
   "types": "./dist/node/index.d.ts",
   "imports": {
-    "#station-data": {
-      "browser": "./src/station-data.browser.ts",
-      "default": "./src/station-data.ts"
+    "#database-bytes": {
+      "browser": "./src/database/bytes.browser.ts",
+      "default": "./src/database/bytes.node.ts"
     }
   },
   "exports": {
@@ -39,8 +39,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "generate": "node scripts/generate-pack.mjs",
-    "build": "npm run generate && tsdown && node scripts/copy-pack.mjs && tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json && npm run smoke",
+    "generate": "node --experimental-transform-types scripts/generate-database.ts",
+    "build": "npm run generate && tsdown && node scripts/copy-database.mjs && tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json && npm run smoke",
     "smoke": "node scripts/smoke.mjs",
     "prepare": "npm run build",
     "pretest": "npm run generate",
@@ -71,6 +71,7 @@
     "schemas"
   ],
   "dependencies": {
+    "flatbuffers": "^25.9.23",
     "geokdbush": "^2.0.1",
     "kdbush": "^4.0.2",
     "minisearch": "^7.2.0"

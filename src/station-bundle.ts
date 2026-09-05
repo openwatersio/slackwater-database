@@ -1,11 +1,10 @@
 import type { StationData, StationMeta, StationMetaKey } from "./types.js";
 
-// Build-time only. This module reads the raw station JSON and splits it into
-// light metadata (bundled eagerly) and heavy fields (bundled as unparsed JSON
-// strings, parsed one station at a time at runtime). It is never included in
-// the runtime bundle: stations.ts imports the create*Json functions as macros
-// (only their string results are inlined), and the search index macros call
-// loadStationMeta() at build time.
+// Build-time only. This module reads the raw station JSON and exposes the light
+// metadata the search-index macros (src/search/geo.ts and text.ts) consume. It
+// is never included in the runtime bundle: only the macros' string results are
+// inlined. The runtime reads the same fields from the FlatBuffers database
+// (see stations.ts).
 
 const META_KEYS: StationMetaKey[] = [
   "name",
@@ -27,8 +26,8 @@ const META_KEYS: StationMetaKey[] = [
 function readAll(): { id: string; data: StationData }[] {
   // data/ also holds non-station GeoJSON (e.g. baltic-sea.geo.json, used by
   // the chart-datum tooling); only plain .json files are stations. Must stay
-  // in sync with the walk in scripts/generate-pack.mjs so the search indexes
-  // share the pack's station order.
+  // in sync with the walk in scripts/generate-database.ts so the search
+  // indexes share the database's station order.
   const modules = import.meta.glob<StationData>(
     ["./**/*.json", "!./**/*.geo.json"],
     {
@@ -37,32 +36,17 @@ function readAll(): { id: string; data: StationData }[] {
       base: "../data",
     },
   );
-  // Sort explicitly so the metadata array and the geo/text indexes share one
-  // deterministic station order regardless of the bundler's glob implementation.
+  // Sorted by id so the geo/text indexes share the database file's station
+  // order (buildDatabase sorts the stations vector by id, its FlatBuffers key).
   return Object.entries(modules)
-    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
     .map(([path, data]) => ({
       id: path.replace(/^\.\//, "").replace(/\.json$/, ""),
       data,
-    }));
+    }))
+    .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 }
 
-/**
- * The set of datum keys present across all stations, computed at build time and
- * inlined as a small array literal. Lets consumers (e.g. the API's OpenAPI spec)
- * get the datum enum without a runtime scan that would parse every station.
- */
-export function createDatumEnum(): string[] {
-  const datums = new Set<string>();
-  for (const { data } of readAll()) {
-    if (data.datums)
-      for (const key of Object.keys(data.datums)) datums.add(key);
-  }
-  // Sorted for deterministic builds (downstream may embed this, e.g. OpenAPI enums).
-  return [...datums].sort();
-}
-
-/** Light metadata for every station, in bundle order. Used at build time. */
+/** Light metadata for every station, in database order. Used at build time. */
 export function loadStationMeta(): StationMeta[] {
   return readAll().map(({ id, data }) => {
     const meta = { id } as StationMeta;
@@ -72,30 +56,4 @@ export function loadStationMeta(): StationMeta[] {
     }
     return meta;
   });
-}
-
-/**
- * Metadata array, inlined into the runtime bundle via a macro as an array of
- * object literals (the live objects — no retained JSON string, no parse).
- */
-export function createStationMeta(): StationMeta[] {
-  return loadStationMeta();
-}
-
-/**
- * Prediction data (harmonic_constituents, datums, epoch) keyed by station id,
- * each a JSON string. Used by the browser build, which inlines this as an object
- * of string literals and parses one record on demand. (The Node build reads the
- * same records from an off-heap pack file instead — see station-data.ts.)
- */
-export function createStationDataById(): Record<string, string> {
-  const data: Record<string, string> = {};
-  for (const { id, data: station } of readAll()) {
-    data[id] = JSON.stringify({
-      harmonic_constituents: station.harmonic_constituents ?? [],
-      datums: station.datums ?? {},
-      epoch: station.epoch,
-    });
-  }
-  return data;
 }

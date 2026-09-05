@@ -8,6 +8,17 @@ import { fileURLToPath } from "node:url";
 
 const dist = new URL("../dist/", import.meta.url);
 
+// The browser bundle fetches the database file relative to the module. Node's
+// fetch can't read file: URLs, so serve it from disk here; in a real browser
+// the bundler serves the asset.
+const realFetch = globalThis.fetch;
+globalThis.fetch = async (url, init) => {
+  if (String(url).startsWith("file:")) {
+    return new Response(readFileSync(fileURLToPath(url)));
+  }
+  return realFetch(url, init);
+};
+
 function check(db, label) {
   const ref = db.stations.find(
     (s) => s.type === "reference" && s.harmonic_constituents.length > 0,

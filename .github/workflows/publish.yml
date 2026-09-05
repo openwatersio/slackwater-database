@@ -14,6 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Setup mise (flatc)
+        uses: jdx/mise-action@v3
+
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -38,9 +41,12 @@ jobs:
           mv packages/tcd/dist/harmonics-metric.tcd "packages/tcd/dist/neaps-${RELEASE_VERSION##*.}-metric.tcd"
           mv packages/tcd/dist/harmonics-imperial.tcd "packages/tcd/dist/neaps-${RELEASE_VERSION##*.}-imperial.tcd"
 
+      - name: Rename database file for release
+        run: cp dist/generated/stations.neaps "dist/generated/neaps-${RELEASE_VERSION##*.}.neaps"
+
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ env.RELEASE_VERSION }}
           generateReleaseNotes: true
-          artifacts: "packages/tcd/dist/*.tcd"
+          artifacts: "packages/tcd/dist/*.tcd,dist/generated/neaps-*.neaps"
