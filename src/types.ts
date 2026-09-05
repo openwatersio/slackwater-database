@@ -74,18 +74,23 @@ export interface StationData {
 // buildDatabase. Directions are degrees true, speeds knots, time offsets
 // minutes, speed ratios unitless multipliers on the reference current.
 export interface CurrentData {
+  /** Degrees true. */
   flood_direction?: number;
   ebb_direction?: number;
-  mean_flood_speed?: number;
-  mean_ebb_speed?: number;
-  /** Id of the tide station whose extremes this current pairs with. */
-  tide_station?: string;
-  min_before_flood?: number;
-  min_before_ebb?: number;
-  flood_time?: number;
-  ebb_time?: number;
-  flood_speed_ratio?: number;
-  ebb_speed_ratio?: number;
+  /** Knots; the constant term added to the harmonic sum. */
+  mean_flow?: number;
+  /** Id of the tide station whose extremes pair with this current, if any. */
+  tide_reference?: string;
+  /** Subordinate currents only. Times in minutes, ratios dimensionless. */
+  offsets?: {
+    reference: string;
+    slack_before_flood?: number;
+    slack_before_ebb?: number;
+    flood_time?: number;
+    ebb_time?: number;
+    flood_speed_ratio?: number;
+    ebb_speed_ratio?: number;
+  };
 }
 
 /**

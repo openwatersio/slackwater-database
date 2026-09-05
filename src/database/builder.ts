@@ -1,20 +1,19 @@
 import * as flatbuffers from "flatbuffers";
 import { Constituent } from "../generated/fbs/neaps/constituent.ts";
 import { Current } from "../generated/fbs/neaps/current.ts";
+import { CurrentOffsets } from "../generated/fbs/neaps/current-offsets.ts";
 import { Datum } from "../generated/fbs/neaps/datum.ts";
 import { DatumsSource } from "../generated/fbs/neaps/datums-source.ts";
+import { Epoch } from "../generated/fbs/neaps/epoch.ts";
 import { HeightOffsetType } from "../generated/fbs/neaps/height-offset-type.ts";
 import { Kind } from "../generated/fbs/neaps/kind.ts";
 import { License } from "../generated/fbs/neaps/license.ts";
+import { Root } from "../generated/fbs/neaps/root.ts";
 import { Source } from "../generated/fbs/neaps/source.ts";
 import { Station } from "../generated/fbs/neaps/station.ts";
 import { StationType } from "../generated/fbs/neaps/station-type.ts";
-import { TideDatabase } from "../generated/fbs/neaps/tide-database.ts";
 import { TideOffsets } from "../generated/fbs/neaps/tide-offsets.ts";
 import type { StationInput } from "../types.js";
-
-/** Sentinel index meaning "no chart datum" (schema default for chart_datum). */
-export const NO_CHART_DATUM = 0xffff;
 
 /**
  * Serialize stations into the FlatBuffers database format
@@ -33,8 +32,8 @@ export function buildDatabase(
   stations: StationInput[],
   { version }: { version?: string } = {},
 ): Uint8Array {
-  // Ids are ASCII, so JS string order matches the byte-wise UTF-8 order
-  // FlatBuffers key lookup expects.
+  // Ids are ASCII, so JS string order matches the strcmp order FlatBuffers key
+  // lookup expects.
   const sorted = [...stations].sort((a, b) =>
     a.id < b.id ? -1 : a.id > b.id ? 1 : 0,
   );
@@ -43,10 +42,7 @@ export function buildDatabase(
     sorted.flatMap((s) => (s.harmonic_constituents ?? []).map((c) => c.name)),
   );
   const datumNames = nameTable(
-    sorted.flatMap((s) => [
-      ...Object.keys(s.datums ?? {}),
-      ...(s.chart_datum ? [s.chart_datum] : []),
-    ]),
+    sorted.flatMap((s) => Object.keys(s.datums ?? {})),
   );
 
   const builder = new flatbuffers.Builder(1 << 22);
@@ -84,10 +80,11 @@ export function buildDatabase(
   });
 
   // Phase 2: identity — strings, sub-tables, and the station tables themselves —
-  // together at the head. Source and license tables repeat across most of a
-  // catalog, so identical ones are written once and shared.
+  // together at the head. Source, license, and epoch tables repeat across most
+  // of a catalog, so identical ones are written once and shared.
   const sourceOffsets = new Map<string, number>();
   const licenseOffsets = new Map<string, number>();
+  const epochOffsets = new Map<string, number>();
   const str = (v: string | undefined): number =>
     v === undefined ? 0 : builder.createSharedString(v);
 
@@ -98,42 +95,51 @@ export function buildDatabase(
     const region = str(s.region);
     const country = str(s.country);
     const continent = str(s.continent);
+    const chartDatum = str(s.chart_datum);
     const disclaimers = str(s.disclaimers);
-    const epochStart = str(s.epoch?.start);
-    const epochEnd = str(s.epoch?.end);
 
     let aliases = 0;
     if (s.aliases?.length) {
+      // The schema promises lower-cased, deduplicated aliases.
+      const normalized = [...new Set(s.aliases.map((a) => a.toLowerCase()))];
       aliases = Station.createAliasesVector(
         builder,
-        s.aliases.map((a) => builder.createSharedString(a)),
+        normalized.map((a) => builder.createSharedString(a)),
+      );
+    }
+
+    let epoch = 0;
+    if (s.epoch) {
+      const { start, end } = s.epoch;
+      epoch = memo(epochOffsets, s.epoch, () =>
+        Epoch.createEpoch(builder, str(start), str(end)),
       );
     }
 
     let source = 0;
     if (s.source) {
-      const { name, id, published_harmonics, url } = s.source;
+      const { name, id, url, published_harmonics } = s.source;
       source = memo(sourceOffsets, s.source, () =>
         Source.createSource(
           builder,
           str(name),
           str(id),
-          published_harmonics,
           str(url),
+          published_harmonics,
         ),
       );
     }
 
     let license = 0;
     if (s.license) {
-      const { type, commercial_use, url, notes } = s.license;
+      const { type, url, notes, commercial_use } = s.license;
       license = memo(licenseOffsets, s.license, () =>
         License.createLicense(
           builder,
           str(type),
-          commercial_use,
           str(url),
           str(notes),
+          commercial_use,
         ),
       );
     }
@@ -145,38 +151,45 @@ export function buildDatabase(
       TideOffsets.addReference(builder, reference);
       TideOffsets.addTimeHigh(builder, s.offsets.time.high);
       TideOffsets.addTimeLow(builder, s.offsets.time.low);
-      TideOffsets.addHeightHigh(builder, s.offsets.height.high);
-      TideOffsets.addHeightLow(builder, s.offsets.height.low);
       if (s.offsets.height.type === "fixed")
         TideOffsets.addHeightType(builder, HeightOffsetType.Fixed);
+      TideOffsets.addHeightHigh(builder, s.offsets.height.high);
+      TideOffsets.addHeightLow(builder, s.offsets.height.low);
       offsets = TideOffsets.endTideOffsets(builder);
     }
 
     let current = 0;
     if (s.current) {
       const c = s.current;
-      const tideStation = str(c.tide_station);
+      let currentOffsets = 0;
+      if (c.offsets) {
+        const o = c.offsets;
+        const reference = builder.createSharedString(o.reference);
+        CurrentOffsets.startCurrentOffsets(builder);
+        CurrentOffsets.addReference(builder, reference);
+        if (o.slack_before_flood !== undefined)
+          CurrentOffsets.addSlackBeforeFlood(builder, o.slack_before_flood);
+        if (o.slack_before_ebb !== undefined)
+          CurrentOffsets.addSlackBeforeEbb(builder, o.slack_before_ebb);
+        if (o.flood_time !== undefined)
+          CurrentOffsets.addFloodTime(builder, o.flood_time);
+        if (o.ebb_time !== undefined)
+          CurrentOffsets.addEbbTime(builder, o.ebb_time);
+        if (o.flood_speed_ratio !== undefined)
+          CurrentOffsets.addFloodSpeedRatio(builder, o.flood_speed_ratio);
+        if (o.ebb_speed_ratio !== undefined)
+          CurrentOffsets.addEbbSpeedRatio(builder, o.ebb_speed_ratio);
+        currentOffsets = CurrentOffsets.endCurrentOffsets(builder);
+      }
+      const tideReference = str(c.tide_reference);
       Current.startCurrent(builder);
       if (c.flood_direction !== undefined)
         Current.addFloodDirection(builder, c.flood_direction);
       if (c.ebb_direction !== undefined)
         Current.addEbbDirection(builder, c.ebb_direction);
-      if (c.mean_flood_speed !== undefined)
-        Current.addMeanFloodSpeed(builder, c.mean_flood_speed);
-      if (c.mean_ebb_speed !== undefined)
-        Current.addMeanEbbSpeed(builder, c.mean_ebb_speed);
-      Current.addTideStation(builder, tideStation);
-      if (c.min_before_flood !== undefined)
-        Current.addMinBeforeFlood(builder, c.min_before_flood);
-      if (c.min_before_ebb !== undefined)
-        Current.addMinBeforeEbb(builder, c.min_before_ebb);
-      if (c.flood_time !== undefined)
-        Current.addFloodTime(builder, c.flood_time);
-      if (c.ebb_time !== undefined) Current.addEbbTime(builder, c.ebb_time);
-      if (c.flood_speed_ratio !== undefined)
-        Current.addFloodSpeedRatio(builder, c.flood_speed_ratio);
-      if (c.ebb_speed_ratio !== undefined)
-        Current.addEbbSpeedRatio(builder, c.ebb_speed_ratio);
+      if (c.mean_flow !== undefined) Current.addMeanFlow(builder, c.mean_flow);
+      Current.addTideReference(builder, tideReference);
+      Current.addOffsets(builder, currentOffsets);
       current = Current.endCurrent(builder);
     }
 
@@ -195,18 +208,14 @@ export function buildDatabase(
     Station.addAliases(builder, aliases);
     Station.addConstituents(builder, prediction[i]!.constituents);
     Station.addDatums(builder, prediction[i]!.datums);
-    Station.addChartDatum(
-      builder,
-      s.chart_datum ? datumNames.index.get(s.chart_datum)! : NO_CHART_DATUM,
-    );
     if (s.datums_source === "observed")
       Station.addDatumsSource(builder, DatumsSource.Observed);
     else if (s.datums_source === "harmonic")
       Station.addDatumsSource(builder, DatumsSource.Harmonic);
-    Station.addEpochStart(builder, epochStart);
-    Station.addEpochEnd(builder, epochEnd);
+    Station.addChartDatum(builder, chartDatum);
     Station.addOffsets(builder, offsets);
     Station.addCurrent(builder, current);
+    Station.addEpoch(builder, epoch);
     Station.addSource(builder, source);
     Station.addLicense(builder, license);
     Station.addDisclaimers(builder, disclaimers);
@@ -214,28 +223,26 @@ export function buildDatabase(
   });
 
   // Phase 3: the root — stations vector and name tables — at the very head.
-  const stationsVector = TideDatabase.createStationsVector(
-    builder,
-    stationOffsets,
-  );
-  const constituentNamesVector = TideDatabase.createConstituentNamesVector(
+  const stationsVector = Root.createStationsVector(builder, stationOffsets);
+  const constituentNamesVector = Root.createConstituentNamesVector(
     builder,
     constituentNames.names.map((n) => builder.createSharedString(n)),
   );
-  const datumNamesVector = TideDatabase.createDatumNamesVector(
+  const datumNamesVector = Root.createDatumNamesVector(
     builder,
     datumNames.names.map((n) => builder.createSharedString(n)),
   );
   const versionOffset = str(version);
 
-  TideDatabase.startTideDatabase(builder);
-  TideDatabase.addVersion(builder, versionOffset);
-  TideDatabase.addConstituentNames(builder, constituentNamesVector);
-  TideDatabase.addDatumNames(builder, datumNamesVector);
-  TideDatabase.addStations(builder, stationsVector);
-  TideDatabase.finishTideDatabaseBuffer(
+  Root.finishRootBuffer(
     builder,
-    TideDatabase.endTideDatabase(builder),
+    Root.createRoot(
+      builder,
+      versionOffset,
+      stationsVector,
+      constituentNamesVector,
+      datumNamesVector,
+    ),
   );
 
   return builder.asUint8Array();
@@ -247,7 +254,7 @@ function nameTable(all: string[]): {
   index: Map<string, number>;
 } {
   const names = [...new Set(all)].sort();
-  if (names.length >= NO_CHART_DATUM)
+  if (names.length > 0xffff)
     throw new Error(`Name table overflows ushort: ${names.length} names`);
   return { names, index: new Map(names.map((n, i) => [n, i])) };
 }

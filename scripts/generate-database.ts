@@ -40,10 +40,15 @@ for (const file of readdirSync(fbsDir)) {
 // The builder imports the code generated above, so load it only now.
 const { buildDatabase } = await import("../src/database/builder.ts");
 
+// data/ also holds non-station GeoJSON (e.g. baltic-sea.geo.json, used by the
+// chart-datum tooling); only plain .json files are stations. Must stay in sync
+// with the import.meta.glob in src/station-bundle.ts so the search indexes
+// share the database's station order.
 function walk(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
     const p = join(dir, e.name);
-    return e.isDirectory() ? walk(p) : p.endsWith(".json") ? [p] : [];
+    if (e.isDirectory()) return walk(p);
+    return p.endsWith(".json") && !p.endsWith(".geo.json") ? [p] : [];
   });
 }
 

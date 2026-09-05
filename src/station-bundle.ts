@@ -24,10 +24,10 @@ const META_KEYS: StationMetaKey[] = [
 ];
 
 function readAll(): { id: string; data: StationData }[] {
-  // data/ also holds non-station GeoJSON (e.g. baltic-sea.geo.json, used by
-  // the chart-datum tooling); only plain .json files are stations. Must stay
-  // in sync with the walk in scripts/generate-database.ts so the search
-  // indexes share the database's station order.
+  // data/ also holds non-station GeoJSON (e.g. baltic-sea.geo.json); only plain
+  // .json files are stations. Must stay in sync with the walk in
+  // scripts/generate-database.ts so the search indexes share the database's
+  // station order.
   const modules = import.meta.glob<StationData>(
     ["./**/*.json", "!./**/*.geo.json"],
     {

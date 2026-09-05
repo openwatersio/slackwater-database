@@ -2,12 +2,12 @@ import { describe, test, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import * as flatbuffers from "flatbuffers";
 import { buildDatabase } from "../src/database/builder.ts";
-import { TideDatabase } from "../src/generated/fbs/neaps/tide-database.ts";
+import { Root } from "../src/generated/fbs/neaps/root.ts";
 import { Kind } from "../src/generated/fbs/neaps/kind.ts";
 import type { StationInput } from "../src/types.ts";
 
-function open(bytes: Uint8Array): TideDatabase {
-  return TideDatabase.getRootAsTideDatabase(new flatbuffers.ByteBuffer(bytes));
+function open(bytes: Uint8Array): Root {
+  return Root.getRootAsRoot(new flatbuffers.ByteBuffer(bytes));
 }
 
 const shipped = open(
@@ -19,9 +19,9 @@ describe("the shipped database file", () => {
     const bytes = readFileSync(
       new URL("../src/generated/stations.neaps", import.meta.url),
     );
-    expect(
-      TideDatabase.bufferHasIdentifier(new flatbuffers.ByteBuffer(bytes)),
-    ).toBe(true);
+    expect(Root.bufferHasIdentifier(new flatbuffers.ByteBuffer(bytes))).toBe(
+      true,
+    );
     expect(shipped.version()).toBeTruthy();
   });
 
@@ -98,8 +98,13 @@ describe("buildDatabase", () => {
       current: {
         flood_direction: 90,
         ebb_direction: 270,
-        tide_station: "test/2",
-        flood_speed_ratio: 0.8,
+        mean_flow: 0.4,
+        tide_reference: "test/2",
+        offsets: {
+          reference: "test/2",
+          slack_before_flood: -30,
+          flood_speed_ratio: 0.8,
+        },
       },
     },
   ];
@@ -124,11 +129,14 @@ describe("buildDatabase", () => {
     const mllw = station.datums(0)!;
     expect(db.datumNames(mllw.name())).toBe("MLLW");
     expect(mllw.value()).toBeCloseTo(2.419, 6);
-    expect(db.datumNames(station.chartDatum())).toBe("MLLW");
+    expect(station.chartDatum()).toBe("MLLW");
 
-    expect(station.epochStart()).toBe("2007-01-01");
-    expect(station.epochEnd()).toBe("2026-01-01");
-    expect(station.aliases(0)).toBe("Elliott Bay");
+    const epoch = station.epoch()!;
+    expect(epoch.start()).toBe("2007-01-01");
+    expect(epoch.end()).toBe("2026-01-01");
+    // Aliases are lower-cased per the schema contract.
+    expect(station.aliases(0)).toBe("elliott bay");
+    expect(station.aliases(1)).toBe("seattle");
   });
 
   test("round-trips subordinate offsets", () => {
@@ -145,7 +153,11 @@ describe("buildDatabase", () => {
     const current = station.current()!;
     expect(current.floodDirection()).toBe(90);
     expect(current.ebbDirection()).toBe(270);
-    expect(current.tideStation()).toBe("test/2");
-    expect(current.floodSpeedRatio()).toBeCloseTo(0.8, 6);
+    expect(current.meanFlow()).toBeCloseTo(0.4, 6);
+    expect(current.tideReference()).toBe("test/2");
+    const offsets = current.offsets()!;
+    expect(offsets.reference()).toBe("test/2");
+    expect(offsets.slackBeforeFlood()).toBe(-30);
+    expect(offsets.floodSpeedRatio()).toBeCloseTo(0.8, 6);
   });
 });

@@ -5,8 +5,7 @@ import { Datum } from "./generated/fbs/neaps/datum.ts";
 import { DatumsSource } from "./generated/fbs/neaps/datums-source.ts";
 import { HeightOffsetType } from "./generated/fbs/neaps/height-offset-type.ts";
 import { StationType } from "./generated/fbs/neaps/station-type.ts";
-import { TideDatabase } from "./generated/fbs/neaps/tide-database.ts";
-import { NO_CHART_DATUM } from "./database/builder.js";
+import { Root } from "./generated/fbs/neaps/root.ts";
 import quality from "../quality.json" with { type: "json" };
 import type { HarmonicConstituent, Station, StationData } from "./types.js";
 
@@ -16,7 +15,7 @@ import type { HarmonicConstituent, Station, StationData } from "./types.js";
 // plain objects once, below; the prediction data (harmonic_constituents,
 // datums, epoch) is decoded from the buffer only when a station's fields are
 // accessed, so importing this module holds no prediction data on the heap.
-const db = TideDatabase.getRootAsTideDatabase(
+const db = Root.getRootAsRoot(
   new flatbuffers.ByteBuffer(await getDatabaseBytes()),
 );
 
@@ -70,10 +69,9 @@ function readDatums(index: number): Record<string, number> {
 }
 
 function readEpoch(index: number): StationData["epoch"] {
-  const table = db.stations(index)!;
-  const start = table.epochStart();
-  const end = table.epochEnd();
-  return start && end ? { start, end } : undefined;
+  const epoch = db.stations(index)!.epoch();
+  if (!epoch) return undefined;
+  return { start: epoch.start()!, end: epoch.end()! };
 }
 
 function readStation(index: number): Station {
@@ -93,7 +91,7 @@ function readStation(index: number): Station {
   station.disclaimers = t.disclaimers()!;
 
   const chartDatum = t.chartDatum();
-  if (chartDatum !== NO_CHART_DATUM) station.chart_datum = datums[chartDatum]!;
+  if (chartDatum !== null) station.chart_datum = chartDatum;
   if (t.datumsSource() === DatumsSource.Observed)
     station.datums_source = "observed";
   else if (t.datumsSource() === DatumsSource.Harmonic)

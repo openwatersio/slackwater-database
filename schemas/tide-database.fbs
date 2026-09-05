@@ -1,136 +1,138 @@
-// Neaps tide database. One file holds every station: identity fields readable
-// without touching prediction data, prediction data readable per station.
-// See docs in the repo for the build-order requirement (constituents vectors
-// are written together at the tail of the buffer, station tables together at
-// the head) — the schema cannot express it, the builder and a locality test
-// enforce it.
+// Neaps tide database — FlatBuffers schema.
+//
+// One file serves three reads without decoding what it does not touch:
+//   identity scan   — id, name, coordinates of every station, for ranking and search
+//   lookup by id    — binary search on the sorted `stations` vector (`id` is the key)
+//   prediction data — one station's constituents, datums, offsets
+//
+// Layout rule the builder must follow (not expressible in the schema): build
+// every station's `constituents` vector before any `Station` table. The builder
+// writes back to front, so constituents land together at the tail of the file
+// and station tables land together near the head. An identity scan over a
+// memory-mapped file then touches head pages only. A builder that interleaves
+// them faults the whole file in for the cheapest read. Assert in tests that
+// the lowest constituents offset is past the highest station table offset.
 
-namespace neaps;
+namespace Neaps;
 
-enum Kind : ubyte {
-  Tide = 0,
-  Current = 1,
+/// Datum names and constituent names live once, at the root; records refer to
+/// them by index. Constituent records repeat ~23 names across ~110k entries.
+table Root {
+  /// Release tag of the database that produced this file, e.g. "0.9.20260801".
+  version: string;
+  /// Sorted by `id` (strcmp order) so `lookupByKey` binary-searches.
+  stations: [Station];
+  /// Indexed by `Constituent.name`. Names as the predictor catalogue spells them ("M2", "K1").
+  constituent_names: [string];
+  /// Indexed by `Datum.name` ("MLLW", "MSL", "LAT", ...).
+  datum_names: [string];
 }
 
-enum StationType : ubyte {
-  Reference = 0,
-  Subordinate = 1,
-}
+enum Kind : ubyte { Tide = 0, Current = 1 }
+enum StationType : ubyte { Reference = 0, Subordinate = 1 }
+enum HeightOffsetType : ubyte { Ratio = 0, Fixed = 1 }
+enum DatumsSource : ubyte { Unknown = 0, Observed = 1, Harmonic = 2 }
 
-enum DatumsSource : ubyte {
-  Unknown = 0,
-  Observed = 1,
-  Harmonic = 2,
-}
-
-enum HeightOffsetType : ubyte {
-  Ratio = 0,
-  Fixed = 1,
-}
-
-// A harmonic constituent: an index into TideDatabase.constituent_names plus
-// amplitude and phase. 12 bytes, contiguous in the vector. Float32 holds seven
-// significant digits; sources publish three decimal places.
+/// 12 bytes, contiguous per station. Amplitude in metres (tides) or knots
+/// (currents); phase in degrees. float32 keeps 7 significant digits, more
+/// than any publisher's millimetre / 0.1° precision.
 struct Constituent {
-  name: ushort;
+  name: ushort;      // index into Root.constituent_names
   amplitude: float;
   phase: float;
 }
 
-// A datum: an index into TideDatabase.datum_names plus its value.
 struct Datum {
-  name: ushort;
-  value: float;
+  name: ushort;      // index into Root.datum_names
+  value: float;      // metres above the station's zero
+}
+
+/// Subordinate tide station: NOAA-style corrections against `reference`.
+table TideOffsets {
+  reference: string (required);   // Station.id of the reference
+  time_high: int;                 // minutes
+  time_low: int;
+  height_type: HeightOffsetType;
+  height_high: float;             // ratio, or metres when Fixed
+  height_low: float;
+}
+
+/// Subordinate current station: NOAA-style corrections against `reference`.
+/// Offsets in minutes, ratios dimensionless.
+table CurrentOffsets {
+  reference: string (required);
+  slack_before_flood: int;
+  slack_before_ebb: int;
+  flood_time: int;
+  ebb_time: int;
+  flood_speed_ratio: float;
+  ebb_speed_ratio: float;
+}
+
+/// Present only when Kind == Current.
+table Current {
+  flood_direction: float;   // degrees true
+  ebb_direction: float;
+  mean_flow: float;         // knots, the constant term added to the harmonic sum
+  /// Station.id of the tide station whose extremes pair with this current, if any.
+  tide_reference: string;
+  offsets: CurrentOffsets;  // subordinate currents only
 }
 
 table Source {
   name: string;
   id: string;
-  published_harmonics: bool;
   url: string;
+  published_harmonics: bool;
 }
 
 table License {
   type: string;
-  commercial_use: bool;
   url: string;
   notes: string;
+  commercial_use: bool;
 }
 
-// Subordinate-station tide offsets, applied to the reference station's
-// predictions. Times are in minutes; heights are a ratio or a fixed amount
-// depending on height_type.
-table TideOffsets {
-  reference: string (required);
-  time_high: float;
-  time_low: float;
-  height_high: float;
-  height_low: float;
-  height_type: HeightOffsetType;
-}
-
-// Current-station data. No current data ships from this repo yet; the table
-// gives downstream catalogs a place to write theirs through the builder.
-// Directions are degrees true, speeds are knots, time offsets are minutes,
-// speed ratios are unitless multipliers on the reference current.
-table Current {
-  flood_direction: float;
-  ebb_direction: float;
-  mean_flood_speed: float;
-  mean_ebb_speed: float;
-  // Station id of the tide station whose extremes this current pairs with.
-  tide_station: string;
-  min_before_flood: float;
-  min_before_ebb: float;
-  flood_time: float;
-  ebb_time: float;
-  flood_speed_ratio: float;
-  ebb_speed_ratio: float;
+table Epoch {
+  start: string;   // YYYY-MM-DD
+  end: string;
 }
 
 table Station {
-  // "<source>/<station id>", e.g. "noaa/9447130". The vector key: stations are
-  // sorted by id so lookup is a binary search inside the buffer.
+  // ---- identity: what a scan reads ----
   id: string (key, required);
-  name: string;
+  name: string (required);
   kind: Kind;
   type: StationType;
   latitude: double;
   longitude: double;
-  timezone: string;
+  timezone: string;   // IANA
+  /// Upstream's region as published ("NJ", "Nova Scotia"). Readers that want a
+  /// display line derive it from region and country at read time.
   region: string;
   country: string;
   continent: string;
-  // Alternate names and slugs for search.
+  /// Alternate names and slugs for search. Lower-cased, deduplicated.
   aliases: [string];
 
+  // ---- prediction data: what a lookup reads ----
+  /// Empty for subordinates; predict from `offsets.reference`.
   constituents: [Constituent];
+  /// Vertical datums relative to the station's zero. Chart-datum shift for
+  /// heights is `datums[MSL] - datums[chart_datum]`, computed by the reader.
   datums: [Datum];
-  // Index into TideDatabase.datum_names of the vertical reference (e.g. MLLW).
-  // 65535 means no chart datum.
-  chart_datum: ushort = 65535;
   datums_source: DatumsSource;
-  // The period the harmonic constituents were computed over, "YYYY-MM-DD".
-  epoch_start: string;
-  epoch_end: string;
-  offsets: TideOffsets;
-  current: Current;
+  chart_datum: string;
+  offsets: TideOffsets;   // subordinate tides only
+  current: Current;       // Kind == Current only
+  epoch: Epoch;
 
+  // ---- provenance ----
   source: Source;
   license: License;
   disclaimers: string;
 }
 
-table TideDatabase {
-  // Version of the database that built the file (e.g. the package version).
-  version: string;
-  // Name tables for the struct vectors' ushort indexes.
-  constituent_names: [string];
-  datum_names: [string];
-  // Sorted by id.
-  stations: [Station];
-}
-
-root_type TideDatabase;
+root_type Root;
 file_identifier "NEAP";
 file_extension "neaps";
