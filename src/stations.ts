@@ -142,7 +142,10 @@ function readStation(index: number): Station {
   station.timezone = t.timezone()!;
   station.type =
     t.type() === StationType.Subordinate ? "subordinate" : "reference";
-  station.disclaimers = t.disclaimers()!;
+  // Optional in the data (many subordinates omit it); keep the key absent
+  // rather than surfacing FlatBuffers' null.
+  const disclaimers = t.disclaimers();
+  if (disclaimers !== null) station.disclaimers = disclaimers;
 
   const chartDatum = t.chartDatum();
   if (chartDatum !== null) station.chart_datum = chartDatum;

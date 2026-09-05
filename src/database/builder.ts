@@ -225,7 +225,10 @@ export function buildDatabase(
     Station.startStation(builder);
     Station.addId(builder, id);
     Station.addName(builder, name);
-    if (s.kind === "current") Station.addKind(builder, Kind.Current);
+    // A Current table implies Kind.Current; deriving it here keeps the buffer
+    // consistent when a caller sets `current` without `kind`.
+    if (s.kind === "current" || s.current)
+      Station.addKind(builder, Kind.Current);
     if (s.type === "subordinate")
       Station.addType(builder, StationType.Subordinate);
     if (s.latitude !== undefined) Station.addLatitude(builder, s.latitude);

@@ -15,6 +15,16 @@ describe("datums export", () => {
   });
 });
 
+describe("identity fields", () => {
+  test("absent optional fields are undefined, not FlatBuffers null", () => {
+    const nullish = allStations.filter(
+      (s) =>
+        s.disclaimers === null || s.region === null || s.chart_datum === null,
+    );
+    expect(nullish.map((s) => s.id)).toEqual([]);
+  });
+});
+
 describe("lazily loaded station data", () => {
   test("reference stations resolve their own harmonics and datums", () => {
     const ref = stations.find(

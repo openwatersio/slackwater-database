@@ -116,7 +116,7 @@ describe("buildDatabase", () => {
     {
       id: "test/3",
       name: "A current",
-      kind: "current",
+      // No explicit kind: the builder derives Kind.Current from `current`.
       current: {
         flood_direction: 90,
         ebb_direction: 270,
