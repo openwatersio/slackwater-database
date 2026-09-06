@@ -29,6 +29,8 @@
   },
   "exports": {
     ".": {
+      "workerd": "./dist/worker/index.js",
+      "worker": "./dist/worker/index.js",
       "browser": "./dist/browser/index.js",
       "node": "./dist/node/index.js",
       "default": "./dist/browser/index.js"

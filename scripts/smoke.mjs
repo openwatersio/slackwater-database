@@ -1,7 +1,10 @@
 // Smoke-tests the built artifacts (not src), so a broken published package can't
-// slip through. Runs after build. Imports the Node ESM entry and the browser
-// ESM entry, checks a reference and a subordinate station resolve their
-// prediction data, and asserts the browser bundle contains no node:fs.
+// slip through. Runs after build. Imports the Node, browser, and worker ESM
+// entries, checks a reference and a subordinate station resolve their
+// prediction data, and asserts the browser/worker bundles respect their
+// runtime constraints (no node:fs; the worker additionally may not fetch or
+// touch import.meta.url during module evaluation — Cloudflare Workers allow
+// neither).
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -48,13 +51,31 @@ function check(db, label) {
 check(await import(new URL("node/index.js", dist)), "node ESM");
 check(await import(new URL("browser/index.js", dist)), "browser ESM");
 
-const browserSrc = readFileSync(
-  fileURLToPath(new URL("browser/index.js", dist)),
-  "utf8",
-);
+// The worker bundle must start with no fetch and no filesystem, like a
+// Cloudflare Worker's global scope: poison fetch for the duration of its
+// import to prove startup never calls it.
+globalThis.fetch = () => {
+  throw new Error("worker bundle called fetch during module evaluation");
+};
+check(await import(new URL("worker/index.js", dist)), "worker ESM");
+globalThis.fetch = realFetch;
+
+for (const bundle of ["browser", "worker"]) {
+  const src = readFileSync(
+    fileURLToPath(new URL(`${bundle}/index.js`, dist)),
+    "utf8",
+  );
+  assert.ok(
+    !/["']node:fs["']|require\(["']fs["']\)/.test(src),
+    `${bundle} bundle must not reference node:fs`,
+  );
+}
 assert.ok(
-  !/["']node:fs["']|require\(["']fs["']\)/.test(browserSrc),
-  "browser bundle must not reference node:fs",
+  !readFileSync(
+    fileURLToPath(new URL("worker/index.js", dist)),
+    "utf8",
+  ).includes("import.meta.url"),
+  "worker bundle must not use import.meta.url",
 );
 
-console.log("smoke: node ESM + browser ESM OK");
+console.log("smoke: node ESM + browser ESM + worker ESM OK");
