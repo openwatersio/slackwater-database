@@ -1,5 +1,11 @@
 import { describe, test, expect } from "vitest";
-import { datums, stations, stationsById, allStations } from "../src/index.js";
+import {
+  datums,
+  stations,
+  stationsById,
+  allStations,
+  qualityMap,
+} from "../src/index.js";
 
 describe("datums export", () => {
   test("is the set of datum keys present in the database", () => {
@@ -12,6 +18,14 @@ describe("datums export", () => {
       (s) => s.type === "reference" && Object.keys(s.datums).length > 0,
     )!;
     for (const key of Object.keys(ref.datums)) expect(datums).toContain(key);
+  });
+});
+
+describe("qualityMap", () => {
+  test("records keep their station id, like the quality.json originals", () => {
+    const station = stations[0]!;
+    expect(qualityMap.get(station.id)?.id).toBe(station.id);
+    expect(station.quality?.id).toBe(station.id);
   });
 });
 

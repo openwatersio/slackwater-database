@@ -19,9 +19,10 @@ import type {
 // plain objects once, below; the prediction data (harmonic_constituents,
 // datums, epoch) is decoded from the buffer only when a station's fields are
 // accessed, so importing this module holds no prediction data on the heap.
-const db = Root.getRootAsRoot(
-  new flatbuffers.ByteBuffer(await getDatabaseBytes()),
-);
+// No await here: the browser byte source resolves its fetch with top-level
+// await in its own module, so this graph — and the Node bundle — stays
+// synchronous and require()-able.
+const db = Root.getRootAsRoot(new flatbuffers.ByteBuffer(getDatabaseBytes()));
 
 const constituentNames: string[] = Array.from(
   { length: db.constituentNamesLength() },
@@ -77,11 +78,13 @@ function readDatums(index: number): Record<string, number> {
 // Quality table at the tail and decodes only on access, like prediction data.
 function readQuality(
   index: number,
+  id: string,
   accepted: boolean,
   score: number,
 ): StationQuality {
   const detail = () => db.stations(index)!.quality();
-  const quality = { accepted, score } as StationQuality;
+  // id comes from station identity rather than a second copy in the database.
+  const quality = { id, accepted, score } as StationQuality;
   Object.defineProperties(quality, {
     factors: {
       enumerable: true,
@@ -197,7 +200,7 @@ function readStation(index: number): Station {
 
   // Presence check only: following the field offset stays on head pages.
   if (t.quality() !== null) {
-    station.quality = readQuality(index, t.accepted(), t.score());
+    station.quality = readQuality(index, station.id, t.accepted(), t.score());
   }
 
   // Getters keep the sync API: reading these fields decodes one station's data

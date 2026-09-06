@@ -108,6 +108,8 @@ export type StationInput = {
 // Quality evaluation for a station (tools/evaluate-quality.ts). `accepted` is
 // the default filter applied to the `stations` export; `score` is 0-100.
 export interface StationQuality {
+  /** The station's id — not stored in the database, filled from identity. */
+  id: string;
   accepted: boolean;
   score: number;
   /** Scoring factors, each 0-1. */

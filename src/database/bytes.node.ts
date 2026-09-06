@@ -8,6 +8,6 @@
 // shared generated/stations.neaps.
 import { readFileSync } from "node:fs";
 
-export function getDatabaseBytes(): Uint8Array | Promise<Uint8Array> {
+export function getDatabaseBytes(): Uint8Array {
   return readFileSync(new URL("../generated/stations.neaps", import.meta.url));
 }

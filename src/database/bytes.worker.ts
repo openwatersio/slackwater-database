@@ -9,7 +9,7 @@ import { createDatabaseBase64 } from "./inline.js" with { type: "macro" };
 let encoded: string | undefined = createDatabaseBase64();
 let bytes: Uint8Array | undefined;
 
-export function getDatabaseBytes(): Uint8Array | Promise<Uint8Array> {
+export function getDatabaseBytes(): Uint8Array {
   if (!bytes) {
     const bin = atob(encoded!);
     encoded = undefined; // let the ~8 MB base64 string go to GC

@@ -84,6 +84,7 @@ describe("buildDatabase", () => {
       ],
       datums: { MLLW: 2.419, MSL: 4.443 },
       quality: {
+        id: "test/2",
         accepted: true,
         score: 87,
         factors: {
@@ -102,6 +103,7 @@ describe("buildDatabase", () => {
       name: "Subordinate",
       type: "subordinate",
       quality: {
+        id: "test/1",
         accepted: false,
         score: 0,
         reason: "duplicate",

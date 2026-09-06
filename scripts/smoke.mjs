@@ -7,6 +7,7 @@
 // neither).
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 const dist = new URL("../dist/", import.meta.url);
@@ -51,6 +52,12 @@ function check(db, label) {
 check(await import(new URL("node/index.js", dist)), "node ESM");
 check(await import(new URL("browser/index.js", dist)), "browser ESM");
 
+// require() of the ESM entry works only while its module graph is synchronous;
+// this fails with ERR_REQUIRE_ASYNC_MODULE if top-level await sneaks back into
+// the Node bundle (the browser source keeps its fetch await to itself).
+const require = createRequire(import.meta.url);
+check(require(fileURLToPath(new URL("node/index.js", dist))), "node require");
+
 // The worker bundle must start with no fetch and no filesystem, like a
 // Cloudflare Worker's global scope: poison fetch for the duration of its
 // import to prove startup never calls it.
@@ -78,4 +85,4 @@ assert.ok(
   "worker bundle must not use import.meta.url",
 );
 
-console.log("smoke: node ESM + browser ESM + worker ESM OK");
+console.log("smoke: node ESM + node require + browser ESM + worker ESM OK");
