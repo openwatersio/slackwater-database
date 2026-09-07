@@ -7,6 +7,7 @@ import {
   normalize,
   type PartialStationData,
 } from "../tools/station.js";
+import { allStations } from "../src/index.js";
 
 const CONSTITUENTS = [
   { name: "M2", amplitude: 1.0, phase: 0 },
@@ -181,5 +182,90 @@ describe("normalize — subordinate stations without datums", () => {
   test("preserves a preset chart_datum", () => {
     const out = normalize({ ...subordinate, chart_datum: "MLLW" });
     expect(out.chart_datum).toBe("MLLW");
+  });
+});
+
+// Stations whose published LAT sits materially ABOVE their own chart datum,
+// which is hydrographically impossible and always an upstream data problem —
+// never something this repo computes. Two flavours:
+//
+//   - Freshwater. LLWLT is a Canadian *tidal* chart datum; on the Great Lakes
+//     and the upper St. Lawrence the water level is set by lake regulation and
+//     discharge, not the moon, so the two numbers describe different physics.
+//   - Agency error. APIA publishes LAT 0.93 m above its own MLLW. Xiamen's TLT
+//     is a theoretical datum that its fitted constituents don't reach.
+//
+// Listed so a NEW gross violation fails the build instead of joining the noise.
+const LAT_ABOVE_CHART_DATUM = new Set([
+  "noaa/1778000", // APIA (Observatory), Upolu Island — 0.93 m
+  "ticon/cote_ste_catherine-15450-can-meds",
+  "ticon/pointe_claire-15330-can-meds",
+  "ticon/tecumseh_ontario-11975-can-meds",
+  "ticon/la_prairie-15470-can-meds",
+  "ticon/belle_river_ontario-11965-can-meds",
+  "ticon/port_lambton_ontario-11950-can-meds",
+  "ticon/cobourg_ontario-13590-can-meds",
+  "ticon/gamebridge_ontario-16500-can-meds",
+  "ticon/xiamen-376a-chn-uhslc_rq",
+]);
+
+/** Anything below this is datum rounding between two agencies, not a defect. */
+const DATUM_ROUNDING_M = 0.06;
+
+describe("astronomical extremes across the database", () => {
+  const references = allStations.filter(
+    (s) => s.type === "reference" && s.datums["LAT"] !== undefined,
+  );
+
+  test("covers every reference station the constituents can honestly bound", () => {
+    const missing = allStations.filter(
+      (s) => s.type === "reference" && s.datums["HAT"] === undefined,
+    );
+    // Three publish no MSL, so there is no frame to put a constituent-space
+    // result onto. The other eight carry Sa and Ssa at zero amplitude, so a
+    // 19-year scan over them returns a confidently narrowed envelope rather
+    // than an extreme. Both are deliberate. See tools/backfill-lat-hat.ts.
+    expect(missing.map((s) => s.id).sort()).toEqual([
+      "noaa/6835001", // Djakarta, Java — seasonless
+      "noaa/8414781", // Winterport — seasonless
+      "noaa/8519024", // no MSL
+      "noaa/8764311", // no MSL
+      "noaa/9450618", // Shinaku Inlet — seasonless
+      "noaa/9450623", // no MSL
+      "noaa/9458779", // Nakchamik Island — seasonless
+      "noaa/9458819", // Kujulik Bay (North Shore) — seasonless
+      "noaa/9458917", // Chignik, Anchorage Bay — seasonless
+      "noaa/9466229", // Offshore St Matthew Island (GNSS Buoy) — seasonless
+      "noaa/9991475", // Guayaquil — seasonless
+    ]);
+  });
+
+  test("HAT is always above LAT", () => {
+    const inverted = references.filter(
+      (s) => s.datums["HAT"]! <= s.datums["LAT"]!,
+    );
+    expect(inverted.map((s) => s.id)).toEqual([]);
+  });
+
+  test("LAT is at or below the chart datum, bar known upstream defects", () => {
+    const offenders = references
+      .filter((s) => s.datums[s.chart_datum] !== undefined)
+      .map((s) => ({
+        id: s.id,
+        over: s.datums["LAT"]! - s.datums[s.chart_datum]!,
+      }))
+      .filter((s) => s.over > DATUM_ROUNDING_M)
+      .filter((s) => !LAT_ABOVE_CHART_DATUM.has(s.id));
+
+    expect(offenders).toEqual([]);
+  });
+
+  test("HAT is at or above MHHW, bar the same rounding", () => {
+    const offenders = references
+      .filter((s) => s.datums["MHHW"] !== undefined)
+      .map((s) => ({ id: s.id, under: s.datums["MHHW"]! - s.datums["HAT"]! }))
+      .filter((s) => s.under > DATUM_ROUNDING_M);
+
+    expect(offenders.length).toBeLessThan(20);
   });
 });
