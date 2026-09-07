@@ -35,6 +35,14 @@ jobs:
           sed -n '/^## Summary$/,$p' /tmp/noaa-update.log > /tmp/noaa-summary.md
           printf '\n### Workflow\n\n            This PR was automatically created by the monthly NOAA station update workflow.Run: %s\n' "$WORKFLOW_URL" >> /tmp/noaa-summary.md
 
+      - name: Backfill LAT/HAT
+        # The updater above rewrites `datums` wholesale from NOAA's API, which
+        # drops any LAT/HAT this repo synthesized last month. Re-run the
+        # backfill before quality is evaluated, so the gates see the same datums
+        # the package will ship. Idempotent, and self-healing if NOAA starts
+        # publishing LAT for a station we had been filling.
+        run: tools/backfill-lat-hat.ts
+
       - name: Re-evaluate station quality
         # New/moved NOAA stations shift proximity and can supersede TICON
         # records, so quality.json must be regenerated in the same commit or it

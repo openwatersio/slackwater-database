@@ -17,6 +17,25 @@ Subordinate stations carry no datums of their own in the source data, but the
 quality-filtered `stations` export from `@neaps/tide-database` copies datums and
 constituents from each subordinate's reference station at load time.
 
+Those copied datums describe the **reference's** water, and this library
+deliberately does not reduce them through the subordinate's offsets. It is
+tempting to — a subordinate's own floor and ceiling are what a caller usually
+wants — but the result would not be a datum. NOAA's height corrections are
+defined for high and low *extremes*, not for means, so there is no principled
+reduction for MSL or MTL, and applying the extreme corrections to LAT/HAT alone
+leaves the object internally inconsistent: a `fixed` offset of +0.42 m on a
+reference whose LAT sits 0.17 m below chart datum (Manzanillo off San Juan,
+Niue off Pago Pago) puts the subordinate's "LAT" a quarter-metre *above* its own
+chart datum, which the datum-ordering gate rightly rejects.
+
+That number is still true about what the predictor produces — it is simply the
+floor of a prediction, not a hydrographic datum. Callers that want it should
+apply `offsets.height` to the reference's LAT/HAT themselves, at the same point
+they apply the offsets to the predicted extremes. The reduction is exact for
+both offset kinds: a `ratio` scales the height above chart datum, a `fixed`
+translates it, and both are monotonic in the reference height, so the lowest low
+maps to the lowest low.
+
 How the values are produced differs by source:
 
 - [NOAA](../data/noaa/README.md) - uses datums published by NOAA (`MLLW`, or `STND` for non-tidal stations)
