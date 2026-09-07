@@ -41,10 +41,10 @@ async function main() {
     // observed set that marks a NOAA-surveyed station.
     if (
       station.type !== "subordinate" &&
-      d.LAT !== undefined &&
-      d.HAT !== undefined &&
-      d.MSL !== undefined &&
-      d.MHW !== undefined &&
+      d["LAT"] !== undefined &&
+      d["HAT"] !== undefined &&
+      d["MSL"] !== undefined &&
+      d["MHW"] !== undefined &&
       station.harmonic_constituents?.length
     ) {
       candidates.push(station);
@@ -64,16 +64,24 @@ async function main() {
 
   for (const station of sample) {
     const d = station.datums!;
-    const { datums: computed } = computeDatums(station.harmonic_constituents, {});
-    if (computed.LAT === undefined || computed.HAT === undefined) continue;
-    const lat = computed.LAT + d.MSL! - d.LAT!;
-    const hat = computed.HAT + d.MSL! - d.HAT!;
+    const { datums: computed } = computeDatums(
+      station.harmonic_constituents,
+      {},
+    );
+    if (computed["LAT"] === undefined || computed["HAT"] === undefined)
+      continue;
+    const lat = computed["LAT"] + d["MSL"]! - d["LAT"]!;
+    const hat = computed["HAT"] + d["MSL"]! - d["HAT"]!;
     errors.LAT.push(Math.abs(lat));
     errors.HAT.push(Math.abs(hat));
     worst.push({ name: station.name, lat, hat });
   }
 
-  worst.sort((a, b) => Math.max(...[b.lat, b.hat].map(Math.abs)) - Math.max(...[a.lat, a.hat].map(Math.abs)));
+  worst.sort(
+    (a, b) =>
+      Math.max(...[b.lat, b.hat].map(Math.abs)) -
+      Math.max(...[a.lat, a.hat].map(Math.abs)),
+  );
   console.log("Largest disagreements:");
   for (const w of worst.slice(0, 10)) {
     console.log(

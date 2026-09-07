@@ -53,14 +53,16 @@ async function main() {
     if (station.type === "subordinate") continue;
 
     const datums = station.datums ?? {};
-    if (datums.LAT !== undefined && datums.HAT !== undefined) continue;
+    if (datums["LAT"] !== undefined && datums["HAT"] !== undefined) continue;
 
     // computeDatums works in the constituents' own MSL=0 frame; NOAA's datums
     // are on the STND scale, so shift by the station's published MSL. Without
     // one there is nothing to shift onto, and without constituents there is
     // nothing to predict.
-    if (datums.MSL === undefined || !station.harmonic_constituents?.length) {
-      skipped.push(`${file} (${datums.MSL === undefined ? "no MSL" : "no constituents"})`);
+    if (datums["MSL"] === undefined || !station.harmonic_constituents?.length) {
+      skipped.push(
+        `${file} (${datums["MSL"] === undefined ? "no MSL" : "no constituents"})`,
+      );
       continue;
     }
     if (!hasSeasonalTerm(station.harmonic_constituents)) {
@@ -68,8 +70,11 @@ async function main() {
       continue;
     }
 
-    const { datums: computed } = computeDatums(station.harmonic_constituents, {});
-    if (computed.LAT === undefined || computed.HAT === undefined) {
+    const { datums: computed } = computeDatums(
+      station.harmonic_constituents,
+      {},
+    );
+    if (computed["LAT"] === undefined || computed["HAT"] === undefined) {
       skipped.push(`${file} (predictor returned no LAT/HAT)`);
       continue;
     }
@@ -78,8 +83,8 @@ async function main() {
     await save("noaa", {
       ...station,
       datums: {
-        LAT: toFixed(computed.LAT + datums.MSL, 3),
-        HAT: toFixed(computed.HAT + datums.MSL, 3),
+        LAT: toFixed(computed["LAT"] + datums["MSL"], 3),
+        HAT: toFixed(computed["HAT"] + datums["MSL"], 3),
         ...datums,
       },
     });

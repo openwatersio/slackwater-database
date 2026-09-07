@@ -214,12 +214,12 @@ const DATUM_ROUNDING_M = 0.06;
 
 describe("astronomical extremes across the database", () => {
   const references = allStations.filter(
-    (s) => s.type === "reference" && s.datums.LAT !== undefined,
+    (s) => s.type === "reference" && s.datums["LAT"] !== undefined,
   );
 
   test("covers every reference station the constituents can honestly bound", () => {
     const missing = allStations.filter(
-      (s) => s.type === "reference" && s.datums.HAT === undefined,
+      (s) => s.type === "reference" && s.datums["HAT"] === undefined,
     );
     // Three publish no MSL, so there is no frame to put a constituent-space
     // result onto. The other eight carry Sa and Ssa at zero amplitude, so a
@@ -241,14 +241,19 @@ describe("astronomical extremes across the database", () => {
   });
 
   test("HAT is always above LAT", () => {
-    const inverted = references.filter((s) => s.datums.HAT! <= s.datums.LAT!);
+    const inverted = references.filter(
+      (s) => s.datums["HAT"]! <= s.datums["LAT"]!,
+    );
     expect(inverted.map((s) => s.id)).toEqual([]);
   });
 
   test("LAT is at or below the chart datum, bar known upstream defects", () => {
     const offenders = references
       .filter((s) => s.datums[s.chart_datum] !== undefined)
-      .map((s) => ({ id: s.id, over: s.datums.LAT! - s.datums[s.chart_datum]! }))
+      .map((s) => ({
+        id: s.id,
+        over: s.datums["LAT"]! - s.datums[s.chart_datum]!,
+      }))
       .filter((s) => s.over > DATUM_ROUNDING_M)
       .filter((s) => !LAT_ABOVE_CHART_DATUM.has(s.id));
 
@@ -257,8 +262,8 @@ describe("astronomical extremes across the database", () => {
 
   test("HAT is at or above MHHW, bar the same rounding", () => {
     const offenders = references
-      .filter((s) => s.datums.MHHW !== undefined)
-      .map((s) => ({ id: s.id, under: s.datums.MHHW! - s.datums.HAT! }))
+      .filter((s) => s.datums["MHHW"] !== undefined)
+      .map((s) => ({ id: s.id, under: s.datums["MHHW"]! - s.datums["HAT"]! }))
       .filter((s) => s.under > DATUM_ROUNDING_M);
 
     expect(offenders.length).toBeLessThan(20);

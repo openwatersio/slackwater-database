@@ -21,11 +21,11 @@ Those copied datums describe the **reference's** water, and this library
 deliberately does not reduce them through the subordinate's offsets. It is
 tempting to — a subordinate's own floor and ceiling are what a caller usually
 wants — but the result would not be a datum. NOAA's height corrections are
-defined for high and low *extremes*, not for means, so there is no principled
+defined for high and low _extremes_, not for means, so there is no principled
 reduction for MSL or MTL, and applying the extreme corrections to LAT/HAT alone
 leaves the object internally inconsistent: a `fixed` offset of +0.42 m on a
 reference whose LAT sits 0.17 m below chart datum (Manzanillo off San Juan,
-Niue off Pago Pago) puts the subordinate's "LAT" a quarter-metre *above* its own
+Niue off Pago Pago) puts the subordinate's "LAT" a quarter-metre _above_ its own
 chart datum, which the datum-ordering gate rightly rejects.
 
 That number is still true about what the predictor produces — it is simply the
