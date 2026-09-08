@@ -19,7 +19,9 @@ export interface StationData {
   country: string;
   region?: string;
   timezone: string;
-  disclaimers: string;
+  // Optional in the data (schemas/station.schema.json does not require it);
+  // stations without one have the key absent.
+  disclaimers?: string;
   type: "reference" | "subordinate";
   latitude: number;
   longitude: number;

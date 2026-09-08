@@ -38,7 +38,7 @@ The bytes come from a per-build source behind the `#neaps.tcdb` subpath import â
 
 - **Node** (`src/database/bytes.node.ts`): `readFileSync` into an off-heap `Buffer`.
 - **Browser** (`src/database/bytes.browser.ts`): `fetch(new URL("../generated/neaps.tcdb", import.meta.url))`; bundlers that understand `new URL(..., import.meta.url)` copy the asset and rewrite the URL.
-- **Workers** (`src/database/bytes.worker.ts`, selected by the `workerd`/`worker` export conditions): Cloudflare Workers can't construct file URLs from `import.meta.url` and disallow `fetch` during module evaluation, so the database is inlined into `dist/worker` as a base64 literal by a build-time macro and decoded once on first use.
+- **Workers** (`src/database/bytes.worker.ts`, selected by the `workerd`/`worker` export conditions): Cloudflare Workers can't construct file URLs from `import.meta.url` and disallow `fetch` during module evaluation, so the database is inlined into `dist/worker` as a base64 literal by a build-time macro and decoded at module evaluation. The bundle is ~4.5 MiB compressed, which needs a plan with the 10 MiB script limit â€” free plans (3 MiB) have never fit this database in any format. The smoke test guards the compressed size so data growth surfaces at build time rather than at a consumer's deploy.
 
 Both bundles resolve `../generated/neaps.tcdb` to one shared copy at `dist/generated/neaps.tcdb`.
 

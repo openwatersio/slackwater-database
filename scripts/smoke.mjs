@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { gzipSync } from "node:zlib";
 
 const dist = new URL("../dist/", import.meta.url);
 
@@ -77,12 +78,25 @@ for (const bundle of ["browser", "worker"]) {
     `${bundle} bundle must not reference node:fs`,
   );
 }
+const workerSrc = readFileSync(
+  fileURLToPath(new URL("worker/index.js", dist)),
+  "utf8",
+);
 assert.ok(
-  !readFileSync(
-    fileURLToPath(new URL("worker/index.js", dist)),
-    "utf8",
-  ).includes("import.meta.url"),
+  !workerSrc.includes("import.meta.url"),
   "worker bundle must not use import.meta.url",
+);
+
+// Cloudflare's script-size limits apply to the compressed upload: 3 MiB on
+// free plans (never fit this database — the previous JSON-string bundle was
+// 4.7 MiB), 10 MiB on paid. Guard well under the paid limit so data growth
+// that would push consumer deployments over it fails here, not at their
+// deploy. ~4.5 MiB as of 8,339 stations.
+const compressed = gzipSync(workerSrc).length;
+assert.ok(
+  compressed < 6 * 1024 * 1024,
+  `worker bundle is ${(compressed / 1048576).toFixed(1)} MiB gzipped; ` +
+    "approaching Cloudflare's 10 MiB compressed script limit",
 );
 
 console.log("smoke: node ESM + node require + browser ESM + worker ESM OK");
