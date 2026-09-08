@@ -9,7 +9,7 @@
 // nothing in the file marks which is which. `datums_source` is one value per
 // station, so setting it to "harmonic" would relabel NOAA's own MHHW/MSL/MLLW
 // as computed. A later validation pass must not score these as published; see
-// data/noaa/README.md.
+// sources/noaa/README.md.
 //
 // Stations with no seasonal term are skipped rather than filled. LAT and HAT
 // are the extremes of a full 19-year envelope, and a constituent set with Sa

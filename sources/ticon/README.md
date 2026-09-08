@@ -3,6 +3,7 @@
 [TICON-4](https://www.seanoe.org/data/00980/109129/) is a global dataset of tidal harmonic constituents derived from the **GESLA-4** (Global Extreme Sea Level Analysis v.4) sea-level gauge compilation. It provides tidal characteristics for **4,264 tide stations** worldwide, with emphasis on global coverage outside the United States (which is covered by NOAA's tide database).
 
 **Key Details:**
+
 - **Source:** [TICON-4 @ SEANOE](https://www.seanoe.org/data/00980/109129/)
 - **Manual:** [TICON Documentation](https://www.seanoe.org/data/00980/109129/data/122852.pdf)
 - **License:** CC-BY-4.0 (Creative Commons Attribution 4.0)
@@ -23,14 +24,14 @@ TICON-4 does not publish tidal datums, so we derive them from the original GESLA
 
 Each station records its provenance in `datums_source`: `observed` when derived from GESLA water levels, or `harmonic` when the record was too short or sparse to reduce (< 1 year of data or < 4,000 hourly points), in which case all datums fall back to the synthetic harmonic prediction and the station's `disclaimers` note the higher uncertainty. For `observed` stations the `epoch` field is the reduced observation window; for `harmonic` fallbacks it is the TICON record period the constituents were fit from.
 
-Cross-checked against authoritative agency datums (NOAA CO-OPS, Canada CHS), the observed datums agree to within ~0.03 m in great diurnal range, versus ~0.2 m for purely synthetic datums — which is why observations are preferred whenever the record supports them. See [#40](https://github.com/openwatersio/tide-database/issues/40) and [`tools/validate-datums.ts`](../../tools/validate-datums.ts).
+Cross-checked against authoritative agency datums (NOAA CO-OPS, Canada CHS), the observed datums agree to within ~0.03 m in great diurnal range, versus ~0.2 m for purely synthetic datums — which is why observations are preferred whenever the record supports them. See [#40](https://github.com/openwatersio/tide-database/issues/40) and [`packages/stations/validate-datums.ts`](../../packages/stations/validate-datums.ts).
 
 ## Regenerating
 
 The station JSONs are generated. After changing datum logic, regenerate them (the full GESLA-4 dataset is downloaded on demand and is not committed):
 
 ```sh
-FORCE_DATUMS=1 node tools/import-ticon.ts
+FORCE_DATUMS=1 npm run import -w @neaps/ticon
 ```
 
 Without `FORCE_DATUMS`, the importer reuses each station's cached datums and only recomputes the derived metadata (`chart_datum`, pruning, disclaimers).

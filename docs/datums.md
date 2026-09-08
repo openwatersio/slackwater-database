@@ -38,8 +38,8 @@ maps to the lowest low.
 
 How the values are produced differs by source:
 
-- [NOAA](../data/noaa/README.md) - uses datums published by NOAA (`MLLW`, or `STND` for non-tidal stations)
-- [TICON](../data/ticon/README.md) — datums derived from
+- [NOAA](../sources/noaa/README.md) - uses datums published by NOAA (`MLLW`, or `STND` for non-tidal stations)
+- [TICON](../sources/ticon/README.md) — datums derived from
   GESLA-4 water levels.
 
 ## The datums

@@ -6,10 +6,10 @@ This database includes harmonic constituents for tide prediction from various so
 
 ## Sources
 
-- ✅ [**NOAA**](data/noaa/README.md): National Oceanic and Atmospheric Administration
+- ✅ [**NOAA**](sources/noaa/README.md): National Oceanic and Atmospheric Administration
   ~3400 stations, mostly in the United States and its territories. Updated monthly via [NOAA's API](https://api.tidesandcurrents.noaa.gov/mdapi/prod/).
 
-- ✅ [**TICON-4**](data/ticon/README.md): TIdal CONstants based on GESLA-4 sea-level records
+- ✅ [**TICON-4**](sources/ticon/README.md): TIdal CONstants based on GESLA-4 sea-level records
   ~4200+ global stations - ([#16](https://github.com/openwatersio/tide-database/pull/16))
 
 If you know of other public sources of harmonic constituents, please [open an issue](https://github.com/openwatersio/tide-database/issues/new) to discuss adding them.
