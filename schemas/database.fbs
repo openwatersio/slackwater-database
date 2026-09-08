@@ -1,0 +1,170 @@
+// Neaps database — FlatBuffers schema.
+//
+// One file serves three reads without decoding what it does not touch:
+//   identity scan   — id, name, coordinates of every station, for ranking and search
+//   lookup by id    — binary search on the sorted `stations` vector (`id` is the key)
+//   prediction data — one station's constituents, datums, offsets
+//
+// Layout rule the builder must follow (not expressible in the schema): build
+// every station's `constituents` vector before any `Station` table. The builder
+// writes back to front, so constituents land together at the tail of the file
+// and station tables land together near the head. An identity scan over a
+// memory-mapped file then touches head pages only. A builder that interleaves
+// them faults the whole file in for the cheapest read. Assert in tests that
+// the lowest constituents offset is past the highest station table offset.
+
+namespace Neaps;
+
+/// Datum names and constituent names live once, at the root; records refer to
+/// them by index. Constituent records repeat ~23 names across ~110k entries.
+table Root {
+  /// Release tag of the database that produced this file, e.g. "0.9.20260801".
+  version: string;
+  /// Sorted by `id` (strcmp order) so `lookupByKey` binary-searches.
+  stations: [Station];
+  /// Indexed by `Constituent.name`. Names as the predictor catalogue spells them ("M2", "K1").
+  constituent_names: [string];
+  /// Indexed by `Datum.name` ("MLLW", "MSL", "LAT", ...).
+  datum_names: [string];
+}
+
+enum Kind : ubyte { Tide = 0, Current = 1 }
+enum StationType : ubyte { Reference = 0, Subordinate = 1 }
+enum HeightOffsetType : ubyte { Ratio = 0, Fixed = 1 }
+enum DatumsSource : ubyte { Unknown = 0, Observed = 1, Harmonic = 2 }
+
+/// 12 bytes, contiguous per station. Amplitude in metres (tides) or knots
+/// (currents); phase in degrees. float32 keeps 7 significant digits, more
+/// than any publisher's millimetre / 0.1° precision.
+struct Constituent {
+  name: ushort;      // index into Root.constituent_names
+  amplitude: float;
+  phase: float;
+}
+
+struct Datum {
+  name: ushort;      // index into Root.datum_names
+  value: float;      // metres above the station's zero
+}
+
+/// Subordinate tide station: NOAA-style corrections against `reference`.
+table TideOffsets {
+  reference: string (required);   // Station.id of the reference
+  time_high: int;                 // minutes
+  time_low: int;
+  height_type: HeightOffsetType;
+  height_high: float;             // ratio, or metres when Fixed
+  height_low: float;
+}
+
+/// Subordinate current station: NOAA-style corrections against `reference`.
+/// Offsets in minutes, ratios dimensionless.
+table CurrentOffsets {
+  reference: string (required);
+  slack_before_flood: int;
+  slack_before_ebb: int;
+  flood_time: int;
+  ebb_time: int;
+  flood_speed_ratio: float;
+  ebb_speed_ratio: float;
+}
+
+/// Present only when Kind == Current.
+table Current {
+  flood_direction: float;   // degrees true
+  ebb_direction: float;
+  mean_flow: float;         // knots, the constant term added to the harmonic sum
+  /// Station.id of the tide station whose extremes pair with this current, if any.
+  tide_reference: string;
+  offsets: CurrentOffsets;  // subordinate currents only
+}
+
+table Source {
+  name: string;
+  id: string;
+  url: string;
+  published_harmonics: bool;
+}
+
+table License {
+  type: string;
+  url: string;
+  notes: string;
+  commercial_use: bool;
+}
+
+table Epoch {
+  start: string;   // YYYY-MM-DD
+  end: string;
+}
+
+/// Scoring factors, each 0–1. A struct rather than scalar fields so presence
+/// is exact: scalars can't distinguish an omitted factor from a real 0, while
+/// a struct field reads back null when it was never written.
+struct QualityFactors {
+  epoch: float;
+  recency: float;
+  source: float;
+  quality: float;
+  amplitude: float;
+  coverage: float;
+}
+
+/// Quality-evaluation detail (tools/evaluate-quality.ts). The gate itself —
+/// `accepted` and `score` — lives inline on Station so an identity scan can
+/// filter and rank without touching this table; the builder writes Quality
+/// tables at the tail of the file with the other lookup data.
+table Quality {
+  factors: QualityFactors;
+  /// Human-readable findings, e.g. "MLW (3.827) < LAT (3.831)".
+  issues: [string];
+  /// Rejection category ("duplicate", "datum", "constituents", ...), if rejected.
+  reason: string;
+  /// Station.id of the station that makes this one redundant, if any.
+  redundant: string;
+}
+
+table Station {
+  // ---- identity: what a scan reads ----
+  id: string (key, required);
+  name: string (required);
+  kind: Kind;
+  type: StationType;
+  latitude: double;
+  longitude: double;
+  timezone: string;   // IANA
+  /// Upstream's region as published ("NJ", "Nova Scotia"). Readers that want a
+  /// display line derive it from region and country at read time.
+  region: string;
+  country: string;
+  continent: string;
+  /// Alternate names and slugs for search. Lower-cased, deduplicated.
+  aliases: [string];
+  /// Quality gate: whether the station passes the default filter, and its
+  /// 0–100 score. Inline so an identity scan reads them from head pages;
+  /// the detail behind them is in `quality`.
+  accepted: bool;
+  score: ubyte;
+
+  // ---- prediction data: what a lookup reads ----
+  /// Empty for subordinates; predict from `offsets.reference`.
+  constituents: [Constituent];
+  /// Vertical datums relative to the station's zero. Chart-datum shift for
+  /// heights is `datums[MSL] - datums[chart_datum]`, computed by the reader.
+  datums: [Datum];
+  datums_source: DatumsSource;
+  chart_datum: string;
+  offsets: TideOffsets;   // subordinate tides only
+  current: Current;       // Kind == Current only
+  epoch: Epoch;
+  quality: Quality;
+
+  // ---- provenance ----
+  source: Source;
+  license: License;
+  disclaimers: string;
+}
+
+root_type Root;
+file_identifier "TCDB";
+file_extension "tcdb";

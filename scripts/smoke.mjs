@@ -1,12 +1,28 @@
 // Smoke-tests the built artifacts (not src), so a broken published package can't
-// slip through. Runs after build. Imports the Node ESM entry and the browser
-// ESM entry, checks a reference and a subordinate station resolve their
-// prediction data, and asserts the browser bundle contains no node:fs.
+// slip through. Runs after build. Imports the Node, browser, and worker ESM
+// entries, checks a reference and a subordinate station resolve their
+// prediction data, and asserts the browser/worker bundles respect their
+// runtime constraints (no node:fs; the worker additionally may not fetch or
+// touch import.meta.url during module evaluation — Cloudflare Workers allow
+// neither).
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { gzipSync } from "node:zlib";
 
 const dist = new URL("../dist/", import.meta.url);
+
+// The browser bundle fetches the database file relative to the module. Node's
+// fetch can't read file: URLs, so serve it from disk here; in a real browser
+// the bundler serves the asset.
+const realFetch = globalThis.fetch;
+globalThis.fetch = async (url, init) => {
+  if (String(url).startsWith("file:")) {
+    return new Response(readFileSync(fileURLToPath(url)));
+  }
+  return realFetch(url, init);
+};
 
 function check(db, label) {
   const ref = db.stations.find(
@@ -37,13 +53,50 @@ function check(db, label) {
 check(await import(new URL("node/index.js", dist)), "node ESM");
 check(await import(new URL("browser/index.js", dist)), "browser ESM");
 
-const browserSrc = readFileSync(
-  fileURLToPath(new URL("browser/index.js", dist)),
+// require() of the ESM entry works only while its module graph is synchronous;
+// this fails with ERR_REQUIRE_ASYNC_MODULE if top-level await sneaks back into
+// the Node bundle (the browser source keeps its fetch await to itself).
+const require = createRequire(import.meta.url);
+check(require(fileURLToPath(new URL("node/index.js", dist))), "node require");
+
+// The worker bundle must start with no fetch and no filesystem, like a
+// Cloudflare Worker's global scope: poison fetch for the duration of its
+// import to prove startup never calls it.
+globalThis.fetch = () => {
+  throw new Error("worker bundle called fetch during module evaluation");
+};
+check(await import(new URL("worker/index.js", dist)), "worker ESM");
+globalThis.fetch = realFetch;
+
+for (const bundle of ["browser", "worker"]) {
+  const src = readFileSync(
+    fileURLToPath(new URL(`${bundle}/index.js`, dist)),
+    "utf8",
+  );
+  assert.ok(
+    !/["']node:fs["']|require\(["']fs["']\)/.test(src),
+    `${bundle} bundle must not reference node:fs`,
+  );
+}
+const workerSrc = readFileSync(
+  fileURLToPath(new URL("worker/index.js", dist)),
   "utf8",
 );
 assert.ok(
-  !/["']node:fs["']|require\(["']fs["']\)/.test(browserSrc),
-  "browser bundle must not reference node:fs",
+  !workerSrc.includes("import.meta.url"),
+  "worker bundle must not use import.meta.url",
 );
 
-console.log("smoke: node ESM + browser ESM OK");
+// Cloudflare's script-size limits apply to the compressed upload: 3 MiB on
+// free plans (never fit this database — the previous JSON-string bundle was
+// 4.7 MiB), 10 MiB on paid. Guard well under the paid limit so data growth
+// that would push consumer deployments over it fails here, not at their
+// deploy. ~4.5 MiB as of 8,339 stations.
+const compressed = gzipSync(workerSrc).length;
+assert.ok(
+  compressed < 6 * 1024 * 1024,
+  `worker bundle is ${(compressed / 1048576).toFixed(1)} MiB gzipped; ` +
+    "approaching Cloudflare's 10 MiB compressed script limit",
+);
+
+console.log("smoke: node ESM + node require + browser ESM + worker ESM OK");

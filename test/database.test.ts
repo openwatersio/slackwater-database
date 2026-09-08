@@ -1,0 +1,210 @@
+import { describe, test, expect } from "vitest";
+import { readFileSync } from "node:fs";
+import * as flatbuffers from "flatbuffers";
+import { buildDatabase } from "../src/database/builder.ts";
+import { openDatabase } from "../src/database/reader.ts";
+import { Root, Kind } from "../src/generated/fbs/neaps.ts";
+import type { StationInput } from "../src/types.ts";
+
+const shipped = openDatabase(
+  readFileSync(new URL("../src/generated/neaps.tcdb", import.meta.url)),
+);
+
+describe("the shipped database file", () => {
+  test("carries the TCDB file identifier", () => {
+    const bytes = readFileSync(
+      new URL("../src/generated/neaps.tcdb", import.meta.url),
+    );
+    expect(Root.bufferHasIdentifier(new flatbuffers.ByteBuffer(bytes))).toBe(
+      true,
+    );
+    expect(shipped.version()).toBeTruthy();
+  });
+
+  test("stations are sorted by id, the vector key", () => {
+    let previous = "";
+    for (let i = 0; i < shipped.stationsLength(); i++) {
+      const id = shipped.stations(i)!.id()!;
+      expect(id > previous).toBe(true);
+      previous = id;
+    }
+  });
+
+  // The layout the builder exists to produce: every station's prediction data
+  // (constituents and datums vectors) lands together at the tail of the file,
+  // every station table together at the head, so an identity scan over a
+  // memory-mapped file touches only the head pages. A naive build loop
+  // interleaves them, and nothing else fails when that regresses.
+  test("prediction data sits after all station tables", () => {
+    let highestTable = 0;
+    let lowestPrediction = Infinity;
+    for (let i = 0; i < shipped.stationsLength(); i++) {
+      const station = shipped.stations(i)!;
+      highestTable = Math.max(highestTable, station.bb_pos);
+      if (station.constituentsLength() > 0)
+        lowestPrediction = Math.min(
+          lowestPrediction,
+          station.constituents(0)!.bb_pos,
+        );
+      if (station.datumsLength() > 0)
+        lowestPrediction = Math.min(
+          lowestPrediction,
+          station.datums(0)!.bb_pos,
+        );
+      const quality = station.quality();
+      if (quality)
+        lowestPrediction = Math.min(lowestPrediction, quality.bb_pos);
+    }
+    expect(lowestPrediction).toBeGreaterThan(highestTable);
+  });
+});
+
+describe("buildDatabase", () => {
+  const inputs: StationInput[] = [
+    {
+      id: "test/2",
+      name: "Reference",
+      latitude: 47.6,
+      longitude: -122.3,
+      timezone: "America/Los_Angeles",
+      country: "United States",
+      continent: "Americas",
+      type: "reference",
+      chart_datum: "MLLW",
+      datums_source: "observed",
+      epoch: { start: "2007-01-01", end: "2026-01-01" },
+      aliases: ["Elliott Bay", "seattle"],
+      harmonic_constituents: [
+        { name: "M2", amplitude: 1.063, phase: 10.8 },
+        { name: "S2", amplitude: 0.268, phase: 25.2 },
+      ],
+      datums: { MLLW: 2.419, MSL: 4.443 },
+      quality: {
+        id: "test/2",
+        accepted: true,
+        score: 87,
+        factors: {
+          epoch: 1,
+          recency: 0.75,
+          source: 1,
+          quality: 1,
+          amplitude: 0.5,
+          coverage: 1,
+        },
+        issues: ["MLW (3.827) < LAT (3.831)"],
+      },
+    },
+    {
+      id: "test/1",
+      name: "Subordinate",
+      type: "subordinate",
+      quality: {
+        id: "test/1",
+        accepted: false,
+        score: 0,
+        reason: "duplicate",
+        redundant: "test/2",
+      },
+      offsets: {
+        reference: "test/2",
+        time: { high: 12, low: -6 },
+        height: { high: 1.1, low: 0.9, type: "ratio" },
+      },
+    },
+    {
+      id: "test/3",
+      name: "A current",
+      // No explicit kind: the builder derives Kind.Current from `current`.
+      current: {
+        flood_direction: 90,
+        ebb_direction: 270,
+        mean_flow: 0.4,
+        tide_reference: "test/2",
+        offsets: {
+          reference: "test/2",
+          slack_before_flood: -30,
+          flood_speed_ratio: 0.8,
+        },
+      },
+    },
+  ];
+  const db = openDatabase(buildDatabase(inputs, { version: "1.2.3" }));
+
+  test("round-trips stations sorted by id", () => {
+    expect(db.version()).toBe("1.2.3");
+    expect(db.stationsLength()).toBe(3);
+    expect(db.stations(0)!.id()).toBe("test/1");
+    expect(db.stations(1)!.id()).toBe("test/2");
+    expect(db.stations(2)!.id()).toBe("test/3");
+  });
+
+  test("round-trips prediction data through the name tables", () => {
+    const station = db.stations(1)!;
+    expect(station.constituentsLength()).toBe(2);
+    const m2 = station.constituents(0)!;
+    expect(db.constituentNames(m2.name())).toBe("M2");
+    expect(m2.amplitude()).toBeCloseTo(1.063, 6);
+    expect(m2.phase()).toBeCloseTo(10.8, 5);
+
+    const mllw = station.datums(0)!;
+    expect(db.datumNames(mllw.name())).toBe("MLLW");
+    expect(mllw.value()).toBeCloseTo(2.419, 6);
+    expect(station.chartDatum()).toBe("MLLW");
+
+    const epoch = station.epoch()!;
+    expect(epoch.start()).toBe("2007-01-01");
+    expect(epoch.end()).toBe("2026-01-01");
+    // Aliases are lower-cased per the schema contract.
+    expect(station.aliases(0)).toBe("elliott bay");
+    expect(station.aliases(1)).toBe("seattle");
+  });
+
+  test("round-trips quality, gate inline and detail in the table", () => {
+    const accepted = db.stations(1)!;
+    expect(accepted.accepted()).toBe(true);
+    expect(accepted.score()).toBe(87);
+    const detail = accepted.quality()!;
+    const factors = detail.factors()!;
+    expect(factors.recency()).toBeCloseTo(0.75, 6);
+    expect(factors.amplitude()).toBeCloseTo(0.5, 6);
+    expect(detail.issuesLength()).toBe(1);
+    expect(detail.issues(0)).toBe("MLW (3.827) < LAT (3.831)");
+    expect(detail.reason()).toBeNull();
+
+    const rejected = db.stations(0)!;
+    expect(rejected.accepted()).toBe(false);
+    expect(rejected.score()).toBe(0);
+    // Factors were not provided, so they read back absent — not six zeros.
+    expect(rejected.quality()!.factors()).toBeNull();
+    expect(rejected.quality()!.reason()).toBe("duplicate");
+    expect(rejected.quality()!.redundant()).toBe("test/2");
+  });
+
+  test("round-trips subordinate offsets", () => {
+    const offsets = db.stations(0)!.offsets()!;
+    expect(offsets.reference()).toBe("test/2");
+    expect(offsets.timeHigh()).toBe(12);
+    expect(offsets.timeLow()).toBe(-6);
+    expect(offsets.heightHigh()).toBeCloseTo(1.1, 6);
+  });
+
+  test("rejects a station without a name, by id", () => {
+    expect(() => buildDatabase([{ id: "test/nameless" }])).toThrow(
+      /test\/nameless has no name/,
+    );
+  });
+
+  test("round-trips current stations", () => {
+    const station = db.stations(2)!;
+    expect(station.kind()).toBe(Kind.Current);
+    const current = station.current()!;
+    expect(current.floodDirection()).toBe(90);
+    expect(current.ebbDirection()).toBe(270);
+    expect(current.meanFlow()).toBeCloseTo(0.4, 6);
+    expect(current.tideReference()).toBe("test/2");
+    const offsets = current.offsets()!;
+    expect(offsets.reference()).toBe("test/2");
+    expect(offsets.slackBeforeFlood()).toBe(-30);
+    expect(offsets.floodSpeedRatio()).toBeCloseTo(0.8, 6);
+  });
+});

@@ -171,7 +171,9 @@ stations.forEach((station) => {
           range,
           `Station ${station.id} has negligible tidal range: ${(range * 100).toFixed(1)}cm (MHW-MLW). ` +
             `Run tools/evaluate-quality.ts to re-filter.`,
-        ).toBeGreaterThanOrEqual(MIN_TIDAL_RANGE);
+          // The database stores datums as float32, so a station accepted right
+          // at the threshold can read back a hair under it.
+        ).toBeGreaterThanOrEqual(MIN_TIDAL_RANGE - 1e-6);
       });
     }
   });

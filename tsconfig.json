@@ -4,6 +4,10 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "types": ["vite/client", "node"],
+    // src imports the flatc-generated code with ".ts" specifiers so node can
+    // run the builder directly (scripts/generate-database.ts). Checked with
+    // --noEmit; tsdown produces the emitted output.
+    "allowImportingTsExtensions": true,
     "declarationMap": true,
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },

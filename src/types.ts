@@ -19,7 +19,9 @@ export interface StationData {
   country: string;
   region?: string;
   timezone: string;
-  disclaimers: string;
+  // Optional in the data (schemas/station.schema.json does not require it);
+  // stations without one have the key absent.
+  disclaimers?: string;
   type: "reference" | "subordinate";
   latitude: number;
   longitude: number;
@@ -64,16 +66,79 @@ export interface StationData {
     start: string; // Date in YYYY-MM-DD format
     end: string; // Date in YYYY-MM-DD format
   };
+
+  // Alternate names and slugs, for search.
+  aliases?: string[];
+}
+
+// Current-station data. This repo ships no current data yet; the database
+// format carries a slot for it so downstream catalogs can write theirs through
+// buildDatabase. Directions are degrees true, speeds knots, time offsets
+// minutes, speed ratios unitless multipliers on the reference current.
+export interface CurrentData {
+  /** Degrees true. */
+  flood_direction?: number;
+  ebb_direction?: number;
+  /** Knots; the constant term added to the harmonic sum. */
+  mean_flow?: number;
+  /** Id of the tide station whose extremes pair with this current, if any. */
+  tide_reference?: string;
+  /** Subordinate currents only. Times in minutes, ratios dimensionless. */
+  offsets?: {
+    reference: string;
+    slack_before_flood?: number;
+    slack_before_ebb?: number;
+    flood_time?: number;
+    ebb_time?: number;
+    flood_speed_ratio?: number;
+    ebb_speed_ratio?: number;
+  };
+}
+
+/**
+ * What buildDatabase accepts: a station id plus whatever fields the catalog
+ * has. Downstream generators can pass filtered stations from this package or
+ * records of their own (including current stations).
+ */
+export type StationInput = {
+  id: string;
+  kind?: "tide" | "current";
+  current?: CurrentData;
+  quality?: StationQuality;
+} & Partial<StationData>;
+
+// Quality evaluation for a station (tools/evaluate-quality.ts). `accepted` is
+// the default filter applied to the `stations` export; `score` is 0-100.
+export interface StationQuality {
+  /** The station's id — not stored in the database, filled from identity. */
+  id: string;
+  accepted: boolean;
+  score: number;
+  /** Scoring factors, each 0-1. */
+  factors?: {
+    epoch: number;
+    recency: number;
+    source: number;
+    quality: number;
+    amplitude: number;
+    coverage: number;
+  };
+  /** Human-readable findings, e.g. "MLW (3.827) < LAT (3.831)". */
+  issues?: string[];
+  /** Rejection category ("duplicate", "datum", "constituents", ...), if rejected. */
+  reason?: string;
+  /** Id of the station that makes this one redundant, if any. */
+  redundant?: string;
 }
 
 export interface Station extends StationData {
   id: string;
+  quality?: StationQuality;
 }
 
-// The light fields, bundled eagerly for all stations (~1.5 MB serialized;
-// ~15 MB as live objects on the heap). Everything the search/geo/list paths
-// need. The prediction data (harmonic_constituents, datums, epoch) is loaded
-// per station from the pack — see station-data.ts.
+// The light fields the search/geo/list paths need. Used at build time to
+// construct the search indexes; at runtime the same fields are read from the
+// database file (see stations.ts).
 export type StationMetaKey =
   | "name"
   | "latitude"
@@ -91,11 +156,3 @@ export type StationMetaKey =
   | "offsets";
 
 export type StationMeta = { id: string } & Pick<StationData, StationMetaKey>;
-
-// The lazily-loaded prediction data, resolved per station from the data source
-// (an off-heap pack file on Node, bundled JSON strings in the browser).
-export interface PredictionData {
-  harmonic_constituents: HarmonicConstituent[];
-  datums: Record<string, number>;
-  epoch?: StationData["epoch"];
-}
