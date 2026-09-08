@@ -25,13 +25,18 @@ const META_KEYS: StationMetaKey[] = [
 ];
 
 function readAll(): { id: string; data: StationData }[] {
-  // Stations live at data/<source>/<id>.json; one level deep excludes
-  // top-level files like baltic-sea.geo.json.
-  const modules = import.meta.glob<StationData>("./*/*.json", {
-    eager: true,
-    import: "default",
-    base: "../data",
-  });
+  // data/ also holds non-station GeoJSON (e.g. baltic-sea.geo.json, used by
+  // the chart-datum tooling); only plain .json files are stations. Must stay
+  // in sync with the walk in scripts/generate-pack.mjs so the search indexes
+  // share the pack's station order.
+  const modules = import.meta.glob<StationData>(
+    ["./**/*.json", "!./**/*.geo.json"],
+    {
+      eager: true,
+      import: "default",
+      base: "../data",
+    },
+  );
   // Sort explicitly so the metadata array and the geo/text indexes share one
   // deterministic station order regardless of the bundler's glob implementation.
   return Object.entries(modules)

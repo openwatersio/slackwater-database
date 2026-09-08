@@ -16,16 +16,20 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dataDir = join(root, "data");
 const outDir = join(root, "src", "generated");
 
-// Stations live at data/<source>/<id>.json; one level deep excludes top-level
-// files like baltic-sea.geo.json. Sorted for a deterministic pack layout.
-const files = readdirSync(dataDir, { withFileTypes: true })
-  .filter((e) => e.isDirectory())
-  .flatMap((e) =>
-    readdirSync(join(dataDir, e.name))
-      .filter((f) => f.endsWith(".json"))
-      .map((f) => join(dataDir, e.name, f)),
-  )
-  .sort();
+// data/ also holds non-station GeoJSON (e.g. baltic-sea.geo.json, used by the
+// chart-datum tooling); only plain .json files are stations. Must stay in sync
+// with the import.meta.glob in src/station-bundle.ts so the search indexes
+// share the pack's station order.
+function walk(dir) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    const p = join(dir, e.name);
+    if (e.isDirectory()) return walk(p);
+    return p.endsWith(".json") && !p.endsWith(".geo.json") ? [p] : [];
+  });
+}
+
+// Sorted for a deterministic pack layout.
+const files = walk(dataDir).sort();
 
 const chunks = [];
 const index = {};
