@@ -22,7 +22,7 @@
   "module": "./dist/node/index.js",
   "types": "./dist/node/index.d.ts",
   "imports": {
-    "#database-bytes": {
+    "#neaps.tcdb": {
       "browser": "./src/database/bytes.browser.ts",
       "default": "./src/database/bytes.node.ts"
     }

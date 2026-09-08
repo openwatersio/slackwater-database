@@ -1,11 +1,10 @@
-import * as flatbuffers from "flatbuffers";
-import { getDatabaseBytes } from "#database-bytes";
+import databaseBytes from "#neaps.tcdb";
+import { openDatabase } from "./database/reader.js";
 import { Constituent } from "./generated/fbs/neaps/constituent.ts";
 import { Datum } from "./generated/fbs/neaps/datum.ts";
 import { DatumsSource } from "./generated/fbs/neaps/datums-source.ts";
 import { HeightOffsetType } from "./generated/fbs/neaps/height-offset-type.ts";
 import { StationType } from "./generated/fbs/neaps/station-type.ts";
-import { Root } from "./generated/fbs/neaps/root.ts";
 import type {
   HarmonicConstituent,
   Station,
@@ -22,7 +21,7 @@ import type {
 // No await here: the browser byte source resolves its fetch with top-level
 // await in its own module, so this graph — and the Node bundle — stays
 // synchronous and require()-able.
-const db = Root.getRootAsRoot(new flatbuffers.ByteBuffer(getDatabaseBytes()));
+const db = openDatabase(databaseBytes);
 
 const constituentNames: string[] = Array.from(
   { length: db.constituentNamesLength() },

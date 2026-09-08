@@ -34,7 +34,7 @@ The schema can't express this; the builder has to produce it deliberately. FlatB
 
 The quality gate comes from the same file: `station.quality` carries `accepted` and `score` eagerly (read inline during the identity scan) with lazy getters for the detail, `qualityMap` indexes those objects by id, and the `stations` export filters `allStations` on `accepted`. The module does not bundle `quality.json`; it stays in the repo as the artifact `tools/evaluate-quality.ts` writes and the build embeds.
 
-The bytes come from a per-build source behind the `#database-bytes` subpath import:
+The bytes come from a per-build source behind the `#neaps.tcdb` subpath import — each default-exports the bytes:
 
 - **Node** (`src/database/bytes.node.ts`): `readFileSync` into an off-heap `Buffer`.
 - **Browser** (`src/database/bytes.browser.ts`): `fetch(new URL("../generated/neaps.tcdb", import.meta.url))`; bundlers that understand `new URL(..., import.meta.url)` copy the asset and rewrite the URL.
@@ -51,7 +51,7 @@ Both bundles resolve `../generated/neaps.tcdb` to one shared copy at `dist/gener
 `npm run build`:
 
 1. `generate` (`scripts/generate-database.ts`) — runs `flatc` to generate the TypeScript accessors into `src/generated/fbs/`, then builds `src/generated/neaps.tcdb` from `data/**/*.json` (all git-ignored). A `pretest` hook runs it too. `flatc` comes from mise (`.mise.toml`).
-2. `tsdown` — builds `dist/node`, `dist/browser`, and `dist/worker` (all ESM), resolving `#database-bytes` per build.
+2. `tsdown` — builds `dist/node`, `dist/browser`, and `dist/worker` (all ESM), resolving `#neaps.tcdb` per build.
 3. `copy-database` — copies the file to `dist/generated/`.
 4. `tsc --noEmit` — type-checks src and the tests/tools against the schemas.
 5. `smoke` (`scripts/smoke.mjs`) — imports all three built entries, checks a reference and a subordinate station resolve prediction data, and asserts the browser and worker bundles have no `node:fs` and that the worker bundle neither fetches during module evaluation (fetch is poisoned for its import) nor uses `import.meta.url`.

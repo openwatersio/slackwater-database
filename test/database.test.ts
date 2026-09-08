@@ -2,15 +2,12 @@ import { describe, test, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import * as flatbuffers from "flatbuffers";
 import { buildDatabase } from "../src/database/builder.ts";
+import { openDatabase } from "../src/database/reader.ts";
 import { Root } from "../src/generated/fbs/neaps/root.ts";
 import { Kind } from "../src/generated/fbs/neaps/kind.ts";
 import type { StationInput } from "../src/types.ts";
 
-function open(bytes: Uint8Array): Root {
-  return Root.getRootAsRoot(new flatbuffers.ByteBuffer(bytes));
-}
-
-const shipped = open(
+const shipped = openDatabase(
   readFileSync(new URL("../src/generated/neaps.tcdb", import.meta.url)),
 );
 
@@ -132,7 +129,7 @@ describe("buildDatabase", () => {
       },
     },
   ];
-  const db = open(buildDatabase(inputs, { version: "1.2.3" }));
+  const db = openDatabase(buildDatabase(inputs, { version: "1.2.3" }));
 
   test("round-trips stations sorted by id", () => {
     expect(db.version()).toBe("1.2.3");

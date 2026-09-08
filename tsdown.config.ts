@@ -2,7 +2,7 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "tsdown";
 import macros from "unplugin-macros/rolldown";
 
-// Three builds, differing only in how `#database-bytes` resolves. The Node and
+// Three builds, differing only in how `#neaps.tcdb` resolves. The Node and
 // browser builds resolve it through package.json `imports` conditions (Node
 // reads the shared dist/generated/stations.neaps from disk, the browser
 // fetches it). The worker build serves Cloudflare Workers — selected by the
@@ -12,7 +12,7 @@ import macros from "unplugin-macros/rolldown";
 const workerBytes = {
   name: "worker-database-bytes",
   resolveId: (id: string) =>
-    id === "#database-bytes"
+    id === "#neaps.tcdb"
       ? fileURLToPath(
           new URL("./src/database/bytes.worker.ts", import.meta.url),
         )
