@@ -1,0 +1,9 @@
+#!/bin/bash
+# Regenerates the committed FlatBuffers accessors from schemas/database.fbs.
+# Run after changing the schema; commit the result. CI fails when the
+# generated code drifts from the schema.
+
+set -e
+cd "$(dirname "$0")"
+
+flatc --swift -o Sources/NeapsTideDatabase/generated ../../schemas/database.fbs

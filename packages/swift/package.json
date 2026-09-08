@@ -1,0 +1,10 @@
+{
+  "name": "swift",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "./generate",
+    "pretest": "npm run --prefix ../.. generate && node --experimental-transform-types scripts/generate-fixture.ts",
+    "test": "swift test"
+  }
+}
