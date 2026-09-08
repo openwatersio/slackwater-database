@@ -33,7 +33,7 @@ jobs:
         env:
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          npm run -s import -w @tide-database/noaa 2>&1 | tee /tmp/noaa-update.log
+          npm run -s import -w @neaps/noaa 2>&1 | tee /tmp/noaa-update.log
           # Extract the markdown summary (everything after "## Summary")
           sed -n '/^## Summary$/,$p' /tmp/noaa-update.log > /tmp/noaa-summary.md
           printf '\n### Workflow\n\n            This PR was automatically created by the monthly NOAA station update workflow.Run: %s\n' "$WORKFLOW_URL" >> /tmp/noaa-summary.md
@@ -44,13 +44,13 @@ jobs:
         # backfill before quality is evaluated, so the gates see the same datums
         # the package will ship. Idempotent, and self-healing if NOAA starts
         # publishing LAT for a station we had been filling.
-        run: npm run backfill-lat-hat -w @tide-database/stations
+        run: npm run backfill-lat-hat -w @neaps/stations
 
       - name: Re-evaluate station quality
         # New/moved NOAA stations shift proximity and can supersede TICON
         # records, so quality.json must be regenerated in the same commit or it
         # goes stale against the data it describes.
-        run: npm run evaluate-quality -w @tide-database/stations
+        run: npm run evaluate-quality -w @neaps/stations
 
       - name: Check for changes
         id: changes

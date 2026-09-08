@@ -75,10 +75,10 @@ jobs:
         run: npm run build
 
       - name: Build TCD harmonics files
-        run: npm run build -w tcd
+        run: npm run build -w @neaps/tcd
 
       - name: Run TCD validation tests
-        run: npm run test -w tcd
+        run: npm run test -w @neaps/tcd
 
       - name: Upload TCD artifacts
         uses: actions/upload-artifact@v7

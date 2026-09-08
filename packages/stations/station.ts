@@ -4,7 +4,7 @@ import countryLookup from "country-code-lookup";
 import { join, dirname } from "path";
 import { mkdir, writeFile, readFile } from "fs/promises";
 import sortObject from "sort-object-keys";
-import { isBaltic } from "@tide-database/datums";
+import { isBaltic } from "@neaps/datums";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 export const DATA_DIR = join(__dirname, "..", "..", "data");

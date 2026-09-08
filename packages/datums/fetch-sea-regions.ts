@@ -12,7 +12,7 @@
  * consumers are coastal tide gauges.
  *
  * Run manually when Marine Regions publishes a new IHO version:
- *   npm run fetch-sea-regions -w @tide-database/datums
+ *   npm run fetch-sea-regions -w @neaps/datums
  */
 import { writeFile } from "fs/promises";
 import { join } from "path";

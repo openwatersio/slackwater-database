@@ -1,12 +1,12 @@
 {
-  "name": "@tide-database/noaa",
+  "name": "@neaps/noaa",
   "private": true,
   "type": "module",
   "scripts": {
     "import": "node import.ts"
   },
   "dependencies": {
-    "@tide-database/stations": "*",
+    "@neaps/stations": "*",
     "make-fetch-happen": "^16.0.0"
   },
   "devDependencies": {

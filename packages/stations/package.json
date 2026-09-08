@@ -1,5 +1,5 @@
 {
-  "name": "@tide-database/stations",
+  "name": "@neaps/stations",
   "private": true,
   "type": "module",
   "exports": {
@@ -13,7 +13,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@tide-database/datums": "*",
+    "@neaps/datums": "*",
     "country-code-lookup": "^0.1.3",
     "geo-tz": "^8.1.4",
     "geokdbush": "^2.0.1",

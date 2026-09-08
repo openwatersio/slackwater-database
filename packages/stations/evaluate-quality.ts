@@ -15,14 +15,14 @@
  *   quality.json — all stations with factors, score, and accept/reject status
  *
  * Usage:
- *   npm run evaluate-quality -w @tide-database/stations
+ *   npm run evaluate-quality -w @neaps/stations
  */
 
 import { readdir, readFile, writeFile } from "fs/promises";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { DATA_DIR } from "./station.ts";
-import { NODAL_CYCLE_DAYS } from "@tide-database/datums";
+import { NODAL_CYCLE_DAYS } from "@neaps/datums";
 import {
   distance,
   getSourceSuffix,

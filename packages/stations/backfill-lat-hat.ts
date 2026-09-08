@@ -26,7 +26,7 @@
 
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
-import { computeDatums, toFixed } from "@tide-database/datums";
+import { computeDatums, toFixed } from "@neaps/datums";
 import { save, DATA_DIR } from "./station.ts";
 import type { StationData } from "@neaps/tide-database";
 

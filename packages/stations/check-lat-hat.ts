@@ -9,11 +9,11 @@
 // A tool, not a test: the full 1,188-station set takes ~13 minutes. Run by hand
 // before merging a change to the backfill logic.
 //
-//   npm run check-lat-hat -w @tide-database/stations -- [--sample 200]
+//   npm run check-lat-hat -w @neaps/stations -- [--sample 200]
 
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
-import { computeDatums } from "@tide-database/datums";
+import { computeDatums } from "@neaps/datums";
 import { DATA_DIR } from "./station.ts";
 import type { StationData } from "@neaps/tide-database";
 
