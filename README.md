@@ -24,7 +24,7 @@ A pre-built [TCD file](./packages/tcd/README.md) compatible with XTide, OpenCPN,
 
 ### FlatBuffers file
 
-Each release attaches `neaps-<date>.neaps`, the whole database as one [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/tide-database.fbs`](./schemas/tide-database.fbs). It is the same file the NPM package reads; native apps can bundle and memory-map it, generating a reader in their language from the schema. [See the format documentation.](./docs/database-format.md)
+Each release attaches `neaps-<date>.tcdb`, the whole database as one [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](./schemas/database.fbs). It is the same file the NPM package reads; native apps can bundle and memory-map it, generating a reader in their language from the schema. [See the format documentation.](./docs/database-format.md)
 
 ### JavaScript / TypeScript
 

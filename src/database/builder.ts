@@ -18,7 +18,7 @@ import type { StationInput } from "../types.js";
 
 /**
  * Serialize stations into the FlatBuffers database format
- * (schemas/tide-database.fbs). Stations are sorted by id — the vector key — so
+ * (schemas/database.fbs). Stations are sorted by id — the vector key — so
  * readers can binary-search the buffer.
  *
  * Build order matters and the schema cannot express it: FlatBuffers writes back

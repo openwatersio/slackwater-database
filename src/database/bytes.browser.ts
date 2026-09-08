@@ -7,7 +7,7 @@
 // module alone is asynchronous: getDatabaseBytes() stays synchronous across
 // all three sources, keeping the Node bundle's module graph synchronous and
 // therefore require()-able.
-const url = new URL("../generated/stations.neaps", import.meta.url);
+const url = new URL("../generated/neaps.tcdb", import.meta.url);
 const response = await fetch(url);
 if (!response.ok) {
   throw new Error(`Failed to fetch tide database ${url}: ${response.status}`);

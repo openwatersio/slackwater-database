@@ -1,8 +1,8 @@
 // Generates the FlatBuffers database the module reads at runtime.
 //
 // Emits under src/generated/ (git-ignored, regenerated on build/test):
-//   fbs/            flatc-generated TypeScript for schemas/tide-database.fbs
-//   stations.neaps  the database file (shipped in dist and as a release asset)
+//   fbs/            flatc-generated TypeScript for schemas/database.fbs
+//   neaps.tcdb  the database file (shipped in dist and as a release asset)
 //
 // Run with `node --experimental-transform-types` — the generated FlatBuffers
 // code uses TypeScript enums, which plain type stripping cannot erase.
@@ -21,13 +21,7 @@ const outDir = join(root, "src", "generated");
 mkdirSync(outDir, { recursive: true });
 execFileSync(
   "flatc",
-  [
-    "--ts",
-    "--ts-omit-entrypoint",
-    "-o",
-    join(outDir, "fbs"),
-    "tide-database.fbs",
-  ],
+  ["--ts", "--ts-omit-entrypoint", "-o", join(outDir, "fbs"), "database.fbs"],
   { cwd: join(root, "schemas"), stdio: "inherit" },
 );
 const fbsDir = join(outDir, "fbs", "neaps");
@@ -87,7 +81,7 @@ const { version } = JSON.parse(
 );
 const database = buildDatabase(stations, { version });
 
-writeFileSync(join(outDir, "stations.neaps"), database);
+writeFileSync(join(outDir, "neaps.tcdb"), database);
 console.log(
-  `generated stations.neaps: ${(database.length / 1048576).toFixed(1)} MB, ${stations.length} stations`,
+  `generated neaps.tcdb: ${(database.length / 1048576).toFixed(1)} MB, ${stations.length} stations`,
 );

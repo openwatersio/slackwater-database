@@ -11,13 +11,13 @@ function open(bytes: Uint8Array): Root {
 }
 
 const shipped = open(
-  readFileSync(new URL("../src/generated/stations.neaps", import.meta.url)),
+  readFileSync(new URL("../src/generated/neaps.tcdb", import.meta.url)),
 );
 
 describe("the shipped database file", () => {
-  test("carries the NEAP file identifier", () => {
+  test("carries the TCDB file identifier", () => {
     const bytes = readFileSync(
-      new URL("../src/generated/stations.neaps", import.meta.url),
+      new URL("../src/generated/neaps.tcdb", import.meta.url),
     );
     expect(Root.bufferHasIdentifier(new flatbuffers.ByteBuffer(bytes))).toBe(
       true,

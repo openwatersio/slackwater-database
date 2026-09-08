@@ -5,9 +5,9 @@
 // The relative path works in both layouts because this module sits one
 // directory below the package root in src (src/database/) and the bundle sits
 // one below in dist (dist/node/ and dist/browser/), both resolving to a single
-// shared generated/stations.neaps.
+// shared generated/neaps.tcdb.
 import { readFileSync } from "node:fs";
 
 export function getDatabaseBytes(): Uint8Array {
-  return readFileSync(new URL("../generated/stations.neaps", import.meta.url));
+  return readFileSync(new URL("../generated/neaps.tcdb", import.meta.url));
 }

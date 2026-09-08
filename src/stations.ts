@@ -13,7 +13,7 @@ import type {
   StationQuality,
 } from "./types.js";
 
-// The whole database is one FlatBuffers file (schemas/tide-database.fbs). On
+// The whole database is one FlatBuffers file (schemas/database.fbs). On
 // Node the bytes are a Buffer — external memory, off the V8 heap; in the
 // browser an ArrayBuffer from fetch. Identity fields are materialized into
 // plain objects once, below; the prediction data (harmonic_constituents,

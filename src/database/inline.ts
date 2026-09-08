@@ -5,6 +5,6 @@ import { readFileSync } from "node:fs";
 
 export function createDatabaseBase64(): string {
   return readFileSync(
-    new URL("../generated/stations.neaps", import.meta.url),
+    new URL("../generated/neaps.tcdb", import.meta.url),
   ).toString("base64");
 }

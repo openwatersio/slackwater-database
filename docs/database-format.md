@@ -1,6 +1,6 @@
 # The FlatBuffers database file
 
-The whole database ships as one FlatBuffers file, `stations.neaps`, built from `schemas/tide-database.fbs`. It is the format the JS module reads, the browser build fetches, and native apps can bundle: readers touch only the bytes they access, so an identity scan reads ids, names, and coordinates without decoding constituents, and a lookup by id reads one station's constituents without decoding anything else. The public API is unchanged and synchronous.
+The whole database ships as one FlatBuffers file, `neaps.tcdb`, built from `schemas/database.fbs`. It is the format the JS module reads, the browser build fetches, and native apps can bundle: readers touch only the bytes they access, so an identity scan reads ids, names, and coordinates without decoding constituents, and a lookup by id reads one station's constituents without decoding anything else. The public API is unchanged and synchronous.
 
 ## Why a single binary file
 
@@ -20,7 +20,7 @@ Per-record JSON decode was never the cost (4 ms for 200 records); the cost is de
 - Identical `source` and `license` tables are written once and shared; repeated strings (timezones, countries, epochs) are deduplicated with shared strings.
 - A `Current` sub-table and `Kind` enum give current stations a place in the same `stations` vector — one key space, one lookup. This repo ships no current data; downstream catalogs can write theirs through `buildDatabase`.
 - Quality evaluation (`quality.json`) rides along: the gate — `accepted` and `score` — is inline on `Station` so an identity scan can filter and rank from head pages, and the detail (factors, issues, reason, redundant) is a `Quality` sub-table written at the tail with the other lookup data. The file carries all stations, rejected ones included; readers apply the `accepted` filter.
-- `file_identifier "NEAP"`, `file_extension "neaps"`.
+- `file_identifier "TCDB"`, `file_extension "tcdb"`.
 
 ## Build order and locality
 
@@ -35,10 +35,10 @@ The quality gate comes from the same file: `station.quality` carries `accepted` 
 The bytes come from a per-build source behind the `#database-bytes` subpath import:
 
 - **Node** (`src/database/bytes.node.ts`): `readFileSync` into an off-heap `Buffer`.
-- **Browser** (`src/database/bytes.browser.ts`): `fetch(new URL("../generated/stations.neaps", import.meta.url))`; bundlers that understand `new URL(..., import.meta.url)` copy the asset and rewrite the URL.
+- **Browser** (`src/database/bytes.browser.ts`): `fetch(new URL("../generated/neaps.tcdb", import.meta.url))`; bundlers that understand `new URL(..., import.meta.url)` copy the asset and rewrite the URL.
 - **Workers** (`src/database/bytes.worker.ts`, selected by the `workerd`/`worker` export conditions): Cloudflare Workers can't construct file URLs from `import.meta.url` and disallow `fetch` during module evaluation, so the database is inlined into `dist/worker` as a base64 literal by a build-time macro and decoded once on first use.
 
-Both bundles resolve `../generated/stations.neaps` to one shared copy at `dist/generated/stations.neaps`.
+Both bundles resolve `../generated/neaps.tcdb` to one shared copy at `dist/generated/neaps.tcdb`.
 
 ## Search indexes
 
@@ -48,13 +48,13 @@ Both bundles resolve `../generated/stations.neaps` to one shared copy at `dist/g
 
 `npm run build`:
 
-1. `generate` (`scripts/generate-database.ts`) — runs `flatc` to generate the TypeScript accessors into `src/generated/fbs/`, then builds `src/generated/stations.neaps` from `data/**/*.json` (all git-ignored). A `pretest` hook runs it too. `flatc` comes from mise (`.mise.toml`).
+1. `generate` (`scripts/generate-database.ts`) — runs `flatc` to generate the TypeScript accessors into `src/generated/fbs/`, then builds `src/generated/neaps.tcdb` from `data/**/*.json` (all git-ignored). A `pretest` hook runs it too. `flatc` comes from mise (`.mise.toml`).
 2. `tsdown` — builds `dist/node`, `dist/browser`, and `dist/worker` (all ESM), resolving `#database-bytes` per build.
 3. `copy-database` — copies the file to `dist/generated/`.
 4. `tsc --noEmit` — type-checks src and the tests/tools against the schemas.
 5. `smoke` (`scripts/smoke.mjs`) — imports all three built entries, checks a reference and a subordinate station resolve prediction data, and asserts the browser and worker bundles have no `node:fs` and that the worker bundle neither fetches during module evaluation (fetch is poisoned for its import) nor uses `import.meta.url`.
 
-Releases attach the file as `neaps-<date>.neaps` alongside the TCD files.
+Releases attach the file as `neaps-<date>.tcdb` alongside the TCD files.
 
 ## Downstream builders
 

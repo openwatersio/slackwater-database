@@ -1,4 +1,4 @@
-// Neaps tide database — FlatBuffers schema.
+// Neaps database — FlatBuffers schema.
 //
 // One file serves three reads without decoding what it does not touch:
 //   identity scan   — id, name, coordinates of every station, for ranking and search
@@ -160,5 +160,5 @@ table Station {
 }
 
 root_type Root;
-file_identifier "NEAP";
-file_extension "neaps";
+file_identifier "TCDB";
+file_extension "tcdb";
