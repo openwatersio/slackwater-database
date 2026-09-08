@@ -25,7 +25,9 @@ const META_KEYS: StationMetaKey[] = [
 ];
 
 function readAll(): { id: string; data: StationData }[] {
-  const modules = import.meta.glob<StationData>("./**/*.json", {
+  // Stations live at data/<source>/<id>.json; one level deep excludes
+  // top-level files like baltic-sea.geo.json.
+  const modules = import.meta.glob<StationData>("./*/*.json", {
     eager: true,
     import: "default",
     base: "../data",

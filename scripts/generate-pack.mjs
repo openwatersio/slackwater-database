@@ -16,15 +16,16 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dataDir = join(root, "data");
 const outDir = join(root, "src", "generated");
 
-function walk(dir) {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
-    const p = join(dir, e.name);
-    return e.isDirectory() ? walk(p) : p.endsWith(".json") ? [p] : [];
-  });
-}
-
-// Sorted for a deterministic pack layout.
-const files = walk(dataDir).sort();
+// Stations live at data/<source>/<id>.json; one level deep excludes top-level
+// files like baltic-sea.geo.json. Sorted for a deterministic pack layout.
+const files = readdirSync(dataDir, { withFileTypes: true })
+  .filter((e) => e.isDirectory())
+  .flatMap((e) =>
+    readdirSync(join(dataDir, e.name))
+      .filter((f) => f.endsWith(".json"))
+      .map((f) => join(dataDir, e.name, f)),
+  )
+  .sort();
 
 const chunks = [];
 const index = {};
