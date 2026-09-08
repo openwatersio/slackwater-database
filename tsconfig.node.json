@@ -8,5 +8,5 @@
     "allowImportingTsExtensions": true
   },
   "include": ["packages", "sources"],
-  "exclude": ["packages/database", "**/node_modules"]
+  "exclude": ["packages/database", "packages/swift/.build", "**/node_modules"]
 }
