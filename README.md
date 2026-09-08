@@ -144,7 +144,7 @@ The `search` function takes the following parameters:
 
 ## Data Format
 
-Each tide station is defined in a single JSON file in the [`data/`](./data) directory that includes basic station information, like location and name, and harmonics or subordinate station offsets. The format is defined by the schema in [../schemas/station.schema.json](schemas/station.schema.json), which includes more detailed descriptions of each field. All data is validated against this schema automatically on each change.
+Each tide station is defined in a single JSON file in the [`data/`](./data) directory that includes basic station information, like location and name, and harmonics or subordinate station offsets. The format is defined by the schema in [packages/database/schemas/station.schema.json](packages/database/schemas/station.schema.json), which includes more detailed descriptions of each field. All data is validated against this schema automatically on each change.
 
 ## Station Types
 
@@ -159,6 +159,17 @@ Reference stations have defined harmonic constituents. They should have an array
 Subordinate stations are locations that have very similar tides to a reference station. Usually these are geographically close to another reference station.
 
 Subordinate stations have four kinds of offsets, two to correct for water level, and two for the time of high and low tide. They use an `offsets` object to define these items, along with the name of the reference station they are based on.
+
+## Repository Layout
+
+This repo is an npm workspace. Station data lives in [`data/`](./data), and everything that reads or writes it is a workspace package:
+
+- [`packages/database`](./packages/database) — the published [`@neaps/tide-database`](https://www.npmjs.com/package/@neaps/tide-database) npm module
+- [`packages/tcd`](./packages/tcd) — TCD harmonics files for XTide-compatible software
+- [`packages/datums`](./packages/datums) — tidal datum computation and sea-region classification
+- [`packages/harmonic-analysis`](./packages/harmonic-analysis) — least-squares harmonic analysis of water level observations
+- [`packages/stations`](./packages/stations) — station file I/O, quality filtering, geocoding, and maintenance scripts (including `evaluate-quality`, which writes [`quality.json`](./quality.json))
+- [`sources/*`](./sources) — one package per data source (NOAA, TICON), each with an `npm run import`
 
 ## Maintenance
 
@@ -189,7 +200,7 @@ Releases of this database use [Semantic Versioning](https://semver.org/), with t
 
 ## Releasing
 
-Releases are created by [running the Publish action](https://github.com/openwatersio/tide-database/actions/workflows/publish.yml) on GitHub Actions. This action will use the major and minor `version` defined in `package.json`, and set the patch version to the current date.
+Releases are created by [running the Publish action](https://github.com/openwatersio/tide-database/actions/workflows/publish.yml) on GitHub Actions. This action will use the major and minor `version` defined in `packages/database/package.json`, and set the patch version to the current date.
 
 ## License
 
