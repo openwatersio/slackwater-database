@@ -130,7 +130,11 @@ export function buildDatabase(
 
   const stationOffsets = sorted.map((s, i) => {
     const id = builder.createString(s.id);
-    const name = str(s.name);
+    // The schema requires name; endStation would reject a missing one anyway,
+    // but with an unhelpful "field 6 must be set". Fail with the station id.
+    if (s.name === undefined)
+      throw new Error(`Station ${s.id} has no name; the schema requires one`);
+    const name = builder.createSharedString(s.name);
     const timezone = str(s.timezone);
     const region = str(s.region);
     const country = str(s.country);

@@ -188,6 +188,12 @@ describe("buildDatabase", () => {
     expect(offsets.heightHigh()).toBeCloseTo(1.1, 6);
   });
 
+  test("rejects a station without a name, by id", () => {
+    expect(() => buildDatabase([{ id: "test/nameless" }])).toThrow(
+      /test\/nameless has no name/,
+    );
+  });
+
   test("round-trips current stations", () => {
     const station = db.stations(2)!;
     expect(station.kind()).toBe(Kind.Current);
