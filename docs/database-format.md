@@ -1,10 +1,10 @@
 # The FlatBuffers database file
 
-The whole database ships as one FlatBuffers file, `neaps.tcdb`, built from `schemas/database.fbs`. It is the format the JS module reads, the browser build fetches, and native apps can bundle: readers touch only the bytes they access, so an identity scan reads ids, names, and coordinates without decoding constituents, and a lookup by id reads one station's constituents without decoding anything else. The public API is unchanged and synchronous.
+The whole database ships as one [FlatBuffers](https://flatbuffers.dev) file, `neaps.tcdb`, built from `schemas/database.fbs`. It is the format the JS module reads, the browser build fetches, and native apps can bundle: readers touch only the bytes they access, so an identity scan reads ids, names, and coordinates without decoding constituents, and a lookup by id reads one station's constituents without decoding anything else. The public API is unchanged and synchronous.
 
 ## Why a single binary file
 
-Keeping station data off the V8 heap matters: parsing every station into live JS objects costs ~118 MB of heap and OOMs memory-constrained devices (see [signalk-tides#103](https://github.com/openwatersio/signalk-tides/issues/103)). Anything bundled into JavaScript — object literals, JSON strings, base64 — lands on the heap. A file does not:
+Any platform that needs station data otherwise has to parse all of it into memory to read any of it: object literals, JSON catalogs, and Codable records all decode the whole database up front, whether the consumer is a Node process, a browser, or an iOS widget ranking nearby stations. On the JS side that parse costs ~118 MB of V8 heap and OOMs memory-constrained devices (see [signalk-tides#103](https://github.com/openwatersio/signalk-tides/issues/103)); on a phone it is hundreds of milliseconds of decode before the first read. A file that readers access in place avoids the whole class of problem:
 
 - **Node** reads it with `readFileSync` into a `Buffer`, which is external memory, off the heap.
 - **Browsers** fetch it into an `ArrayBuffer`.
@@ -24,7 +24,9 @@ Per-record JSON decode was never the cost (4 ms for 200 records); the cost is de
 
 ## Build order and locality
 
-The one thing the schema cannot express: FlatBuffers writes back to front, and a naive per-station loop interleaves ~100 bytes of identity with ~1,300 bytes of constituents, so an identity scan over a mapped file faults in every page anyway. `buildDatabase` (`src/database/builder.ts`) writes every station's constituents and datums vectors first, so they land together at the tail of the file, then every station table, so they land together at the head. `test/database.test.ts` asserts the lowest prediction-data offset is past the highest station-table offset, because this regresses silently if someone tidies the loop.
+The finished file is laid out in two bands: every station table together at the head, and every station's lookup data together at the tail. The head band holds everything a scan needs — ids, names, coordinates, and the quality gate (`accepted` and `score` are inline scalars on the station table, not in the tail-side `Quality` detail) — so ranking all 8,000+ stations by distance and filtering to accepted ones touches only the head pages. The tail band holds what only a per-station lookup reads: constituents, datums, and the quality detail (factors, issues, reason), faulting in only when someone looks up that station. Identity is ~100 bytes per station and constituents ~1,300, so an interleaved layout would spread identity across thirteen times as many pages and an identity scan would fault in essentially the whole file.
+
+The schema can't express this; the builder has to produce it deliberately. FlatBuffers writes buffers back to front — whatever is built first lands at the highest addresses — so `buildDatabase` (`src/database/builder.ts`) builds in two passes: first every station's constituents, datums, and quality tables (landing together at the tail), then every station table (landing together at the head). The natural refactor, one loop building each station's vectors right before its table, produces the interleaved layout — and nothing else fails when that happens. `test/database.test.ts` guards it by asserting the lowest prediction-data offset sits past the highest station-table offset.
 
 ## The reader
 
