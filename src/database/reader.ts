@@ -1,6 +1,5 @@
+import { Root, StationType } from "../generated/fbs/neaps.ts";
 import * as flatbuffers from "flatbuffers";
-import { Root } from "../generated/fbs/neaps/root.ts";
-import { StationType } from "../generated/fbs/neaps/station-type.ts";
 import type { StationMeta } from "../types.js";
 
 /**

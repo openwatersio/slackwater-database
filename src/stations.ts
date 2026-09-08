@@ -1,10 +1,12 @@
+import {
+  Constituent,
+  Datum,
+  DatumsSource,
+  HeightOffsetType,
+  StationType,
+} from "./generated/fbs/neaps.ts";
 import databaseBytes from "#neaps.tcdb";
 import { openDatabase } from "./database/reader.js";
-import { Constituent } from "./generated/fbs/neaps/constituent.ts";
-import { Datum } from "./generated/fbs/neaps/datum.ts";
-import { DatumsSource } from "./generated/fbs/neaps/datums-source.ts";
-import { HeightOffsetType } from "./generated/fbs/neaps/height-offset-type.ts";
-import { StationType } from "./generated/fbs/neaps/station-type.ts";
 import type {
   HarmonicConstituent,
   Station,

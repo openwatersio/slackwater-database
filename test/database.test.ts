@@ -3,8 +3,7 @@ import { readFileSync } from "node:fs";
 import * as flatbuffers from "flatbuffers";
 import { buildDatabase } from "../src/database/builder.ts";
 import { openDatabase } from "../src/database/reader.ts";
-import { Root } from "../src/generated/fbs/neaps/root.ts";
-import { Kind } from "../src/generated/fbs/neaps/kind.ts";
+import { Root, Kind } from "../src/generated/fbs/neaps.ts";
 import type { StationInput } from "../src/types.ts";
 
 const shipped = openDatabase(

@@ -1,19 +1,21 @@
+import {
+  Constituent,
+  Current,
+  CurrentOffsets,
+  Datum,
+  DatumsSource,
+  Epoch,
+  HeightOffsetType,
+  Kind,
+  License,
+  Quality,
+  Root,
+  Source,
+  Station,
+  StationType,
+  TideOffsets,
+} from "../generated/fbs/neaps.ts";
 import * as flatbuffers from "flatbuffers";
-import { Constituent } from "../generated/fbs/neaps/constituent.ts";
-import { Current } from "../generated/fbs/neaps/current.ts";
-import { CurrentOffsets } from "../generated/fbs/neaps/current-offsets.ts";
-import { Datum } from "../generated/fbs/neaps/datum.ts";
-import { DatumsSource } from "../generated/fbs/neaps/datums-source.ts";
-import { Epoch } from "../generated/fbs/neaps/epoch.ts";
-import { HeightOffsetType } from "../generated/fbs/neaps/height-offset-type.ts";
-import { Kind } from "../generated/fbs/neaps/kind.ts";
-import { License } from "../generated/fbs/neaps/license.ts";
-import { Quality } from "../generated/fbs/neaps/quality.ts";
-import { Root } from "../generated/fbs/neaps/root.ts";
-import { Source } from "../generated/fbs/neaps/source.ts";
-import { Station } from "../generated/fbs/neaps/station.ts";
-import { StationType } from "../generated/fbs/neaps/station-type.ts";
-import { TideOffsets } from "../generated/fbs/neaps/tide-offsets.ts";
 import type { StationInput } from "../types.js";
 
 /**
