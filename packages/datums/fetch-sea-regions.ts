@@ -18,7 +18,7 @@ import { writeFile } from "fs/promises";
 import { join } from "path";
 
 const __dirname = new URL(".", import.meta.url).pathname;
-const OUT = join(__dirname, "..", "data", "baltic-sea.geo.json");
+const OUT = join(__dirname, "..", "..", "data", "baltic-sea.geo.json");
 
 /** Marine Regions gazetteer IDs (MRGIDs) of the IHO basins in the MSL region. */
 const BASINS = [2401, 2402, 2407, 2409, 2374]; // Baltic, Bothnia, Finland, Riga, Kattegat

@@ -22,7 +22,7 @@ import { readdir, readFile, writeFile } from "fs/promises";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { DATA_DIR } from "./station.ts";
-import { NODAL_CYCLE_DAYS } from "./datum.ts";
+import { NODAL_CYCLE_DAYS } from "@tide-database/datums";
 import {
   distance,
   getSourceSuffix,

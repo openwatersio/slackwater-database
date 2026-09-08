@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "build": "npm run build -w @neaps/tide-database",
-    "test": "tsc -p tsconfig.node.json && vitest -r test && npm run test -w @neaps/tide-database",
+    "test": "tsc -p tsconfig.node.json && vitest -r test && npm run test -w @neaps/tide-database -w @tide-database/datums -w @tide-database/harmonic-analysis",
     "lint": "prettier --check .",
     "format": "prettier --write ."
   },

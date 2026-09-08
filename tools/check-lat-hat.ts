@@ -13,7 +13,7 @@
 
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
-import { computeDatums } from "./datum.ts";
+import { computeDatums } from "@tide-database/datums";
 import { DATA_DIR } from "./station.ts";
 import type { StationData } from "@neaps/tide-database";
 

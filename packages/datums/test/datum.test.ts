@@ -3,7 +3,7 @@ import {
   computeDatumsFromObservations,
   parseGeslaSamples,
   type Sample,
-} from "../tools/datum.js";
+} from "../datum.js";
 
 describe("computeDatumsFromObservations", () => {
   test("recovers MSL and range from a synthetic M2 tide in the gauge frame", () => {

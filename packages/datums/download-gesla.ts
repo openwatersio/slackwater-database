@@ -12,7 +12,7 @@ import { createWriteStream } from "fs";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** Canonical location for the extracted GESLA-4 station files (gitignored). */
-export const GESLA_DIR = join(__dirname, "..", "tmp", "GESLA");
+export const GESLA_DIR = join(__dirname, "..", "..", "tmp", "GESLA");
 
 // GESLA-4 is published only as an iCloud Drive share (not scriptable). We mirror
 // the zip to an R2 bucket for CI/fresh checkouts; a local zip is preferred.

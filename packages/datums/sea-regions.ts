@@ -28,7 +28,7 @@ const __dirname = new URL(".", import.meta.url).pathname;
 type Ring = readonly (readonly [number, number])[];
 
 const geo = JSON.parse(
-  readFileSync(join(__dirname, "..", "data", "baltic-sea.geo.json"), "utf-8"),
+  readFileSync(join(__dirname, "..", "..", "data", "baltic-sea.geo.json"), "utf-8"),
 ) as { features: { geometry: { coordinates: Ring[] } }[] };
 
 /**

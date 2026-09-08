@@ -7,5 +7,6 @@
     "types": ["node"],
     "allowImportingTsExtensions": true
   },
-  "include": ["test/**/*", "tools/**/*", "packages/tcd/**/*"]
+  "include": ["test", "tools", "packages"],
+  "exclude": ["packages/database", "**/node_modules"]
 }

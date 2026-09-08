@@ -1,0 +1,17 @@
+{
+  "name": "@tide-database/harmonic-analysis",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@neaps/tide-predictor": "^0.11.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.15"
+  }
+}

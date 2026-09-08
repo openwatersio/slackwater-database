@@ -10,13 +10,13 @@ import {
   computeDatumsFromObservations,
   parseGeslaSamples,
   toFixed,
-} from "./datum.ts";
-import { ensureGeslaData, GESLA_DIR } from "./download-gesla.ts";
+} from "@tide-database/datums";
+import { ensureGeslaData, GESLA_DIR } from "@tide-database/datums";
 import {
   parseGeslaSamplesInZone,
   fitHarmonics,
   isAnalyzable,
-} from "./harmonic-analysis.ts";
+} from "@tide-database/harmonic-analysis";
 import { getSourceSuffix, NON_COMMERCIAL_SOURCES } from "./filtering.ts";
 import { cleanName } from "./name-cleanup.ts";
 import { loadGeocoder } from "./geocode.ts";

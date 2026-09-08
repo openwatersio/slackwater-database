@@ -4,7 +4,7 @@ import {
   fitHarmonics,
   parseGeslaSamplesInZone,
   type Sample,
-} from "../tools/harmonic-analysis.js";
+} from "../index.js";
 
 describe("fitHarmonics", () => {
   test("recovers known amplitude/phase from a synthetic tide", () => {

@@ -1,0 +1,20 @@
+{
+  "name": "@tide-database/datums",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "fetch-sea-regions": "node fetch-sea-regions.ts",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@neaps/tide-predictor": "^0.11.0",
+    "make-fetch-happen": "^16.0.0"
+  },
+  "devDependencies": {
+    "@types/make-fetch-happen": "^10.0.4",
+    "vitest": "^4.0.15"
+  }
+}

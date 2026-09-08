@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
-import { computeDatums } from "../tools/datum.js";
-import { isBaltic } from "../tools/sea-regions.js";
+import { computeDatums } from "@tide-database/datums";
+import { isBaltic } from "@tide-database/datums";
 import {
   getChartDatum,
   pruneDatums,

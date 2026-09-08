@@ -28,8 +28,8 @@ import {
   computeDatumsFromObservations,
   parseGeslaSamples,
   type Datums,
-} from "./datum.ts";
-import { ensureGeslaData, GESLA_DIR } from "./download-gesla.ts";
+} from "@tide-database/datums";
+import { ensureGeslaData, GESLA_DIR } from "@tide-database/datums";
 import type { StationData } from "@neaps/tide-database";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
