@@ -10,7 +10,7 @@ import { around, distance } from "geokdbush";
 import countryLookup from "country-code-lookup";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const GEONAMES_DIR = join(__dirname, "..", "tmp", "geonames");
+const GEONAMES_DIR = join(__dirname, "..", "..", "tmp", "geonames");
 const CITIES_URL = "https://download.geonames.org/export/dump/cities500.zip";
 const ADMIN1_URL =
   "https://download.geonames.org/export/dump/admin1CodesASCII.txt";

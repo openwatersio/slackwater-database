@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeAll } from "vitest";
-import { loadGeocoder, type Geocoder } from "../tools/geocode.js";
+import { loadGeocoder, type Geocoder } from "../geocode.js";
 
 describe("geocoder", () => {
   let geocoder: Geocoder;

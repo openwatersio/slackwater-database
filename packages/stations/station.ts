@@ -7,7 +7,7 @@ import sortObject from "sort-object-keys";
 import { isBaltic } from "@tide-database/datums";
 
 const __dirname = new URL(".", import.meta.url).pathname;
-export const DATA_DIR = join(__dirname, "..", "data");
+export const DATA_DIR = join(__dirname, "..", "..", "data");
 
 const sortOrder: (keyof StationData)[] = [
   "name",

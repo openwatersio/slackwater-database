@@ -1,0 +1,32 @@
+{
+  "name": "@tide-database/stations",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "evaluate-quality": "node evaluate-quality.ts",
+    "backfill-lat-hat": "node backfill-lat-hat.ts",
+    "check-lat-hat": "node check-lat-hat.ts",
+    "validate-datums": "node validate-datums.ts",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@tide-database/datums": "*",
+    "country-code-lookup": "^0.1.3",
+    "geo-tz": "^8.1.4",
+    "geokdbush": "^2.0.1",
+    "kdbush": "^4.0.2",
+    "make-fetch-happen": "^16.0.0",
+    "sort-object-keys": "^2.0.1"
+  },
+  "devDependencies": {
+    "@neaps/tide-database": "*",
+    "@types/geokdbush": "^1.1.5",
+    "@types/make-fetch-happen": "^10.0.4",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "vitest": "^4.0.15"
+  }
+}

@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { cleanName } from "../tools/name-cleanup.js";
+import { cleanName } from "../name-cleanup.js";
 
 describe("cleanName", () => {
   describe("underscore replacement", () => {

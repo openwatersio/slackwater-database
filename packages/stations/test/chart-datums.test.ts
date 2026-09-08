@@ -6,7 +6,7 @@ import {
   pruneDatums,
   normalize,
   type PartialStationData,
-} from "../tools/station.js";
+} from "../station.js";
 import { allStations } from "@neaps/tide-database";
 
 const CONSTITUENTS = [

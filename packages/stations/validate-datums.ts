@@ -16,7 +16,7 @@
  *   dLo = MSL  − MLLW
  *
  * A drop in the |median| residual from harmonic → observed is the fix #40 asks
- * for. Run after `node tools/download-gesla.ts`. Reads GESLA directly, so it
+ * for. Run after the GESLA download (@tide-database/datums). Reads GESLA directly, so it
  * does not depend on `import-ticon` having been run.
  */
 

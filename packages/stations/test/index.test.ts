@@ -15,10 +15,10 @@ import {
   gaugeKey,
   coordinatePrecision,
   distance,
-} from "../tools/filtering.js";
-import quality from "../quality.json" with { type: "json" };
+} from "../filtering.js";
+import quality from "../../../quality.json" with { type: "json" };
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = new URL("../../..", import.meta.url).pathname;
 const SCHEMA_PATH = join(
   ROOT,
   "packages/database/schemas",

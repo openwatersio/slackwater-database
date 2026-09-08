@@ -3,8 +3,8 @@
 import { readFile } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import { parseCSV, indexBy, groupBy } from "./util.ts";
-import { normalize, save, load, type PartialStationData } from "./station.ts";
+import { parseCSV, indexBy, groupBy } from "@tide-database/stations";
+import { normalize, save, load, type PartialStationData } from "@tide-database/stations";
 import {
   computeDatums,
   computeDatumsFromObservations,
@@ -17,9 +17,9 @@ import {
   fitHarmonics,
   isAnalyzable,
 } from "@tide-database/harmonic-analysis";
-import { getSourceSuffix, NON_COMMERCIAL_SOURCES } from "./filtering.ts";
-import { cleanName } from "./name-cleanup.ts";
-import { loadGeocoder } from "./geocode.ts";
+import { getSourceSuffix, NON_COMMERCIAL_SOURCES } from "@tide-database/stations";
+import { cleanName } from "@tide-database/stations";
+import { loadGeocoder } from "@tide-database/stations";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const metaPath = join(__dirname, "..", "tmp", "TICON-4", "meta.csv");

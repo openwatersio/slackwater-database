@@ -824,7 +824,7 @@ async function main() {
 
   // Write output
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  const outPath = join(__dirname, "..", "quality.json");
+  const outPath = join(__dirname, "..", "..", "quality.json");
   await writeFile(outPath, JSON.stringify(results, null, 2) + "\n");
 
   // Summary
