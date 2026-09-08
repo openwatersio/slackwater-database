@@ -7,6 +7,16 @@ import {
   qualityMap,
 } from "../src/index.js";
 
+describe("station metadata", () => {
+  test("every station has an id and finite coordinates", () => {
+    for (const s of allStations) {
+      expect(s.id, `station ${s.id}`).toMatch(/^[^/]+\/.+$/);
+      expect(Number.isFinite(s.latitude), `latitude of ${s.id}`).toBe(true);
+      expect(Number.isFinite(s.longitude), `longitude of ${s.id}`).toBe(true);
+    }
+  });
+});
+
 describe("datums export", () => {
   test("is the set of datum keys present in the database", () => {
     expect(datums).toContain("MLLW");
