@@ -15,7 +15,7 @@ import { readdir, readFile } from "fs/promises";
 import { join } from "path";
 import { computeDatums } from "./datum.ts";
 import { DATA_DIR } from "./station.ts";
-import type { StationData } from "../src/index.ts";
+import type { StationData } from "@neaps/tide-database";
 
 const NOAA_DIR = join(DATA_DIR, "noaa");
 

@@ -1,4 +1,4 @@
-import type { StationData } from "../src/index.js";
+import type { StationData } from "@neaps/tide-database";
 import { find as findTz } from "geo-tz/all";
 import countryLookup from "country-code-lookup";
 import { join, dirname } from "path";

@@ -1,11 +1,12 @@
 {
-  "extends": "./tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "noEmit": true,
-    "types": ["node"],
+    "types": ["node", "vite/client"],
     "allowImportingTsExtensions": true
   },
-  "include": ["test/**/*", "tools/**/*", "packages/tcd/**/*"]
+  "include": ["test/**/*", "examples/**/*"],
+  "exclude": ["src/**/*.ts"]
 }

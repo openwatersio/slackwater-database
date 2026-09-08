@@ -24,6 +24,7 @@ jobs:
       - run: npm install
 
       - name: Set version
+        working-directory: packages/database
         run: |
           CURRENT_VERSION=$(npm pkg get version | tr -d '"')
           RELEASE_VERSION="${CURRENT_VERSION%.*}.$(date +%Y%m%d)"
@@ -31,6 +32,7 @@ jobs:
           npm version "$RELEASE_VERSION" --no-git-tag-version
 
       - name: Publish to npm
+        working-directory: packages/database
         run: npm publish
 
       - name: Build TCD harmonics files

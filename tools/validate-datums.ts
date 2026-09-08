@@ -30,7 +30,7 @@ import {
   type Datums,
 } from "./datum.ts";
 import { ensureGeslaData, GESLA_DIR } from "./download-gesla.ts";
-import type { StationData } from "../src/types.ts";
+import type { StationData } from "@neaps/tide-database";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TICON_DIR = join(__dirname, "..", "data", "ticon");

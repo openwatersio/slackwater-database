@@ -3,8 +3,7 @@ import { readFile } from "fs/promises";
 import { join } from "path";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
-import { stations, allStations } from "../src/index.js";
-import { near } from "../src/search/index.js";
+import { stations, allStations, near } from "@neaps/tide-database";
 import {
   MIN_TIDAL_RANGE,
   MIN_DEDUP_DISTANCE,
@@ -20,7 +19,11 @@ import {
 import quality from "../quality.json" with { type: "json" };
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const SCHEMA_PATH = join(ROOT, "schemas", "station.schema.json");
+const SCHEMA_PATH = join(
+  ROOT,
+  "packages/database/schemas",
+  "station.schema.json",
+);
 
 const schema = JSON.parse(await readFile(SCHEMA_PATH, "utf-8"));
 const ajv = new (Ajv2020 as any)({ allErrors: true, strict: false });

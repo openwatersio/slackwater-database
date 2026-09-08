@@ -43,7 +43,7 @@ import {
   SEASONAL_OUTLIER_MIN_SA,
   SEASONAL_OUTLIER_RATIO,
 } from "./filtering.ts";
-import type { StationData } from "../src/types.js";
+import type { StationData } from "@neaps/tide-database";
 
 // ── Types ───────────────────────────────────────────────────────────────
 

@@ -2,7 +2,7 @@
 
 import createFetch from "make-fetch-happen";
 import { normalize, save, DATA_DIR } from "./station.ts";
-import type { StationData } from "../src/index.ts";
+import type { StationData } from "@neaps/tide-database";
 import { loadGeocoder } from "./geocode.ts";
 import { readFile } from "fs/promises";
 import { join } from "path";

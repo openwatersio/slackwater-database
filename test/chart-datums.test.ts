@@ -7,7 +7,7 @@ import {
   normalize,
   type PartialStationData,
 } from "../tools/station.js";
-import { allStations } from "../src/index.js";
+import { allStations } from "@neaps/tide-database";
 
 const CONSTITUENTS = [
   { name: "M2", amplitude: 1.0, phase: 0 },
