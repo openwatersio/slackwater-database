@@ -14,7 +14,7 @@
  * (Flanders Marine Institute, CC-BY 4.0) — the Baltic Sea, Gulfs of Bothnia /
  * Finland / Riga, and the Kattegat; the Skagerrak is excluded. Outer rings
  * only (island gauges classify by basin) at ~1 km simplification; regenerate
- * with `node tools/fetch-sea-regions.ts`.
+ * with `npm run fetch-sea-regions -w @tide-database/datums`.
  *
  * A small tolerance treats points within ~2 km of a basin boundary as inside:
  * harbor gauges sit exactly on the (simplified) coastline, and it also closes
@@ -28,7 +28,10 @@ const __dirname = new URL(".", import.meta.url).pathname;
 type Ring = readonly (readonly [number, number])[];
 
 const geo = JSON.parse(
-  readFileSync(join(__dirname, "..", "..", "data", "baltic-sea.geo.json"), "utf-8"),
+  readFileSync(
+    join(__dirname, "..", "..", "data", "baltic-sea.geo.json"),
+    "utf-8",
+  ),
 ) as { features: { geometry: { coordinates: Ring[] } }[] };
 
 /**

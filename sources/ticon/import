@@ -2,6 +2,8 @@
 
 set -e
 
+cd "$(dirname "$0")/../.."
+
 mkdir -p tmp
 
 [[ -d tmp/TICON-4 ]] || {
@@ -9,4 +11,4 @@ mkdir -p tmp
   unzip -d tmp tmp/TICON-4.zip
 }
 
-node tools/import-ticon.ts
+node sources/ticon/import.ts

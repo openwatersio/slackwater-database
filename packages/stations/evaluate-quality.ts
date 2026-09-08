@@ -15,7 +15,7 @@
  *   quality.json — all stations with factors, score, and accept/reject status
  *
  * Usage:
- *   node tools/evaluate-quality.ts
+ *   npm run evaluate-quality -w @tide-database/stations
  */
 
 import { readdir, readFile, writeFile } from "fs/promises";

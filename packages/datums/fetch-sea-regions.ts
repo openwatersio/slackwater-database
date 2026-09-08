@@ -12,7 +12,7 @@
  * consumers are coastal tide gauges.
  *
  * Run manually when Marine Regions publishes a new IHO version:
- *   node tools/fetch-sea-regions.ts
+ *   npm run fetch-sea-regions -w @tide-database/datums
  */
 import { writeFile } from "fs/promises";
 import { join } from "path";
@@ -108,7 +108,7 @@ async function main() {
       "Flanders Marine Institute: IHO Sea Areas v3 (marineregions.org), via geo.vliz.be WFS",
     license: "CC-BY 4.0 — https://creativecommons.org/licenses/by/4.0/",
     generated_by:
-      "tools/fetch-sea-regions.ts (outer rings only, simplified ~1km)",
+      "packages/datums/fetch-sea-regions.ts (outer rings only, simplified ~1km)",
     features,
   };
 

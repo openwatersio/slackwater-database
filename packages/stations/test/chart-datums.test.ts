@@ -224,7 +224,7 @@ describe("astronomical extremes across the database", () => {
     // Three publish no MSL, so there is no frame to put a constituent-space
     // result onto. The other eight carry Sa and Ssa at zero amplitude, so a
     // 19-year scan over them returns a confidently narrowed envelope rather
-    // than an extreme. Both are deliberate. See tools/backfill-lat-hat.ts.
+    // than an extreme. Both are deliberate. See backfill-lat-hat.ts in this package.
     expect(missing.map((s) => s.id).sort()).toEqual([
       "noaa/6835001", // Djakarta, Java — seasonless
       "noaa/8414781", // Winterport — seasonless

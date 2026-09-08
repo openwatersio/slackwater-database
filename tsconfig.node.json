@@ -7,6 +7,6 @@
     "types": ["node"],
     "allowImportingTsExtensions": true
   },
-  "include": ["test", "tools", "packages"],
+  "include": ["packages", "sources"],
   "exclude": ["packages/database", "**/node_modules"]
 }

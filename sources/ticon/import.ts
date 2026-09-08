@@ -4,7 +4,12 @@ import { readFile } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { parseCSV, indexBy, groupBy } from "@tide-database/stations";
-import { normalize, save, load, type PartialStationData } from "@tide-database/stations";
+import {
+  normalize,
+  save,
+  load,
+  type PartialStationData,
+} from "@tide-database/stations";
 import {
   computeDatums,
   computeDatumsFromObservations,
@@ -17,13 +22,16 @@ import {
   fitHarmonics,
   isAnalyzable,
 } from "@tide-database/harmonic-analysis";
-import { getSourceSuffix, NON_COMMERCIAL_SOURCES } from "@tide-database/stations";
+import {
+  getSourceSuffix,
+  NON_COMMERCIAL_SOURCES,
+} from "@tide-database/stations";
 import { cleanName } from "@tide-database/stations";
 import { loadGeocoder } from "@tide-database/stations";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const metaPath = join(__dirname, "..", "tmp", "TICON-4", "meta.csv");
-const dataPath = join(__dirname, "..", "tmp", "TICON-4", "data.csv");
+const metaPath = join(__dirname, "..", "..", "tmp", "TICON-4", "meta.csv");
+const dataPath = join(__dirname, "..", "..", "tmp", "TICON-4", "data.csv");
 const metadata = indexBy(
   parseCSV<TiconMetaRow>(await readFile(metaPath, "utf-8")),
   "FILE NAME",

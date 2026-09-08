@@ -25,22 +25,26 @@ Root `package.json` becomes a private workspace root: `"workspaces": ["packages/
 ## Package contents (from current files)
 
 ### packages/database (published, keeps name `@neaps/tide-database`)
+
 - `src/`, `scripts/{generate-pack,copy-pack,smoke}.mjs`, `tsdown.config.ts`, `schemas/`, `examples/`, `docs/lazy-loading.md`
 - Tests: `test/{search,station-bundle}.test.ts` (`index.test.ts` moves to the stations package — it depends on filtering constants)
 - Path fixes: `generate-pack.mjs` data dir → `../../data`; `src/stations.ts` quality import → `../../quality.json`; `src/station-bundle.ts` macro `base: "../data"` → `"../../data"`
 - Keeps `prepare`, `imports` (`#station-data`), `exports`, `files` from the current root manifest
 
 ### packages/datums
+
 - `tools/datum.ts`, `tools/sea-regions.ts`, `tools/fetch-sea-regions.ts`, `tools/download-gesla.ts` (GESLA feeds datum computation/validation)
 - Tests: `test/{datum,chart-datums}.test.ts`
 - Deps: `@neaps/tide-predictor`, make-fetch-happen; devDeps: `@neaps/tide-database` (`allStations` in chart-datums test)
 - Pure library + its own data fetchers — no dependency on the stations package, so the layering stays one-way (stations → datums)
 
 ### packages/harmonic-analysis
+
 - `tools/harmonic-analysis.ts` + `test/harmonic-analysis.test.ts`
 - Deps: `@neaps/tide-predictor` only
 
 ### packages/stations
+
 - `tools/station.ts` (load/save/normalize, `DATA_DIR` → `../../data`), `tools/filtering.ts`, `tools/name-cleanup.ts`, `tools/geocode.ts`, `tools/util.ts`
 - Scripts: `tools/evaluate-quality.ts` as `npm run evaluate-quality` (writes root `quality.json`), plus the cross-source datum maintenance scripts `tools/{backfill-lat-hat,check-lat-hat,validate-datums}.ts` — they need station save/load, and putting them in datums would create a datums↔stations cycle
 - Tests: `test/{geocode,name-cleanup}.test.ts`, plus `test/index.test.ts` (validates every data file against the schema and quality gates; imports the database package and filtering constants)
@@ -48,14 +52,17 @@ Root `package.json` becomes a private workspace root: `"workspaces": ["packages/
 - ponytail: filtering/quality lives here rather than a separate `packages/quality`; split it out only if this package grows past station-record concerns
 
 ### sources/noaa
+
 - `tools/update-noaa-stations.ts` → `npm run import`
 - Deps: stations package
 
 ### sources/ticon
+
 - `tools/import-ticon.ts` + the `tools/import-ticon` bash wrapper → `npm run import`
 - Deps: stations, datums, harmonic-analysis packages
 
 ### Deleted
+
 - `tools/hawaii-converter.js` — legacy UHSLC→Harmgen converter with no pipeline hooks; git history keeps it. Resurrect into `sources/uhslc` if/when UHSLC becomes a real source.
 - `tools/README.md` — folded into per-package READMEs / root README.
 

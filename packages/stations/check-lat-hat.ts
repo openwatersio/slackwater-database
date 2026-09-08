@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Accuracy check for tools/backfill-lat-hat.ts: recompute LAT/HAT from
+// Accuracy check for backfill-lat-hat.ts: recompute LAT/HAT from
 // constituents for NOAA reference stations that ALSO publish them, and report
 // the disagreement. NOAA's published values come from its own 1983-2001 epoch
 // while DATUM_EPOCH is 2007-2026, so exact equality is not expected — a few
@@ -9,7 +9,7 @@
 // A tool, not a test: the full 1,188-station set takes ~13 minutes. Run by hand
 // before merging a change to the backfill logic.
 //
-//   node tools/check-lat-hat.ts [--sample 200]
+//   npm run check-lat-hat -w @tide-database/stations -- [--sample 200]
 
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";

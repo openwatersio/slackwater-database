@@ -73,7 +73,7 @@ export async function ensureGeslaData(): Promise<string> {
   return GESLA_DIR;
 }
 
-// Run directly: node tools/download-gesla.ts
+// Run directly: node packages/datums/download-gesla.ts
 if (import.meta.url === `file://${process.argv[1]}`) {
   console.log(`GESLA-4 ready: ${await ensureGeslaData()}`);
 }

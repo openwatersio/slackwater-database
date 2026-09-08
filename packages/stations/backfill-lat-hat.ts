@@ -2,7 +2,7 @@
 
 // NOAA publishes LAT/HAT for most, but not all, of its reference stations.
 // For the rest, synthesize them from the station's own constituents over the
-// pinned DATUM_EPOCH — the same method tools/datum.ts already uses for TICON
+// pinned DATUM_EPOCH — the same method the datums package already uses for TICON
 // and IOC. Only LAT/HAT are written; every NOAA-published mean is left alone.
 //
 // That leaves those records MIXED — observed means, synthesized extremes — and
@@ -22,7 +22,7 @@
 //
 // Idempotent: stations that already have both are skipped, and the epoch is
 // pinned, so re-running produces no diff. Chain it AFTER
-// tools/update-noaa-stations.ts, which rewrites `datums` wholesale.
+// the NOAA import (sources/noaa), which rewrites `datums` wholesale.
 
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";

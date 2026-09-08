@@ -117,7 +117,7 @@ stations.forEach((station) => {
           throw new Error(
             `This TICON station has duplicate/very close coordinates with ${other.id}: ` +
               `${(dist * 1000).toFixed(0)}m apart. ` +
-              `Run tools/evaluate-quality.ts to re-filter.`,
+              `Run npm run evaluate-quality -w @tide-database/stations to re-filter.`,
           );
         }
       });
@@ -138,7 +138,7 @@ stations.forEach((station) => {
           throw new Error(
             `This TICON station is ${(dist * 1000).toFixed(0)}m from NOAA station ${noaa.id}. ` +
               `Minimum distance is ${MIN_DISTANCE * 1000}m. ` +
-              `Run tools/evaluate-quality.ts to re-filter.`,
+              `Run npm run evaluate-quality -w @tide-database/stations to re-filter.`,
           );
         }
       });
@@ -159,7 +159,7 @@ stations.forEach((station) => {
           throw new Error(
             `This TICON station is only ${(dist * 1000).toFixed(0)}m from ${other.id} ` +
               `(minimum: ${MIN_DISTANCE * 1000}m). ` +
-              `Run tools/evaluate-quality.ts to re-filter.`,
+              `Run npm run evaluate-quality -w @tide-database/stations to re-filter.`,
           );
         }
       });
@@ -173,7 +173,7 @@ stations.forEach((station) => {
         expect(
           range,
           `Station ${station.id} has negligible tidal range: ${(range * 100).toFixed(1)}cm (MHW-MLW). ` +
-            `Run tools/evaluate-quality.ts to re-filter.`,
+            `Run npm run evaluate-quality -w @tide-database/stations to re-filter.`,
           // The database stores datums as float32, so a station accepted right
           // at the threshold can read back a hair under it.
         ).toBeGreaterThanOrEqual(MIN_TIDAL_RANGE - 1e-6);
@@ -251,7 +251,7 @@ describe("seasonal-contamination gate", () => {
         sa / med,
         `Station ${station.id}: SA ${sa.toFixed(3)}m is ${(sa / med).toFixed(1)}x the ` +
           `median SA of its same-regime neighbours (${med.toFixed(3)}m). ` +
-          `Run tools/evaluate-quality.ts to re-filter.`,
+          `Run npm run evaluate-quality -w @tide-database/stations to re-filter.`,
       ).toBeLessThan(SEASONAL_OUTLIER_RATIO);
     }
   });
@@ -273,7 +273,7 @@ describe("gauge deduplication", () => {
       expect(
         prior,
         `Stations ${prior} and ${station.id} share gauge key "${key}". ` +
-          `Run tools/evaluate-quality.ts to re-filter.`,
+          `Run npm run evaluate-quality -w @tide-database/stations to re-filter.`,
       ).toBeUndefined();
       seen.set(key, station.id);
     }
@@ -346,7 +346,7 @@ describe("coordinate gate", () => {
       expect(
         onNullIsland,
         `Station ${station.id} is on Null Island (${station.latitude}, ${station.longitude}). ` +
-          `Run tools/evaluate-quality.ts to re-filter.`,
+          `Run npm run evaluate-quality -w @tide-database/stations to re-filter.`,
       ).toBe(false);
     }
   });

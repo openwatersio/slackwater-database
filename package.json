@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "sources/*"
   ],
   "scripts": {
     "build": "npm run build -w @neaps/tide-database",
@@ -12,10 +13,7 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "@types/make-fetch-happen": "^10.0.4",
     "@types/node": "^26.0.0",
-    "make-fetch-happen": "^16.0.0",
-    "moment": "^2.30.1",
     "prettier": "^3.7.4",
     "typescript": "^7.0.2"
   }

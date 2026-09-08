@@ -1,0 +1,13 @@
+{
+  "name": "@tide-database/ticon",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "./import"
+  },
+  "dependencies": {
+    "@tide-database/datums": "*",
+    "@tide-database/harmonic-analysis": "*",
+    "@tide-database/stations": "*"
+  }
+}

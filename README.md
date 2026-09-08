@@ -174,7 +174,7 @@ You can also manually trigger the workflow from the Actions tab in GitHub.
 To manually update NOAA stations:
 
 ```bash
-$ tools/update-noaa-stations.ts
+$ npm run import -w @tide-database/noaa
 ```
 
 This will scan all existing NOAA station files, fetch any new stations from NOAA's API, and update harmonic constituents for all stations.
