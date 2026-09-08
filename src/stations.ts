@@ -91,15 +91,15 @@ function readQuality(
       enumerable: true,
       configurable: true,
       get: () => {
-        const t = detail();
-        if (!t) return undefined;
+        const f = detail()?.factors();
+        if (!f) return undefined;
         return {
-          epoch: t.epoch(),
-          recency: t.recency(),
-          source: t.source(),
-          quality: t.quality(),
-          amplitude: t.amplitude(),
-          coverage: t.coverage(),
+          epoch: f.epoch(),
+          recency: f.recency(),
+          source: f.source(),
+          quality: f.quality(),
+          amplitude: f.amplitude(),
+          coverage: f.coverage(),
         };
       },
     },

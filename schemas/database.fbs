@@ -98,18 +98,24 @@ table Epoch {
   end: string;
 }
 
-/// Quality-evaluation detail (tools/evaluate-quality.ts). The gate itself —
-/// `accepted` and `score` — lives inline on Station so an identity scan can
-/// filter and rank without touching this table; the builder writes Quality
-/// tables at the tail of the file with the other lookup data.
-table Quality {
-  /// Scoring factors, each 0–1.
+/// Scoring factors, each 0–1. A struct rather than scalar fields so presence
+/// is exact: scalars can't distinguish an omitted factor from a real 0, while
+/// a struct field reads back null when it was never written.
+struct QualityFactors {
   epoch: float;
   recency: float;
   source: float;
   quality: float;
   amplitude: float;
   coverage: float;
+}
+
+/// Quality-evaluation detail (tools/evaluate-quality.ts). The gate itself —
+/// `accepted` and `score` — lives inline on Station so an identity scan can
+/// filter and rank without touching this table; the builder writes Quality
+/// tables at the tail of the file with the other lookup data.
+table Quality {
+  factors: QualityFactors;
   /// Human-readable findings, e.g. "MLW (3.827) < LAT (3.831)".
   issues: [string];
   /// Rejection category ("duplicate", "datum", "constituents", ...), if rejected.

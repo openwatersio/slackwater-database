@@ -164,8 +164,9 @@ describe("buildDatabase", () => {
     expect(accepted.accepted()).toBe(true);
     expect(accepted.score()).toBe(87);
     const detail = accepted.quality()!;
-    expect(detail.recency()).toBeCloseTo(0.75, 6);
-    expect(detail.amplitude()).toBeCloseTo(0.5, 6);
+    const factors = detail.factors()!;
+    expect(factors.recency()).toBeCloseTo(0.75, 6);
+    expect(factors.amplitude()).toBeCloseTo(0.5, 6);
     expect(detail.issuesLength()).toBe(1);
     expect(detail.issues(0)).toBe("MLW (3.827) < LAT (3.831)");
     expect(detail.reason()).toBeNull();
@@ -173,6 +174,8 @@ describe("buildDatabase", () => {
     const rejected = db.stations(0)!;
     expect(rejected.accepted()).toBe(false);
     expect(rejected.score()).toBe(0);
+    // Factors were not provided, so they read back absent — not six zeros.
+    expect(rejected.quality()!.factors()).toBeNull();
     expect(rejected.quality()!.reason()).toBe("duplicate");
     expect(rejected.quality()!.redundant()).toBe("test/2");
   });

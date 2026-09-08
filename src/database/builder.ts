@@ -9,6 +9,7 @@ import {
   Kind,
   License,
   Quality,
+  QualityFactors,
   Root,
   Source,
   Station,
@@ -96,12 +97,20 @@ export function buildDatabase(
       const redundant = str(q.redundant);
       Quality.startQuality(builder);
       if (q.factors) {
-        Quality.addEpoch(builder, q.factors.epoch);
-        Quality.addRecency(builder, q.factors.recency);
-        Quality.addSource(builder, q.factors.source);
-        Quality.addQuality(builder, q.factors.quality);
-        Quality.addAmplitude(builder, q.factors.amplitude);
-        Quality.addCoverage(builder, q.factors.coverage);
+        // Structs are written inline at the add site.
+        const f = q.factors;
+        Quality.addFactors(
+          builder,
+          QualityFactors.createQualityFactors(
+            builder,
+            f.epoch,
+            f.recency,
+            f.source,
+            f.quality,
+            f.amplitude,
+            f.coverage,
+          ),
+        );
       }
       Quality.addIssues(builder, issues);
       Quality.addReason(builder, reason);
