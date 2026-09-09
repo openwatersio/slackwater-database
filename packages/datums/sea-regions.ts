@@ -14,7 +14,7 @@
  * (Flanders Marine Institute, CC-BY 4.0) — the Baltic Sea, Gulfs of Bothnia /
  * Finland / Riga, and the Kattegat; the Skagerrak is excluded. Outer rings
  * only (island gauges classify by basin) at ~1 km simplification; regenerate
- * with `npm run fetch-sea-regions -w @neaps/datums`.
+ * with `npm run fetch-sea-regions -w packages/datums`.
  *
  * A small tolerance treats points within ~2 km of a basin boundary as inside:
  * harbor gauges sit exactly on the (simplified) coastline, and it also closes

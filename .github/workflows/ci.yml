@@ -31,7 +31,7 @@ jobs:
         run: npm install
 
       - name: Pack npm module
-        run: npm pack -w @neaps/tide-database
+        run: npm pack -w packages/database
 
       - name: Publish to pkg.pr.new
         run: npx pkg-pr-new publish ./packages/database
@@ -75,10 +75,10 @@ jobs:
         run: npm run build
 
       - name: Build TCD harmonics files
-        run: npm run build -w @neaps/tcd
+        run: npm run build -w packages/tcd
 
       - name: Run TCD validation tests
-        run: npm run test -w @neaps/tcd
+        run: npm run test -w packages/tcd
 
       - name: Upload TCD artifacts
         uses: actions/upload-artifact@v7

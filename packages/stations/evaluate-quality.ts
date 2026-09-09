@@ -15,7 +15,7 @@
  *   quality.json — all stations with factors, score, and accept/reject status
  *
  * Usage:
- *   npm run evaluate-quality -w @neaps/stations
+ *   npm run evaluate-quality -w packages/stations
  */
 
 import { readdir, readFile, writeFile } from "fs/promises";

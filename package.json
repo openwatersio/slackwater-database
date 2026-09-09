@@ -7,8 +7,8 @@
     "sources/*"
   ],
   "scripts": {
-    "build": "npm run build -w @neaps/tide-database",
-    "test": "tsc -p tsconfig.node.json && npm run test -w @neaps/tide-database -w @neaps/datums -w @neaps/harmonic-analysis -w @neaps/stations",
+    "build": "npm run build -w packages/database",
+    "test": "tsc -p tsconfig.node.json && npm run test -w packages/database -w packages/datums -w packages/harmonic-analysis -w packages/stations",
     "lint": "prettier --check .",
     "format": "prettier --write ."
   },

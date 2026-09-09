@@ -36,7 +36,7 @@ jobs:
         run: npm publish
 
       - name: Build TCD harmonics files
-        run: npm run build -w @neaps/tcd
+        run: npm run build -w packages/tcd
 
       - name: Rename TCD files for release
         run: |

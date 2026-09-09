@@ -31,7 +31,7 @@ Cross-checked against authoritative agency datums (NOAA CO-OPS, Canada CHS), the
 The station JSONs are generated. After changing datum logic, regenerate them (the full GESLA-4 dataset is downloaded on demand and is not committed):
 
 ```sh
-FORCE_DATUMS=1 npm run import -w @neaps/ticon
+FORCE_DATUMS=1 npm run import -w sources/ticon
 ```
 
 Without `FORCE_DATUMS`, the importer reuses each station's cached datums and only recomputes the derived metadata (`chart_datum`, pruning, disclaimers).

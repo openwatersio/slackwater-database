@@ -9,7 +9,7 @@
 // A tool, not a test: the full 1,188-station set takes ~13 minutes. Run by hand
 // before merging a change to the backfill logic.
 //
-//   npm run check-lat-hat -w @neaps/stations -- [--sample 200]
+//   npm run check-lat-hat -w packages/stations -- [--sample 200]
 
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
