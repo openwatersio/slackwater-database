@@ -12,6 +12,23 @@ export interface Constituent {
   speed: number;
 }
 
+export interface StationRouteInput {
+  slug: string;
+  station_ids: string[];
+  former_paths?: string[];
+}
+
+export interface StationRoute {
+  slug: string;
+  stationIds: string[];
+  formerPaths: string[];
+}
+
+export interface DatabaseRoutes {
+  tide: StationRouteInput[];
+  current: StationRouteInput[];
+}
+
 export interface StationData {
   // Basic station information
   name: string;

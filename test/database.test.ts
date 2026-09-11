@@ -147,12 +147,79 @@ describe("buildDatabase", () => {
   ];
   const db = openDatabase(buildDatabase(inputs, { version: "1.2.3" }));
 
+  const routeInputs = [
+    ...inputs,
+    {
+      ...inputs[0]!,
+      id: "test/4",
+      name: "Second Victoria provider record",
+    },
+  ];
+  const routes = {
+    tide: [
+      {
+        slug: "victoria",
+        station_ids: ["test/2", "test/4", "test/2"],
+        former_paths: [
+          "/tides/victoria-harbour/",
+          "/tides/victoria-harbour/",
+        ],
+      },
+      { slug: "alpha", station_ids: ["test/1"] },
+    ],
+    current: [],
+  };
+
   test("round-trips stations sorted by id", () => {
     expect(db.version()).toBe("1.2.3");
     expect(db.stationsLength()).toBe(3);
     expect(db.stations(0)!.id()).toBe("test/1");
     expect(db.stations(1)!.id()).toBe("test/2");
     expect(db.stations(2)!.id()).toBe("test/3");
+  });
+
+  test("round-trips sorted, deduplicated route indexes", () => {
+    const root = openDatabase(
+      buildDatabase(routeInputs, { version: "1.2.3", routes }),
+    );
+    expect(root.tideRoutesLength()).toBe(2);
+    expect(root.tideRoutes(0)!.slug()).toBe("alpha");
+    const victoria = root.tideRoutes(1)!;
+    expect(victoria.slug()).toBe("victoria");
+    expect(victoria.stationIdsLength()).toBe(2);
+    expect(victoria.stationIds(1)).toBe("test/4");
+    expect(victoria.formerPathsLength()).toBe(1);
+    expect(victoria.formerPaths(0)).toBe("/tides/victoria-harbour/");
+  });
+
+  test("rejects malformed route indexes", () => {
+    expect(() =>
+      buildDatabase(inputs, {
+        routes: {
+          tide: [
+            { slug: "same", station_ids: ["test/1"] },
+            { slug: "same", station_ids: ["test/2"] },
+          ],
+          current: [],
+        },
+      }),
+    ).toThrow(/tide.*duplicate.*same/);
+    expect(() =>
+      buildDatabase(inputs, {
+        routes: {
+          tide: [{ slug: "empty", station_ids: [] }],
+          current: [],
+        },
+      }),
+    ).toThrow(/tide\/empty.*no station ids/);
+    expect(() =>
+      buildDatabase(inputs, {
+        routes: {
+          tide: [{ slug: "missing", station_ids: ["test/404"] }],
+          current: [],
+        },
+      }),
+    ).toThrow(/tide\/missing.*test\/404/);
   });
 
   test("round-trips prediction data through the name tables", () => {

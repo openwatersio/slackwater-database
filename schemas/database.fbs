@@ -15,6 +15,12 @@
 
 namespace Neaps;
 
+table StationRoute {
+  slug: string (key, required);
+  station_ids: [string] (required);
+  former_paths: [string];
+}
+
 /// Datum names and constituent names live once, at the root; records refer to
 /// them by index. Constituent records repeat ~23 names across ~110k entries.
 table Root {
@@ -26,6 +32,8 @@ table Root {
   constituent_names: [string];
   /// Indexed by `Datum.name` ("MLLW", "MSL", "LAT", ...).
   datum_names: [string];
+  tide_routes: [StationRoute];
+  current_routes: [StationRoute];
 }
 
 enum Kind : ubyte { Tide = 0, Current = 1 }

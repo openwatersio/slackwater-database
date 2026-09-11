@@ -13,13 +13,18 @@ import {
   Root,
   Source,
   Station,
+  StationRoute as StationRouteTable,
   StationType,
   TideDerivedCurrent,
   TideOffsets,
 } from "../generated/fbs/neaps.ts";
 import * as flatbuffers from "flatbuffers";
 import countryLookup from "country-code-lookup";
-import type { StationInput } from "../types.js";
+import type {
+  DatabaseRoutes,
+  StationInput,
+  StationRouteInput,
+} from "../types.js";
 
 /**
  * Serialize stations into the FlatBuffers database format
@@ -36,7 +41,10 @@ import type { StationInput } from "../types.js";
  */
 export function buildDatabase(
   stations: StationInput[],
-  { version }: { version?: string } = {},
+  {
+    version,
+    routes = { tide: [], current: [] },
+  }: { version?: string; routes?: DatabaseRoutes } = {},
 ): Uint8Array {
   // Ids are ASCII, so JS string order matches the strcmp order FlatBuffers key
   // lookup expects.
@@ -44,6 +52,7 @@ export function buildDatabase(
     a.id < b.id ? -1 : a.id > b.id ? 1 : 0,
   );
   sorted.forEach(requireCountry);
+  const preparedRoutes = prepareRoutes(sorted, routes);
 
   const constituentNames = nameTable(
     sorted.flatMap((s) => (s.harmonic_constituents ?? []).map((c) => c.name)),
@@ -313,6 +322,35 @@ export function buildDatabase(
     return Station.endStation(builder);
   });
 
+  const routeOffsets = (records: StationRouteInput[]): number[] =>
+    records.map((route) => {
+      const slug = builder.createString(route.slug);
+      const stationIds = StationRouteTable.createStationIdsVector(
+        builder,
+        route.station_ids.map((id) => builder.createSharedString(id)),
+      );
+      const formerPaths = route.former_paths?.length
+        ? StationRouteTable.createFormerPathsVector(
+            builder,
+            route.former_paths.map((path) => builder.createSharedString(path)),
+          )
+        : 0;
+      StationRouteTable.startStationRoute(builder);
+      StationRouteTable.addSlug(builder, slug);
+      StationRouteTable.addStationIds(builder, stationIds);
+      StationRouteTable.addFormerPaths(builder, formerPaths);
+      return StationRouteTable.endStationRoute(builder);
+    });
+
+  const tideRouteOffsets = routeOffsets(preparedRoutes.tide);
+  const tideRoutesVector = tideRouteOffsets.length
+    ? Root.createTideRoutesVector(builder, tideRouteOffsets)
+    : 0;
+  const currentRouteOffsets = routeOffsets(preparedRoutes.current);
+  const currentRoutesVector = currentRouteOffsets.length
+    ? Root.createCurrentRoutesVector(builder, currentRouteOffsets)
+    : 0;
+
   // Phase 3: the root — stations vector and name tables — at the very head.
   const stationsVector = Root.createStationsVector(builder, stationOffsets);
   const constituentNamesVector = Root.createConstituentNamesVector(
@@ -333,10 +371,51 @@ export function buildDatabase(
       stationsVector,
       constituentNamesVector,
       datumNamesVector,
+      tideRoutesVector,
+      currentRoutesVector,
     ),
   );
 
   return builder.asUint8Array();
+}
+
+function prepareRoutes(
+  stations: StationInput[],
+  routes: DatabaseRoutes,
+): DatabaseRoutes {
+  const ids = new Set(stations.map((station) => station.id));
+  const prepare = (
+    kind: keyof DatabaseRoutes,
+    records: StationRouteInput[],
+  ): StationRouteInput[] => {
+    const slugs = new Set<string>();
+    return records
+      .map((route) => {
+        if (!/^[a-z0-9-]+$/.test(route.slug) || slugs.has(route.slug))
+          throw new Error(
+            `${kind} route has invalid or duplicate slug ${JSON.stringify(route.slug)}`,
+          );
+        if (route.station_ids.length === 0)
+          throw new Error(`${kind}/${route.slug} has no station ids`);
+        for (const id of route.station_ids) {
+          if (!ids.has(id))
+            throw new Error(
+              `${kind}/${route.slug} references missing station ${id}`,
+            );
+        }
+        slugs.add(route.slug);
+        return {
+          slug: route.slug,
+          station_ids: [...new Set(route.station_ids)],
+          former_paths: [...new Set(route.former_paths ?? [])],
+        };
+      })
+      .sort((a, b) => a.slug.localeCompare(b.slug));
+  };
+  return {
+    tide: prepare("tide", routes.tide),
+    current: prepare("current", routes.current),
+  };
 }
 
 function requireCountry(station: StationInput): void {
