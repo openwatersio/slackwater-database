@@ -95,7 +95,7 @@ describe("metadata resolution", () => {
         ...everett.place,
         name: "Victoria",
         admin1: "British Columbia",
-        admin1Code: "BC",
+        admin1Code: "02",
         countryCode: "CA",
       },
     };
@@ -106,6 +106,8 @@ describe("metadata resolution", () => {
 
     expect(result.country).toBe("Canada");
     expect(result.country_code).toBe("CA");
+    expect(result.region).toBe("British Columbia");
+    expect(result.region_code).toBe("CA-BC");
   });
 
   test("a curated context is not marked as derived", () => {

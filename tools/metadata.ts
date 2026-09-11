@@ -410,10 +410,12 @@ export function resolveMetadata(
   const regionCode =
     explicitLocation?.regionCode ??
     station.region_code ??
-    (place &&
-    (country.iso2 === "US" || country.iso2 === "CA") &&
-    /^[A-Z0-9]{1,3}$/.test(place.place.admin1Code)
-      ? `${country.iso2}-${place.place.admin1Code}`
+    (place
+      ? isoSubdivisionCode(
+          country.iso2,
+          place.place.admin1,
+          place.place.admin1Code,
+        )
       : undefined);
   if (regionCode && !regionCode.startsWith(`${country.iso2}-`))
     throw new Error(
@@ -580,6 +582,34 @@ const NAME_STOP_WORDS = new Set([
   "st",
   "pt",
 ]);
+
+const CANADIAN_SUBDIVISIONS: Record<string, string> = {
+  Alberta: "AB",
+  "British Columbia": "BC",
+  Manitoba: "MB",
+  "New Brunswick": "NB",
+  "Newfoundland and Labrador": "NL",
+  "Northwest Territories": "NT",
+  "Nova Scotia": "NS",
+  Nunavut: "NU",
+  Ontario: "ON",
+  "Prince Edward Island": "PE",
+  Quebec: "QC",
+  Saskatchewan: "SK",
+  Yukon: "YT",
+};
+
+function isoSubdivisionCode(
+  countryCode: string,
+  admin1: string,
+  admin1Code: string,
+): string | undefined {
+  if (countryCode === "US" && /^[A-Z]{2}$/.test(admin1Code))
+    return `US-${admin1Code}`;
+  if (countryCode === "CA" && CANADIAN_SUBDIVISIONS[admin1])
+    return `CA-${CANADIAN_SUBDIVISIONS[admin1]}`;
+  return undefined;
+}
 
 function sharesMeaningfulWord(left: string, right: string): boolean {
   const words = (text: string) =>

@@ -338,6 +338,13 @@ noaa-boundary-pass:
   context: Saturna & Patos Islands
   position: [48.6912, -123.245]
   provider: noaa
+  location:
+    {
+      region: Washington,
+      regionCode: US-WA,
+      country: United States,
+      countryCode: US,
+    }
   source: >-
     NOAA CO-OPS station; position from the NOAA station page, not the CHS
     fitting pipeline that supplies the other gates. See PROVENANCE.md.
