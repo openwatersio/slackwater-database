@@ -1,10 +1,12 @@
-import { describe, test, expect, vi } from "vitest";
+import { describe, test, expect, expectTypeOf, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import * as flatbuffers from "flatbuffers";
 import { buildDatabase } from "../src/database/builder.ts";
 import { openDatabase } from "../src/database/reader.ts";
 import { Root, Kind } from "../src/generated/fbs/neaps.ts";
-import type { StationInput } from "../src/types.ts";
+import type { Station, StationInput } from "../src/types.ts";
+
+expectTypeOf<Station["chart_datum"]>().toEqualTypeOf<string | undefined>();
 
 const shipped = openDatabase(
   readFileSync(new URL("../src/generated/neaps.tcdb", import.meta.url)),
@@ -218,6 +220,19 @@ describe("buildDatabase", () => {
         },
       }),
     ).toThrow(/tide\/wrong.*current.*test\/3/);
+  });
+
+  test("rejects contradictory station kinds", () => {
+    expect(() => buildDatabase([{ ...inputs[2]!, kind: "tide" }])).toThrow(
+      /test\/3.*tide.*current/,
+    );
+  });
+
+  test("rejects empty and duplicate station ids", () => {
+    expect(() => buildDatabase([{ ...inputs[0]!, id: "" }])).toThrow(/no id/);
+    expect(() => buildDatabase([inputs[0]!, { ...inputs[0]! }])).toThrow(
+      /duplicate station id test\/2/,
+    );
   });
 
   test("rejects malformed route indexes", () => {

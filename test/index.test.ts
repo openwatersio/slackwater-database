@@ -51,10 +51,12 @@ tideStations.forEach((station) => {
     });
 
     test("has chart_datum", () => {
+      const chartDatum = station.chart_datum;
       expect(
-        station.chart_datum,
+        chartDatum,
         `Station ${station.id} is missing chart_datum`,
       ).toBeDefined();
+      if (!chartDatum) return;
 
       const { datums } =
         (station.type === "reference"
@@ -65,8 +67,8 @@ tideStations.forEach((station) => {
       // 3 NOAA stations have empty datums, so we skip the check for those
       if (datums && Object.keys(datums).length > 0) {
         expect(
-          datums[station.chart_datum],
-          `Station ${station.id} missing chart_datum ${station.chart_datum}`,
+          datums[chartDatum],
+          `Station ${station.id} missing chart_datum ${chartDatum}`,
         ).toBeDefined();
       }
     });

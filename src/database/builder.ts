@@ -51,7 +51,11 @@ export function buildDatabase(
   const sorted = [...stations].sort((a, b) =>
     a.id < b.id ? -1 : a.id > b.id ? 1 : 0,
   );
-  sorted.forEach(requireIdentity);
+  sorted.forEach((station, index) => {
+    requireIdentity(station);
+    if (index > 0 && sorted[index - 1]!.id === station.id)
+      throw new Error(`duplicate station id ${station.id}`);
+  });
   const preparedRoutes = prepareRoutes(sorted, routes);
 
   const constituentNames = nameTable(
@@ -299,10 +303,7 @@ export function buildDatabase(
     Station.startStation(builder);
     Station.addId(builder, id);
     Station.addName(builder, name);
-    // A Current table implies Kind.Current; deriving it here keeps the buffer
-    // consistent when a caller sets `current` without `kind`.
-    if (s.kind === "current" || s.current)
-      Station.addKind(builder, Kind.Current);
+    if (stationKind(s) === "current") Station.addKind(builder, Kind.Current);
     if (s.type === "subordinate")
       Station.addType(builder, StationType.Subordinate);
     if (s.latitude !== undefined) Station.addLatitude(builder, s.latitude);
@@ -399,10 +400,7 @@ function prepareRoutes(
   routes: DatabaseRoutes,
 ): DatabaseRoutes {
   const kinds = new Map(
-    stations.map((station) => [
-      station.id,
-      station.kind ?? (station.current ? "current" : "tide"),
-    ]),
+    stations.map((station) => [station.id, stationKind(station)]),
   );
   const prepare = (
     kind: keyof DatabaseRoutes,
@@ -444,6 +442,8 @@ function prepareRoutes(
 }
 
 function requireIdentity(station: StationInput): void {
+  if (!station.id.trim()) throw new Error("Station has no id");
+  stationKind(station);
   for (const field of ["name", "timezone", "continent"] as const) {
     if (!station[field]?.trim())
       throw new Error(`Station ${station.id} has no ${field}`);
@@ -480,6 +480,14 @@ function requireIdentity(station: StationInput): void {
     throw new Error(
       `Station ${station.id} region_code ${station.region_code} does not match ${station.country_code}`,
     );
+}
+
+function stationKind(station: StationInput): "tide" | "current" {
+  if (station.kind === "tide" && station.current)
+    throw new Error(
+      `Station ${station.id} declares tide kind with current data`,
+    );
+  return station.kind ?? (station.current ? "current" : "tide");
 }
 
 /** Unique sorted names plus a name → ushort index map. */

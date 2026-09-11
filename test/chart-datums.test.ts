@@ -8,6 +8,7 @@ import {
   type PartialStationData,
 } from "../tools/station.js";
 import { allStations } from "../src/index.js";
+import type { Station } from "../src/index.js";
 
 const tideStations = allStations.filter(
   (station) => station.kind === "tide" && station.quality,
@@ -218,7 +219,10 @@ const DATUM_ROUNDING_M = 0.06;
 
 describe("astronomical extremes across the database", () => {
   const references = tideStations.filter(
-    (s) => s.type === "reference" && s.datums["LAT"] !== undefined,
+    (s): s is Station & { chart_datum: string } =>
+      s.type === "reference" &&
+      s.datums["LAT"] !== undefined &&
+      s.chart_datum !== undefined,
   );
 
   test("covers every reference station the constituents can honestly bound", () => {

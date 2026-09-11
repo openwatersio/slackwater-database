@@ -46,7 +46,7 @@ the source data or geocoder cannot identify a reliable value.
 | ----------------------------------------- | ---------: | ---------------: |
 | Previous `stations.pack` on `origin/main` | 18,496,618 |         17.6 MiB |
 | Unified `neaps.tcdb`                      |  8,761,128 |          8.4 MiB |
-| Packed npm package                        | 12,120,988 |         11.6 MiB |
+| Packed npm package                        | 12,121,467 |         11.6 MiB |
 
 The unified database payload is 9,735,490 bytes (52.6%) smaller than the
 previous generated station pack while including current stations and route
