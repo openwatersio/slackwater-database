@@ -75,6 +75,12 @@ table CurrentOffsets {
   ebb_time: int;
   flood_speed_ratio: float;
   ebb_speed_ratio: float;
+  slack_before_flood_missing: bool;
+  slack_before_ebb_missing: bool;
+  flood_time_missing: bool;
+  ebb_time_missing: bool;
+  flood_speed_ratio_missing: bool;
+  ebb_speed_ratio_missing: bool;
 }
 
 /// Present only when Kind == Current.

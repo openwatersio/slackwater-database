@@ -60,8 +60,26 @@ describe("the shipped database file", () => {
 });
 
 describe("buildDatabase", () => {
+  const identity = {
+    latitude: 0,
+    longitude: 0,
+    timezone: "Etc/UTC",
+    continent: "Americas",
+    source: {
+      name: "Test",
+      id: "test",
+      published_harmonics: true,
+      url: "https://example.com",
+    },
+    license: {
+      type: "public domain",
+      commercial_use: true,
+      url: "https://example.com/license",
+    },
+  };
   const inputs: StationInput[] = [
     {
+      ...identity,
       id: "test/2",
       name: "Reference",
       latitude: 47.6,
@@ -102,6 +120,7 @@ describe("buildDatabase", () => {
       },
     },
     {
+      ...identity,
       id: "test/1",
       name: "Subordinate",
       country: "Canada",
@@ -121,6 +140,7 @@ describe("buildDatabase", () => {
       },
     },
     {
+      ...identity,
       id: "test/3",
       name: "A current",
       country: "United States",
@@ -187,6 +207,17 @@ describe("buildDatabase", () => {
     expect(victoria.stationIds(1)).toBe("test/4");
     expect(victoria.formerPathsLength()).toBe(1);
     expect(victoria.formerPaths(0)).toBe("/tides/victoria-harbour/");
+  });
+
+  test("rejects routes that point at the other station kind", () => {
+    expect(() =>
+      buildDatabase(inputs, {
+        routes: {
+          tide: [{ slug: "wrong", station_ids: ["test/3"] }],
+          current: [],
+        },
+      }),
+    ).toThrow(/tide\/wrong.*current.*test\/3/);
   });
 
   test("rejects malformed route indexes", () => {
@@ -332,6 +363,12 @@ describe("buildDatabase", () => {
     ).toThrow(/test\/region.*US-WA.*CA/);
   });
 
+  test("rejects incomplete public station identity", () => {
+    expect(() =>
+      buildDatabase([{ ...inputs[0]!, id: "test/incomplete", timezone: "" }]),
+    ).toThrow(/test\/incomplete.*timezone/);
+  });
+
   test("round-trips current stations", () => {
     const station = db.stations(2)!;
     expect(station.kind()).toBe(Kind.Current);
@@ -392,14 +429,20 @@ describe("buildDatabase", () => {
 
   test("preserves absent current measurements without confusing them with zero", async () => {
     const sparse = structuredClone(inputs);
-    sparse[2]!.current = { ebb_direction: 0 };
+    sparse[2]!.current = {
+      ebb_direction: 0,
+      offsets: { reference: "test/2", flood_time: 0 },
+    };
     const bytes = buildDatabase(sparse);
     vi.doMock("#neaps.tcdb", () => ({ default: bytes }));
     vi.resetModules();
 
     try {
       const { stationsById } = await import("../src/stations.ts");
-      expect(stationsById.get("test/3")!.current).toEqual({ ebb_direction: 0 });
+      expect(stationsById.get("test/3")!.current).toEqual({
+        ebb_direction: 0,
+        offsets: { reference: "test/2", flood_time: 0 },
+      });
     } finally {
       vi.doUnmock("#neaps.tcdb");
       vi.resetModules();

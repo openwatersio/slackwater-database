@@ -5,6 +5,8 @@
 Station corrections and identities live in `metadata/corrections.yaml` and
 `metadata/registry.yaml`. Use corrections for an existing provider record and
 the registry for curated records that may not exist in an imported source.
+`metadata/places.json` is the reviewed GeoNames snapshot used for deterministic
+location enrichment; builds do not download mutable gazetteer data.
 
 Slug allocations, former paths, and position audits are durable release state.
 Do not edit their JSON lock files by hand. After changing source or curated

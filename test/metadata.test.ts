@@ -110,6 +110,29 @@ describe("metadata resolution", () => {
     expect(result.region_code).toBe("CA-BC");
   });
 
+  test("replaces opaque provider subdivision ids with the display region", () => {
+    const canada = {
+      ...everett,
+      country: "Canada",
+      region: "British Columbia",
+      place: {
+        ...everett.place,
+        name: "Sooke",
+        admin1: "British Columbia",
+        admin1Code: "02",
+        countryCode: "CA",
+      },
+    };
+    const result = resolveMetadata(
+      { ...baseStation, country: "Canada", country_code: "CA", region: "02" },
+      { geocoder: { nearest: () => canada, near: () => [canada] } },
+    );
+
+    expect(result.region).toBe("British Columbia");
+    expect(result.region_code).toBe("CA-BC");
+    expect(result.context).toBe("Sooke, British Columbia");
+  });
+
   test("a curated context is not marked as derived", () => {
     const result = resolveMetadata(
       { ...baseStation, context: "Automated place", context_derived: true },

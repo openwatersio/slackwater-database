@@ -404,7 +404,9 @@ export function resolveMetadata(
   setOptional(
     result,
     "region",
-    explicitLocation?.region ?? station.region ?? place?.place.admin1,
+    explicitLocation?.region ??
+      normalizedRegion(station.region, country.iso2, place?.place.admin1) ??
+      place?.place.admin1,
   );
 
   const regionCode =
@@ -422,6 +424,19 @@ export function resolveMetadata(
       `${station.id}: region code ${regionCode} does not match ${country.iso2}`,
     );
   setOptional(result, "region_code", regionCode);
+  if (country.iso2 === "CA" && regionCode) {
+    const expected = Object.entries(CANADIAN_SUBDIVISIONS).find(
+      ([, code]) => `CA-${code}` === regionCode,
+    );
+    if (
+      expected &&
+      result.region !== expected[0] &&
+      result.region !== expected[1]
+    )
+      throw new Error(
+        `${station.id}: region ${result.region} does not match ${regionCode}`,
+      );
+  }
 
   const curatedContext = registry?.context ?? correction?.context;
   let context = curatedContext ?? station.context ?? split.context;
@@ -614,6 +629,23 @@ const CANADIAN_SUBDIVISIONS: Record<string, string> = {
   Saskatchewan: "SK",
   Yukon: "YT",
 };
+
+function normalizedRegion(
+  region: string | undefined,
+  countryCode: string,
+  fallback: string | undefined,
+): string | undefined {
+  if (!region) return undefined;
+  if (countryCode === "CA") {
+    if (CANADIAN_SUBDIVISIONS[region]) return region;
+    return (
+      Object.entries(CANADIAN_SUBDIVISIONS).find(
+        ([, code]) => code === region.toUpperCase(),
+      )?.[0] ?? fallback
+    );
+  }
+  return /^\d+$/.test(region) ? fallback : region;
+}
 
 function isoSubdivisionCode(
   countryCode: string,

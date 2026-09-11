@@ -41,9 +41,17 @@ Everything above is about _station_ identity. The database builder also uses
 **GeoNames cities500, CC BY 4.0** to derive locality, subdivision, country, and
 fallback context fields when curated and provider data do not supply them.
 
-The GeoNames corpus is downloaded as a build input and is not included in the
-published database or npm package. Only the derived station fields are written to
-TCDB. GeoNames contains no tide or current station records:
+`places.json` is a reviewed, filtered snapshot of the ten nearest GeoNames
+candidates within 100 km of every station in the 2026-09-11 catalogue. It was
+built from `cities500.zip` and `admin1CodesASCII.txt` downloaded on 2026-09-11
+(SHA-256 `060245a4f6914e253d87a09a1344ed274c659ba736f5d445ab0c7ca4effeee1e`
+and `590651498043f674accda2b7f46d21286cda0e290b02f8561c5005eee9a5448c`).
+The committed snapshot makes generation reproducible and reviewable; updating
+it is an explicit source-data change rather than a side effect of building.
+
+The snapshot is not included in the published database or npm package. Only
+the derived station fields are written to TCDB. GeoNames contains no tide or
+current station records:
 
 - The rule is _don't redistribute a **provider's** station file_ — CHS's or NOAA's list of the
   things we publish records about. GeoNames publishes no tide or current stations, so nothing

@@ -51,7 +51,7 @@ export function buildDatabase(
   const sorted = [...stations].sort((a, b) =>
     a.id < b.id ? -1 : a.id > b.id ? 1 : 0,
   );
-  sorted.forEach(requireCountry);
+  sorted.forEach(requireIdentity);
   const preparedRoutes = prepareRoutes(sorted, routes);
 
   const constituentNames = nameTable(
@@ -262,6 +262,18 @@ export function buildDatabase(
           CurrentOffsets.addFloodSpeedRatio(builder, o.flood_speed_ratio);
         if (o.ebb_speed_ratio !== undefined)
           CurrentOffsets.addEbbSpeedRatio(builder, o.ebb_speed_ratio);
+        if (o.slack_before_flood === undefined)
+          CurrentOffsets.addSlackBeforeFloodMissing(builder, true);
+        if (o.slack_before_ebb === undefined)
+          CurrentOffsets.addSlackBeforeEbbMissing(builder, true);
+        if (o.flood_time === undefined)
+          CurrentOffsets.addFloodTimeMissing(builder, true);
+        if (o.ebb_time === undefined)
+          CurrentOffsets.addEbbTimeMissing(builder, true);
+        if (o.flood_speed_ratio === undefined)
+          CurrentOffsets.addFloodSpeedRatioMissing(builder, true);
+        if (o.ebb_speed_ratio === undefined)
+          CurrentOffsets.addEbbSpeedRatioMissing(builder, true);
         currentOffsets = CurrentOffsets.endCurrentOffsets(builder);
       }
       const tideReference = str(c.tide_reference);
@@ -386,7 +398,12 @@ function prepareRoutes(
   stations: StationInput[],
   routes: DatabaseRoutes,
 ): DatabaseRoutes {
-  const ids = new Set(stations.map((station) => station.id));
+  const kinds = new Map(
+    stations.map((station) => [
+      station.id,
+      station.kind ?? (station.current ? "current" : "tide"),
+    ]),
+  );
   const prepare = (
     kind: keyof DatabaseRoutes,
     records: StationRouteInput[],
@@ -401,9 +418,14 @@ function prepareRoutes(
         if (route.station_ids.length === 0)
           throw new Error(`${kind}/${route.slug} has no station ids`);
         for (const id of route.station_ids) {
-          if (!ids.has(id))
+          const stationKind = kinds.get(id);
+          if (!stationKind)
             throw new Error(
               `${kind}/${route.slug} references missing station ${id}`,
+            );
+          if (stationKind !== kind)
+            throw new Error(
+              `${kind}/${route.slug} references ${stationKind} station ${id}`,
             );
         }
         slugs.add(route.slug);
@@ -421,7 +443,20 @@ function prepareRoutes(
   };
 }
 
-function requireCountry(station: StationInput): void {
+function requireIdentity(station: StationInput): void {
+  for (const field of ["name", "timezone", "continent"] as const) {
+    if (!station[field]?.trim())
+      throw new Error(`Station ${station.id} has no ${field}`);
+  }
+  if (
+    !Number.isFinite(station.latitude) ||
+    !Number.isFinite(station.longitude) ||
+    Math.abs(station.latitude!) > 90 ||
+    Math.abs(station.longitude!) > 180
+  )
+    throw new Error(`Station ${station.id} has invalid coordinates`);
+  if (!station.source) throw new Error(`Station ${station.id} has no source`);
+  if (!station.license) throw new Error(`Station ${station.id} has no license`);
   if (!station.country)
     throw new Error(
       `Station ${station.id} has no country; the schema requires one`,

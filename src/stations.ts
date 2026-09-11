@@ -147,15 +147,20 @@ function readCurrent(index: number): CurrentData | undefined {
   if (tideReference) current.tide_reference = tideReference;
   const offsets = table.offsets();
   if (offsets) {
-    current.offsets = {
+    const values: NonNullable<CurrentData["offsets"]> = {
       reference: offsets.reference()!,
-      slack_before_flood: offsets.slackBeforeFlood(),
-      slack_before_ebb: offsets.slackBeforeEbb(),
-      flood_time: offsets.floodTime(),
-      ebb_time: offsets.ebbTime(),
-      flood_speed_ratio: offsets.floodSpeedRatio(),
-      ebb_speed_ratio: offsets.ebbSpeedRatio(),
     };
+    if (!offsets.slackBeforeFloodMissing())
+      values.slack_before_flood = offsets.slackBeforeFlood();
+    if (!offsets.slackBeforeEbbMissing())
+      values.slack_before_ebb = offsets.slackBeforeEbb();
+    if (!offsets.floodTimeMissing()) values.flood_time = offsets.floodTime();
+    if (!offsets.ebbTimeMissing()) values.ebb_time = offsets.ebbTime();
+    if (!offsets.floodSpeedRatioMissing())
+      values.flood_speed_ratio = offsets.floodSpeedRatio();
+    if (!offsets.ebbSpeedRatioMissing())
+      values.ebb_speed_ratio = offsets.ebbSpeedRatio();
+    current.offsets = values;
   }
   const magnitudeNote = table.magnitudeNote();
   if (magnitudeNote) current.magnitude_note = magnitudeNote;
