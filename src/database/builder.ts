@@ -410,7 +410,7 @@ function prepareRoutes(
           former_paths: [...new Set(route.former_paths ?? [])],
         };
       })
-      .sort((a, b) => a.slug.localeCompare(b.slug));
+      .sort((a, b) => (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0));
   };
   return {
     tide: prepare("tide", routes.tide),
