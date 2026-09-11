@@ -302,7 +302,7 @@ export const qualityMap = new Map<string, StationQuality>(
 );
 
 export function qualityFilter(station: Station): boolean {
-  return qualityMap.get(station.id)?.accepted ?? false;
+  return qualityMap.get(station.id)?.accepted ?? true;
 }
 
 export const stations: Station[] = allStations.filter(qualityFilter);

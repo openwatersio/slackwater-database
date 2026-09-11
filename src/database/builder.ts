@@ -295,7 +295,7 @@ export function buildDatabase(
     Station.addCountry(builder, country);
     Station.addContinent(builder, continent);
     Station.addAliases(builder, aliases);
-    if (s.quality?.accepted) Station.addAccepted(builder, true);
+    if (s.quality?.accepted ?? true) Station.addAccepted(builder, true);
     if (s.quality?.score) Station.addScore(builder, s.quality.score);
     Station.addConstituents(builder, prediction[i]!.constituents);
     Station.addDatums(builder, prediction[i]!.datums);

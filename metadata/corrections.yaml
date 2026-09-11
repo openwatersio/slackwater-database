@@ -19,6 +19,15 @@
 # No validator can make that call. Slug changes are rare; downstream consumers
 # own the redirect consequences either way.
 
+# Turn Point is on the US side of Boundary Pass, but cross-border nearest-place
+# lookup can select a Canadian locality.
+noaa/PUG1717:
+  location:
+    region: Washington
+    regionCode: US-WA
+    country: United States
+    countryCode: US
+
 noaa/9447659:
   name: Everett
   context: Port Gardner

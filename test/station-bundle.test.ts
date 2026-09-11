@@ -23,7 +23,7 @@ describe("datums export", () => {
 
 describe("qualityMap", () => {
   test("records keep their station id, like the quality.json originals", () => {
-    const station = stations[0]!;
+    const station = stations.find(({ quality }) => quality)!;
     expect(qualityMap.get(station.id)?.id).toBe(station.id);
     expect(station.quality?.id).toBe(station.id);
   });
@@ -53,11 +53,20 @@ describe("identity fields", () => {
     ).toEqual([]);
   });
 
-  test("the shipped tide-only catalogue exposes station kind eagerly", () => {
-    expect(allStations.every((station) => station.kind === "tide")).toBe(true);
-    expect(allStations.every((station) => station.current === undefined)).toBe(
+  test("every station retains source and license provenance", () => {
+    expect(
+      allStations.filter((station) => !station.source || !station.license),
+    ).toEqual([]);
+  });
+
+  test("the shipped catalogue exposes both station kinds eagerly", () => {
+    expect(allStations.some((station) => station.kind === "tide")).toBe(true);
+    expect(allStations.some((station) => station.kind === "current")).toBe(
       true,
     );
+    expect(
+      allStations.find((station) => station.kind === "current")?.current,
+    ).toBeDefined();
   });
 });
 

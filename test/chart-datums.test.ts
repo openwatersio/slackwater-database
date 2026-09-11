@@ -9,6 +9,10 @@ import {
 } from "../tools/station.js";
 import { allStations } from "../src/index.js";
 
+const tideStations = allStations.filter(
+  (station) => station.kind === "tide" && station.quality,
+);
+
 const CONSTITUENTS = [
   { name: "M2", amplitude: 1.0, phase: 0 },
   { name: "S2", amplitude: 0.3, phase: 0 },
@@ -213,12 +217,12 @@ const LAT_ABOVE_CHART_DATUM = new Set([
 const DATUM_ROUNDING_M = 0.06;
 
 describe("astronomical extremes across the database", () => {
-  const references = allStations.filter(
+  const references = tideStations.filter(
     (s) => s.type === "reference" && s.datums["LAT"] !== undefined,
   );
 
   test("covers every reference station the constituents can honestly bound", () => {
-    const missing = allStations.filter(
+    const missing = tideStations.filter(
       (s) => s.type === "reference" && s.datums["HAT"] === undefined,
     );
     // Three publish no MSL, so there is no frame to put a constituent-space

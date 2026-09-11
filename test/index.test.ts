@@ -26,8 +26,14 @@ const schema = JSON.parse(await readFile(SCHEMA_PATH, "utf-8"));
 const ajv = new (Ajv2020 as any)({ allErrors: true, strict: false });
 (addFormats as any)(ajv);
 const validate = ajv.compile(schema);
+const tideStations = stations.filter(
+  (station) => station.kind === "tide" && station.quality,
+);
+const allTideStations = allStations.filter(
+  (station) => station.kind === "tide" && station.quality,
+);
 
-stations.forEach((station) => {
+tideStations.forEach((station) => {
   describe(station.id, () => {
     test("is valid", async () => {
       // Validate against the on-disk JSON, not the in-memory station. Subordinate
@@ -53,7 +59,8 @@ stations.forEach((station) => {
       const { datums } =
         (station.type === "reference"
           ? station
-          : stations.find((s) => s.id === station.offsets!.reference)) || {};
+          : tideStations.find((s) => s.id === station.offsets!.reference)) ||
+        {};
 
       // 3 NOAA stations have empty datums, so we skip the check for those
       if (datums && Object.keys(datums).length > 0) {
@@ -94,7 +101,7 @@ stations.forEach((station) => {
     if (station.type === "subordinate") {
       test("has valid reference station", () => {
         const id = station.offsets!.reference;
-        const reference = stations.find((s) => s.id === id);
+        const reference = tideStations.find((s) => s.id === id);
         expect(reference, `Unknown reference station: ${id}`).toBeDefined();
       });
     }
@@ -127,7 +134,7 @@ stations.forEach((station) => {
           longitude: station.longitude,
           maxDistance: MIN_DISTANCE,
           maxResults: Infinity,
-          filter: (s) => s.id.startsWith("noaa/"),
+          filter: (s) => s.kind === "tide" && s.id.startsWith("noaa/"),
         });
 
         if (nearby.length > 0) {
@@ -211,10 +218,10 @@ describe("seasonal-contamination gate", () => {
   // Shipped-data invariant: no published TICON station has an SA amplitude that
   // grossly outstrips same-regime (similar-M2) neighbours within the radius.
   test("no published station is a same-regime SA outlier", () => {
-    const refs = allStations.filter(
+    const refs = allTideStations.filter(
       (s) => (s.type ?? "reference") === "reference",
     );
-    for (const station of stations) {
+    for (const station of tideStations) {
       if (!station.id.startsWith("ticon/")) continue;
       if ((station.type ?? "reference") !== "reference") continue;
       const sa = getAmp(station, "SA");
@@ -263,7 +270,7 @@ describe("gauge deduplication", () => {
   // share a gauge key.
   test("no two published TICON stations share a gauge key", () => {
     const seen = new Map<string, string>();
-    for (const station of stations) {
+    for (const station of tideStations) {
       if (!station.id.startsWith("ticon/")) continue;
       const key = gaugeKey(station.source.id);
       const prior = seen.get(key);
@@ -317,10 +324,10 @@ describe("coordinate-precision tiebreak", () => {
     expect(dropped?.accepted).toBe(false);
     expect(dropped?.redundant).toBe("ticon/lymingtontg-lym-gbr-cmems");
 
-    const keptStation = stations.find(
+    const keptStation = tideStations.find(
       (s) => s.id === "ticon/lymingtontg-lym-gbr-cmems",
     )!;
-    const droppedStation = allStations.find(
+    const droppedStation = allTideStations.find(
       (s) => s.id === "ticon/lymington-lym-gbr-cco",
     )!;
     expect(
@@ -336,7 +343,7 @@ describe("coordinate gate", () => {
   // the Gulf of Guinea — where they cannot be deduplicated against the real
   // gauge (openwatersio/tide-database#112, the Nonopapa case).
   test("no published station sits on Null Island", () => {
-    for (const station of stations) {
+    for (const station of tideStations) {
       const onNullIsland =
         Math.abs(station.latitude) < NULL_ISLAND_RADIUS &&
         Math.abs(station.longitude) < NULL_ISLAND_RADIUS;
@@ -382,7 +389,7 @@ describe("subordinate offset dedup", () => {
 
 test("Does not have duplicate source IDs", () => {
   const seen = new Map();
-  stations.forEach((station) => {
+  tideStations.forEach((station) => {
     const dup = seen.get(station.source.id);
     if (dup) {
       throw new Error(

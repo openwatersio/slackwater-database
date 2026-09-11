@@ -186,6 +186,7 @@ export type StationMetaKey =
   | "context"
   | "context_derived"
   | "cities"
+  | "aliases"
   | "timezone"
   | "type"
   | "disclaimers"

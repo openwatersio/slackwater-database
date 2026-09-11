@@ -496,6 +496,20 @@ export function registryStations({
         longitude: record.position?.[1],
         type: "reference",
         harmonic_constituents: [],
+        source: {
+          name:
+            record.provider === "chs"
+              ? "Canadian Hydrographic Service"
+              : "US National Oceanic and Atmospheric Administration",
+          id,
+          published_harmonics: false,
+          url: "https://github.com/openwatersio/tide-database/blob/main/metadata/PROVENANCE.md",
+        },
+        license: {
+          type: "MIT",
+          commercial_use: true,
+          url: "https://github.com/openwatersio/tide-database/blob/main/LICENSE",
+        },
       },
       { registry: record, geocoder },
     ),
