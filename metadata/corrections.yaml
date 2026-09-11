@@ -1,0 +1,192 @@
+# Corrections to published station data. One record per station, keyed by
+# provider ID. Every field is optional except `reason`, which is required
+# whenever `position` is set.
+#
+# `context` is whatever most usefully distinguishes this place — a water body,
+# an island group, a region, a county, or a characteristic. It must never
+# restate the name.
+#
+# `formerSlugs` records a slug this station used to resolve to, so a consumer
+# can redirect an old shared link instead of 404ing it. Set it in the same
+# change that moves `slug` - CI compares data/slugs.json against the previous
+# release tag and fails a slug change that does not record the old value here.
+# It is also what lets two ids for one station share a slug: see "Two ids may
+# share one slug" in CONTRIBUTING.md.
+#
+# Only record a former slug when the new slug points at the *same place*: a
+# rename qualifies, a mislabel does not - redirecting a mislabel preserves a
+# wrong link, where a 404 is more honest (issue #6, the retired `anacortes`).
+# No validator can make that call. Slug changes are rare; downstream consumers
+# own the redirect consequences either way.
+
+noaa/9447659:
+  name: Everett
+  context: Port Gardner
+  slug: everett
+  cities: [Everett, Marysville]
+  aliases: [port gardner, everett marina]
+
+noaa/9442396:
+  name: La Push
+  context: Quillayute River
+  slug: la-push
+  cities: [Forks]
+  positionVerified: >-
+    Sited up the Quillayute River. OSM land-polygons maps the ocean coastline
+    only, so a riverine gauge reads inland by construction - the published
+    position is correct.
+
+noaa/9445133:
+  name: Bangor Wharf
+  context: Hood Canal
+  cities: [Silverdale, Poulsbo]
+
+noaa/9449424:
+  name: Cherry Point
+  context: Strait of Georgia
+  cities: [Ferndale, Blaine]
+
+noaa/9445016:
+  name: Foulweather Bluff
+  context: Hood Canal Entrance
+  cities: [Port Ludlow]
+
+noaa/9447973:
+  name: Naval Air Station Whidbey Island
+  context: Strait of Juan de Fuca
+  cities: [Oak Harbor]
+  aliases: [nas whidbey, whidbey island naval air station]
+
+noaa/9443090:
+  name: Neah Bay
+  context: Strait of Juan de Fuca
+  cities: [Neah Bay]
+
+noaa/9449639:
+  name: Point Roberts
+  context: Boundary Bay
+  cities: [Point Roberts, Blaine]
+
+noaa/9444090:
+  name: Port Angeles
+  context: Strait of Juan de Fuca
+  cities: [Port Angeles]
+
+noaa/9444900:
+  name: Port Townsend
+  context: Admiralty Inlet
+  cities: [Port Townsend]
+
+noaa/9447717:
+  name: Priest Point
+  context: Possession Sound
+  cities: [Marysville, Everett]
+
+noaa/9446804:
+  name: Sandy Point
+  context: Anderson Island
+  cities: [Steilacoom]
+
+noaa/9448576:
+  name: Sneeoosh Point
+  context: Skagit Bay
+  cities: [La Conner]
+
+noaa/9448009:
+  name: Spee-Bi-Dah
+  context: Possession Sound
+  cities: [Marysville]
+
+noaa/9447773:
+  name: Tulalip
+  context: Possession Sound
+  cities: [Marysville]
+
+noaa/9445478:
+  name: Union
+  context: Hood Canal
+  cities: [Shelton]
+
+noaa/9449746:
+  name: Waldron Island
+  context: San Juan Islands
+  cities: [Friday Harbor]
+
+# These six arrive with their own qualifier already in the raw name (e.g.
+# "Blaine, Semiahmoo Bay"), so the derived-context fallback finds a gazetteer
+# place whose name is a substring of the raw name and suppresses itself via
+# namesOverlap - correctly avoiding a tautology like "Blaine near Blaine, WA",
+# but leaving these six with no context at all. Curated the same as every
+# other entry above rather than loosening namesOverlap, which is doing its
+# job for the 18 stations it was written for.
+
+noaa/9449679:
+  name: Blaine
+  context: Semiahmoo Bay
+  cities: [Blaine]
+
+noaa/9445958:
+  name: Bremerton
+  context: Sinclair Inlet
+  cities: [Bremerton, Port Orchard]
+
+noaa/9446807:
+  name: Budd Inlet
+  context: Olympia Shoal
+  cities: [Olympia]
+
+noaa/9449880:
+  name: Friday Harbor
+  context: San Juan Island
+  cities: [Friday Harbor]
+
+noaa/9447130:
+  name: Seattle
+  context: Elliott Bay
+  cities: [Seattle]
+  aliases: [madison st, seattle madison street]
+
+noaa/9446484:
+  name: Tacoma
+  context: Commencement Bay
+  cities: [Tacoma]
+  aliases: [sitcum waterway]
+
+# Two NOAA short-term gauges, both decommissioned in 2016, whose published
+# coordinates cannot be pinned to a town or island - the pair issue #1 flagged.
+# Placed instead by the water body NOAA's own chart assignment puts them in,
+# which is the one thing the coordinate states without guessing. No `cities`:
+# each sits mid-strait between shores (Telegraph Bay ~5 km south of the bay it
+# is named for, on Decatur Island), so naming a nearest town would reintroduce
+# exactly the "which side?" ambiguity that made the derived fallback wrong.
+
+# noaa/9449988 - removed 2016-01-31. Coordinate (48.443, -122.805) sits in
+# Rosario Strait, not Puget Sound as the raw name claims; NOAA chart 18429 is
+# "Rosario Strait, southern part". Name override strips the wrong qualifier.
+noaa/9449988:
+  name: Telegraph Bay
+  context: Rosario Strait
+
+# noaa/9443551 - a four-month deployment (2016-05-05 to 2016-09-04). Coordinate
+# (48.187, -124.063) is on the Olympic Peninsula shore of the Strait of Juan de
+# Fuca near Pysht; NOAA chart 18460 is "Strait of Juan de Fuca, entrance". Not
+# the inland Jim Creek near Arlington that the name suggests. Source name is
+# already clean, so only the context is corrected.
+noaa/9443551:
+  context: Strait of Juan de Fuca
+
+# Two lighted buoys 4.4 m apart in the St Johns River, genuinely distinct -
+# different flood and ebb directions, different M2 amplitudes. NOAA files their
+# buoy numbers inconsistently: LB 20 carries its number in the *name*, LB 22
+# carries "LB 22" in the region and is named bare "Mile Point". The ladder reads
+# the name, so LB 20 was allocated `mile-point-lb-20` while LB 22 took the
+# generic `mile-point` - one buoy identified, its sibling reading as the
+# canonical station for the place when neither is.
+#
+# Both now carry their buoy number. `mile-point` belongs to neither and is
+# retained here so no future station can be handed it.
+noaa/jx0303:
+  name: Mile Point LB 22
+  context: St Johns River
+  slug: mile-point-lb-22
+  formerSlugs: [mile-point]
