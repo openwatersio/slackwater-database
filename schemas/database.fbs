@@ -93,6 +93,9 @@ table Current {
   offsets: CurrentOffsets;  // subordinate currents only
   magnitude_note: string;
   derived: TideDerivedCurrent;
+  flood_direction_present: bool;
+  ebb_direction_present: bool;
+  mean_flow_present: bool;
 }
 
 table Source {

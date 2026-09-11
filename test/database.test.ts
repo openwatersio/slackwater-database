@@ -389,4 +389,20 @@ describe("buildDatabase", () => {
       vi.resetModules();
     }
   });
+
+  test("preserves absent current measurements without confusing them with zero", async () => {
+    const sparse = structuredClone(inputs);
+    sparse[2]!.current = { ebb_direction: 0 };
+    const bytes = buildDatabase(sparse);
+    vi.doMock("#neaps.tcdb", () => ({ default: bytes }));
+    vi.resetModules();
+
+    try {
+      const { stationsById } = await import("../src/stations.ts");
+      expect(stationsById.get("test/3")!.current).toEqual({ ebb_direction: 0 });
+    } finally {
+      vi.doUnmock("#neaps.tcdb");
+      vi.resetModules();
+    }
+  });
 });

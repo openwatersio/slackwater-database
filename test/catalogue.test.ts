@@ -86,6 +86,7 @@ function fixtures(): CatalogueInputs {
         "chs-malibu-rapids": "malibu-rapids",
       },
     },
+    slugTombstones: { tide: {}, current: {} },
     routeLock: { tide: {}, current: {} },
     geocoder,
   };
@@ -127,6 +128,8 @@ describe("buildCatalogue", () => {
       id: "chs-point-atkinson",
       published_harmonics: false,
     });
+    expect(catalogue.slugTable.tide["noaa/9447130"]).toBe("seattle");
+    expect(catalogue.slugTombstones).toEqual({ tide: {}, current: {} });
   });
 
   test("rejects a missing station reference with both ids", () => {

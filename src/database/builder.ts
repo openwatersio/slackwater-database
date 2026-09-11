@@ -272,6 +272,11 @@ export function buildDatabase(
       if (c.ebb_direction !== undefined)
         Current.addEbbDirection(builder, c.ebb_direction);
       if (c.mean_flow !== undefined) Current.addMeanFlow(builder, c.mean_flow);
+      if (c.flood_direction !== undefined)
+        Current.addFloodDirectionPresent(builder, true);
+      if (c.ebb_direction !== undefined)
+        Current.addEbbDirectionPresent(builder, true);
+      if (c.mean_flow !== undefined) Current.addMeanFlowPresent(builder, true);
       Current.addTideReference(builder, tideReference);
       Current.addOffsets(builder, currentOffsets);
       Current.addMagnitudeNote(builder, magnitudeNote);

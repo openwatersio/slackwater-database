@@ -13,6 +13,7 @@ import {
   buildSlugTable,
   type RouteLock,
   type SlugTable,
+  type SlugTombstones,
 } from "./routes.ts";
 
 export interface CatalogueInputs {
@@ -21,6 +22,7 @@ export interface CatalogueInputs {
   corrections: Corrections;
   registry: Registry;
   slugTable: SlugTable;
+  slugTombstones: SlugTombstones;
   routeLock: RouteLock;
   geocoder: Geocoder;
 }
@@ -28,6 +30,9 @@ export interface CatalogueInputs {
 export function buildCatalogue(inputs: CatalogueInputs): {
   stations: ResolvedStation[];
   routes: DatabaseRoutes;
+  slugTable: SlugTable;
+  slugTombstones: SlugTombstones;
+  gone: string[];
 } {
   const sourceStations = [...inputs.tides, ...inputs.currents];
   const errors = validateMetadata(
@@ -56,7 +61,11 @@ export function buildCatalogue(inputs: CatalogueInputs): {
   const routedStations = stations.filter(
     ({ quality, routed }) => routed !== false && (quality?.accepted ?? true),
   );
-  const { table: slugs } = buildSlugTable(routedStations, inputs.slugTable);
+  const {
+    table: slugs,
+    tombstones: slugTombstones,
+    gone,
+  } = buildSlugTable(routedStations, inputs.slugTable, inputs.slugTombstones);
   const members = routedStations.map((station) => {
     const kind = station.kind ?? "tide";
     const slug = slugs[kind][station.id];
@@ -77,6 +86,9 @@ export function buildCatalogue(inputs: CatalogueInputs): {
       routeLock: inputs.routeLock,
       registryIds: new Set(inputs.registry.keys()),
     }),
+    slugTable: slugs,
+    slugTombstones,
+    gone,
   };
 }
 

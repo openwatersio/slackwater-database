@@ -18,11 +18,8 @@ const textSearchIndexOptions: Options<StationMeta> = {
     "source.id",
   ],
   extractField: (station, fieldName) => {
-    if (fieldName in station) {
-      return (station as any)[fieldName];
-    } else if (fieldName === "source.id") {
-      return station.source?.id;
-    }
+    if (fieldName === "source.id") return station.source?.id;
+    if (fieldName in station) return (station as any)[fieldName];
   },
   searchOptions: {
     boost: {

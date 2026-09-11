@@ -17,7 +17,7 @@ import { buildCatalogue } from "../tools/catalogue.ts";
 import { currentInputs } from "../tools/current-input.ts";
 import { loadGeocoder } from "../tools/geocode.ts";
 import { loadCorrections, loadRegistry } from "../tools/metadata.ts";
-import type { RouteLock, SlugTable } from "../tools/routes.ts";
+import type { RouteLock, SlugTable, SlugTombstones } from "../tools/routes.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "src", "generated");
@@ -113,6 +113,9 @@ const catalogue = buildCatalogue({
   slugTable: JSON.parse(
     readFileSync(join(metadataDir, "slugs.json"), "utf8"),
   ) as SlugTable,
+  slugTombstones: JSON.parse(
+    readFileSync(join(metadataDir, "slug-tombstones.json"), "utf8"),
+  ) as SlugTombstones,
   routeLock: JSON.parse(
     readFileSync(join(metadataDir, "routes.lock.json"), "utf8"),
   ) as RouteLock,

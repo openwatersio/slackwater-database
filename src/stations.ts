@@ -137,11 +137,11 @@ function readEpoch(index: number): StationData["epoch"] {
 function readCurrent(index: number): CurrentData | undefined {
   const table = db.stations(index)!.current();
   if (!table) return undefined;
-  const current: CurrentData = {
-    flood_direction: table.floodDirection(),
-    ebb_direction: table.ebbDirection(),
-    mean_flow: table.meanFlow(),
-  };
+  const current: CurrentData = {};
+  if (table.floodDirectionPresent())
+    current.flood_direction = table.floodDirection();
+  if (table.ebbDirectionPresent()) current.ebb_direction = table.ebbDirection();
+  if (table.meanFlowPresent()) current.mean_flow = table.meanFlow();
   const tideReference = table.tideReference();
   if (tideReference) current.tide_reference = tideReference;
   const offsets = table.offsets();

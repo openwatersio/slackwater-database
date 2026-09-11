@@ -131,9 +131,7 @@ describe("search", () => {
       "noaa/9447659",
     );
     expect(search("Marysville").map(({ id }) => id)).toContain("noaa/9447659");
-    expect(search("everett marina").map(({ id }) => id)).toContain(
-      "noaa/9447659",
-    );
+    expect(search("sitcum").map(({ id }) => id)).toContain("noaa/9446484");
   });
 
   test("searches by country", () => {

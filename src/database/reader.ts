@@ -48,6 +48,11 @@ export function readStationMeta(bytes: Uint8Array): StationMeta[] {
         t.cities(index),
       );
     }
+    if (t.aliasesLength() > 0) {
+      meta.aliases = Array.from({ length: t.aliasesLength() }, (_, index) =>
+        t.aliases(index),
+      );
+    }
     const source = t.source();
     if (source) {
       meta.source = {
