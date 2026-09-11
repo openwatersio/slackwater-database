@@ -1,4 +1,4 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import * as flatbuffers from "flatbuffers";
 import { buildDatabase } from "../src/database/builder.ts";
@@ -131,6 +131,12 @@ describe("buildDatabase", () => {
         ebb_direction: 270,
         mean_flow: 0.4,
         tide_reference: "test/2",
+        magnitude_note: "9 kn flood and ebb",
+        derived: {
+          reference: "test/2",
+          high_water_lag_minutes: 25,
+          low_water_lag_minutes: 35,
+        },
         offsets: {
           reference: "test/2",
           slack_before_flood: -30,
@@ -270,9 +276,54 @@ describe("buildDatabase", () => {
     expect(current.ebbDirection()).toBe(270);
     expect(current.meanFlow()).toBeCloseTo(0.4, 6);
     expect(current.tideReference()).toBe("test/2");
+    expect(current.magnitudeNote()).toBe("9 kn flood and ebb");
+    const derived = current.derived()!;
+    expect(derived.reference()).toBe("test/2");
+    expect(derived.highWaterLagMinutes()).toBe(25);
+    expect(derived.lowWaterLagMinutes()).toBe(35);
     const offsets = current.offsets()!;
     expect(offsets.reference()).toBe("test/2");
     expect(offsets.slackBeforeFlood()).toBe(-30);
     expect(offsets.floodSpeedRatio()).toBeCloseTo(0.8, 6);
+  });
+
+  test("exposes kind eagerly and current data lazily", async () => {
+    const bytes = buildDatabase(inputs, { version: "1.2.3" });
+    vi.doMock("#neaps.tcdb", () => ({ default: bytes }));
+    vi.resetModules();
+    const { Station: FlatBufferStation } = await import(
+      "../src/generated/fbs/neaps.ts"
+    );
+    const currentAccessor = vi.spyOn(FlatBufferStation.prototype, "current");
+
+    try {
+      const { stationsById } = await import("../src/stations.ts");
+      const station = stationsById.get("test/3")!;
+      expect(station.kind).toBe("current");
+      expect(currentAccessor).not.toHaveBeenCalled();
+      const current = station.current!;
+      expect(current).toMatchObject({
+        flood_direction: 90,
+        ebb_direction: 270,
+        tide_reference: "test/2",
+        magnitude_note: "9 kn flood and ebb",
+        derived: {
+          reference: "test/2",
+          high_water_lag_minutes: 25,
+          low_water_lag_minutes: 35,
+        },
+        offsets: {
+          reference: "test/2",
+          slack_before_flood: -30,
+        },
+      });
+      expect(current.mean_flow).toBeCloseTo(0.4, 6);
+      expect(current.offsets?.flood_speed_ratio).toBeCloseTo(0.8, 6);
+      expect(currentAccessor).toHaveBeenCalledTimes(1);
+    } finally {
+      currentAccessor.mockRestore();
+      vi.doUnmock("#neaps.tcdb");
+      vi.resetModules();
+    }
   });
 });

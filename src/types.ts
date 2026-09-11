@@ -81,6 +81,12 @@ export interface StationData {
 // format carries a slot for it so downstream catalogs can write theirs through
 // buildDatabase. Directions are degrees true, speeds knots, time offsets
 // minutes, speed ratios unitless multipliers on the reference current.
+export interface TideDerivedCurrentData {
+  reference: string;
+  high_water_lag_minutes: number;
+  low_water_lag_minutes: number;
+}
+
 export interface CurrentData {
   /** Degrees true. */
   flood_direction?: number;
@@ -89,6 +95,8 @@ export interface CurrentData {
   mean_flow?: number;
   /** Id of the tide station whose extremes pair with this current, if any. */
   tide_reference?: string;
+  magnitude_note?: string;
+  derived?: TideDerivedCurrentData;
   /** Subordinate currents only. Times in minutes, ratios dimensionless. */
   offsets?: {
     reference: string;
@@ -140,6 +148,8 @@ export interface StationQuality {
 export interface Station extends StationData {
   id: string;
   country_code: string;
+  kind: "tide" | "current";
+  current?: CurrentData;
   quality?: StationQuality;
 }
 

@@ -52,6 +52,13 @@ describe("identity fields", () => {
       ),
     ).toEqual([]);
   });
+
+  test("the shipped tide-only catalogue exposes station kind eagerly", () => {
+    expect(allStations.every((station) => station.kind === "tide")).toBe(true);
+    expect(allStations.every((station) => station.current === undefined)).toBe(
+      true,
+    );
+  });
 });
 
 describe("lazily loaded station data", () => {

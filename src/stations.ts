@@ -3,11 +3,13 @@ import {
   Datum,
   DatumsSource,
   HeightOffsetType,
+  Kind,
   StationType,
 } from "./generated/fbs/neaps.ts";
 import databaseBytes from "#neaps.tcdb";
 import { openDatabase } from "./database/reader.js";
 import type {
+  CurrentData,
   HarmonicConstituent,
   Station,
   StationData,
@@ -132,11 +134,47 @@ function readEpoch(index: number): StationData["epoch"] {
   return { start: epoch.start()!, end: epoch.end()! };
 }
 
+function readCurrent(index: number): CurrentData | undefined {
+  const table = db.stations(index)!.current();
+  if (!table) return undefined;
+  const current: CurrentData = {
+    flood_direction: table.floodDirection(),
+    ebb_direction: table.ebbDirection(),
+    mean_flow: table.meanFlow(),
+  };
+  const tideReference = table.tideReference();
+  if (tideReference) current.tide_reference = tideReference;
+  const offsets = table.offsets();
+  if (offsets) {
+    current.offsets = {
+      reference: offsets.reference()!,
+      slack_before_flood: offsets.slackBeforeFlood(),
+      slack_before_ebb: offsets.slackBeforeEbb(),
+      flood_time: offsets.floodTime(),
+      ebb_time: offsets.ebbTime(),
+      flood_speed_ratio: offsets.floodSpeedRatio(),
+      ebb_speed_ratio: offsets.ebbSpeedRatio(),
+    };
+  }
+  const magnitudeNote = table.magnitudeNote();
+  if (magnitudeNote) current.magnitude_note = magnitudeNote;
+  const derived = table.derived();
+  if (derived) {
+    current.derived = {
+      reference: derived.reference()!,
+      high_water_lag_minutes: derived.highWaterLagMinutes(),
+      low_water_lag_minutes: derived.lowWaterLagMinutes(),
+    };
+  }
+  return current;
+}
+
 function readStation(index: number): Station {
   const t = db.stations(index)!;
 
   const station = { id: t.id()! } as Station;
   station.name = t.name()!;
+  station.kind = t.kind() === Kind.Current ? "current" : "tide";
   station.latitude = t.latitude();
   station.longitude = t.longitude();
   const locality = t.locality();
@@ -212,6 +250,13 @@ function readStation(index: number): Station {
     station.cities = Array.from({ length: t.citiesLength() }, (_, i) =>
       t.cities(i),
     );
+  }
+  if (station.kind === "current") {
+    Object.defineProperty(station, "current", {
+      enumerable: true,
+      configurable: true,
+      get: () => readCurrent(index),
+    });
   }
 
   // Presence check only: following the field offset stays on head pages.

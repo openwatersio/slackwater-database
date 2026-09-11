@@ -70,6 +70,12 @@ table CurrentOffsets {
 }
 
 /// Present only when Kind == Current.
+table TideDerivedCurrent {
+  reference: string (required);
+  high_water_lag_minutes: int;
+  low_water_lag_minutes: int;
+}
+
 table Current {
   flood_direction: float;   // degrees true
   ebb_direction: float;
@@ -77,6 +83,8 @@ table Current {
   /// Station.id of the tide station whose extremes pair with this current, if any.
   tide_reference: string;
   offsets: CurrentOffsets;  // subordinate currents only
+  magnitude_note: string;
+  derived: TideDerivedCurrent;
 }
 
 table Source {

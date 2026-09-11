@@ -14,6 +14,7 @@ import {
   Source,
   Station,
   StationType,
+  TideDerivedCurrent,
   TideOffsets,
 } from "../generated/fbs/neaps.ts";
 import * as flatbuffers from "flatbuffers";
@@ -221,6 +222,21 @@ export function buildDatabase(
     let current = 0;
     if (s.current) {
       const c = s.current;
+      let derived = 0;
+      if (c.derived) {
+        const reference = builder.createSharedString(c.derived.reference);
+        TideDerivedCurrent.startTideDerivedCurrent(builder);
+        TideDerivedCurrent.addReference(builder, reference);
+        TideDerivedCurrent.addHighWaterLagMinutes(
+          builder,
+          c.derived.high_water_lag_minutes,
+        );
+        TideDerivedCurrent.addLowWaterLagMinutes(
+          builder,
+          c.derived.low_water_lag_minutes,
+        );
+        derived = TideDerivedCurrent.endTideDerivedCurrent(builder);
+      }
       let currentOffsets = 0;
       if (c.offsets) {
         const o = c.offsets;
@@ -242,6 +258,7 @@ export function buildDatabase(
         currentOffsets = CurrentOffsets.endCurrentOffsets(builder);
       }
       const tideReference = str(c.tide_reference);
+      const magnitudeNote = str(c.magnitude_note);
       Current.startCurrent(builder);
       if (c.flood_direction !== undefined)
         Current.addFloodDirection(builder, c.flood_direction);
@@ -250,6 +267,8 @@ export function buildDatabase(
       if (c.mean_flow !== undefined) Current.addMeanFlow(builder, c.mean_flow);
       Current.addTideReference(builder, tideReference);
       Current.addOffsets(builder, currentOffsets);
+      Current.addMagnitudeNote(builder, magnitudeNote);
+      Current.addDerived(builder, derived);
       current = Current.endCurrent(builder);
     }
 
