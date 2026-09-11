@@ -58,9 +58,7 @@ export function buildCatalogue(inputs: CatalogueInputs): {
   ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 
   validateStationReferences(stations);
-  const routedStations = stations.filter(
-    ({ quality, routed }) => routed !== false && (quality?.accepted ?? true),
-  );
+  const routedStations = stations.filter(({ routed }) => routed !== false);
   const {
     table: slugs,
     tombstones: slugTombstones,

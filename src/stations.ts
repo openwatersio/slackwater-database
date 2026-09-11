@@ -140,7 +140,8 @@ function readCurrent(index: number): CurrentData | undefined {
   const current: CurrentData = {};
   if (!table.floodDirectionMissing())
     current.flood_direction = table.floodDirection();
-  if (!table.ebbDirectionMissing()) current.ebb_direction = table.ebbDirection();
+  if (!table.ebbDirectionMissing())
+    current.ebb_direction = table.ebbDirection();
   if (!table.meanFlowMissing()) current.mean_flow = table.meanFlow();
   const tideReference = table.tideReference();
   if (tideReference) current.tide_reference = tideReference;
