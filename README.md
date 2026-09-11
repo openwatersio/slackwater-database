@@ -1,8 +1,8 @@
-# Neaps Tide Database
+# Neaps Tide and Current Station Database
 
-> A public database of tide harmonics
+> A public database of tide and current stations
 
-This database includes harmonic constituents for tide prediction from various sources around the world. These constants can be used with a tide harmonic calculator like [Neaps](https://github.com/openwatersio/neaps) to create astronomical tide predictions.
+This database includes station identity, structured location, stable web routes, and harmonic data from sources around the world. Tide constants can be used with a harmonic calculator like [Neaps](https://github.com/openwatersio/neaps) to create astronomical predictions.
 
 ## Sources
 
@@ -16,7 +16,7 @@ If you know of other public sources of harmonic constituents, please [open an is
 
 ## Usage
 
-The database is available as an NPM package, as an [XTide-compatible TCD file](./packages/tcd/), and as a single [FlatBuffers file](./docs/database-format.md).
+The database is available as an NPM package, as a tide-only [XTide-compatible TCD file](./packages/tcd/), and as a unified [FlatBuffers file](./docs/database-format.md).
 
 ### XTide / OpenCPN / TCD-compatible software
 
@@ -34,15 +34,33 @@ Install the package:
 $ npm install @neaps/tide-database
 ```
 
-The package exports an array of all tide stations in the database:
+The package exports accepted tide and current stations. `allStations` includes records rejected by the quality gate, and `stationsById` looks up either kind by provider-qualified id.
 
 ```typescript
-import { stations } from "@neaps/tide-database";
+import { stations, stationsById } from "@neaps/tide-database";
 
-// Stations is an array of all the files in `data/`
 console.log("Total stations:", stations.length);
-console.log(stations[0]);
+console.log(stationsById.get("noaa/9447130"));
 ```
+
+Each station has separate `locality`, `region`, and `country` display fields.
+`country_code` is an ISO 3166-1 alpha-2 code; `region_code`, when available,
+is an ISO 3166-2 subdivision code. Consumers can therefore omit country or
+region text when the surrounding page already supplies it.
+
+#### Stable station routes
+
+```typescript
+import { stationRouteBySlug, stationsById } from "@neaps/tide-database";
+
+const route = stationRouteBySlug("tide", "victoria");
+const station = route && stationsById.get(route.stationIds[0]!);
+console.log(station?.locality, station?.region, station?.country_code);
+```
+
+`stationRouteBySlug(kind, slug)` performs a binary lookup without decoding the
+full route index. `stationRoutes(kind)` decodes that kind's complete route list
+on demand. Prediction fields such as constituents and datums remain lazy.
 
 #### Searching for stations
 
@@ -144,7 +162,10 @@ The `search` function takes the following parameters:
 
 ## Data Format
 
-Each tide station is defined in a single JSON file in the [`data/`](./data) directory that includes basic station information, like location and name, and harmonics or subordinate station offsets. The format is defined by the schema in [../schemas/station.schema.json](schemas/station.schema.json), which includes more detailed descriptions of each field. All data is validated against this schema automatically on each change.
+Tide harmonics come from the JSON files in [`data/`](./data), NOAA current data
+is imported during generation, and curated identity and routing inputs live in
+[`metadata/`](./metadata). The generated FlatBuffers file is the release
+source consumed by every runtime.
 
 ## Station Types
 

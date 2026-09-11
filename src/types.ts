@@ -94,10 +94,9 @@ export interface StationData {
   aliases?: string[];
 }
 
-// Current-station data. This repo ships no current data yet; the database
-// format carries a slot for it so downstream catalogs can write theirs through
-// buildDatabase. Directions are degrees true, speeds knots, time offsets
-// minutes, speed ratios unitless multipliers on the reference current.
+// Current-station data. Directions are degrees true, speeds knots, time
+// offsets minutes, and speed ratios unitless multipliers on the reference
+// current.
 export interface TideDerivedCurrentData {
   reference: string;
   high_water_lag_minutes: number;

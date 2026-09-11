@@ -14,11 +14,12 @@ Per-record JSON decode was never the cost (4 ms for 200 records); the cost is de
 
 ## Schema shape
 
-- One root table with `version`, a `stations` vector sorted by `id` (the FlatBuffers `key`, so lookup is a binary search inside the buffer), and name tables for constituent and datum names.
-- `Station` carries identity (id, name, kind, type, coordinates, timezone, region, country, continent, aliases), prediction data (constituents, datums, chart datum, offsets, epoch), and provenance (source, license, disclaimers).
+- One root table with `version`, a `stations` vector sorted by `id` (the FlatBuffers `key`, so lookup is a binary search inside the buffer), name tables for constituent and datum names, and separate tide/current route vectors sorted by slug.
+- `Station` carries identity (id, name, kind, type, coordinates, timezone, locality, region, ISO region code, country, ISO country code, continent, context, cities, aliases), prediction data (constituents, datums, chart datum, tide/current offsets, epoch), and provenance (source, license, disclaimers).
 - Constituents are a struct vector: a `ushort` index into the root name table plus two `float` values — 12 bytes per constituent, contiguous, versus ~28 for a table per constituent. Float32 holds seven significant digits; sources publish three decimal places. Datums use the same struct-plus-name-table pattern.
 - Identical `source` and `license` tables are written once and shared; repeated strings (timezones, countries, epochs) are deduplicated with shared strings.
-- A `Current` sub-table and `Kind` enum give current stations a place in the same `stations` vector — one key space, one lookup. This repo ships no current data; downstream catalogs can write theirs through `buildDatabase`.
+- A `Current` sub-table and `Kind` enum keep current stations in the same `stations` vector and id lookup. It carries directions, mean flow, tide references, subordinate-current offsets, magnitude notes, and tide-derived rules.
+- `tide_routes` and `current_routes` map stable slugs to one or more provider ids and retain former paths for redirects. Route lookup is a binary search; the full list is decoded only when requested.
 - Quality evaluation (`quality.json`) rides along: the gate — `accepted` and `score` — is inline on `Station` so an identity scan can filter and rank from head pages, and the detail (factors, issues, reason, redundant) is a `Quality` sub-table written at the tail with the other lookup data. The file carries all stations, rejected ones included; readers apply the `accepted` filter.
 - `file_identifier "TCDB"`, `file_extension "tcdb"`.
 
@@ -30,7 +31,7 @@ The schema can't express this; the builder has to produce it deliberately. FlatB
 
 ## The reader
 
-`src/stations.ts` opens the buffer once, materializes identity fields into plain objects (`allStations`), and attaches lazy getters for `harmonic_constituents`, `datums`, and `epoch` that decode one station's data from the buffer on access. Subordinate stations resolve their reference station's harmonics and datums; their own offsets still apply. No caching — a persistent cache on module-level objects would pull the data back onto the heap.
+`src/stations.ts` opens the buffer once, materializes identity fields into plain objects (`allStations`), and attaches lazy getters for `harmonic_constituents`, `datums`, `epoch`, and current details that decode one station's data from the buffer on access. Subordinate stations resolve their reference station's harmonics and datums; their own offsets still apply. No caching — a persistent cache on module-level objects would pull the data back onto the heap.
 
 The quality gate comes from the same file: `station.quality` carries `accepted` and `score` eagerly (read inline during the identity scan) with lazy getters for the detail, `qualityMap` indexes those objects by id, and the `stations` export filters `allStations` on `accepted`. The module does not bundle `quality.json`; it stays in the repo as the artifact `tools/evaluate-quality.ts` writes and the build embeds.
 
@@ -60,7 +61,7 @@ Releases attach the file as `neaps-<date>.tcdb` alongside the TCD files.
 
 ## Downstream builders
 
-`buildDatabase(stations)` is exported so downstream generators can write filtered catalogs of their own through the same builder and read them with the same generated readers — including current stations via `kind` and `current`.
+`buildDatabase(stations, { routes })` is exported so downstream generators can write filtered catalogues through the same builder and read them with the same generated readers.
 
 ## ESM only (no CJS build)
 

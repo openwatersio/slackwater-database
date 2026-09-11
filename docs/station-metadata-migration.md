@@ -31,6 +31,8 @@ removing the temporary development dependency and parity checker.
 | Routed station records |        10,908 |
 | Tide routes            |         8,349 |
 | Current routes         |         2,558 |
+| Former tide paths      |             3 |
+| Former current paths   |             2 |
 | Country-code coverage  | 10,935 (100%) |
 | Region-code coverage   | 7,749 (70.9%) |
 | Locality coverage      | 9,735 (89.0%) |
