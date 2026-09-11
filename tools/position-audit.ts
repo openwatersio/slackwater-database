@@ -146,6 +146,10 @@ export function auditProblems(
   lock: AuditLock,
   stations: AuditStation[],
 ): string[] {
+  if (lock.thresholdM !== REPORT_THRESHOLD_M)
+    return [
+      `position audit threshold changed from ${lock.thresholdM} to ${REPORT_THRESHOLD_M} metres`,
+    ];
   const diff = diffAuditLock(lock, stations);
   const problems = [
     ...diff.added.map((id) => `${id}: not in position audit lock`),

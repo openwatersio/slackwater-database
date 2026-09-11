@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadProductionCatalogue } from "../tools/load-catalogue.ts";
 import { buildAuditLock, diffAuditLock } from "../tools/position-audit.ts";
-import { buildRouteLock } from "../tools/routes.ts";
+import { buildRouteLock, routeHistoryProblems } from "../tools/routes.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const metadataDir = join(root, "metadata");
@@ -27,6 +27,14 @@ const members = routed.map((station) => {
   };
 });
 const routeLock = buildRouteLock(members, catalogue.previousRouteLock);
+const routeProblems = routeHistoryProblems(
+  catalogue.previousRouteLock,
+  routeLock,
+  catalogue.previousSlugTable,
+  catalogue.gone,
+);
+if (routeProblems.length)
+  throw new Error(`route history would be lost\n${routeProblems.join("\n")}`);
 const coastlineBytes = readFileSync(join(metadataDir, "coastline.geojson"));
 const auditLock = buildAuditLock(
   routed,
@@ -39,6 +47,10 @@ const diff = diffAuditLock(previousAudit, routed);
 console.log(
   `metadata locks: ${diff.added.length} added, ${diff.moved.length} moved, ${diff.removed.length} removed`,
 );
+for (const id of diff.added) console.log(`added: ${id}`);
+for (const { id, was, now } of diff.moved)
+  console.log(`moved: ${id} ${was.join(",")} -> ${now.join(",")}`);
+for (const id of diff.removed) console.log(`removed: ${id}`);
 
 for (const [name, value] of [
   ["slugs.json", catalogue.slugTable],

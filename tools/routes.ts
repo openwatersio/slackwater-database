@@ -1,4 +1,4 @@
-import type { DatabaseRoutes, StationRouteInput } from "../src/types.ts";
+import type { DatabaseRoutes } from "../src/types.ts";
 import type { ResolvedStation } from "./metadata.ts";
 
 export type StationKind = "tide" | "current";
@@ -302,6 +302,38 @@ export function buildRouteLock(
     }
   }
   return lock;
+}
+
+export function routeHistoryProblems(
+  previous: RouteLock,
+  current: RouteLock,
+  previousSlugs: SlugTable,
+  gone: Iterable<string>,
+): string[] {
+  const problems: string[] = [];
+  const departedIds = new Set(gone);
+  for (const kind of ["tide", "current"] as const) {
+    const redirects = new Set(
+      Object.values(current[kind]).flatMap(({ former_paths }) => former_paths),
+    );
+    for (const [slug, route] of Object.entries(previous[kind])) {
+      if (current[kind][slug]) continue;
+      const previousOwners = Object.entries(previousSlugs[kind])
+        .filter(([, allocated]) => allocated === slug)
+        .map(([id]) => id);
+      const departed =
+        previousOwners.length > 0 &&
+        previousOwners.every((id) => departedIds.has(id));
+      if (departed) continue;
+      for (const path of [route.path, ...route.former_paths]) {
+        if (!redirects.has(path))
+          problems.push(
+            `${kind}/${slug}: published path ${path} disappeared without a tombstone or redirect`,
+          );
+      }
+    }
+  }
+  return problems;
 }
 
 function compare(left: string, right: string): number {

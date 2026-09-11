@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  REPORT_THRESHOLD_M,
   auditProblems,
   classifyPosition,
   diffAuditLock,
@@ -68,5 +69,11 @@ describe("position audit", () => {
     expect(auditProblems(pinnedClear, [ashore]).join("\n")).toMatch(
       /noaa\/8: \d+ metres inland/,
     );
+  });
+
+  test("rejects a stale audit threshold", () => {
+    expect(
+      auditProblems({ ...lock, thresholdM: REPORT_THRESHOLD_M + 1 }, []),
+    ).toEqual([expect.stringMatching(/threshold changed/)]);
   });
 });

@@ -7,6 +7,7 @@ import {
   buildSlugTable,
   checkSlugTable,
   departures,
+  routeHistoryProblems,
   routePath,
   type RouteLock,
   type RouteMember,
@@ -20,7 +21,13 @@ const routeMember = (
   id: string,
   country_code: string,
   region_code?: string,
-): RouteMember => ({ kind, slug, id, country_code, region_code });
+): RouteMember => ({
+  kind,
+  slug,
+  id,
+  country_code,
+  ...(region_code ? { region_code } : {}),
+});
 
 const station = (
   id: string,
@@ -208,7 +215,7 @@ describe("geographic routes", () => {
       "/tides/ca/bc/victoria-harbour/",
       "/tides/victoria-old/",
     ]);
-    expect(buildRouteLock([member], previous).tide.victoria).toEqual({
+    expect(buildRouteLock([member], previous).tide["victoria"]).toEqual({
       path: "/tides/ca/bc/victoria/",
       former_paths: routes.tide[0]?.former_paths,
     });
@@ -237,9 +244,9 @@ describe("geographic routes", () => {
       "/tides/old-old/",
       "/tides/us/wa/old/",
     ]);
-    expect(buildRouteLock([member], previous).tide.new?.former_paths).toEqual(
-      route?.former_paths,
-    );
+    expect(
+      buildRouteLock([member], previous).tide["new"]?.former_paths,
+    ).toEqual(route?.former_paths);
   });
 
   test("rejects a former path that is another route's canonical path", () => {
@@ -303,5 +310,56 @@ describe("geographic routes", () => {
         registryIds: new Set(),
       }).tide[0]?.former_paths,
     ).toEqual(["/tides/ca/ab/victoria/"]);
+  });
+
+  test("rejects a slug move that loses published route history", () => {
+    const previous: RouteLock = {
+      tide: {
+        old: { path: "/tides/us/wa/old/", former_paths: ["/tides/old/"] },
+      },
+      current: {},
+    };
+    const moved = buildRouteLock(
+      [routeMember("tide", "new", "station", "US", "US-WA")],
+      previous,
+    );
+    expect(
+      routeHistoryProblems(
+        previous,
+        moved,
+        { ...emptySlugs(), tide: { station: "old" } },
+        [],
+      ),
+    ).toEqual([
+      expect.stringMatching(/tide\/old.*\/tides\/us\/wa\/old/),
+      expect.stringMatching(/tide\/old.*\/tides\/old/),
+    ]);
+
+    const redirected = buildRouteLock(
+      [
+        {
+          ...routeMember("tide", "new", "station", "US", "US-WA"),
+          former_slugs: ["old"],
+        },
+      ],
+      previous,
+    );
+    expect(
+      routeHistoryProblems(
+        previous,
+        redirected,
+        { ...emptySlugs(), tide: { station: "old" } },
+        [],
+      ),
+    ).toEqual([]);
+
+    expect(
+      routeHistoryProblems(
+        previous,
+        emptyRoutes(),
+        { ...emptySlugs(), tide: { station: "old" } },
+        ["station"],
+      ),
+    ).toEqual([]);
   });
 });
