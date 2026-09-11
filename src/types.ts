@@ -17,8 +17,14 @@ export interface StationData {
   name: string;
   continent: string;
   country: string;
+  country_code?: string;
+  locality?: string;
   region?: string;
+  region_code?: string;
   timezone: string;
+  context?: string;
+  context_derived?: boolean;
+  cities?: string[];
   // Optional in the data (schemas/station.schema.json does not require it);
   // stations without one have the key absent.
   disclaimers?: string;
@@ -133,6 +139,7 @@ export interface StationQuality {
 
 export interface Station extends StationData {
   id: string;
+  country_code: string;
   quality?: StationQuality;
 }
 
@@ -143,9 +150,15 @@ export type StationMetaKey =
   | "name"
   | "latitude"
   | "longitude"
+  | "locality"
   | "region"
+  | "region_code"
   | "country"
+  | "country_code"
   | "continent"
+  | "context"
+  | "context_derived"
+  | "cities"
   | "timezone"
   | "type"
   | "disclaimers"

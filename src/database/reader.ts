@@ -27,12 +27,27 @@ export function readStationMeta(bytes: Uint8Array): StationMeta[] {
       latitude: t.latitude(),
       longitude: t.longitude(),
       country: t.country()!,
+      country_code: t.countryCode()!,
       continent: t.continent()!,
       timezone: t.timezone()!,
       type: t.type() === StationType.Subordinate ? "subordinate" : "reference",
     } as StationMeta;
     const region = t.region();
     if (region !== null) meta.region = region;
+    const locality = t.locality();
+    if (locality !== null) meta.locality = locality;
+    const regionCode = t.regionCode();
+    if (regionCode !== null) meta.region_code = regionCode;
+    const context = t.context();
+    if (context !== null) {
+      meta.context = context;
+      meta.context_derived = t.contextDerived();
+    }
+    if (t.citiesLength() > 0) {
+      meta.cities = Array.from({ length: t.citiesLength() }, (_, index) =>
+        t.cities(index),
+      );
+    }
     const source = t.source();
     if (source) {
       meta.source = {

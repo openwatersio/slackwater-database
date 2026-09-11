@@ -67,8 +67,15 @@ describe("buildDatabase", () => {
       latitude: 47.6,
       longitude: -122.3,
       timezone: "America/Los_Angeles",
-      country: "United States",
+      locality: "Victoria",
+      region: "British Columbia",
+      region_code: "CA-BC",
+      country: "Canada",
+      country_code: "CA",
       continent: "Americas",
+      context: "Inner Harbour",
+      context_derived: false,
+      cities: ["Victoria", "Esquimalt"],
       type: "reference",
       chart_datum: "MLLW",
       datums_source: "observed",
@@ -97,6 +104,8 @@ describe("buildDatabase", () => {
     {
       id: "test/1",
       name: "Subordinate",
+      country: "Canada",
+      country_code: "CA",
       type: "subordinate",
       quality: {
         id: "test/1",
@@ -114,6 +123,8 @@ describe("buildDatabase", () => {
     {
       id: "test/3",
       name: "A current",
+      country: "United States",
+      country_code: "US",
       // No explicit kind: the builder derives Kind.Current from `current`.
       current: {
         flood_direction: 90,
@@ -159,6 +170,22 @@ describe("buildDatabase", () => {
     expect(station.aliases(1)).toBe("seattle");
   });
 
+  test("round-trips structured station identity", () => {
+    const station = db.stations(1)!;
+    expect(station.locality()).toBe("Victoria");
+    expect(station.region()).toBe("British Columbia");
+    expect(station.regionCode()).toBe("CA-BC");
+    expect(station.country()).toBe("Canada");
+    expect(station.countryCode()).toBe("CA");
+    expect(station.context()).toBe("Inner Harbour");
+    expect(station.contextDerived()).toBe(false);
+    expect(
+      Array.from({ length: station.citiesLength() }, (_, i) =>
+        station.cities(i),
+      ),
+    ).toEqual(["Victoria", "Esquimalt"]);
+  });
+
   test("round-trips quality, gate inline and detail in the table", () => {
     const accepted = db.stations(1)!;
     expect(accepted.accepted()).toBe(true);
@@ -189,9 +216,50 @@ describe("buildDatabase", () => {
   });
 
   test("rejects a station without a name, by id", () => {
-    expect(() => buildDatabase([{ id: "test/nameless" }])).toThrow(
+    expect(() =>
+      buildDatabase([
+        {
+          id: "test/nameless",
+          country: "United States",
+          country_code: "US",
+        },
+      ]),
+    ).toThrow(
       /test\/nameless has no name/,
     );
+  });
+
+  test("rejects missing, unknown, and mismatched country codes by station id", () => {
+    const missing = { ...inputs[0]!, id: "test/missing" };
+    delete missing.country_code;
+    expect(() => buildDatabase([missing])).toThrow(
+      /test\/missing.*country_code/,
+    );
+    expect(() =>
+      buildDatabase([{ ...inputs[0]!, id: "test/bad", country_code: "CAN" }]),
+    ).toThrow(/test\/bad.*country_code/);
+    expect(() =>
+      buildDatabase([{ ...inputs[0]!, id: "test/unknown", country_code: "ZZ" }]),
+    ).toThrow(/test\/unknown.*ZZ/);
+    expect(() =>
+      buildDatabase([
+        {
+          ...inputs[0]!,
+          id: "test/mismatch",
+          country: "Canada",
+          country_code: "US",
+        },
+      ]),
+    ).toThrow(/test\/mismatch.*Canada.*US/);
+    expect(() =>
+      buildDatabase([
+        {
+          ...inputs[0]!,
+          id: "test/region",
+          region_code: "US-WA",
+        },
+      ]),
+    ).toThrow(/test\/region.*US-WA.*CA/);
   });
 
   test("round-trips current stations", () => {

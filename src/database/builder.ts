@@ -17,6 +17,7 @@ import {
   TideOffsets,
 } from "../generated/fbs/neaps.ts";
 import * as flatbuffers from "flatbuffers";
+import countryLookup from "country-code-lookup";
 import type { StationInput } from "../types.js";
 
 /**
@@ -41,6 +42,7 @@ export function buildDatabase(
   const sorted = [...stations].sort((a, b) =>
     a.id < b.id ? -1 : a.id > b.id ? 1 : 0,
   );
+  sorted.forEach(requireCountry);
 
   const constituentNames = nameTable(
     sorted.flatMap((s) => (s.harmonic_constituents ?? []).map((c) => c.name)),
@@ -136,9 +138,13 @@ export function buildDatabase(
       throw new Error(`Station ${s.id} has no name; the schema requires one`);
     const name = builder.createSharedString(s.name);
     const timezone = str(s.timezone);
+    const locality = str(s.locality);
     const region = str(s.region);
+    const regionCode = str(s.region_code);
     const country = str(s.country);
+    const countryCode = builder.createSharedString(s.country_code!);
     const continent = str(s.continent);
+    const context = str(s.context);
     const chartDatum = str(s.chart_datum);
     const disclaimers = str(s.disclaimers);
 
@@ -149,6 +155,16 @@ export function buildDatabase(
       aliases = Station.createAliasesVector(
         builder,
         normalized.map((a) => builder.createSharedString(a)),
+      );
+    }
+
+    let cities = 0;
+    if (s.cities?.length) {
+      cities = Station.createCitiesVector(
+        builder,
+        [...new Set(s.cities)].map((city) =>
+          builder.createSharedString(city),
+        ),
       );
     }
 
@@ -269,6 +285,12 @@ export function buildDatabase(
     Station.addSource(builder, source);
     Station.addLicense(builder, license);
     Station.addDisclaimers(builder, disclaimers);
+    Station.addLocality(builder, locality);
+    Station.addRegionCode(builder, regionCode);
+    Station.addCountryCode(builder, countryCode);
+    Station.addContext(builder, context);
+    if (s.context_derived) Station.addContextDerived(builder, true);
+    Station.addCities(builder, cities);
     return Station.endStation(builder);
   });
 
@@ -296,6 +318,30 @@ export function buildDatabase(
   );
 
   return builder.asUint8Array();
+}
+
+function requireCountry(station: StationInput): void {
+  if (!station.country)
+    throw new Error(`Station ${station.id} has no country; the schema requires one`);
+  if (!/^[A-Z]{2}$/.test(station.country_code ?? ""))
+    throw new Error(
+      `Station ${station.id} has invalid country_code ${JSON.stringify(station.country_code)}`,
+    );
+
+  const country = countryLookup.byIso(station.country_code!);
+  if (!country || country.country !== station.country)
+    throw new Error(
+      `Station ${station.id} country ${station.country} does not match ${station.country_code}`,
+    );
+
+  if (
+    station.region_code &&
+    (!/^[A-Z]{2}-[A-Z0-9]{1,3}$/.test(station.region_code) ||
+      !station.region_code.startsWith(`${station.country_code}-`))
+  )
+    throw new Error(
+      `Station ${station.id} region_code ${station.region_code} does not match ${station.country_code}`,
+    );
 }
 
 /** Unique sorted names plus a name → ushort index map. */

@@ -139,11 +139,21 @@ function readStation(index: number): Station {
   station.name = t.name()!;
   station.latitude = t.latitude();
   station.longitude = t.longitude();
+  const locality = t.locality();
+  if (locality !== null) station.locality = locality;
   const region = t.region();
   if (region !== null) station.region = region;
+  const regionCode = t.regionCode();
+  if (regionCode !== null) station.region_code = regionCode;
   station.country = t.country()!;
+  station.country_code = t.countryCode()!;
   station.continent = t.continent()!;
   station.timezone = t.timezone()!;
+  const context = t.context();
+  if (context !== null) {
+    station.context = context;
+    station.context_derived = t.contextDerived();
+  }
   station.type =
     t.type() === StationType.Subordinate ? "subordinate" : "reference";
   // Optional in the data (many subordinates omit it); keep the key absent
@@ -196,6 +206,11 @@ function readStation(index: number): Station {
   if (t.aliasesLength() > 0) {
     station.aliases = Array.from({ length: t.aliasesLength() }, (_, i) =>
       t.aliases(i),
+    );
+  }
+  if (t.citiesLength() > 0) {
+    station.cities = Array.from({ length: t.citiesLength() }, (_, i) =>
+      t.cities(i),
     );
   }
 

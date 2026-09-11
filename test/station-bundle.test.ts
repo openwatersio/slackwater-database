@@ -33,9 +33,24 @@ describe("identity fields", () => {
   test("absent optional fields are undefined, not FlatBuffers null", () => {
     const nullish = allStations.filter(
       (s) =>
-        s.disclaimers === null || s.region === null || s.chart_datum === null,
+        s.disclaimers === null ||
+        s.locality === null ||
+        s.region === null ||
+        s.region_code === null ||
+        s.context === null ||
+        s.cities === null ||
+        s.chart_datum === null,
     );
     expect(nullish.map((s) => s.id)).toEqual([]);
+  });
+
+  test("every station has structured country identity", () => {
+    expect(
+      allStations.filter(
+        (station) =>
+          !station.country || !/^[A-Z]{2}$/.test(station.country_code),
+      ),
+    ).toEqual([]);
   });
 });
 

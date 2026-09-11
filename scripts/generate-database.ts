@@ -11,6 +11,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import countryLookup from "country-code-lookup";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "src", "generated");
@@ -58,11 +59,19 @@ const quality = new Map<string, { id: string }>(
 );
 
 const dataDir = join(root, "data");
+function countryCode(id: string, country: string): string {
+  const code = countryLookup.byCountry(country)?.iso2;
+  if (!code) throw new Error(`${id}: no ISO country code for ${country}`);
+  return code;
+}
+
 const stations = walk(dataDir).map((file) => {
   const id = file.slice(dataDir.length + 1).replace(/\.json$/, "");
+  const source = JSON.parse(readFileSync(file, "utf8"));
   return {
     id,
-    ...JSON.parse(readFileSync(file, "utf8")),
+    ...source,
+    country_code: countryCode(id, source.country),
     quality: quality.get(id),
   };
 });

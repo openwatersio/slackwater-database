@@ -136,7 +136,7 @@ table Station {
   /// Upstream's region as published ("NJ", "Nova Scotia"). Readers that want a
   /// display line derive it from region and country at read time.
   region: string;
-  country: string;
+  country: string (required);
   continent: string;
   /// Alternate names and slugs for search. Lower-cased, deduplicated.
   aliases: [string];
@@ -163,6 +163,14 @@ table Station {
   source: Source;
   license: License;
   disclaimers: string;
+
+  // ---- structured location ----
+  locality: string;
+  region_code: string;
+  country_code: string (required);
+  context: string;
+  context_derived: bool;
+  cities: [string];
 }
 
 root_type Root;
