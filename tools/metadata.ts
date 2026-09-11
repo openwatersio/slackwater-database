@@ -84,10 +84,18 @@ export function validateMetadata(
 
   for (const [id, correction] of corrections) {
     validateCommon(id, correction, problems);
+    const station = published.get(id);
+    if (
+      nonEmpty(correction.name) &&
+      nonEmpty(station?.name) &&
+      !sharesMeaningfulWord(correction.name, station.name)
+    )
+      problems.push(
+        `${id}: curated name ${JSON.stringify(correction.name)} shares no meaningful word with published name ${JSON.stringify(station.name)}`,
+      );
     if (correction.position !== undefined) {
       if (!nonEmpty(correction.reason))
         problems.push(`${id}: position is corrected but no reason is given`);
-      const station = published.get(id);
       if (
         validPosition(correction.position) &&
         typeof station?.latitude === "number" &&
@@ -313,12 +321,14 @@ export function resolveMetadata(
   const nearby = geocoder.near(position[0], position[1], 10, 100);
   const nearest = nearby[0] ?? geocoder.nearest(position[0], position[1], 100);
   const explicitLocation = registry?.location ?? correction?.location;
-  const countryCodeHint = explicitLocation?.countryCode ?? station.country_code;
   const countryName =
     explicitLocation?.country ??
+    (explicitLocation?.countryCode
+      ? countryLookup.byIso(explicitLocation.countryCode)?.country
+      : undefined) ??
     station.country ??
-    (countryCodeHint
-      ? countryLookup.byIso(countryCodeHint)?.country
+    (station.country_code
+      ? countryLookup.byIso(station.country_code)?.country
       : undefined) ??
     nearest?.country;
   if (!nonEmpty(countryName)) throw new Error(`${station.id}: no country`);
@@ -336,6 +346,7 @@ export function resolveMetadata(
     station.country_code &&
     !registry &&
     !correction?.location?.country &&
+    !correction?.location?.countryCode &&
     station.country_code !== country.iso2
   )
     throw new Error(
@@ -410,12 +421,15 @@ export function resolveMetadata(
     );
   setOptional(result, "region_code", regionCode);
 
-  let context =
-    registry?.context ??
-    correction?.context ??
-    station.context ??
-    split.context;
-  let contextDerived = context ? (station.context_derived ?? false) : undefined;
+  const curatedContext = registry?.context ?? correction?.context;
+  let context = curatedContext ?? station.context ?? split.context;
+  let contextDerived = curatedContext
+    ? false
+    : station.context
+      ? (station.context_derived ?? false)
+      : context
+        ? false
+        : undefined;
   if (!context && place && place.distance <= DERIVED_MAX_KM) {
     const shortRegion = place.region ?? place.place.admin1Code;
     if (!namesOverlap(name, place.place.name))
@@ -539,6 +553,42 @@ function namesOverlap(left: string, right: string): boolean {
       part.every((word, offset) => whole[index + offset] === word),
     );
   return contains(words(a), words(b)) || contains(words(b), words(a));
+}
+
+const NAME_STOP_WORDS = new Set([
+  "the",
+  "a",
+  "an",
+  "of",
+  "and",
+  "bay",
+  "point",
+  "island",
+  "channel",
+  "inlet",
+  "harbor",
+  "harbour",
+  "sound",
+  "strait",
+  "passage",
+  "narrows",
+  "cove",
+  "creek",
+  "river",
+  "entrance",
+  "ent",
+  "st",
+  "pt",
+]);
+
+function sharesMeaningfulWord(left: string, right: string): boolean {
+  const words = (text: string) =>
+    text
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter((word) => word && !NAME_STOP_WORDS.has(word));
+  const rightWords = new Set(words(right));
+  return words(left).some((word) => rightWords.has(word));
 }
 
 function distanceKm(

@@ -86,6 +86,37 @@ describe("metadata resolution", () => {
     expect(result.context).toBe("San Juan Island");
     expect(result.context_derived).toBe(false);
   });
+
+  test("a code-only country correction outranks provider country", () => {
+    const canada = {
+      ...everett,
+      country: "Canada",
+      place: {
+        ...everett.place,
+        name: "Victoria",
+        admin1: "British Columbia",
+        admin1Code: "BC",
+        countryCode: "CA",
+      },
+    };
+    const result = resolveMetadata(baseStation, {
+      correction: { location: { countryCode: "CA" } },
+      geocoder: { nearest: () => canada, near: () => [canada] },
+    });
+
+    expect(result.country).toBe("Canada");
+    expect(result.country_code).toBe("CA");
+  });
+
+  test("a curated context is not marked as derived", () => {
+    const result = resolveMetadata(
+      { ...baseStation, context: "Automated place", context_derived: true },
+      { correction: { context: "Port Gardner" }, geocoder },
+    );
+
+    expect(result.context).toBe("Port Gardner");
+    expect(result.context_derived).toBe(false);
+  });
 });
 
 describe("metadata validation", () => {
@@ -227,5 +258,14 @@ test/1:
         { ...baseStation, id: "test/1", latitude: 49, longitude: -123 },
       ]).join("\n"),
     ).toMatch(/test\/1.*corrected position/);
+  });
+
+  test("rejects a curated name attached to a different published station", () => {
+    const corrections = loadCorrections("test/1:\n  name: Anacortes\n");
+    expect(
+      validateMetadata(corrections, new Map(), [
+        { ...baseStation, id: "test/1", name: "Swinomish Channel Entrance" },
+      ]).join("\n"),
+    ).toMatch(/test\/1.*Anacortes.*Swinomish Channel Entrance/);
   });
 });

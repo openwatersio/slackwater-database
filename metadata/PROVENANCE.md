@@ -1,8 +1,9 @@
 # Provenance
 
-This package publishes **our own factual registry** of tide and current stations.
-It is not a copy of any provider's station file. This document records where each
-field comes from, so the claim is auditable rather than asserted.
+The identity registry in this package is **our own factual registry** of tide and
+current stations. It is not a copy of any provider's station file. This document
+records where each registry field comes from, so the claim is auditable rather
+than asserted.
 
 ## Operational boundary
 
@@ -12,9 +13,9 @@ other documented sources, then write the registry record here.
 
 > **Never redistribute a provider station export or include a provider-minted identifier.**
 
-Provider data may be consulted at runtime under the consumer's own terms, but a provider's
-station file and opaque identifiers do not enter this repository. Agreement with a provider
-coordinate does not replace independent authoring and human review.
+Provider records enter the tide database through their own documented ingestion
+pipelines. They do not enter this independently authored registry. Agreement with
+a provider coordinate does not replace independent authoring and human review.
 
 ## Per-field provenance
 
@@ -34,37 +35,35 @@ The honest summary: the _names, context, and positions_ are our work, and there 
 provider handle in the published data at all — the one field that would point _into_ a
 provider's system is the one field we chose not to ship.
 
-## Third-party place data: `data/places.json`
+## Third-party place data
 
-Everything above is about _station_ identity, and none of it changes. `data/places.json` is
-not station identity — it is a list of **towns**, used only to derive a fallback caption
-("~Nanaimo, BC") for a station that neither the registry nor the corrections file names.
+Everything above is about _station_ identity. The database builder also uses
+**GeoNames cities500, CC BY 4.0** to derive locality, subdivision, country, and
+fallback context fields when curated and provider data do not supply them.
 
-It is a filtered extract of **GeoNames cities500, CC BY 4.0** — a third-party dataset,
-redistributed under its licence with attribution in [NOTICE](NOTICE). The bundled coastline
-is also third-party data and is attributed there. The derived place record keeps locality,
-administrative region, ISO subdivision and country codes, country name, position and population.
-Neither dataset contains tide or current station records:
+The GeoNames corpus is downloaded as a build input and is not included in the
+published database or npm package. Only the derived station fields are written to
+TCDB. GeoNames contains no tide or current station records:
 
 - The rule is _don't redistribute a **provider's** station file_ — CHS's or NOAA's list of the
   things we publish records about. GeoNames publishes no tide or current stations, so nothing
   here overlaps a provider's compilation.
-- CC BY **grants** redistribution outright. The concern the rule exists to prevent — a
-  licence term binding us because we shipped someone's file — is answered by complying with
-  it, which costs one attribution line.
-- A derived caption is the lowest tier and is always beaten by a curated `context`. Making
-  any one station's label better still means writing it in the registry, by hand, as before.
+- A derived value is the lowest-precedence tier and is always beaten by registry,
+  correction, or provider data.
+- A same-country check prevents a nearby place across a border from supplying
+  locality or subdivision data.
+- Localities farther than 40 km remain empty rather than naming a misleading place.
 
-If that trade ever stops being worth it, the exit is cheap: drop the file, and every station
-falls back to whatever coarse label the consumer already has.
+If that trade ever stops being worth it, the exit is cheap: remove GeoNames from
+the build, and optional location fields remain absent.
 
 ## Human review
 
-Every station's identity is reviewed by a person before it lands. Positions are audited
-against a bundled coastline (`station-metadata audit`) and a moved position shows up in a
-lock diff (`station-metadata check`). This review is what converts overlapping facts into
-our own verified factual work — see the `source` field on a `RegistryStation` for recording
-a per-station provenance that deviates from the defaults above.
+Every registry station's identity is reviewed by a person before it lands.
+Release validation audits positions against the coastline and reports moved
+positions through a deterministic lock diff. This review is what converts
+overlapping facts into our own verified factual work — use the `source` field to
+record per-station provenance that deviates from the defaults above.
 
 ## For contributors
 
