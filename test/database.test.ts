@@ -160,10 +160,7 @@ describe("buildDatabase", () => {
       {
         slug: "victoria",
         station_ids: ["test/2", "test/4", "test/2"],
-        former_paths: [
-          "/tides/victoria-harbour/",
-          "/tides/victoria-harbour/",
-        ],
+        former_paths: ["/tides/victoria-harbour/", "/tides/victoria-harbour/"],
       },
       { slug: "alpha", station_ids: ["test/1"] },
     ],
@@ -297,9 +294,7 @@ describe("buildDatabase", () => {
           country_code: "US",
         },
       ]),
-    ).toThrow(
-      /test\/nameless has no name/,
-    );
+    ).toThrow(/test\/nameless has no name/);
   });
 
   test("rejects missing, unknown, and mismatched country codes by station id", () => {
@@ -312,7 +307,9 @@ describe("buildDatabase", () => {
       buildDatabase([{ ...inputs[0]!, id: "test/bad", country_code: "CAN" }]),
     ).toThrow(/test\/bad.*country_code/);
     expect(() =>
-      buildDatabase([{ ...inputs[0]!, id: "test/unknown", country_code: "ZZ" }]),
+      buildDatabase([
+        { ...inputs[0]!, id: "test/unknown", country_code: "ZZ" },
+      ]),
     ).toThrow(/test\/unknown.*ZZ/);
     expect(() =>
       buildDatabase([
@@ -358,9 +355,8 @@ describe("buildDatabase", () => {
     const bytes = buildDatabase(inputs, { version: "1.2.3" });
     vi.doMock("#neaps.tcdb", () => ({ default: bytes }));
     vi.resetModules();
-    const { Station: FlatBufferStation } = await import(
-      "../src/generated/fbs/neaps.ts"
-    );
+    const { Station: FlatBufferStation } =
+      await import("../src/generated/fbs/neaps.ts");
     const currentAccessor = vi.spyOn(FlatBufferStation.prototype, "current");
 
     try {

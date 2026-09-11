@@ -172,9 +172,7 @@ export function buildDatabase(
     if (s.cities?.length) {
       cities = Station.createCitiesVector(
         builder,
-        [...new Set(s.cities)].map((city) =>
-          builder.createSharedString(city),
-        ),
+        [...new Set(s.cities)].map((city) => builder.createSharedString(city)),
       );
     }
 
@@ -420,7 +418,9 @@ function prepareRoutes(
 
 function requireCountry(station: StationInput): void {
   if (!station.country)
-    throw new Error(`Station ${station.id} has no country; the schema requires one`);
+    throw new Error(
+      `Station ${station.id} has no country; the schema requires one`,
+    );
   if (!/^[A-Z]{2}$/.test(station.country_code ?? ""))
     throw new Error(
       `Station ${station.id} has invalid country_code ${JSON.stringify(station.country_code)}`,

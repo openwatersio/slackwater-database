@@ -8,13 +8,11 @@ const db = openDatabase(databaseBytes);
 function readRoute(table: StationRouteTable): StationRoute {
   return {
     slug: table.slug()!,
-    stationIds: Array.from(
-      { length: table.stationIdsLength() },
-      (_, index) => table.stationIds(index),
+    stationIds: Array.from({ length: table.stationIdsLength() }, (_, index) =>
+      table.stationIds(index),
     ),
-    formerPaths: Array.from(
-      { length: table.formerPathsLength() },
-      (_, index) => table.formerPaths(index),
+    formerPaths: Array.from({ length: table.formerPathsLength() }, (_, index) =>
+      table.formerPaths(index),
     ),
   };
 }
@@ -29,9 +27,9 @@ export function stationRouteBySlug(
   let high = length - 1;
   while (low <= high) {
     const index = (low + high) >>> 1;
-    const table = (kind === "tide"
-      ? db.tideRoutes(index)
-      : db.currentRoutes(index))!;
+    const table = (
+      kind === "tide" ? db.tideRoutes(index) : db.currentRoutes(index)
+    )!;
     const candidate = table.slug()!;
     if (candidate === slug) return readRoute(table);
     if (candidate < slug) low = index + 1;
@@ -45,9 +43,7 @@ export function stationRoutes(kind: "tide" | "current"): StationRoute[] {
     kind === "tide" ? db.tideRoutesLength() : db.currentRoutesLength();
   return Array.from({ length }, (_, index) =>
     readRoute(
-      (kind === "tide"
-        ? db.tideRoutes(index)
-        : db.currentRoutes(index))!,
+      (kind === "tide" ? db.tideRoutes(index) : db.currentRoutes(index))!,
     ),
   );
 }
