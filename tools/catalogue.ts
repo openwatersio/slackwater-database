@@ -18,7 +18,7 @@ import {
 
 export interface CatalogueInputs {
   tides: StationInput[];
-  currents: StationInput[];
+  currents: (StationInput & { routed?: boolean })[];
   corrections: Corrections;
   registry: Registry;
   slugTable: SlugTable;

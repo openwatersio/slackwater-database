@@ -54,6 +54,9 @@ jobs:
       - name: Run tests
         run: npm run test
 
+      - name: Validate station metadata
+        run: npm run validate:database
+
   tcd:
     runs-on: ubuntu-latest
     steps:

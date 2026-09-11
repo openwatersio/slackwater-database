@@ -42,6 +42,8 @@
   },
   "scripts": {
     "generate": "node --experimental-transform-types scripts/generate-database.ts",
+    "metadata:lock": "node --experimental-transform-types scripts/update-metadata-locks.ts",
+    "validate:database": "node --experimental-transform-types scripts/validate-database.ts",
     "build": "npm run generate && tsdown && node scripts/copy-database.mjs && tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json && npm run smoke",
     "smoke": "node scripts/smoke.mjs",
     "prepare": "npm run build",
@@ -53,6 +55,8 @@
   "devDependencies": {
     "@neaps/tide-predictor": "^0.11.0",
     "@openwaters/noaa-current-stations": "^0.5.0",
+    "@turf/boolean-point-in-polygon": "^7.4.0",
+    "@turf/helpers": "^7.4.0",
     "@types/geokdbush": "^1.1.5",
     "@types/make-fetch-happen": "^10.0.4",
     "@types/node": "^26.0.0",
@@ -72,7 +76,8 @@
   },
   "files": [
     "dist",
-    "schemas"
+    "schemas",
+    "NOTICE"
   ],
   "dependencies": {
     "flatbuffers": "^25.9.23",

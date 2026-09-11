@@ -138,4 +138,20 @@ describe("buildCatalogue", () => {
 
     expect(() => buildCatalogue(input)).toThrow(/noaa\/PUG1701.*noaa\/missing/);
   });
+
+  test("keeps rejected station URLs but omits explicit support records", () => {
+    const input = fixtures();
+    input.tides[0]!.quality = {
+      id: "noaa/9447130",
+      accepted: false,
+      score: 0,
+    };
+    input.currents[0]!.routed = false;
+
+    const catalogue = buildCatalogue(input);
+    expect(catalogue.routes.tide.map(({ slug }) => slug)).toContain("seattle");
+    expect(catalogue.routes.current).toEqual([
+      expect.objectContaining({ slug: "malibu-rapids" }),
+    ]);
+  });
 });
