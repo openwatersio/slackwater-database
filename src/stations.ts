@@ -138,10 +138,10 @@ function readCurrent(index: number): CurrentData | undefined {
   const table = db.stations(index)!.current();
   if (!table) return undefined;
   const current: CurrentData = {};
-  if (table.floodDirectionPresent())
+  if (!table.floodDirectionMissing())
     current.flood_direction = table.floodDirection();
-  if (table.ebbDirectionPresent()) current.ebb_direction = table.ebbDirection();
-  if (table.meanFlowPresent()) current.mean_flow = table.meanFlow();
+  if (!table.ebbDirectionMissing()) current.ebb_direction = table.ebbDirection();
+  if (!table.meanFlowMissing()) current.mean_flow = table.meanFlow();
   const tideReference = table.tideReference();
   if (tideReference) current.tide_reference = tideReference;
   const offsets = table.offsets();
