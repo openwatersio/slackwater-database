@@ -188,6 +188,28 @@ export function buildRoutes(
     groups.set(key, [...(groups.get(key) ?? []), member]);
   }
 
+  const formerSlugOwners = new Map<string, string>();
+  for (const member of members) {
+    const owner = `${member.kind}\0${member.slug}`;
+    for (const formerSlug of member.former_slugs ?? []) {
+      if (!/^[a-z0-9-]+$/.test(formerSlug))
+        throw new Error(
+          `${member.id}: invalid former slug ${JSON.stringify(formerSlug)}`,
+        );
+      const formerKey = `${member.kind}\0${formerSlug}`;
+      if (groups.has(formerKey) && formerKey !== owner)
+        throw new Error(
+          `${member.kind}/${member.slug}: former slug ${formerSlug} is another route's current slug`,
+        );
+      const previousOwner = formerSlugOwners.get(formerKey);
+      if (previousOwner && previousOwner !== owner)
+        throw new Error(
+          `${member.kind}/${member.slug}: former slug ${formerSlug} is already used by ${previousOwner.split("\0").join("/")}`,
+        );
+      formerSlugOwners.set(formerKey, owner);
+    }
+  }
+
   const routes: DatabaseRoutes = { tide: [], current: [] };
   const canonicalPaths = new Map<string, string>();
   const formerPathOwners = new Map<string, string>();
@@ -205,14 +227,24 @@ export function buildRoutes(
       );
     const path = routePath(first.kind, first);
     canonicalPaths.set(path, `${first.kind}/${first.slug}`);
-    const previous = routeLock[first.kind][first.slug];
-    const formerPaths = new Set(previous?.former_paths ?? []);
-    if (previous?.path && previous.path !== path)
-      formerPaths.add(previous.path);
+    const formerSlugs = new Set(
+      group.flatMap((member) => member.former_slugs ?? []),
+    );
+    const previousEntries = [
+      routeLock[first.kind][first.slug],
+      ...[...formerSlugs].map((slug) => routeLock[first.kind][slug]),
+    ].filter((entry): entry is RouteLockEntry => entry !== undefined);
+    const formerPaths = new Set(
+      previousEntries.flatMap((entry) => entry.former_paths),
+    );
+    for (const entry of previousEntries) {
+      if (entry.path !== path) formerPaths.add(entry.path);
+    }
     for (const member of group) {
       for (const slug of member.former_slugs ?? [])
         formerPaths.add(routePath(first.kind, { ...member, slug }));
     }
+    formerPaths.delete(path);
     const stationIds = group
       .map((member) => member.id)
       .sort(

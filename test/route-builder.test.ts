@@ -214,17 +214,94 @@ describe("geographic routes", () => {
     });
   });
 
+  test("retains history when slug and geography change together", () => {
+    const member = {
+      ...routeMember("tide", "new", "station", "CA", "CA-BC"),
+      former_slugs: ["old"],
+    };
+    const previous: RouteLock = {
+      tide: {
+        old: {
+          path: "/tides/us/wa/old/",
+          former_paths: ["/tides/old-old/"],
+        },
+      },
+      current: {},
+    };
+    const route = buildRoutes([member], {
+      routeLock: previous,
+      registryIds: new Set(),
+    }).tide[0];
+    expect(route?.former_paths).toEqual([
+      "/tides/ca/bc/old/",
+      "/tides/old-old/",
+      "/tides/us/wa/old/",
+    ]);
+    expect(buildRouteLock([member], previous).tide.new?.former_paths).toEqual(
+      route?.former_paths,
+    );
+  });
+
   test("rejects a former path that is another route's canonical path", () => {
     const a = {
       ...routeMember("tide", "alpha", "a", "US", "US-WA"),
       former_slugs: ["bravo"],
     };
-    const b = routeMember("tide", "bravo", "b", "US", "US-WA");
+    const b = routeMember("tide", "bravo", "b", "US", "US-CA");
     expect(() =>
       buildRoutes([a, b], {
         routeLock: emptyRoutes(),
         registryIds: new Set(),
       }),
-    ).toThrow(/former path.*canonical/i);
+    ).toThrow(/former slug.*current slug/i);
+  });
+
+  test("rejects malformed and multiply-owned former slugs", () => {
+    expect(() =>
+      buildRoutes(
+        [
+          {
+            ...routeMember("tide", "alpha", "a", "US", "US-WA"),
+            former_slugs: ["bad/path"],
+          },
+        ],
+        { routeLock: emptyRoutes(), registryIds: new Set() },
+      ),
+    ).toThrow(/invalid former slug/);
+
+    expect(() =>
+      buildRoutes(
+        [
+          {
+            ...routeMember("tide", "alpha", "a", "US", "US-WA"),
+            former_slugs: ["old"],
+          },
+          {
+            ...routeMember("tide", "bravo", "b", "US", "US-CA"),
+            former_slugs: ["old"],
+          },
+        ],
+        { routeLock: emptyRoutes(), registryIds: new Set() },
+      ),
+    ).toThrow(/former slug.*already used/i);
+  });
+
+  test("does not redirect a canonical path to itself", () => {
+    const member = routeMember("tide", "victoria", "station", "CA", "CA-BC");
+    const previous: RouteLock = {
+      tide: {
+        victoria: {
+          path: "/tides/ca/ab/victoria/",
+          former_paths: ["/tides/ca/bc/victoria/"],
+        },
+      },
+      current: {},
+    };
+    expect(
+      buildRoutes([member], {
+        routeLock: previous,
+        registryIds: new Set(),
+      }).tide[0]?.former_paths,
+    ).toEqual(["/tides/ca/ab/victoria/"]);
   });
 });
