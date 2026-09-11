@@ -459,8 +459,10 @@ export function resolveMetadata(
 
   if (registry) {
     result.kind = registry.kind === "tide" ? "tide" : "current";
-    if (!result.timezone)
-      result.timezone = findTimezone(position[0], position[1])[0];
+    if (!result.timezone) {
+      const timezone = findTimezone(position[0], position[1])[0];
+      if (timezone) result.timezone = timezone;
+    }
     if (result.kind === "current") {
       result.current = { ...station.current };
       const tideReference =
@@ -491,9 +493,9 @@ export function registryStations({
     resolveMetadata(
       {
         id,
-        name: record.name,
-        latitude: record.position?.[0],
-        longitude: record.position?.[1],
+        name: record.name!,
+        latitude: record.position![0],
+        longitude: record.position![1],
         type: "reference",
         harmonic_constituents: [],
         source: {

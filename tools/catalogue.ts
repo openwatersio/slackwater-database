@@ -46,8 +46,12 @@ export function buildCatalogue(inputs: CatalogueInputs): {
   const stations = [
     ...sourceStations.map((station) =>
       resolveMetadata(station, {
-        correction: inputs.corrections.get(station.id),
-        registry: inputs.registry.get(station.id),
+        ...(inputs.corrections.get(station.id)
+          ? { correction: inputs.corrections.get(station.id)! }
+          : {}),
+        ...(inputs.registry.get(station.id)
+          ? { registry: inputs.registry.get(station.id)! }
+          : {}),
         geocoder: inputs.geocoder,
       }),
     ),
@@ -73,8 +77,8 @@ export function buildCatalogue(inputs: CatalogueInputs): {
       kind,
       slug,
       country_code: station.country_code,
-      region_code: station.region_code,
-      former_slugs: station.former_slugs,
+      ...(station.region_code ? { region_code: station.region_code } : {}),
+      ...(station.former_slugs ? { former_slugs: station.former_slugs } : {}),
     };
   });
 

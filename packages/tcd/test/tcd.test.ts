@@ -29,7 +29,7 @@ const TEST_STATIONS = [
   },
   {
     id: "noaa/8454000",
-    name: "Providence, State Pier no.1, RI, United States",
+    name: "Providence, RI, United States",
     description: "Estuarine location with high tidal range",
   },
 ] as const;

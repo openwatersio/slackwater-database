@@ -99,6 +99,6 @@ describe("NOAA current input", () => {
       stations: [{ ...subordinate, id: "ACT3681", ebbDirection: null }],
     });
     expect(result).toMatchObject({ id: "noaa/ACT3681", routed: false });
-    expect(result.current).not.toHaveProperty("ebb_direction");
+    expect(result!.current).not.toHaveProperty("ebb_direction");
   });
 });
