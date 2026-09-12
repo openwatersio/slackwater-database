@@ -49,6 +49,7 @@ export type Registry = Map<string, RegistryRecord>;
 export interface ResolvedStation extends StationInput {
   country: string;
   country_code: string;
+  slug?: string;
   former_slugs?: string[];
   positionVerified?: string;
   routed?: boolean;
@@ -467,6 +468,7 @@ export function resolveMetadata(
   if (cities?.length) result.cities = unique(cities);
   else delete result.cities;
 
+  if (authority?.slug) result.slug = authority.slug;
   const formerSlugs = authority?.formerSlugs;
   if (formerSlugs?.length) result.former_slugs = unique(formerSlugs);
   if (authority?.positionVerified)

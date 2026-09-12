@@ -89,6 +89,33 @@ describe("slug allocation", () => {
     expect(returned.tombstones.tide).toEqual({});
   });
 
+  test("a curated slug outranks the previous allocation and the ladder", () => {
+    const previous = {
+      ...emptySlugs(),
+      tide: { "noaa/1": "everett-washington", "noaa/2": "seattle" },
+    };
+    const curated = { ...station("noaa/1", "Everett"), slug: "everett" };
+    expect(
+      buildSlugTable([curated, station("noaa/2", "Seattle")], previous).table
+        .tide,
+    ).toEqual({
+      "noaa/1": "everett",
+      "noaa/2": "seattle",
+    });
+    expect(() =>
+      buildSlugTable(
+        [{ ...curated, slug: "seattle" }, station("noaa/2", "Seattle")],
+        previous,
+      ),
+    ).toThrow(/noaa\/1.*seattle.*noaa\/2/);
+    expect(() =>
+      buildSlugTable([curated], emptySlugs(), {
+        tide: { "noaa/old": "everett" },
+        current: {},
+      }),
+    ).toThrow(/tombstoned for noaa\/old/);
+  });
+
   test("allows the same slug in tide and current namespaces", () => {
     const result = buildSlugTable(
       [

@@ -21,7 +21,6 @@ const clear = {
 const ashore = { id: "noaa/8", latitude: 48.515, longitude: -122.62 };
 const lock: AuditLock = {
   note: "Position audit lock",
-  generated: "2026-09-11",
   coastline: "sha256-test",
   thresholdM: 200,
   stations: {

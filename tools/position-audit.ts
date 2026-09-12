@@ -20,7 +20,6 @@ export type AuditVerdict =
 
 export interface AuditLock {
   note: string;
-  generated: string;
   coastline: string;
   thresholdM: number;
   stations: Record<string, { position: [number, number] } & AuditVerdict>;
@@ -85,7 +84,6 @@ export function buildAuditLock(
 ): AuditLock {
   return {
     note: "Audit results pinned per routed station. Regenerate with `npm run metadata:lock`.",
-    generated: new Date().toISOString().slice(0, 10),
     coastline: coastlineFingerprint,
     thresholdM: REPORT_THRESHOLD_M,
     stations: Object.fromEntries(

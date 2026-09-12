@@ -560,7 +560,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 async function main() {
   console.error("Loading stations...");
 
-  const tideStations = stations.filter((s: Station) => s.kind !== "current");
+  // Registry-only tide ports carry identity but no constituents; XTide would
+  // list them and predict a flat line.
+  const tideStations = stations.filter(
+    (s: Station) =>
+      s.kind !== "current" &&
+      (s.type === "subordinate" || s.harmonic_constituents.length > 0),
+  );
   const referenceStations = tideStations.filter(
     (s: Station) => s.type === "reference",
   );

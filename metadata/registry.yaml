@@ -88,8 +88,8 @@
 #
 # `formerSlugs` records a slug this station used to resolve to, so a consumer
 # can redirect an old shared link instead of 404ing it. Set it in the same
-# change that moves `slug` - CI compares data/slugs.json against the previous
-# release tag and fails a slug change that does not record the old value here.
+# change that moves `slug` - `npm run metadata:lock` refuses to retire a
+# published path unless the old slug is recorded here.
 # It is also what lets two ids for one station share a slug: see "Two ids may
 # share one slug" in CONTRIBUTING.md.
 #

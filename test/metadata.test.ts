@@ -47,6 +47,7 @@ describe("metadata resolution", () => {
       correction: {
         name: "Everett",
         context: "Port Gardner",
+        slug: "everett",
         cities: ["Marysville"],
       },
       geocoder,
@@ -54,6 +55,7 @@ describe("metadata resolution", () => {
 
     expect(result).toMatchObject({
       name: "Everett",
+      slug: "everett",
       locality: "Everett",
       region: "Washington",
       region_code: "US-WA",

@@ -71,6 +71,26 @@ export function buildSlugTable(
       allocated.set(station.id, slug);
       delete nextTombstones[kind][station.id];
     }
+    // A curated `slug` outranks any earlier allocation; the route lock still
+    // demands the old path in `formerSlugs` before it will let it move.
+    for (const station of candidates) {
+      if (!station.slug) continue;
+      const owner = [...allocated].find(
+        ([id, slug]) => slug === station.slug && id !== station.id,
+      );
+      if (owner)
+        throw new Error(
+          `${station.id}: slug ${JSON.stringify(station.slug)} is allocated to ${owner[0]}`,
+        );
+      const buried = Object.entries(nextTombstones[kind]).find(
+        ([, slug]) => slug === station.slug,
+      );
+      if (buried)
+        throw new Error(
+          `${station.id}: slug ${JSON.stringify(station.slug)} is tombstoned for ${buried[0]}`,
+        );
+      allocated.set(station.id, station.slug);
+    }
 
     const used = new Set([
       ...allocated.values(),
