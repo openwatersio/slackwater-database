@@ -1,8 +1,8 @@
-# Neaps Tide Database
+# Neaps Tide and Current Station Database
 
-> A public database of tide harmonics
+> A public database of tide and current stations
 
-This database includes harmonic constituents for tide prediction from various sources around the world. These constants can be used with a tide harmonic calculator like [Neaps](https://github.com/openwatersio/neaps) to create astronomical tide predictions.
+This database includes station identity, structured location, stable web routes, and harmonic data from sources around the world. Tide constants can be used with a harmonic calculator like [Neaps](https://github.com/openwatersio/neaps) to create astronomical predictions.
 
 ## Sources
 
@@ -16,7 +16,7 @@ If you know of other public sources of harmonic constituents, please [open an is
 
 ## Usage
 
-The database is available as an NPM package, as an [XTide-compatible TCD file](./packages/tcd/), and as a single [FlatBuffers file](./docs/database-format.md).
+The database is available as an NPM package, as a tide-only [XTide-compatible TCD file](./packages/tcd/), and as a unified [FlatBuffers file](./docs/database-format.md) of tide and current stations.
 
 ### XTide / OpenCPN / TCD-compatible software
 
@@ -32,11 +32,11 @@ Each release attaches `neaps-<date>.tcdb`, the whole database as one [FlatBuffer
 $ npm install @neaps/tide-database
 ```
 
-The module exports every station in the database, along with geographic, bounding box, and full-text search. [See the package README for the full API.](./packages/database/README.md)
+The module exports every tide and current station in the database, along with stable web routes and geographic, bounding box, and full-text search. [See the package README for the full API.](./packages/database/README.md)
 
 ## Data Format
 
-Each tide station is defined in a single JSON file in the [`data/`](./data) directory that includes basic station information, like location and name, and harmonics or subordinate station offsets. The format is defined by the schema in [schemas/station.schema.json](schemas/station.schema.json), which includes more detailed descriptions of each field. All data is validated against this schema automatically on each change.
+Tide harmonics come from the JSON files in [`data/`](./data), NOAA current data is imported during generation, and curated identity and routing inputs live in [`metadata/`](./metadata). The generated FlatBuffers file is the release source consumed by every runtime. Each tide station file includes basic station information, like location and name, and harmonics or subordinate station offsets. The format is defined by the schema in [schemas/station.schema.json](schemas/station.schema.json), which includes more detailed descriptions of each field. All data is validated against this schema automatically on each change.
 
 ## Station Types
 
@@ -60,7 +60,7 @@ This repo is an npm workspace. Station data lives in [`data/`](./data), and ever
 - [`packages/tcd`](./packages/tcd) — TCD harmonics files for XTide-compatible software
 - [`packages/datums`](./packages/datums) — tidal datum computation and sea-region classification
 - [`packages/harmonic-analysis`](./packages/harmonic-analysis) — least-squares harmonic analysis of water level observations
-- [`packages/stations`](./packages/stations) — station file I/O, quality filtering, geocoding, and maintenance scripts (including `evaluate-quality`, which writes [`quality.json`](./quality.json))
+- [`packages/stations`](./packages/stations) — station file I/O, quality filtering, geocoding, the unified catalogue (curated inputs in [`metadata/`](./metadata)), and maintenance scripts (including `evaluate-quality`, which writes [`quality.json`](./quality.json))
 - [`sources/*`](./sources) — one package per data source (NOAA, TICON), each with an `npm run import`
 
 ## Maintenance

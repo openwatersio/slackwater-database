@@ -14,18 +14,32 @@ $ npm install @neaps/tide-database
 
 ## Usage
 
-The package exports every station that passes the database's quality gates:
+The package exports every tide and current station that passes the database's quality gates:
 
 ```typescript
-import { stations } from "@neaps/tide-database";
+import { stations, stationsById } from "@neaps/tide-database";
 
 console.log("Total stations:", stations.length);
-console.log(stations[0]);
+console.log(stationsById.get("noaa/9447130"));
 ```
 
 `stations` leaves out records the quality evaluation rejected, such as duplicate gauges and implausible datums. `allStations` is the unfiltered catalog, `stationsById` maps an id to its station, and every search function below takes `includeAll: true` to search the full catalog instead of the accepted subset.
 
 Each station carries its identity and location eagerly. The heavy prediction fields — `harmonic_constituents`, `datums`, and `epoch` — are decoded from the database file on first access, so importing the module does not pull every station's prediction data onto the heap. [See the format documentation](https://github.com/openwatersio/tide-database/blob/main/docs/database-format.md) for how that works.
+
+Each station has separate `locality`, `region`, and `country` display fields. `country_code` is an ISO 3166-1 alpha-2 code; `region_code`, when available, is an ISO 3166-2 subdivision code. Consumers can therefore omit country or region text when the surrounding page already supplies it.
+
+### Stable station routes
+
+```typescript
+import { stationRouteBySlug, stationsById } from "@neaps/tide-database";
+
+const route = stationRouteBySlug("tide", "victoria");
+const station = route && stationsById.get(route.stationIds[0]!);
+console.log(station?.locality, station?.region, station?.country_code);
+```
+
+`stationRouteBySlug(kind, slug)` performs a binary lookup without decoding the full route index. `stationRoutes(kind)` decodes that kind's complete route list on demand. Prediction fields such as constituents and datums remain lazy.
 
 ### Searching for stations
 

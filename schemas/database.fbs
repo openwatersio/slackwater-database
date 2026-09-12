@@ -15,6 +15,12 @@
 
 namespace Neaps;
 
+table StationRoute {
+  slug: string (key, required);
+  station_ids: [string] (required);
+  former_paths: [string];
+}
+
 /// Datum names and constituent names live once, at the root; records refer to
 /// them by index. Constituent records repeat ~23 names across ~110k entries.
 table Root {
@@ -26,6 +32,8 @@ table Root {
   constituent_names: [string];
   /// Indexed by `Datum.name` ("MLLW", "MSL", "LAT", ...).
   datum_names: [string];
+  tide_routes: [StationRoute];
+  current_routes: [StationRoute];
 }
 
 enum Kind : ubyte { Tide = 0, Current = 1 }
@@ -67,9 +75,21 @@ table CurrentOffsets {
   ebb_time: int;
   flood_speed_ratio: float;
   ebb_speed_ratio: float;
+  slack_before_flood_missing: bool;
+  slack_before_ebb_missing: bool;
+  flood_time_missing: bool;
+  ebb_time_missing: bool;
+  flood_speed_ratio_missing: bool;
+  ebb_speed_ratio_missing: bool;
 }
 
 /// Present only when Kind == Current.
+table TideDerivedCurrent {
+  reference: string (required);
+  high_water_lag_minutes: int;
+  low_water_lag_minutes: int;
+}
+
 table Current {
   flood_direction: float;   // degrees true
   ebb_direction: float;
@@ -77,6 +97,11 @@ table Current {
   /// Station.id of the tide station whose extremes pair with this current, if any.
   tide_reference: string;
   offsets: CurrentOffsets;  // subordinate currents only
+  magnitude_note: string;
+  derived: TideDerivedCurrent;
+  flood_direction_missing: bool;
+  ebb_direction_missing: bool;
+  mean_flow_missing: bool;
 }
 
 table Source {
@@ -136,7 +161,7 @@ table Station {
   /// Upstream's region as published ("NJ", "Nova Scotia"). Readers that want a
   /// display line derive it from region and country at read time.
   region: string;
-  country: string;
+  country: string (required);
   continent: string;
   /// Alternate names and slugs for search. Lower-cased, deduplicated.
   aliases: [string];
@@ -163,6 +188,14 @@ table Station {
   source: Source;
   license: License;
   disclaimers: string;
+
+  // ---- structured location ----
+  locality: string;
+  region_code: string;
+  country_code: string (required);
+  context: string;
+  context_derived: bool;
+  cities: [string];
 }
 
 root_type Root;

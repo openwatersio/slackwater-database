@@ -56,4 +56,10 @@ describe("geocoder", () => {
     expect(result).not.toBeNull();
     expect(result!.place.admin1).toBe("California");
   });
+
+  test("uses a display name for Canadian subdivisions", () => {
+    const result = geocoder.nearest(48.37, -123.73);
+    expect(result?.place.countryCode).toBe("CA");
+    expect(result?.region).toBe("British Columbia");
+  });
 });

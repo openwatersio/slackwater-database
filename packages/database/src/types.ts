@@ -12,13 +12,36 @@ export interface Constituent {
   speed: number;
 }
 
+export interface StationRouteInput {
+  slug: string;
+  station_ids: string[];
+  former_paths?: string[];
+}
+
+export interface StationRoute {
+  slug: string;
+  stationIds: string[];
+  formerPaths: string[];
+}
+
+export interface DatabaseRoutes {
+  tide: StationRouteInput[];
+  current: StationRouteInput[];
+}
+
 export interface StationData {
   // Basic station information
   name: string;
   continent: string;
   country: string;
+  country_code?: string;
+  locality?: string;
   region?: string;
+  region_code?: string;
   timezone: string;
+  context?: string;
+  context_derived?: boolean;
+  cities?: string[];
   // Optional in the data (schemas/station.schema.json does not require it);
   // stations without one have the key absent.
   disclaimers?: string;
@@ -59,7 +82,7 @@ export interface StationData {
   datums_source?: "observed" | "harmonic";
 
   // The chart datum key used as the vertical reference (e.g., "MLLW", "LAT")
-  chart_datum: string;
+  chart_datum?: string;
 
   // Epoch - the time period over which the harmonic constituents were computed
   epoch?: {
@@ -71,10 +94,15 @@ export interface StationData {
   aliases?: string[];
 }
 
-// Current-station data. This repo ships no current data yet; the database
-// format carries a slot for it so downstream catalogs can write theirs through
-// buildDatabase. Directions are degrees true, speeds knots, time offsets
-// minutes, speed ratios unitless multipliers on the reference current.
+// Current-station data. Directions are degrees true, speeds knots, time
+// offsets minutes, and speed ratios unitless multipliers on the reference
+// current.
+export interface TideDerivedCurrentData {
+  reference: string;
+  high_water_lag_minutes: number;
+  low_water_lag_minutes: number;
+}
+
 export interface CurrentData {
   /** Degrees true. */
   flood_direction?: number;
@@ -83,6 +111,8 @@ export interface CurrentData {
   mean_flow?: number;
   /** Id of the tide station whose extremes pair with this current, if any. */
   tide_reference?: string;
+  magnitude_note?: string;
+  derived?: TideDerivedCurrentData;
   /** Subordinate currents only. Times in minutes, ratios dimensionless. */
   offsets?: {
     reference: string;
@@ -133,6 +163,9 @@ export interface StationQuality {
 
 export interface Station extends StationData {
   id: string;
+  country_code: string;
+  kind: "tide" | "current";
+  current?: CurrentData;
   quality?: StationQuality;
 }
 
@@ -143,9 +176,16 @@ export type StationMetaKey =
   | "name"
   | "latitude"
   | "longitude"
+  | "locality"
   | "region"
+  | "region_code"
   | "country"
+  | "country_code"
   | "continent"
+  | "context"
+  | "context_derived"
+  | "cities"
+  | "aliases"
   | "timezone"
   | "type"
   | "source";

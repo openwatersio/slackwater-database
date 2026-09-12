@@ -4,13 +4,22 @@ import type { StationMeta } from "../types.js";
 // Only metadata fields are indexed, so this operates on StationMeta and never
 // touches the lazily-loaded harmonics/datums.
 const textSearchIndexOptions: Options<StationMeta> = {
-  fields: ["name", "region", "country", "continent", "source.id"],
+  fields: [
+    "name",
+    "locality",
+    "region",
+    "region_code",
+    "country",
+    "country_code",
+    "context",
+    "cities",
+    "aliases",
+    "continent",
+    "source.id",
+  ],
   extractField: (station, fieldName) => {
-    if (fieldName in station) {
-      return (station as any)[fieldName];
-    } else if (fieldName === "source.id") {
-      return station.source.id;
-    }
+    if (fieldName === "source.id") return station.source?.id;
+    if (fieldName in station) return (station as any)[fieldName];
   },
   searchOptions: {
     boost: {

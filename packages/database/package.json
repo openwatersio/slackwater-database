@@ -1,9 +1,10 @@
 {
   "name": "@neaps/tide-database",
   "version": "0.9.0",
-  "description": "A public database of tide harmonics",
+  "description": "A public database of tide and current stations",
   "keywords": [
     "tides",
+    "currents",
     "harmonics",
     "database"
   ],
@@ -47,7 +48,8 @@
     "test": "vitest"
   },
   "files": [
-    "dist"
+    "dist",
+    "NOTICE"
   ],
   "dependencies": {
     "flatbuffers": "^25.9.23",
@@ -56,6 +58,7 @@
     "minisearch": "^7.2.0"
   },
   "devDependencies": {
+    "@neaps/stations": "*",
     "@types/geokdbush": "^1.1.5",
     "@types/node": "^26.0.0",
     "tsdown": "^0.22.1",

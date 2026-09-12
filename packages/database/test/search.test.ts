@@ -12,8 +12,8 @@ describe("near", () => {
       expect(stations.length).toBeGreaterThan(0);
 
       const [station, distance] = stations[0]!;
-      expect(station.source.id).toBe("8411801");
-      expect(distance).toBeCloseTo(70, 0);
+      expect(station.source.id).toBe("ACT0111");
+      expect(distance).toBeCloseTo(55, 0);
     });
   });
 
@@ -28,7 +28,8 @@ describe("near", () => {
 
   test("can set maxDistance", () => {
     const stations = near({ lon: -67.5, lat: 44.5, maxDistance: 10 });
-    expect(stations.length).toBe(1);
+    expect(stations.length).toBeGreaterThan(0);
+    expect(stations.every(([, distance]) => distance <= 10)).toBe(true);
   });
 
   test("can filter results", () => {
@@ -116,6 +117,21 @@ describe("search", () => {
     expect(results.length).toBeGreaterThan(0);
     const hasHawaiiStation = results.some((s) => s.region === "HI");
     expect(hasHawaiiStation).toBe(true);
+  });
+
+  test("searches structured regional identity", () => {
+    const results = search("Victoria BC");
+    expect(results.some((station) => station.region_code === "CA-BC")).toBe(
+      true,
+    );
+  });
+
+  test("searches curated locality, context, cities, and aliases", () => {
+    expect(search("Everett Port Gardner").map(({ id }) => id)).toContain(
+      "noaa/9447659",
+    );
+    expect(search("Marysville").map(({ id }) => id)).toContain("noaa/9447659");
+    expect(search("sitcum").map(({ id }) => id)).toContain("noaa/9446484");
   });
 
   test("searches by country", () => {

@@ -9,6 +9,8 @@
   "scripts": {
     "build": "npm run build -w packages/database",
     "test": "npm run build -w packages/database && tsc -p tsconfig.node.json && npm run test -w packages/database -w packages/datums -w packages/harmonic-analysis -w packages/stations",
+    "metadata:lock": "npm run metadata-lock -w packages/stations",
+    "validate:database": "npm run validate-database -w packages/stations",
     "lint": "prettier --check .",
     "format": "prettier --write ."
   },

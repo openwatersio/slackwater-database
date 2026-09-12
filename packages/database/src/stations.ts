@@ -3,11 +3,13 @@ import {
   Datum,
   DatumsSource,
   HeightOffsetType,
+  Kind,
   StationType,
 } from "./generated/fbs/neaps.ts";
 import databaseBytes from "#neaps.tcdb";
 import { openDatabase } from "./database/reader.js";
 import type {
+  CurrentData,
   HarmonicConstituent,
   Station,
   StationData,
@@ -132,18 +134,70 @@ function readEpoch(index: number): StationData["epoch"] {
   return { start: epoch.start()!, end: epoch.end()! };
 }
 
+function readCurrent(index: number): CurrentData | undefined {
+  const table = db.stations(index)!.current();
+  if (!table) return undefined;
+  const current: CurrentData = {};
+  if (!table.floodDirectionMissing())
+    current.flood_direction = table.floodDirection();
+  if (!table.ebbDirectionMissing())
+    current.ebb_direction = table.ebbDirection();
+  if (!table.meanFlowMissing()) current.mean_flow = table.meanFlow();
+  const tideReference = table.tideReference();
+  if (tideReference) current.tide_reference = tideReference;
+  const offsets = table.offsets();
+  if (offsets) {
+    const values: NonNullable<CurrentData["offsets"]> = {
+      reference: offsets.reference()!,
+    };
+    if (!offsets.slackBeforeFloodMissing())
+      values.slack_before_flood = offsets.slackBeforeFlood();
+    if (!offsets.slackBeforeEbbMissing())
+      values.slack_before_ebb = offsets.slackBeforeEbb();
+    if (!offsets.floodTimeMissing()) values.flood_time = offsets.floodTime();
+    if (!offsets.ebbTimeMissing()) values.ebb_time = offsets.ebbTime();
+    if (!offsets.floodSpeedRatioMissing())
+      values.flood_speed_ratio = offsets.floodSpeedRatio();
+    if (!offsets.ebbSpeedRatioMissing())
+      values.ebb_speed_ratio = offsets.ebbSpeedRatio();
+    current.offsets = values;
+  }
+  const magnitudeNote = table.magnitudeNote();
+  if (magnitudeNote) current.magnitude_note = magnitudeNote;
+  const derived = table.derived();
+  if (derived) {
+    current.derived = {
+      reference: derived.reference()!,
+      high_water_lag_minutes: derived.highWaterLagMinutes(),
+      low_water_lag_minutes: derived.lowWaterLagMinutes(),
+    };
+  }
+  return current;
+}
+
 function readStation(index: number): Station {
   const t = db.stations(index)!;
 
   const station = { id: t.id()! } as Station;
   station.name = t.name()!;
+  station.kind = t.kind() === Kind.Current ? "current" : "tide";
   station.latitude = t.latitude();
   station.longitude = t.longitude();
+  const locality = t.locality();
+  if (locality !== null) station.locality = locality;
   const region = t.region();
   if (region !== null) station.region = region;
+  const regionCode = t.regionCode();
+  if (regionCode !== null) station.region_code = regionCode;
   station.country = t.country()!;
+  station.country_code = t.countryCode()!;
   station.continent = t.continent()!;
   station.timezone = t.timezone()!;
+  const context = t.context();
+  if (context !== null) {
+    station.context = context;
+    station.context_derived = t.contextDerived();
+  }
   station.type =
     t.type() === StationType.Subordinate ? "subordinate" : "reference";
   // Optional in the data (many subordinates omit it); keep the key absent
@@ -198,6 +252,18 @@ function readStation(index: number): Station {
       t.aliases(i),
     );
   }
+  if (t.citiesLength() > 0) {
+    station.cities = Array.from({ length: t.citiesLength() }, (_, i) =>
+      t.cities(i),
+    );
+  }
+  if (station.kind === "current") {
+    Object.defineProperty(station, "current", {
+      enumerable: true,
+      configurable: true,
+      get: () => readCurrent(index),
+    });
+  }
 
   // Presence check only: following the field offset stays on head pages.
   if (t.quality() !== null) {
@@ -245,7 +311,7 @@ export const qualityMap = new Map<string, StationQuality>(
 );
 
 export function qualityFilter(station: Station): boolean {
-  return qualityMap.get(station.id)?.accepted ?? false;
+  return qualityMap.get(station.id)?.accepted ?? true;
 }
 
 export const stations: Station[] = allStations.filter(qualityFilter);
