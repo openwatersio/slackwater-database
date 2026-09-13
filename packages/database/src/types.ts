@@ -148,11 +148,6 @@ export type StationMetaKey =
   | "continent"
   | "timezone"
   | "type"
-  | "disclaimers"
-  | "chart_datum"
-  | "datums_source"
-  | "source"
-  | "license"
-  | "offsets";
+  | "source";
 
 export type StationMeta = { id: string } & Pick<StationData, StationMetaKey>;

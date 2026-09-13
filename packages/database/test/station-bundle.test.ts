@@ -58,10 +58,17 @@ describe("lazily loaded station data", () => {
     expect(Object.keys(ref.datums).length).toBeGreaterThan(0);
   });
 
-  test("subordinate stations inherit harmonics and datums from their reference", () => {
-    const sub = allStations.find((s) => s.type === "subordinate" && s.offsets)!;
+  test("subordinate stations inherit harmonics, datums, and epoch from their reference", () => {
+    const sub = allStations.find(
+      (s) =>
+        s.type === "subordinate" &&
+        s.offsets &&
+        stationsById.get(s.offsets.reference)?.epoch,
+    )!;
     const ref = stationsById.get(sub.offsets!.reference)!;
     expect(sub.harmonic_constituents).toEqual(ref.harmonic_constituents);
     expect(sub.datums).toEqual(ref.datums);
+    expect(sub.epoch).toBeDefined();
+    expect(sub.epoch).toEqual(ref.epoch);
   });
 });

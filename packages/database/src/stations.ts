@@ -221,7 +221,7 @@ function readStation(index: number): Station {
     epoch: {
       enumerable: true,
       configurable: true,
-      get: () => readEpoch(index),
+      get: () => readEpoch(dataIndex(station)),
     },
   });
 

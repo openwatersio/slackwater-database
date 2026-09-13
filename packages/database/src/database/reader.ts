@@ -21,7 +21,8 @@ export function readStationMeta(bytes: Uint8Array): StationMeta[] {
 
   return Array.from({ length: db.stationsLength() }, (_, i) => {
     const t = db.stations(i)!;
-    const meta = {
+    const source = t.source()!;
+    const meta: StationMeta = {
       id: t.id()!,
       name: t.name()!,
       latitude: t.latitude(),
@@ -30,18 +31,15 @@ export function readStationMeta(bytes: Uint8Array): StationMeta[] {
       continent: t.continent()!,
       timezone: t.timezone()!,
       type: t.type() === StationType.Subordinate ? "subordinate" : "reference",
-    } as StationMeta;
-    const region = t.region();
-    if (region !== null) meta.region = region;
-    const source = t.source();
-    if (source) {
-      meta.source = {
+      source: {
         name: source.name()!,
         id: source.id()!,
         published_harmonics: source.publishedHarmonics(),
         url: source.url()!,
-      };
-    }
+      },
+    };
+    const region = t.region();
+    if (region !== null) meta.region = region;
     return meta;
   });
 }
