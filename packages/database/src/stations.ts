@@ -221,7 +221,10 @@ function readStation(index: number): Station {
     epoch: {
       enumerable: true,
       configurable: true,
-      get: () => readEpoch(dataIndex(station)),
+      // A station's own epoch wins; a subordinate without one reports the
+      // period its inherited constituents were computed over. Same precedence
+      // the quality evaluation uses, so a read/write round-trip is lossless.
+      get: () => readEpoch(index) ?? readEpoch(dataIndex(station)),
     },
   });
 

@@ -21,9 +21,14 @@ export function readStationMeta(bytes: Uint8Array): StationMeta[] {
 
   return Array.from({ length: db.stationsLength() }, (_, i) => {
     const t = db.stations(i)!;
-    const source = t.source()!;
+    const id = t.id()!;
+    // The text index keys on source.id, so a station without a source table
+    // can't be indexed. Name the station rather than failing on a null deref
+    // deeper in the build.
+    const source = t.source();
+    if (!source) throw new Error(`Station ${id} has no source`);
     const meta: StationMeta = {
-      id: t.id()!,
+      id,
       name: t.name()!,
       latitude: t.latitude(),
       longitude: t.longitude(),
