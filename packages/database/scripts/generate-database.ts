@@ -20,7 +20,7 @@ const outDir = join(root, "src", "generated");
 // convention for node-run TypeScript — bundlers and vitest resolve it too).
 mkdirSync(outDir, { recursive: true });
 execFileSync("flatc", ["--ts", "-o", join(outDir, "fbs"), "database.fbs"], {
-  cwd: join(root, "schemas"),
+  cwd: join(root, "..", "..", "schemas"),
   stdio: "inherit",
 });
 // Rewrite the entrypoint (fbs/database.ts) and the per-type files it

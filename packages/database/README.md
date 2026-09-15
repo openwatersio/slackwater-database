@@ -25,7 +25,7 @@ console.log(stations[0]);
 
 `stations` leaves out records the quality evaluation rejected, such as duplicate gauges and implausible datums. `allStations` is the unfiltered catalog, `stationsById` maps an id to its station, and every search function below takes `includeAll: true` to search the full catalog instead of the accepted subset.
 
-Each station carries its identity and location eagerly. The heavy prediction fields — `harmonic_constituents`, `datums`, and `epoch` — are decoded from the database file on first access, so importing the module does not pull every station's prediction data onto the heap. [See the format documentation](./docs/database-format.md) for how that works.
+Each station carries its identity and location eagerly. The heavy prediction fields — `harmonic_constituents`, `datums`, and `epoch` — are decoded from the database file on first access, so importing the module does not pull every station's prediction data onto the heap. [See the format documentation](https://github.com/openwatersio/tide-database/blob/main/docs/database-format.md) for how that works.
 
 ### Searching for stations
 
@@ -132,11 +132,11 @@ Stations are either _reference_ or _subordinate_, given by the station's `type` 
 
 Reference stations have their own `harmonic_constituents`, usually derived from a long record of real water level observations. Subordinate stations predict from a nearby reference station's harmonics, adjusted by four `offsets` — two correcting water level and two correcting the time of high and low tide. Reading a subordinate's `harmonic_constituents` or `datums` returns its reference station's values, so both types predict the same way.
 
-The full field-by-field description lives in [`schemas/station.schema.json`](./schemas/station.schema.json).
+The full field-by-field description lives in [`schemas/station.schema.json`](https://github.com/openwatersio/tide-database/blob/main/schemas/station.schema.json).
 
 ## The database file
 
-The module reads a single [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](./schemas/database.fbs). Every release of this package also attaches that file as `neaps-<date>.tcdb`, so native apps can bundle and memory-map it and generate a reader in their own language from the schema. [See the format documentation.](./docs/database-format.md)
+The module reads a single [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](https://github.com/openwatersio/tide-database/blob/main/schemas/database.fbs). Every release of this package also attaches that file as `neaps-<date>.tcdb`, so native apps can bundle and memory-map it and generate a reader in their own language from the schema. [See the format documentation.](https://github.com/openwatersio/tide-database/blob/main/docs/database-format.md)
 
 ## License
 

@@ -19,11 +19,7 @@ import {
 import quality from "../../../quality.json" with { type: "json" };
 
 const ROOT = new URL("../../..", import.meta.url).pathname;
-const SCHEMA_PATH = join(
-  ROOT,
-  "packages/database/schemas",
-  "station.schema.json",
-);
+const SCHEMA_PATH = join(ROOT, "schemas", "station.schema.json");
 
 const schema = JSON.parse(await readFile(SCHEMA_PATH, "utf-8"));
 const ajv = new (Ajv2020 as any)({ allErrors: true, strict: false });

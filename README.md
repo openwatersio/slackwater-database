@@ -16,7 +16,7 @@ If you know of other public sources of harmonic constituents, please [open an is
 
 ## Usage
 
-The database is available as an NPM package, as an [XTide-compatible TCD file](./packages/tcd/), and as a single [FlatBuffers file](./packages/database/docs/database-format.md).
+The database is available as an NPM package, as an [XTide-compatible TCD file](./packages/tcd/), and as a single [FlatBuffers file](./docs/database-format.md).
 
 ### XTide / OpenCPN / TCD-compatible software
 
@@ -24,7 +24,7 @@ A pre-built [TCD file](./packages/tcd/README.md) compatible with XTide, OpenCPN,
 
 ### FlatBuffers file
 
-Each release attaches `neaps-<date>.tcdb`, the whole database as one [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](./packages/database/schemas/database.fbs). It is the same file the NPM package reads; native apps can bundle and memory-map it, generating a reader in their language from the schema. [See the format documentation.](./packages/database/docs/database-format.md)
+Each release attaches `neaps-<date>.tcdb`, the whole database as one [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](./schemas/database.fbs). It is the same file the NPM package reads; native apps can bundle and memory-map it, generating a reader in their language from the schema. [See the format documentation.](./docs/database-format.md)
 
 ### JavaScript / TypeScript
 
@@ -36,7 +36,7 @@ The module exports every station in the database, along with geographic, boundin
 
 ## Data Format
 
-Each tide station is defined in a single JSON file in the [`data/`](./data) directory that includes basic station information, like location and name, and harmonics or subordinate station offsets. The format is defined by the schema in [packages/database/schemas/station.schema.json](packages/database/schemas/station.schema.json), which includes more detailed descriptions of each field. All data is validated against this schema automatically on each change.
+Each tide station is defined in a single JSON file in the [`data/`](./data) directory that includes basic station information, like location and name, and harmonics or subordinate station offsets. The format is defined by the schema in [schemas/station.schema.json](schemas/station.schema.json), which includes more detailed descriptions of each field. All data is validated against this schema automatically on each change.
 
 ## Station Types
 
