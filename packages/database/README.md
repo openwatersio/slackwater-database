@@ -14,7 +14,7 @@ $ npm install @neaps/tide-database
 
 ## Usage
 
-The package exports an array of all tide stations in the database:
+The package exports every station that passes the database's quality gates:
 
 ```typescript
 import { stations } from "@neaps/tide-database";
@@ -23,18 +23,20 @@ console.log("Total stations:", stations.length);
 console.log(stations[0]);
 ```
 
+`stations` leaves out records the quality evaluation rejected, such as duplicate gauges and implausible datums. `allStations` is the unfiltered catalog, `stationsById` maps an id to its station, and every search function below takes `includeAll: true` to search the full catalog instead of the accepted subset.
+
 Each station carries its identity and location eagerly. The heavy prediction fields — `harmonic_constituents`, `datums`, and `epoch` — are decoded from the database file on first access, so importing the module does not pull every station's prediction data onto the heap. [See the format documentation](./docs/database-format.md) for how that works.
 
 ### Searching for stations
 
 #### Geographic search
 
-You can search for stations by proximity using the `near` and `nearest` functions:
+`near` returns an array of `[station, distanceInKm]` tuples, closest first:
 
 ```typescript
 import { near, nearest } from "@neaps/tide-database";
 
-// Find all stations within 10 km of a lat/lon. Returns an array of [station, distanceinKm] tuples.
+// Find stations within 10 km of a lat/lon
 const nearbyStations = near({
   lon: -122,
   lat: 37,
@@ -42,18 +44,25 @@ const nearbyStations = near({
   maxResults: 50,
 });
 console.log("Nearby stations:", nearbyStations.length);
+```
 
-// Find the nearest station to a lat/lon
-const [nearestStation, distance] = nearest({ longitude: -75.5, latitude: 22 });
-console.log("Nearest station:", nearestStation.name, "is", distance, "km away");
+`nearest` returns a single `[station, distanceInKm]` tuple, or `null` when nothing matches:
+
+```typescript
+const result = nearest({ longitude: -75.5, latitude: 22 });
+if (result) {
+  const [station, distance] = result;
+  console.log("Nearest station:", station.name, "is", distance, "km away");
+}
 ```
 
 Both functions take the following parameters:
 
 - `latitude` or `lat`: Latitude in decimal degrees.
 - `longitude`, `lon`, or `lng`: Longitude in decimal degrees.
+- `maxDistance`: Maximum distance in kilometers to search for stations (default: unlimited).
 - `filter`: A function that takes a station and returns `true` to include it in results, or `false` to exclude it.
-- `maxDistance`: Maximum distance in kilometers to search for stations (default: `50` km).
+- `includeAll`: Search the full catalog rather than quality-accepted stations only (default: `false`).
 
 `near` also takes:
 
@@ -61,32 +70,25 @@ Both functions take the following parameters:
 
 #### Bounding box search
 
-You can find all stations within a geographic bounding box using the `bbox` function:
+`bbox` takes a `[minLon, minLat, maxLon, maxLat]` tuple and returns the stations inside it:
 
 ```typescript
 import { bbox } from "@neaps/tide-database";
 
 // Find stations in the Boston area
-const stations = bbox(-71.5, 42, -70.5, 42.8);
-console.log("Stations in bounds:", stations.length);
+const bostonStations = bbox([-71.5, 42, -70.5, 42.8]);
+console.log("Stations in bounds:", bostonStations.length);
 
 // With a filter
-const referenceOnly = bbox(
-  -72,
-  41,
-  -70,
-  43,
-  (station) => station.type === "reference",
-);
+const referenceOnly = bbox([-72, 41, -70, 43], {
+  filter: (station) => station.type === "reference",
+});
 ```
 
-Parameters:
+The bounds are `minLon` (west edge), `minLat` (south edge), `maxLon` (east edge), and `maxLat` (north edge), in decimal degrees. The optional second argument takes:
 
-- `minLon`: Minimum longitude (west edge of the bounding box).
-- `minLat`: Minimum latitude (south edge of the bounding box).
-- `maxLon`: Maximum longitude (east edge of the bounding box).
-- `maxLat`: Maximum latitude (north edge of the bounding box).
-- `filter`: Optional function that takes a station and returns `true` to include it in results, or `false` to exclude it.
+- `filter`: A function that takes a station and returns `true` to include it in results, or `false` to exclude it.
+- `includeAll`: Search the full catalog rather than quality-accepted stations only (default: `false`).
 
 #### Full-text search
 
@@ -121,6 +123,7 @@ The `search` function takes the following parameters:
 - `query` (required): Search string. Supports fuzzy matching and prefix search.
 - `options` (optional):
   - `filter`: Function that takes a station and returns `true` to include it in results, or `false` to exclude it.
+  - `includeAll`: Search the full catalog rather than quality-accepted stations only (default: `false`).
   - `maxResults`: Maximum number of results to return (default: `20`).
 
 ## Station types
