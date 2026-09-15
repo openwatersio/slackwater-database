@@ -3,28 +3,32 @@
 import { readFile } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import { parseCSV, indexBy, groupBy } from "@neaps/stations";
 import {
+  parseCSV,
+  indexBy,
+  groupBy,
   normalize,
   save,
   load,
+  getSourceSuffix,
+  NON_COMMERCIAL_SOURCES,
+  cleanName,
+  loadGeocoder,
   type PartialStationData,
 } from "@neaps/stations";
 import {
   computeDatums,
   computeDatumsFromObservations,
+  ensureGeslaData,
   parseGeslaSamples,
   toFixed,
+  GESLA_DIR,
 } from "@neaps/datums";
-import { ensureGeslaData, GESLA_DIR } from "@neaps/datums";
 import {
   parseGeslaSamplesInZone,
   fitHarmonics,
   isAnalyzable,
 } from "@neaps/harmonic-analysis";
-import { getSourceSuffix, NON_COMMERCIAL_SOURCES } from "@neaps/stations";
-import { cleanName } from "@neaps/stations";
-import { loadGeocoder } from "@neaps/stations";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const metaPath = join(__dirname, "..", "..", "tmp", "TICON-4", "meta.csv");

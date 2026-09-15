@@ -1,6 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { computeDatums } from "@neaps/datums";
-import { isBaltic } from "@neaps/datums";
+import { computeDatums, isBaltic } from "@neaps/datums";
 import {
   getChartDatum,
   pruneDatums,
