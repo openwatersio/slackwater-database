@@ -38,13 +38,13 @@ maps to the lowest low.
 
 How the values are produced differs by source:
 
-- [NOAA](../data/noaa/README.md) - uses datums published by NOAA (`MLLW`, or `STND` for non-tidal stations)
-- [TICON](../data/ticon/README.md) — datums derived from
+- [NOAA](../sources/noaa/README.md) - uses datums published by NOAA (`MLLW`, or `STND` for non-tidal stations)
+- [TICON](../sources/ticon/README.md) — datums derived from
   GESLA-4 water levels.
 
 ## The datums
 
-Computed by `tools/datum.ts`:
+Computed by `packages/datums/datum.ts`:
 
 | Datum           | Definition                                                                                                                                                                                                                       | Method                             |
 | :-------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
@@ -64,14 +64,14 @@ for Tidal Datums Handbook](https://tidesandcurrents.noaa.gov/publications/Comput
 when observations are available; the astronomical/amplitude datums always come
 from the harmonic side, since observed extremes include storm surge. Datums
 specific to one country (LLWLT, TLT, NLLW, ALLW) are pruned from stations that
-don't use them (`pruneDatums` in `tools/station.ts`), so a UK station never
+don't use them (`pruneDatums` in `packages/stations/station.ts`), so a UK station never
 carries a stray TLT.
 
 ## Datum epoch
 
 The synthetic (harmonic-prediction) datums — HAT, LAT, LLWLT, TLT, and the
 amplitude-derived MHWS/MLWS/NLLW/ALLW — are computed over a **pinned epoch of 19
-full calendar years** (`DATUM_EPOCH` in `tools/datum.ts`, currently
+full calendar years** (`DATUM_EPOCH` in `packages/datums/datum.ts`, currently
 2007-01-01 → 2026-01-01), following the convention of NOAA's National Tidal
 Datum Epoch and the Canadian Hydrographic Service. Why this shape:
 
@@ -127,7 +127,7 @@ mean-sea-level datum (BSCD2000) rather than a low-water datum. Germany in
 particular splits: **North Sea coast → LAT (Seekartennull)**, **Baltic coast →
 MSL**. Administrative region can't separate them (Schleswig-Holstein touches
 both seas) and neither can a longitude line (the lower Elbe reaches inland past
-the longitude of the Baltic fjords). `tools/sea-regions.ts` classifies stations
+the longitude of the Baltic fjords). `packages/datums/sea-regions.ts` classifies stations
 with a point-in-polygon test; Baltic stations use MSL.
 
 Denmark splits the same way: inner Danish waters **including the whole
@@ -138,7 +138,7 @@ it charts to MSL.
 The geometry is the authoritative **IHO Sea Areas (S-23)** polygons from
 [Marine Regions](https://marineregions.org) (Flanders Marine Institute,
 CC-BY 4.0): the Baltic Sea, the Gulfs of Bothnia/Finland/Riga, and the
-Kattegat, with the Skagerrak excluded. `tools/fetch-sea-regions.ts` downloads
+Kattegat, with the Skagerrak excluded. `packages/datums/fetch-sea-regions.ts` downloads
 them from the VLIZ WFS, keeps each basin's outer ring only (so island gauges
 classify by basin), simplifies to ~1 km, and writes the committed
 `data/baltic-sea.geo.json`. Two adjustments on top:
@@ -157,7 +157,7 @@ classify by basin), simplifies to ~1 km, and writes the committed
 
 ## Quality gates
 
-Datum-ordering QA (`tools/evaluate-quality.ts`) enforces a strict chain on the
+Datum-ordering QA (`packages/stations/evaluate-quality.ts`) enforces a strict chain on the
 standard datums — `MHW > MSL > MLW ≥ LAT`, `HAT ≥ MHHW`, `MHW ≥ MLLW`, MTL
 between MHW and MLW — as fatal errors, with the diurnal pairs (MHHW/MHW,
 MLW/MLLW) as warnings since they converge at weakly diurnal stations.

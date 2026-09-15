@@ -6,10 +6,10 @@ This database includes harmonic constituents for tide prediction from various so
 
 ## Sources
 
-- ✅ [**NOAA**](data/noaa/README.md): National Oceanic and Atmospheric Administration
+- ✅ [**NOAA**](sources/noaa/README.md): National Oceanic and Atmospheric Administration
   ~3400 stations, mostly in the United States and its territories. Updated monthly via [NOAA's API](https://api.tidesandcurrents.noaa.gov/mdapi/prod/).
 
-- ✅ [**TICON-4**](data/ticon/README.md): TIdal CONstants based on GESLA-4 sea-level records
+- ✅ [**TICON-4**](sources/ticon/README.md): TIdal CONstants based on GESLA-4 sea-level records
   ~4200+ global stations - ([#16](https://github.com/openwatersio/tide-database/pull/16))
 
 If you know of other public sources of harmonic constituents, please [open an issue](https://github.com/openwatersio/tide-database/issues/new) to discuss adding them.
@@ -28,123 +28,15 @@ Each release attaches `neaps-<date>.tcdb`, the whole database as one [FlatBuffer
 
 ### JavaScript / TypeScript
 
-Install the package:
-
 ```sh
 $ npm install @neaps/tide-database
 ```
 
-The package exports an array of all tide stations in the database:
-
-```typescript
-import { stations } from "@neaps/tide-database";
-
-// Stations is an array of all the files in `data/`
-console.log("Total stations:", stations.length);
-console.log(stations[0]);
-```
-
-#### Searching for stations
-
-##### Geographic search
-
-You can search for stations by proximity using the `near` and `nearest` functions:
-
-```typescript
-import { near, nearest } from "@neaps/tide-database";
-
-// Find all stations within 10 km of a lat/lon. Returns an array of [station, distanceinKm] tuples.
-const nearbyStations = near({
-  lon: -122,
-  lat: 37,
-  maxDistance: 10,
-  maxResults: 50,
-});
-console.log("Nearby stations:", nearbyStations.length);
-
-// Find the nearest station to a lat/lon
-const [nearestStation, distance] = nearest({ longitude: -75.5, latitude: 22 });
-console.log("Nearest station:", nearestStation.name, "is", distance, "km away");
-```
-
-Both functions take the following parameters:
-
-- `latitude` or `lat`: Latitude in decimal degrees.
-- `longitude`, `lon`, or `lng`: Longitude in decimal degrees.
-- `filter`: A function that takes a station and returns `true` to include it in results, or `false` to exclude it.
-- `maxDistance`: Maximum distance in kilometers to search for stations (default: `50` km).
-
-`near` also takes:
-
-- `maxResults`: Maximum number of results to return (default: `10`).
-
-##### Bounding box search
-
-You can find all stations within a geographic bounding box using the `bbox` function:
-
-```typescript
-import { bbox } from "@neaps/tide-database";
-
-// Find stations in the Boston area
-const stations = bbox(-71.5, 42, -70.5, 42.8);
-console.log("Stations in bounds:", stations.length);
-
-// With a filter
-const referenceOnly = bbox(
-  -72,
-  41,
-  -70,
-  43,
-  (station) => station.type === "reference",
-);
-```
-
-Parameters:
-
-- `minLon`: Minimum longitude (west edge of the bounding box).
-- `minLat`: Minimum latitude (south edge of the bounding box).
-- `maxLon`: Maximum longitude (east edge of the bounding box).
-- `maxLat`: Maximum latitude (north edge of the bounding box).
-- `filter`: Optional function that takes a station and returns `true` to include it in results, or `false` to exclude it.
-
-##### Full-text search
-
-You can search for stations by name, region, country, or continent using the `search` function. It supports fuzzy matching and prefix search:
-
-```typescript
-import { search } from "@neaps/tide-database";
-
-// Search for stations by name with fuzzy matching
-const results = search("Boston");
-console.log("Found:", results.length, "stations");
-console.log(results[0].name);
-
-// Search with a filter function
-const usStations = search("harbor", {
-  filter: (station) => station.country === "United States",
-  maxResults: 10,
-});
-console.log("US harbor stations:", usStations);
-
-// Combine multiple filters
-const referenceStations = search("island", {
-  filter: (station) =>
-    station.type === "reference" && station.continent === "Americas",
-  maxResults: 20,
-});
-console.log("Reference stations:", referenceStations);
-```
-
-The `search` function takes the following parameters:
-
-- `query` (required): Search string. Supports fuzzy matching and prefix search.
-- `options` (optional):
-  - `filter`: Function that takes a station and returns `true` to include it in results, or `false` to exclude it.
-  - `maxResults`: Maximum number of results to return (default: `20`).
+The module exports every station in the database, along with geographic, bounding box, and full-text search. [See the package README for the full API.](./packages/database/README.md)
 
 ## Data Format
 
-Each tide station is defined in a single JSON file in the [`data/`](./data) directory that includes basic station information, like location and name, and harmonics or subordinate station offsets. The format is defined by the schema in [../schemas/station.schema.json](schemas/station.schema.json), which includes more detailed descriptions of each field. All data is validated against this schema automatically on each change.
+Each tide station is defined in a single JSON file in the [`data/`](./data) directory that includes basic station information, like location and name, and harmonics or subordinate station offsets. The format is defined by the schema in [schemas/station.schema.json](schemas/station.schema.json), which includes more detailed descriptions of each field. All data is validated against this schema automatically on each change.
 
 ## Station Types
 
@@ -160,6 +52,17 @@ Subordinate stations are locations that have very similar tides to a reference s
 
 Subordinate stations have four kinds of offsets, two to correct for water level, and two for the time of high and low tide. They use an `offsets` object to define these items, along with the name of the reference station they are based on.
 
+## Repository Layout
+
+This repo is an npm workspace. Station data lives in [`data/`](./data), and everything that reads or writes it is a workspace package:
+
+- [`packages/database`](./packages/database) — the published [`@neaps/tide-database`](https://www.npmjs.com/package/@neaps/tide-database) npm module
+- [`packages/tcd`](./packages/tcd) — TCD harmonics files for XTide-compatible software
+- [`packages/datums`](./packages/datums) — tidal datum computation and sea-region classification
+- [`packages/harmonic-analysis`](./packages/harmonic-analysis) — least-squares harmonic analysis of water level observations
+- [`packages/stations`](./packages/stations) — station file I/O, quality filtering, geocoding, and maintenance scripts (including `evaluate-quality`, which writes [`quality.json`](./quality.json))
+- [`sources/*`](./sources) — one package per data source (NOAA, TICON), each with an `npm run import`
+
 ## Maintenance
 
 A GitHub Action runs monthly on the 1st of each month to automatically update NOAA tide station data. The workflow:
@@ -174,7 +77,7 @@ You can also manually trigger the workflow from the Actions tab in GitHub.
 To manually update NOAA stations:
 
 ```bash
-$ tools/update-noaa-stations.ts
+$ npm run import -w sources/noaa
 ```
 
 This will scan all existing NOAA station files, fetch any new stations from NOAA's API, and update harmonic constituents for all stations.
@@ -189,7 +92,7 @@ Releases of this database use [Semantic Versioning](https://semver.org/), with t
 
 ## Releasing
 
-Releases are created by [running the Publish action](https://github.com/openwatersio/tide-database/actions/workflows/publish.yml) on GitHub Actions. This action will use the major and minor `version` defined in `package.json`, and set the patch version to the current date.
+Releases are created by [running the Publish action](https://github.com/openwatersio/tide-database/actions/workflows/publish.yml) on GitHub Actions. This action will use the major and minor `version` defined in `packages/database/package.json`, and set the patch version to the current date.
 
 ## License
 

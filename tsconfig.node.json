@@ -4,9 +4,9 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "noEmit": true,
-    "types": ["node", "vite/client"],
+    "types": ["node"],
     "allowImportingTsExtensions": true
   },
-  "include": ["test/**/*", "tools/**/*", "examples/**/*", "packages/**/*"],
-  "exclude": ["src/**/*.ts"]
+  "include": ["packages", "sources"],
+  "exclude": ["packages/database", "packages/swift/.build", "**/node_modules"]
 }

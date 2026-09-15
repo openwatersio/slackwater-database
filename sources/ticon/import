@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")/../.."
+
+mkdir -p tmp
+
+[[ -d tmp/TICON-4 ]] || {
+  curl -L -o tmp/TICON-4.zip https://github.com/user-attachments/files/24195063/TICON-4.zip
+  unzip -d tmp tmp/TICON-4.zip
+}
+
+node sources/ticon/import.ts

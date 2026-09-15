@@ -1,0 +1,16 @@
+{
+  "name": "@neaps/noaa",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "node import.ts"
+  },
+  "dependencies": {
+    "@neaps/stations": "*",
+    "make-fetch-happen": "^16.0.0"
+  },
+  "devDependencies": {
+    "@neaps/tide-database": "*",
+    "@types/make-fetch-happen": "^10.0.4"
+  }
+}

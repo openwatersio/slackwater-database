@@ -25,16 +25,16 @@ jobs:
 
       - name: Set version
         run: |
-          CURRENT_VERSION=$(npm pkg get version | tr -d '"')
+          CURRENT_VERSION=$(node -p "require('./packages/database/package.json').version")
           RELEASE_VERSION="${CURRENT_VERSION%.*}.$(date +%Y%m%d)"
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
-          npm version "$RELEASE_VERSION" --no-git-tag-version
+          npm version "$RELEASE_VERSION" --no-git-tag-version -w packages/database
 
       - name: Publish to npm
-        run: npm publish
+        run: npm publish -w packages/database
 
       - name: Build TCD harmonics files
-        run: npm run build -w tcd
+        run: npm run build -w packages/tcd
 
       - name: Rename TCD files for release
         run: |
@@ -42,11 +42,11 @@ jobs:
           mv packages/tcd/dist/harmonics-imperial.tcd "packages/tcd/dist/neaps-${RELEASE_VERSION##*.}-imperial.tcd"
 
       - name: Rename database file for release
-        run: cp dist/generated/neaps.tcdb "dist/generated/neaps-${RELEASE_VERSION##*.}.tcdb"
+        run: cp packages/database/dist/generated/neaps.tcdb "packages/database/dist/generated/neaps-${RELEASE_VERSION##*.}.tcdb"
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ env.RELEASE_VERSION }}
           generateReleaseNotes: true
-          artifacts: "packages/tcd/dist/*.tcd,dist/generated/neaps-*.tcdb"
+          artifacts: "packages/tcd/dist/*.tcd,packages/database/dist/generated/neaps-*.tcdb"

@@ -1,0 +1,13 @@
+{
+  "name": "@neaps/ticon",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "./import"
+  },
+  "dependencies": {
+    "@neaps/datums": "*",
+    "@neaps/harmonic-analysis": "*",
+    "@neaps/stations": "*"
+  }
+}
