@@ -12,6 +12,9 @@ This database includes harmonic constituents for tide prediction from various so
 - ✅ [**TICON-4**](data/ticon/README.md): TIdal CONstants based on GESLA-4 sea-level records
   ~4200+ global stations - ([#16](https://github.com/openwatersio/tide-database/pull/16))
 
+- ✅ [**IOC SLSMF**](data/ioc/README.md): Sea Level Station Monitoring Facility
+  Constituents fit by this project from quality-controlled observations of real-time gauges not covered by the sources above. Non-commercial.
+
 If you know of other public sources of harmonic constituents, please [open an issue](https://github.com/openwatersio/tide-database/issues/new) to discuss adding them.
 
 ## Usage

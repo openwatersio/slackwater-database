@@ -1,0 +1,289 @@
+{
+  "name": "Makam Beach, Aceh",
+  "region": "Aceh",
+  "country": "Indonesia",
+  "continent": "Asia",
+  "latitude": 2.585085,
+  "longitude": 95.929812,
+  "timezone": "Asia/Jakarta",
+  "source": {
+    "name": "IOC SLSMF",
+    "url": "https://www.ioc-sealevelmonitoring.org/station.php?code=SIMSI",
+    "id": "SIMSI",
+    "published_harmonics": false,
+    "operator": "Kepala Badan Meteorologi, Klimatologi, dan Geofisika ( Indonesia )"
+  },
+  "license": {
+    "type": "IOC Oceanographic Data Exchange Policy",
+    "commercial_use": false,
+    "url": "https://www.ioc-sealevelmonitoring.org/disclaimer.php",
+    "notes": "Non-commercial use only per the SLSMF data policy; commercial users should contact the data originator (Kepala Badan Meteorologi, Klimatologi, dan Geofisika ( Indonesia )). Constituents fit by this project from SLSMF quality-controlled observations. Cite: Flanders Marine Institute (VLIZ); Intergovernmental Oceanographic Commission (IOC) (2026): Sea level station monitoring facility. https://doi.org/10.14284/482"
+  },
+  "disclaimers": "Datums are relative to the gauge's own zero; IOC SLSMF publishes no vertical datum. Datums derived from harmonic prediction; the observation record is too short for an empirical reduction, so datum values carry higher uncertainty.",
+  "datums": {
+    "HAT": 1.948,
+    "MHHW": 0.579,
+    "MHW": 0.502,
+    "MSL": 0,
+    "MTL": -0.002,
+    "MLW": -0.507,
+    "MLLW": -0.575,
+    "LAT": -2.131,
+    "MHWS": 0.36,
+    "MLWS": -0.36
+  },
+  "datums_source": "harmonic",
+  "chart_datum": "LAT",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "M2",
+      "amplitude": 0.22,
+      "phase": 303.52
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.14,
+      "phase": 15.33
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.039,
+      "phase": 278.97
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.054,
+      "phase": 293.74
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.038,
+      "phase": 254.35
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.068,
+      "phase": 163.57
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.176,
+      "phase": 206.44
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.041,
+      "phase": 82.84
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.037,
+      "phase": 239.45
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.004,
+      "phase": 70.8
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.005,
+      "phase": 137.07
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.001,
+      "phase": 273.5
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0.029,
+      "phase": 81.65
+    },
+    {
+      "name": "MU2",
+      "amplitude": 0.032,
+      "phase": 221.25
+    },
+    {
+      "name": "NU2",
+      "amplitude": 0.013,
+      "phase": 8.79
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.35,
+      "phase": 236.88
+    },
+    {
+      "name": "T2",
+      "amplitude": 0.098,
+      "phase": 297.81
+    },
+    {
+      "name": "R2",
+      "amplitude": 0.056,
+      "phase": 77.3
+    },
+    {
+      "name": "LAMBDA2",
+      "amplitude": 0.033,
+      "phase": 55.16
+    },
+    {
+      "name": "2SM2",
+      "amplitude": 0.011,
+      "phase": 256.08
+    },
+    {
+      "name": "MA2",
+      "amplitude": 0.042,
+      "phase": 170.23
+    },
+    {
+      "name": "MB2",
+      "amplitude": 0.076,
+      "phase": 336.05
+    },
+    {
+      "name": "S1",
+      "amplitude": 0.09,
+      "phase": 119.22
+    },
+    {
+      "name": "M1",
+      "amplitude": 0.008,
+      "phase": 103.83
+    },
+    {
+      "name": "J1",
+      "amplitude": 0.024,
+      "phase": 281.61
+    },
+    {
+      "name": "OO1",
+      "amplitude": 0.045,
+      "phase": 216.36
+    },
+    {
+      "name": "2Q1",
+      "amplitude": 0.061,
+      "phase": 102.98
+    },
+    {
+      "name": "RHO1",
+      "amplitude": 0.059,
+      "phase": 168.39
+    },
+    {
+      "name": "SGM",
+      "amplitude": 0.07,
+      "phase": 171.32
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.029,
+      "phase": 9.92
+    },
+    {
+      "name": "S3",
+      "amplitude": 0.059,
+      "phase": 330.43
+    },
+    {
+      "name": "S4",
+      "amplitude": 0.002,
+      "phase": 206.13
+    },
+    {
+      "name": "N4",
+      "amplitude": 0.036,
+      "phase": 254.34
+    },
+    {
+      "name": "M8",
+      "amplitude": 0.011,
+      "phase": 54.92
+    },
+    {
+      "name": "2MS6",
+      "amplitude": 0.01,
+      "phase": 184.64
+    },
+    {
+      "name": "2MK5",
+      "amplitude": 0.009,
+      "phase": 289.63
+    },
+    {
+      "name": "2MO5",
+      "amplitude": 0.006,
+      "phase": 237.69
+    },
+    {
+      "name": "MM",
+      "amplitude": 0.029,
+      "phase": 344.95
+    },
+    {
+      "name": "MF",
+      "amplitude": 0.019,
+      "phase": 314.21
+    },
+    {
+      "name": "MSF",
+      "amplitude": 0.086,
+      "phase": 347.8
+    },
+    {
+      "name": "MTM",
+      "amplitude": 0.058,
+      "phase": 77.75
+    },
+    {
+      "name": "MSQM",
+      "amplitude": 0.008,
+      "phase": 328.08
+    },
+    {
+      "name": "SA",
+      "amplitude": 0.078,
+      "phase": 140.31
+    },
+    {
+      "name": "SSA",
+      "amplitude": 0.321,
+      "phase": 143.11
+    },
+    {
+      "name": "EP2",
+      "amplitude": 0.054,
+      "phase": 305.93
+    },
+    {
+      "name": "3N2",
+      "amplitude": 0.019,
+      "phase": 29.88
+    },
+    {
+      "name": "3L2",
+      "amplitude": 0.369,
+      "phase": 290.87
+    },
+    {
+      "name": "T3",
+      "amplitude": 0.091,
+      "phase": 140.6
+    },
+    {
+      "name": "R3",
+      "amplitude": 0.035,
+      "phase": 317.58
+    }
+  ],
+  "epoch": {
+    "start": "2025-08-19",
+    "end": "2026-09-05"
+  }
+}

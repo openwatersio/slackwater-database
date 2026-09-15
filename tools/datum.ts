@@ -355,7 +355,7 @@ export function parseGeslaSamples(text: string): Sample[] {
 }
 
 /** Bin samples to mean level per UTC hour, sorted ascending. */
-function binHourly(samples: Sample[]): Sample[] {
+export function binHourly(samples: Sample[]): Sample[] {
   const buckets = new Map<number, { sum: number; n: number }>();
   for (const s of samples) {
     const key = Math.floor(s.time.getTime() / HOUR_MS);
@@ -407,6 +407,37 @@ export function computeDatumsFromObservations(
     return null;
 
   return { start: hourly[0]!.time, end, datums };
+}
+
+/**
+ * Combine observed mean datums with harmonic astronomical/amplitude datums.
+ *
+ * Means (MHHW…MLLW) come from observations. The astronomical extremes and
+ * amplitude-derived chart datums live on the harmonic side (computed over a
+ * full nodal cycle, MSL=0 frame); shift them into the observed gauge frame by
+ * adding the observed MSL.
+ */
+export function mergeObservedDatums(
+  harmonic: Datums,
+  observed: Datums,
+): Datums {
+  const shift = observed["MSL"] ?? 0;
+  const HARMONIC_KEYS = [
+    "HAT",
+    "LAT",
+    "LLWLT",
+    "MHWS",
+    "MLWS",
+    "NLLW",
+    "ALLW",
+    "TLT",
+  ];
+  const shifted: Datums = {};
+  for (const k of HARMONIC_KEYS) {
+    const v = harmonic[k];
+    if (v !== undefined) shifted[k] = toFixed(v + shift, 3);
+  }
+  return { ...observed, ...shifted };
 }
 
 export function toFixed(num: number, digits: number) {

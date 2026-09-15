@@ -8,8 +8,8 @@ import { normalize, save, load, type PartialStationData } from "./station.ts";
 import {
   computeDatums,
   computeDatumsFromObservations,
+  mergeObservedDatums,
   parseGeslaSamples,
-  toFixed,
 } from "./datum.ts";
 import { ensureGeslaData, GESLA_DIR } from "./download-gesla.ts";
 import {
@@ -239,27 +239,8 @@ async function getDatums(
   );
   const obs = computeDatumsFromObservations(samples);
   if (obs) {
-    // Means (MHHW…MLLW) come from observations. The astronomical extremes and
-    // amplitude-derived chart datums live on the harmonic side (computed over a
-    // full nodal cycle, MSL=0 frame); shift them into the observed gauge frame.
-    const shift = obs.datums["MSL"] ?? 0;
-    const HARMONIC_KEYS = [
-      "HAT",
-      "LAT",
-      "LLWLT",
-      "MHWS",
-      "MLWS",
-      "NLLW",
-      "ALLW",
-      "TLT",
-    ];
-    const shifted: Record<string, number> = {};
-    for (const k of HARMONIC_KEYS) {
-      const v = harmonic.datums[k];
-      if (v !== undefined) shifted[k] = toFixed(v + shift, 3);
-    }
     return {
-      datums: { ...obs.datums, ...shifted },
+      datums: mergeObservedDatums(harmonic.datums, obs.datums),
       datums_source: "observed" as const,
       epoch: { start: toISODate(obs.start), end: toISODate(obs.end) },
     };

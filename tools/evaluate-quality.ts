@@ -296,8 +296,9 @@ function checkSeasonalContamination(
   station: Station,
   allStations: Station[],
 ): string | null {
-  // Authoritative sources (NOAA) are trusted; this targets TICON harmonic fits.
-  if (!station.id.startsWith("ticon/")) return null;
+  // Authoritative sources (NOAA) are trusted; this targets harmonic fits
+  // (TICON's, and our own from IOC observations).
+  if (station.id.startsWith("noaa/")) return null;
   if (station.type === "subordinate") return null;
 
   const sa = getAmplitude(station, "SA");

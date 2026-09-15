@@ -1,5 +1,3514 @@
 [
   {
+    "id": "ioc/alex2",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 0.75,
+      "coverage": 0.001
+    },
+    "issues": [
+      "MHHW (-2.6) < MHW (-2.573)",
+      "MLWS (-2.744) > MLW (-2.815)",
+      "P1 amplitude (0.0860) exceeds K1 (0.0620): physically impossible",
+      "K2 amplitude (0.0250) exceeds S2 (0.0190)"
+    ],
+    "reason": "constituents"
+  },
+  {
+    "id": "ioc/alex3",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 0.75,
+      "coverage": 0.001
+    },
+    "issues": [
+      "MHHW (-2.6) < MHW (-2.573)",
+      "MLWS (-2.744) > MLW (-2.815)",
+      "P1 amplitude (0.0860) exceeds K1 (0.0620): physically impossible",
+      "K2 amplitude (0.0250) exceeds S2 (0.0190)"
+    ],
+    "reason": "constituents"
+  },
+  {
+    "id": "ioc/ancu",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/ancu2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/ancu"
+  },
+  {
+    "id": "ioc/angu",
+    "accepted": true,
+    "score": 58,
+    "factors": {
+      "epoch": 0.132,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.058
+    },
+    "issues": [
+      "MLWS (0.201) > MLW (0.193)",
+      "MHWS (0.353) < MHW (0.361)"
+    ]
+  },
+  {
+    "id": "ioc/aqab",
+    "accepted": true,
+    "score": 72,
+    "factors": {
+      "epoch": 0.099,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/arsu",
+    "accepted": true,
+    "score": 74,
+    "factors": {
+      "epoch": 0.19,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/BANSI",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/barc2",
+    "accepted": true,
+    "score": 63,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.062
+    },
+    "issues": [
+      "MLWS (0.874) > MLW (0.836)"
+    ]
+  },
+  {
+    "id": "ioc/bcon",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.149,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.298
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/BETSI",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/blow",
+    "accepted": true,
+    "score": 63,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.058
+    },
+    "issues": [
+      "MLWS (6.823) > MLW (6.794)",
+      "MHWS (6.935) < MHW (6.966)"
+    ]
+  },
+  {
+    "id": "ioc/blueb",
+    "accepted": true,
+    "score": 74,
+    "factors": {
+      "epoch": 0.357,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.785
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/bmsa",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/bmsa2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/bmsa"
+  },
+  {
+    "id": "ioc/bmso",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.248,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.117
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/bois",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.151,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.165
+    },
+    "issues": [
+      "MHHW (5.818) < MHW (6.066)",
+      "MHWS (5.59) < MHW (6.066)",
+      "MSL (5.297) <= MLW (5.46)"
+    ],
+    "reason": "datum"
+  },
+  {
+    "id": "ioc/boye",
+    "accepted": true,
+    "score": 60,
+    "factors": {
+      "epoch": 0.26,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/boye2",
+    "accepted": false,
+    "score": 60,
+    "factors": {
+      "epoch": 0.26,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/boye"
+  },
+  {
+    "id": "ioc/bspe",
+    "accepted": true,
+    "score": 63,
+    "factors": {
+      "epoch": 0.154,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.338
+    },
+    "issues": [
+      "MLWS (4.839) > MLW (4.797)",
+      "MHWS (5.249) < MHW (5.277)"
+    ]
+  },
+  {
+    "id": "ioc/busa",
+    "accepted": true,
+    "score": 72,
+    "factors": {
+      "epoch": 0.334,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 0.75,
+      "coverage": 1
+    },
+    "issues": [
+      "Q1 amplitude (0.0100) exceeds O1 (0.0040)"
+    ]
+  },
+  {
+    "id": "ioc/camt",
+    "accepted": true,
+    "score": 65,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 0.95,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.599
+    },
+    "issues": [
+      "MHWS (3.258) < MHW (3.292)"
+    ]
+  },
+  {
+    "id": "ioc/CETR",
+    "accepted": true,
+    "score": 69,
+    "factors": {
+      "epoch": 0.187,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 0.75,
+      "coverage": 1
+    },
+    "issues": [
+      "Q1 amplitude (0.0210) exceeds O1 (0.0090)"
+    ]
+  },
+  {
+    "id": "ioc/chat",
+    "accepted": true,
+    "score": 65,
+    "factors": {
+      "epoch": 0.246,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.362
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/chenn",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/chim2",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.195,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "MHWS (0.227) < MHW (0.281)"
+    ]
+  },
+  {
+    "id": "ioc/chimb",
+    "accepted": false,
+    "score": 59,
+    "factors": {
+      "epoch": 0.195,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "MHWS (0.227) < MHW (0.281)"
+    ],
+    "reason": "duplicate",
+    "redundant": "ioc/chim2"
+  },
+  {
+    "id": "ioc/chit",
+    "accepted": true,
+    "score": 67,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.354
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/chnr",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/chnr2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/chnr"
+  },
+  {
+    "id": "ioc/CIDJI",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/cmet",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/cmet3",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/cmet"
+  },
+  {
+    "id": "ioc/coli",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/coli2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/coli"
+  },
+  {
+    "id": "ioc/cons2",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/const",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/cons2"
+  },
+  {
+    "id": "ioc/coqu",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/coqu2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/coqu"
+  },
+  {
+    "id": "ioc/corr",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/corr2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/corr"
+  },
+  {
+    "id": "ioc/crnl",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/crnl2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/crnl"
+  },
+  {
+    "id": "ioc/cstr",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/cstr2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/cstr"
+  },
+  {
+    "id": "ioc/cuvie",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/dial",
+    "accepted": true,
+    "score": 61,
+    "factors": {
+      "epoch": 0.206,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.121
+    },
+    "issues": [
+      "MLWS (0.304) > MLW (0.198)",
+      "MHWS (0.35) < MHW (0.453)"
+    ]
+  },
+  {
+    "id": "ioc/ENGSI",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/flam",
+    "accepted": true,
+    "score": 64,
+    "factors": {
+      "epoch": 0.058,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.503
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/gale",
+    "accepted": true,
+    "score": 74,
+    "factors": {
+      "epoch": 0.281,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.913
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/gcsb",
+    "accepted": true,
+    "score": 63,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.07
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/GESJI",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.184
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/gokc",
+    "accepted": true,
+    "score": 75,
+    "factors": {
+      "epoch": 0.33,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.902
+    },
+    "issues": [
+      "MHWS (1.913) < MHW (2.009)"
+    ]
+  },
+  {
+    "id": "ioc/greg",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/greg2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/greg"
+  },
+  {
+    "id": "ioc/GRJJI",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/gtdpr",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.28,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.073
+    },
+    "issues": [
+      "MLWS (-3.53) > MLW (-3.566)",
+      "MHWS (-3.496) < MHW (-3.438)"
+    ]
+  },
+  {
+    "id": "ioc/hoko",
+    "accepted": true,
+    "score": 58,
+    "factors": {
+      "epoch": 0.11,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.075
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/huas",
+    "accepted": true,
+    "score": 61,
+    "factors": {
+      "epoch": 0.322,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/huas2",
+    "accepted": false,
+    "score": 61,
+    "factors": {
+      "epoch": 0.322,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/huas"
+  },
+  {
+    "id": "ioc/iclr",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.349,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/ilom",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.2,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/ilom2",
+    "accepted": false,
+    "score": 59,
+    "factors": {
+      "epoch": 0.2,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/ilom"
+  },
+  {
+    "id": "ioc/inav",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.356,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.655
+    },
+    "issues": [
+      "MLWS (2.9) > MLW (1.634)",
+      "MHWS (3.252) < MHW (4.73)",
+      "HAT (5.329) < MHHW (9)"
+    ],
+    "reason": "datum"
+  },
+  {
+    "id": "ioc/iqui",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/iqui2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/iqui"
+  },
+  {
+    "id": "ioc/kala",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.568
+    },
+    "issues": [
+      "MHWS (2.252) < MHW (2.295)",
+      "MSL (2.19) <= MLW (2.295)"
+    ],
+    "reason": "datum"
+  },
+  {
+    "id": "ioc/kapi",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.08
+    },
+    "issues": [
+      "SA amplitude (0.500m) is 13.9x the median SA of 2 same-regime neighbour(s) within 25km (0.036m): seasonal contamination"
+    ],
+    "reason": "seasonal"
+  },
+  {
+    "id": "ioc/kata",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.324,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 0.5,
+      "coverage": 0.793
+    },
+    "issues": [
+      "MLW (3.698) < MLLW (3.771)",
+      "MLWS (3.92) > MLW (3.698)",
+      "MHW (3.836) <= MSL (3.967)",
+      "N2 amplitude (0.0500) exceeds M2 (0.0260)",
+      "Q1 amplitude (0.0780) exceeds O1 (0.0040)"
+    ],
+    "reason": "datum"
+  },
+  {
+    "id": "ioc/kisr",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.173,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/KMMSI",
+    "accepted": true,
+    "score": 61,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.308
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/koli",
+    "accepted": true,
+    "score": 63,
+    "factors": {
+      "epoch": 0.355,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.093
+    },
+    "issues": [
+      "MLWS (6.925) > MLW (6.831)",
+      "MHWS (7.151) < MHW (7.232)"
+    ]
+  },
+  {
+    "id": "ioc/kors",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.09,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 0.5,
+      "coverage": 1
+    },
+    "issues": [
+      "MLWS (-0.866) > MLW (-1.825)",
+      "MHWS (0.866) < MHW (1.898)",
+      "P1 amplitude (0.5640) exceeds K1 (0.3890): physically impossible",
+      "N2 amplitude (0.7970) exceeds M2 (0.1420)",
+      "Q1 amplitude (0.5740) exceeds O1 (0.1200)"
+    ],
+    "reason": "constituents"
+  },
+  {
+    "id": "ioc/KUTBI",
+    "accepted": true,
+    "score": 58,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/lago",
+    "accepted": true,
+    "score": 66,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.289
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/lalb",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/LAMSI",
+    "accepted": true,
+    "score": 65,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.576
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/larn2",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.153,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.007
+    },
+    "issues": [
+      "MHW (-0.281) <= MSL (-0.253)"
+    ],
+    "reason": "datum"
+  },
+  {
+    "id": "ioc/larn3",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.153,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.007
+    },
+    "issues": [
+      "MHW (-0.281) <= MSL (-0.253)"
+    ],
+    "reason": "datum"
+  },
+  {
+    "id": "ioc/lebu",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/lebu2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/lebu"
+  },
+  {
+    "id": "ioc/leme",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.17,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/lena",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/lirf",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/litz",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/live2",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.098
+    },
+    "issues": [
+      "MLWS (4.08) > MLW (3.002)",
+      "MHWS (8.402) < MHW (9.247)",
+      "HAT (8.979) < MHHW (9.296)"
+    ],
+    "reason": "datum"
+  },
+  {
+    "id": "ioc/lpbc",
+    "accepted": true,
+    "score": 64,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.132
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/luga",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/malp2",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.358,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 0.75,
+      "coverage": 1
+    },
+    "issues": [
+      "MLWS (6.371) > MLW (3.671)",
+      "MHWS (7.375) < MHW (10.73)",
+      "HAT (9.817) < MHHW (14.812)",
+      "Q1 amplitude (0.0240) exceeds O1 (0.0190)"
+    ],
+    "reason": "datum"
+  },
+  {
+    "id": "ioc/marm",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/matr",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.066,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/meji",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/meji2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/meji"
+  },
+  {
+    "id": "ioc/milo",
+    "accepted": true,
+    "score": 67,
+    "factors": {
+      "epoch": 0.107,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.649
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/mnts",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.132,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": [
+      "MLWS (0.442) > MLW (0.393)",
+      "MHWS (0.522) < MHW (0.557)"
+    ]
+  },
+  {
+    "id": "ioc/mpaw",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.154,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.084
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/mpcw",
+    "accepted": true,
+    "score": 68,
+    "factors": {
+      "epoch": 0.154,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.666
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/mpsw",
+    "accepted": true,
+    "score": 60,
+    "factors": {
+      "epoch": 0.154,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.137
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/mpww",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.119,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.126
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/mrms",
+    "accepted": true,
+    "score": 64,
+    "factors": {
+      "epoch": 0.327,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.184
+    },
+    "issues": [
+      "MLWS (-0.19) > MLW (-0.266)",
+      "MHWS (0.19) < MHW (0.308)"
+    ]
+  },
+  {
+    "id": "ioc/MRTM",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.169,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/MRTMI",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/ms001",
+    "accepted": true,
+    "score": 68,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.395
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/nanc",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.332,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/nhte",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/nksk",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.35,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": [
+      "MHHW (0.331) < MHW (0.34)",
+      "MHWS (0.295) < MHW (0.34)"
+    ]
+  },
+  {
+    "id": "ioc/ntue",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/nhte"
+  },
+  {
+    "id": "ioc/ntue2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/nhte"
+  },
+  {
+    "id": "ioc/ohig3",
+    "accepted": true,
+    "score": 76,
+    "factors": {
+      "epoch": 0.343,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.916
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/pagi",
+    "accepted": true,
+    "score": 61,
+    "factors": {
+      "epoch": 0.286,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/pagi2",
+    "accepted": false,
+    "score": 61,
+    "factors": {
+      "epoch": 0.286,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/pagi"
+  },
+  {
+    "id": "ioc/pait2",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.211,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "MHHW (2.118) < MHW (2.121)"
+    ]
+  },
+  {
+    "id": "ioc/paita",
+    "accepted": false,
+    "score": 59,
+    "factors": {
+      "epoch": 0.211,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "MHHW (2.118) < MHW (2.121)"
+    ],
+    "reason": "duplicate",
+    "redundant": "ioc/pait2"
+  },
+  {
+    "id": "ioc/papo",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/papo2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/papo"
+  },
+  {
+    "id": "ioc/pass",
+    "accepted": true,
+    "score": 57,
+    "factors": {
+      "epoch": 0.057,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.087
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/pata",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/pata2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/pata"
+  },
+  {
+    "id": "ioc/patu",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.103,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.126
+    },
+    "issues": [
+      "SA amplitude (0.586m) is 36.8x the median SA of 2 same-regime neighbour(s) within 25km (0.016m): seasonal contamination"
+    ],
+    "reason": "seasonal"
+  },
+  {
+    "id": "ioc/PAYJI",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.055,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 0.75,
+      "coverage": 1
+    },
+    "issues": [
+      "MHWS (1.196) < MHW (1.708)",
+      "P1 amplitude (0.6520) exceeds K1 (0.3220): physically impossible",
+      "Q1 amplitude (0.1310) exceeds O1 (0.0440)"
+    ],
+    "reason": "constituents"
+  },
+  {
+    "id": "ioc/pcha",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/pcha2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/pcha"
+  },
+  {
+    "id": "ioc/pedn",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/pedn2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/pedn"
+  },
+  {
+    "id": "ioc/peir",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.746
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/PEISI",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/petr",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.354,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": [
+      "MHHW (3.6) < MHW (3.611)",
+      "MLWS (2.665) > MLW (2.626)",
+      "MHWS (3.387) < MHW (3.611)"
+    ]
+  },
+  {
+    "id": "ioc/pich",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/pich2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/pich"
+  },
+  {
+    "id": "ioc/pisa",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/pisa2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/pisa"
+  },
+  {
+    "id": "ioc/pisco",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.201,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.931
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/plat2",
+    "accepted": true,
+    "score": 63,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.078
+    },
+    "issues": [
+      "MHWS (5.769) < MHW (5.921)"
+    ]
+  },
+  {
+    "id": "ioc/plop",
+    "accepted": true,
+    "score": 66,
+    "factors": {
+      "epoch": 0.165,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.492
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/pmel",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/pmel2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/pmel"
+  },
+  {
+    "id": "ioc/pmur",
+    "accepted": true,
+    "score": 66,
+    "factors": {
+      "epoch": 0.327,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.324
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/pnat",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.205,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "MLWS (3.587) > MLW (3.582)"
+    ]
+  },
+  {
+    "id": "ioc/pnat2",
+    "accepted": false,
+    "score": 59,
+    "factors": {
+      "epoch": 0.205,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "MLWS (3.587) > MLW (3.582)"
+    ],
+    "reason": "duplicate",
+    "redundant": "ioc/pnat"
+  },
+  {
+    "id": "ioc/prev",
+    "accepted": true,
+    "score": 76,
+    "factors": {
+      "epoch": 0.329,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/PSCA",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.197,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 0.75,
+      "coverage": 1
+    },
+    "issues": [
+      "MLWS (-0.045) > MLW (-0.046)",
+      "P1 amplitude (0.0130) exceeds K1 (0.0100): physically impossible",
+      "Q1 amplitude (0.0130) exceeds O1 (0.0100)"
+    ],
+    "reason": "constituents"
+  },
+  {
+    "id": "ioc/ptal",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/ptal2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/ptal"
+  },
+  {
+    "id": "ioc/ptar",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/ptar2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/ptar"
+  },
+  {
+    "id": "ioc/ptbc",
+    "accepted": true,
+    "score": 58,
+    "factors": {
+      "epoch": 0.179,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/ptbc2",
+    "accepted": false,
+    "score": 58,
+    "factors": {
+      "epoch": 0.179,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/ptbc"
+  },
+  {
+    "id": "ioc/ptch",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.343,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/ptmd2",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.605
+    },
+    "issues": [
+      "MHWS (3.488) < MHW (3.539)"
+    ]
+  },
+  {
+    "id": "ioc/qing",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.358,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": [
+      "MLWS (0.769) > MLW (0.625)",
+      "MHWS (1.443) < MHW (1.559)"
+    ]
+  },
+  {
+    "id": "ioc/qtro",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/qtro2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/qtro"
+  },
+  {
+    "id": "ioc/quel",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/quel2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/quel"
+  },
+  {
+    "id": "ioc/quir",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/quir2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/quir"
+  },
+  {
+    "id": "ioc/rbct",
+    "accepted": true,
+    "score": 64,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.096
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/RCCL",
+    "accepted": true,
+    "score": 74,
+    "factors": {
+      "epoch": 0.186,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/sano",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/sano2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/sano"
+  },
+  {
+    "id": "ioc/sema",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/shek",
+    "accepted": true,
+    "score": 70,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.556
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/shen",
+    "accepted": true,
+    "score": 70,
+    "factors": {
+      "epoch": 0.358,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.556
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/SIMSI",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": [
+      "MLWS (-0.36) > MLW (-0.507)",
+      "MHWS (0.36) < MHW (0.502)",
+      "P1 amplitude (0.1760) exceeds K1 (0.0380): physically impossible"
+    ],
+    "reason": "constituents"
+  },
+  {
+    "id": "ioc/sipa",
+    "accepted": true,
+    "score": 65,
+    "factors": {
+      "epoch": 0.086,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.54
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/slor",
+    "accepted": true,
+    "score": 69,
+    "factors": {
+      "epoch": 0.211,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.647
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/sobr",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/sole",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/sole2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/sole"
+  },
+  {
+    "id": "ioc/spjy",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": [
+      "MLWS (0.527) > MLW (0.496)",
+      "MHWS (0.901) < MHW (0.916)"
+    ]
+  },
+  {
+    "id": "ioc/SRMPI",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/stari",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.756
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/stlu3",
+    "accepted": true,
+    "score": 65,
+    "factors": {
+      "epoch": 0.262,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.334
+    },
+    "issues": [
+      "MHWS (2.962) < MHW (2.981)"
+    ]
+  },
+  {
+    "id": "ioc/subi",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.358,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.133
+    },
+    "issues": [
+      "MHHW (6.672) < MHW (6.743)",
+      "MHWS (6.251) < MHW (6.743)",
+      "MSL (6.025) <= MLW (6.219)"
+    ],
+    "reason": "datum"
+  },
+  {
+    "id": "ioc/SUBSI",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/syro",
+    "accepted": true,
+    "score": 72,
+    "factors": {
+      "epoch": 0.339,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 0.75,
+      "coverage": 1
+    },
+    "issues": [
+      "MLWS (-0.024) > MLW (-0.029)",
+      "MHWS (0.024) < MHW (0.026)",
+      "Q1 amplitude (0.0080) exceeds O1 (0.0040)"
+    ]
+  },
+  {
+    "id": "ioc/talc",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/talc2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/talc"
+  },
+  {
+    "id": "ioc/talt",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ioc/talt2"
+  },
+  {
+    "id": "ioc/talt2",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tanp",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.11
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tare",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/TASJI",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.184
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tasw",
+    "accepted": true,
+    "score": 65,
+    "factors": {
+      "epoch": 0.057,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.576
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tboz",
+    "accepted": true,
+    "score": 63,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.339
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/TBSSI",
+    "accepted": true,
+    "score": 71,
+    "factors": {
+      "epoch": 0.056,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tbwc",
+    "accepted": true,
+    "score": 63,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.072
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tche",
+    "accepted": true,
+    "score": 60,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.146
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tcim",
+    "accepted": true,
+    "score": 66,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.526
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tcsb",
+    "accepted": true,
+    "score": 75,
+    "factors": {
+      "epoch": 0.242,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tdan",
+    "accepted": true,
+    "score": 58,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.039
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tdas",
+    "accepted": true,
+    "score": 58,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.039
+    },
+    "issues": [
+      "MLW (-0.876) < MLLW (-0.874)"
+    ]
+  },
+  {
+    "id": "ioc/tdog",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.051
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tdoj",
+    "accepted": true,
+    "score": 66,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.526
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tdon",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.273
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tdos",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": [
+      "MLWS (-0.315) > MLW (-0.44)",
+      "MHWS (0.039) < MHW (0.176)"
+    ]
+  },
+  {
+    "id": "ioc/TEUL",
+    "accepted": true,
+    "score": 74,
+    "factors": {
+      "epoch": 0.331,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.861
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tfan",
+    "accepted": true,
+    "score": 64,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.39
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tfug",
+    "accepted": true,
+    "score": 67,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.643
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tful",
+    "accepted": true,
+    "score": 60,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.181
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/thou",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.112
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/thsi",
+    "accepted": true,
+    "score": 66,
+    "factors": {
+      "epoch": 0.138,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.532
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/thua",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/thul",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.162,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tjhu",
+    "accepted": true,
+    "score": 63,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.361
+    },
+    "issues": [
+      "MLW (-1.071) < MLLW (-1.07)"
+    ]
+  },
+  {
+    "id": "ioc/tjia",
+    "accepted": true,
+    "score": 64,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.422
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tjib",
+    "accepted": true,
+    "score": 64,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.399
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tlan",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tlia",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.138,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.28
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tlin",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.296
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tlon",
+    "accepted": true,
+    "score": 60,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.181
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tlyu",
+    "accepted": true,
+    "score": 67,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.643
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tmai",
+    "accepted": true,
+    "score": 63,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.375
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tmat",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.138,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/toco",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "MLW (2.329) < MLLW (2.332)"
+    ]
+  },
+  {
+    "id": "ioc/toco2",
+    "accepted": false,
+    "score": 62,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "MLW (2.329) < MLLW (2.332)"
+    ],
+    "reason": "duplicate",
+    "redundant": "ioc/toco"
+  },
+  {
+    "id": "ioc/tpen",
+    "accepted": true,
+    "score": 64,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.399
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/trin",
+    "accepted": true,
+    "score": 77,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tshi",
+    "accepted": true,
+    "score": 69,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.776
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tshu",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.137,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.28
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tsic",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.11
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tsua",
+    "accepted": true,
+    "score": 67,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.616
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tsyu",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.112
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/ttai",
+    "accepted": true,
+    "score": 72,
+    "factors": {
+      "epoch": 0.138,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.942
+    },
+    "issues": [
+      "MLW (-1.724) < MLLW (-1.721)"
+    ]
+  },
+  {
+    "id": "ioc/twai",
+    "accepted": true,
+    "score": 66,
+    "factors": {
+      "epoch": 0.138,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.532
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/twun",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.051
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/twus",
+    "accepted": true,
+    "score": 64,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.407
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/txig",
+    "accepted": true,
+    "score": 60,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.146
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/txil",
+    "accepted": true,
+    "score": 62,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.273
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tyon",
+    "accepted": true,
+    "score": 64,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.389
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/tzha",
+    "accepted": true,
+    "score": 59,
+    "factors": {
+      "epoch": 0.144,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.101
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/uper",
+    "accepted": true,
+    "score": 73,
+    "factors": {
+      "epoch": 0.164,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "ioc/ushu",
+    "accepted": true,
+    "score": 64,
+    "factors": {
+      "epoch": 0.359,
+      "recency": 1,
+      "source": 0.495,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.103
+    },
+    "issues": []
+  },
+  {
     "id": "noaa/1610367",
     "accepted": true,
     "score": 98,
@@ -380,14 +3889,14 @@
   {
     "id": "noaa/1617846",
     "accepted": true,
-    "score": 89,
+    "score": 84,
     "factors": {
       "epoch": 1,
       "recency": 0.75,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.405
+      "coverage": 0.075
     },
     "issues": []
   },
@@ -408,14 +3917,14 @@
   {
     "id": "noaa/1618578",
     "accepted": true,
-    "score": 98,
+    "score": 94,
     "factors": {
       "epoch": 1,
       "recency": 0.75,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.775
     },
     "issues": []
   },
@@ -44692,14 +48201,14 @@
   {
     "id": "noaa/TEC4605",
     "accepted": true,
-    "score": 89,
+    "score": 87,
     "factors": {
       "epoch": 1,
       "recency": 1,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.275
+      "coverage": 0.117
     },
     "issues": []
   },
@@ -45588,28 +49097,28 @@
   {
     "id": "noaa/TEC4775",
     "accepted": true,
-    "score": 92,
+    "score": 88,
     "factors": {
       "epoch": 1,
       "recency": 0.75,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.634
+      "coverage": 0.385
     },
     "issues": []
   },
   {
     "id": "noaa/TEC4777",
     "accepted": true,
-    "score": 92,
+    "score": 88,
     "factors": {
       "epoch": 1,
       "recency": 0.75,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.634
+      "coverage": 0.334
     },
     "issues": []
   },
@@ -46946,14 +50455,14 @@
   {
     "id": "noaa/TPT2905",
     "accepted": true,
-    "score": 70,
+    "score": 56,
     "factors": {
       "epoch": 0,
       "recency": 0,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.096
     },
     "issues": []
   },
@@ -46988,14 +50497,14 @@
   {
     "id": "noaa/TWC0269",
     "accepted": true,
-    "score": 68,
+    "score": 62,
     "factors": {
       "epoch": 0,
       "recency": 0,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.89
+      "coverage": 0.492
     },
     "issues": []
   },
@@ -47044,14 +50553,14 @@
   {
     "id": "noaa/TWC0277",
     "accepted": true,
-    "score": 70,
+    "score": 65,
     "factors": {
       "epoch": 0,
       "recency": 0,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.647
     },
     "issues": []
   },
@@ -47382,14 +50891,14 @@
   {
     "id": "noaa/TWC0349",
     "accepted": true,
-    "score": 66,
+    "score": 63,
     "factors": {
       "epoch": 0,
       "recency": 0,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.743
+      "coverage": 0.503
     },
     "issues": []
   },
@@ -49772,7 +53281,7 @@
     "score": 65,
     "factors": {
       "epoch": 0.085,
-      "recency": 0.9,
+      "recency": 0.89,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -50188,7 +53697,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -50202,7 +53711,7 @@
     "score": 70,
     "factors": {
       "epoch": 0.287,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.99,
       "quality": 1,
       "amplitude": 1,
@@ -50672,10 +54181,10 @@
   {
     "id": "ticon/alvarado_flotador-22-mex-unam",
     "accepted": false,
-    "score": 36,
+    "score": 35,
     "factors": {
       "epoch": 0.148,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.141,
       "quality": 0,
       "amplitude": 1,
@@ -50787,7 +54296,7 @@
     "score": 72,
     "factors": {
       "epoch": 0.314,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -50900,7 +54409,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -50971,14 +54480,14 @@
   {
     "id": "ticon/ammassalik-297a-dnk-uhslc_rq",
     "accepted": true,
-    "score": 70,
+    "score": 63,
     "factors": {
       "epoch": 0.437,
       "recency": 0.72,
       "source": 0.192,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.576
     },
     "issues": []
   },
@@ -51713,7 +55222,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -53063,7 +56572,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -53184,7 +56693,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -53349,14 +56858,14 @@
   {
     "id": "ticon/barcelonatg-bar-esp-cmems",
     "accepted": true,
-    "score": 80,
+    "score": 66,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
       "source": 0.02,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.062
     },
     "issues": []
   },
@@ -53757,7 +57266,7 @@
     "score": 87,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -54170,7 +57679,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -54186,7 +57695,7 @@
     "score": 85,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -54294,7 +57803,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -54322,7 +57831,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 0.75,
@@ -54342,7 +57851,7 @@
     "score": 97,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -55239,7 +58748,7 @@
       "source": 0.02,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.131
+      "coverage": 0.111
     },
     "issues": []
   },
@@ -55533,7 +59042,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -56505,7 +60014,7 @@
     "score": 90,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -57152,7 +60661,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -57952,7 +61461,7 @@
     "score": 89,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -58084,7 +61593,7 @@
     "score": 88,
     "factors": {
       "epoch": 0.945,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -58454,7 +61963,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.86,
-      "recency": 0.54,
+      "recency": 0.53,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -59435,7 +62944,7 @@
     "score": 93,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -59805,7 +63314,7 @@
     "score": 78,
     "factors": {
       "epoch": 0.457,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -60022,7 +63531,7 @@
     "score": 85,
     "factors": {
       "epoch": 1,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.99,
       "quality": 1,
       "amplitude": 1,
@@ -60052,7 +63561,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -60550,7 +64059,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -60783,7 +64292,7 @@
     "score": 95,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -61169,7 +64678,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -61517,7 +65026,7 @@
     "score": 88,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -68696,7 +72205,7 @@
     "score": 73,
     "factors": {
       "epoch": 0.45,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -69329,7 +72838,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -71145,14 +74654,14 @@
   {
     "id": "ticon/eden-60530-aus-bom",
     "accepted": true,
-    "score": 98,
+    "score": 84,
     "factors": {
       "epoch": 1,
       "recency": 0.96,
       "source": 0.939,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.072
     },
     "issues": []
   },
@@ -71670,7 +75179,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -71926,7 +75435,7 @@
     "score": 67,
     "factors": {
       "epoch": 0.361,
-      "recency": 0.53,
+      "recency": 0.52,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -72154,14 +75663,14 @@
   {
     "id": "ticon/exmouth-62435-aus-bom",
     "accepted": true,
-    "score": 98,
+    "score": 88,
     "factors": {
       "epoch": 1,
       "recency": 0.96,
       "source": 0.939,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.324
     },
     "issues": []
   },
@@ -72281,7 +75790,7 @@
     "score": 66,
     "factors": {
       "epoch": 0.066,
-      "recency": 0.9,
+      "recency": 0.89,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -73304,7 +76813,7 @@
     "score": 39,
     "factors": {
       "epoch": 0.059,
-      "recency": 0.27,
+      "recency": 0.26,
       "source": 0,
       "quality": 1,
       "amplitude": 1,
@@ -75323,7 +78832,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -75370,14 +78879,14 @@
   {
     "id": "ticon/gold_coast_southport-60051-aus-bom",
     "accepted": true,
-    "score": 98,
+    "score": 84,
     "factors": {
       "epoch": 1,
       "recency": 0.96,
       "source": 0.939,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.07
     },
     "issues": []
   },
@@ -75387,7 +78896,7 @@
     "score": 89,
     "factors": {
       "epoch": 0.722,
-      "recency": 0.68,
+      "recency": 0.67,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -75433,14 +78942,14 @@
   {
     "id": "ticon/gomeratg-gom-esp-cmems",
     "accepted": true,
-    "score": 74,
+    "score": 70,
     "factors": {
       "epoch": 0.994,
       "recency": 0.99,
       "source": 0.02,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.563
+      "coverage": 0.289
     },
     "issues": []
   },
@@ -76592,7 +80101,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -76785,7 +80294,7 @@
     "score": 58,
     "factors": {
       "epoch": 0.09,
-      "recency": 0.91,
+      "recency": 0.9,
       "source": 0.596,
       "quality": 1,
       "amplitude": 1,
@@ -77769,7 +81278,7 @@
     "score": 87,
     "factors": {
       "epoch": 0.419,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -78335,14 +81844,14 @@
   {
     "id": "ticon/henslung_cove-9958-can-meds",
     "accepted": true,
-    "score": 87,
+    "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.169
+      "coverage": 0.132
     },
     "issues": []
   },
@@ -81193,7 +84702,7 @@
     "score": 76,
     "factors": {
       "epoch": 0.321,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -81270,7 +84779,7 @@
     "score": 63,
     "factors": {
       "epoch": 0.196,
-      "recency": 0.44,
+      "recency": 0.43,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -82081,7 +85590,7 @@
     "score": 61,
     "factors": {
       "epoch": 0.698,
-      "recency": 0.86,
+      "recency": 0.85,
       "source": 0.192,
       "quality": 1,
       "amplitude": 1,
@@ -82157,14 +85666,14 @@
   {
     "id": "ticon/jakarta-161a-idn-uhslc_rq",
     "accepted": true,
-    "score": 78,
+    "score": 67,
     "factors": {
       "epoch": 0.965,
       "recency": 0.78,
       "source": 0.192,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.786
+      "coverage": 0.093
     },
     "issues": [
       "MLWS (1.945) > MLW (1.885)",
@@ -83669,7 +87178,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.055,
-      "recency": 0.51,
+      "recency": 0.5,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
@@ -84451,10 +87960,10 @@
   {
     "id": "ticon/kingston_ontario-13988-can-meds",
     "accepted": true,
-    "score": 90,
+    "score": 89,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -84468,14 +87977,14 @@
   {
     "id": "ticon/kingstow-795-vct-uhslc_fd",
     "accepted": true,
-    "score": 83,
+    "score": 73,
     "factors": {
       "epoch": 0.166,
       "recency": 0.99,
       "source": 0.99,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.362
     },
     "issues": []
   },
@@ -84485,7 +87994,7 @@
     "score": 89,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -84576,7 +88085,7 @@
     "score": 92,
     "factors": {
       "epoch": 0.633,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -84590,7 +88099,7 @@
     "score": 72,
     "factors": {
       "epoch": 0.372,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -85103,14 +88612,14 @@
   {
     "id": "ticon/koroni-kor-grc-cmems",
     "accepted": true,
-    "score": 55,
+    "score": 48,
     "factors": {
       "epoch": 0.478,
       "recency": 0.96,
       "source": 0.02,
       "quality": 0,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.568
     },
     "issues": []
   },
@@ -86264,7 +89773,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -86347,7 +89856,7 @@
     "score": 75,
     "factors": {
       "epoch": 0.318,
-      "recency": 0.92,
+      "recency": 0.91,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -86819,7 +90328,7 @@
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.169
+      "coverage": 0.148
     },
     "issues": []
   },
@@ -86876,14 +90385,14 @@
   {
     "id": "ticon/langkawi-142-mys-uhslc_fd",
     "accepted": true,
-    "score": 99,
+    "score": 91,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
       "source": 0.99,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.974
+      "coverage": 0.395
     },
     "issues": []
   },
@@ -88485,7 +91994,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -89015,7 +92524,7 @@
     "score": 83,
     "factors": {
       "epoch": 1,
-      "recency": 0.74,
+      "recency": 0.73,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -89434,7 +92943,7 @@
     "score": 88,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -89448,7 +92957,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -90039,14 +93548,14 @@
   {
     "id": "ticon/macau-338a-prt-uhslc_rq",
     "accepted": true,
-    "score": 68,
+    "score": 63,
     "factors": {
       "epoch": 0.398,
       "recency": 0.59,
       "source": 0.192,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.719
     },
     "issues": []
   },
@@ -91500,14 +95009,14 @@
   {
     "id": "ticon/marmaris-mar-tur-cmems",
     "accepted": true,
-    "score": 46,
+    "score": 35,
     "factors": {
       "epoch": 0.106,
       "recency": 0.96,
       "source": 0.02,
       "quality": 0,
       "amplitude": 1,
-      "coverage": 0.908
+      "coverage": 0.184
     },
     "issues": []
   },
@@ -92025,7 +95534,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.255,
-      "recency": 0.44,
+      "recency": 0.43,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -92749,7 +96258,7 @@
     "score": 60,
     "factors": {
       "epoch": 1,
-      "recency": 0.49,
+      "recency": 0.48,
       "source": 0,
       "quality": 1,
       "amplitude": 1,
@@ -92946,7 +96455,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -93216,7 +96725,7 @@
     "score": 92,
     "factors": {
       "epoch": 0.837,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -94467,7 +97976,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -94625,7 +98134,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -94850,7 +98359,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -95371,7 +98880,7 @@
     "score": 69,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 0,
       "amplitude": 1,
@@ -95487,7 +98996,7 @@
     "score": 79,
     "factors": {
       "epoch": 0.509,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -96365,7 +99874,7 @@
     "score": 91,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -96562,7 +100071,7 @@
     "score": 87,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -97625,7 +101134,7 @@
     "score": 69,
     "factors": {
       "epoch": 0.089,
-      "recency": 0.92,
+      "recency": 0.91,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -97774,7 +101283,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -98389,7 +101898,7 @@
     "score": 66,
     "factors": {
       "epoch": 0.206,
-      "recency": 0.44,
+      "recency": 0.43,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -100585,14 +104094,14 @@
   {
     "id": "ticon/paleafokea-pal-grc-cmems",
     "accepted": true,
-    "score": 47,
+    "score": 43,
     "factors": {
       "epoch": 0.087,
       "recency": 0.96,
       "source": 0.02,
       "quality": 0,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.746
     },
     "issues": []
   },
@@ -101034,7 +104543,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -101221,7 +104730,7 @@
     "score": 85,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -102411,10 +105920,10 @@
   {
     "id": "ticon/point_atkinson_bc-7795-can-meds",
     "accepted": true,
-    "score": 85,
+    "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -102428,7 +105937,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -102443,14 +105952,14 @@
   {
     "id": "ticon/point_fortin-728a-tto-uhslc_rq",
     "accepted": true,
-    "score": 72,
+    "score": 70,
     "factors": {
       "epoch": 0.537,
       "recency": 0.7,
       "source": 0.192,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.913
     },
     "issues": []
   },
@@ -102619,7 +106128,7 @@
     "score": 82,
     "factors": {
       "epoch": 1,
-      "recency": 0.58,
+      "recency": 0.57,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -102665,7 +106174,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.95,
+      "recency": 0.94,
       "source": 0.96,
       "quality": 1,
       "amplitude": 0.75,
@@ -102684,7 +106193,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.95,
+      "recency": 0.94,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103111,7 +106620,7 @@
     "score": 75,
     "factors": {
       "epoch": 0.554,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103153,7 +106662,7 @@
     "score": 83,
     "factors": {
       "epoch": 0.752,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103184,7 +106693,7 @@
     "score": 89,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103325,7 +106834,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103478,7 +106987,7 @@
     "score": 92,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103509,7 +107018,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103662,7 +107171,7 @@
     "score": 97,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103676,7 +107185,7 @@
     "score": 75,
     "factors": {
       "epoch": 0.517,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103863,7 +107372,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104048,7 +107557,7 @@
     "score": 73,
     "factors": {
       "epoch": 0.322,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104259,7 +107768,7 @@
     "score": 78,
     "factors": {
       "epoch": 0.322,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104289,7 +107798,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104383,7 +107892,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.057,
-      "recency": 0.51,
+      "recency": 0.5,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
@@ -104402,7 +107911,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104633,7 +108142,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104944,7 +108453,7 @@
     "score": 89,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -105426,7 +108935,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -105523,7 +109032,7 @@
     "score": 49,
     "factors": {
       "epoch": 1,
-      "recency": 0.68,
+      "recency": 0.67,
       "source": 0.131,
       "quality": 0,
       "amplitude": 1,
@@ -106035,14 +109544,14 @@
   {
     "id": "ticon/puerto_williams-287a-chl-uhslc_rq",
     "accepted": true,
-    "score": 76,
+    "score": 74,
     "factors": {
       "epoch": 0.806,
       "recency": 0.73,
       "source": 0.192,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.913
+      "coverage": 0.81
     },
     "issues": []
   },
@@ -106396,7 +109905,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -106410,7 +109919,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -107032,7 +110541,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.537,
-      "recency": 0.55,
+      "recency": 0.54,
       "source": 0.495,
       "quality": 1,
       "amplitude": 1,
@@ -107625,7 +111134,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -107831,7 +111340,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -109032,7 +112541,7 @@
     "score": 73,
     "factors": {
       "epoch": 0.31,
-      "recency": 0.94,
+      "recency": 0.93,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -109166,7 +112675,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -109649,7 +113158,7 @@
     "score": 67,
     "factors": {
       "epoch": 0.096,
-      "recency": 0.93,
+      "recency": 0.92,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -110276,7 +113785,7 @@
       "source": 0.99,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.969
     },
     "issues": []
   },
@@ -110342,7 +113851,7 @@
     "score": 87,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -110428,7 +113937,7 @@
     "score": 85,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -110442,7 +113951,7 @@
     "score": 92,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -110456,7 +113965,7 @@
     "score": 81,
     "factors": {
       "epoch": 0.676,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -110570,7 +114079,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.95,
+      "recency": 0.94,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -111070,14 +114579,14 @@
   {
     "id": "ticon/samothraki-sam-grc-cmems",
     "accepted": true,
-    "score": 53,
+    "score": 51,
     "factors": {
       "epoch": 0.377,
       "recency": 0.97,
       "source": 0.02,
       "quality": 0,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.902
     },
     "issues": []
   },
@@ -111881,7 +115390,7 @@
     "score": 84,
     "factors": {
       "epoch": 0.961,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -112054,7 +115563,7 @@
     "score": 81,
     "factors": {
       "epoch": 0.816,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -112508,7 +116017,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -112525,7 +116034,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -113157,7 +116666,7 @@
     "score": 76,
     "factors": {
       "epoch": 0.553,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -113313,7 +116822,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -114042,7 +117551,7 @@
     "score": 74,
     "factors": {
       "epoch": 0.448,
-      "recency": 0.94,
+      "recency": 0.93,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -114978,7 +118487,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -115478,14 +118987,14 @@
   {
     "id": "ticon/split-spl-hrv-eseas",
     "accepted": true,
-    "score": 71,
+    "score": 68,
     "factors": {
       "epoch": 0.172,
       "recency": 0.33,
       "source": 0.727,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.756
     },
     "issues": []
   },
@@ -115951,7 +119460,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -116019,7 +119528,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.64,
+      "recency": 0.63,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -116038,7 +119547,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -116482,7 +119991,7 @@
     "score": 73,
     "factors": {
       "epoch": 0.44,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -116496,7 +120005,7 @@
     "score": 74,
     "factors": {
       "epoch": 0.461,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -116688,7 +120197,7 @@
     "score": 58,
     "factors": {
       "epoch": 1,
-      "recency": 0.28,
+      "recency": 0.27,
       "source": 0,
       "quality": 1,
       "amplitude": 1,
@@ -117120,7 +120629,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -117716,7 +121225,7 @@
     "score": 88,
     "factors": {
       "epoch": 1,
-      "recency": 0.88,
+      "recency": 0.87,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -118955,7 +122464,7 @@
     "score": 96,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -119161,7 +122670,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -119341,7 +122850,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -119439,7 +122948,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -119788,7 +123297,7 @@
     "score": 98,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -120308,7 +123817,7 @@
     "score": 87,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -120517,7 +124026,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -120826,10 +124335,10 @@
   {
     "id": "ticon/ucluelet_bc-8595-can-meds",
     "accepted": true,
-    "score": 79,
+    "score": 78,
     "factors": {
       "epoch": 0.242,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -120964,7 +124473,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -121158,7 +124667,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.269,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -121625,7 +125134,7 @@
     "score": 85,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -121791,7 +125300,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -121983,7 +125492,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.351,
-      "recency": 0.66,
+      "recency": 0.65,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
@@ -122291,7 +125800,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -122351,10 +125860,10 @@
   {
     "id": "ticon/vieux_quebec-3248-can-meds",
     "accepted": true,
-    "score": 82,
+    "score": 81,
     "factors": {
       "epoch": 0.857,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -122712,14 +126221,14 @@
   {
     "id": "ticon/vlaktevdraantg-vla-nld-cmems",
     "accepted": true,
-    "score": 61,
+    "score": 60,
     "factors": {
       "epoch": 0.586,
       "recency": 0.99,
       "source": 0.02,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.263
+      "coverage": 0.207
     },
     "issues": []
   },
@@ -124723,7 +128232,7 @@
     "score": 88,
     "factors": {
       "epoch": 1,
-      "recency": 0.93,
+      "recency": 0.92,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -125098,10 +128607,10 @@
   {
     "id": "ticon/winter_harbour_bc-8735-can-meds",
     "accepted": true,
-    "score": 98,
+    "score": 97,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -125115,7 +128624,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.537,
-      "recency": 0.7,
+      "recency": 0.69,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
@@ -125257,7 +128766,7 @@
     "score": 77,
     "factors": {
       "epoch": 1,
-      "recency": 0.77,
+      "recency": 0.76,
       "source": 0.727,
       "quality": 1,
       "amplitude": 1,
@@ -125405,7 +128914,7 @@
     "score": 75,
     "factors": {
       "epoch": 0.434,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -125512,14 +129021,14 @@
   {
     "id": "ticon/xiamen-376a-chn-uhslc_rq",
     "accepted": true,
-    "score": 81,
+    "score": 73,
     "factors": {
       "epoch": 1,
       "recency": 0.71,
       "source": 0.192,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.454
     },
     "issues": []
   },
@@ -125690,7 +129199,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -126035,14 +129544,14 @@
   {
     "id": "ticon/zakynthos-zak-grc-cmems",
     "accepted": true,
-    "score": 68,
+    "score": 65,
     "factors": {
       "epoch": 0.404,
       "recency": 0.98,
       "source": 0.02,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0.793
     },
     "issues": []
   },

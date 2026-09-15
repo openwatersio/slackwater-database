@@ -32,6 +32,8 @@ export interface StationData {
     id: string;
     published_harmonics: boolean;
     url: string;
+    // Operating agency, where the source relays another operator's gauge (IOC).
+    operator?: string;
   };
 
   // License information
