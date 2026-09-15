@@ -17,24 +17,24 @@
  *
  * A drop in the |median| residual from harmonic → observed is the fix #40 asks
  * for. Run after the GESLA download (@neaps/datums). Reads GESLA directly, so it
- * does not depend on `import-ticon` having been run.
+ * does not depend on the TICON import having been run.
  */
 
 import { readFile, readdir } from "fs/promises";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
+import { join } from "path";
 import {
   computeDatums,
   computeDatumsFromObservations,
+  ensureGeslaData,
   parseGeslaSamples,
+  GESLA_DIR,
   type Datums,
 } from "@neaps/datums";
-import { ensureGeslaData, GESLA_DIR } from "@neaps/datums";
+import { DATA_DIR } from "./station.ts";
 import type { StationData } from "@neaps/tide-database";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const TICON_DIR = join(__dirname, "..", "data", "ticon");
-const NOAA_DIR = join(__dirname, "..", "data", "noaa");
+const TICON_DIR = join(DATA_DIR, "ticon");
+const NOAA_DIR = join(DATA_DIR, "noaa");
 
 const REL_KEYS = ["MN", "GT", "dHi", "dLo"] as const;
 type Rels = Record<(typeof REL_KEYS)[number], number>;
