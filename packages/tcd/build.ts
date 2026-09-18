@@ -3,6 +3,10 @@
  * Generates XTide-compatible harmonics.txt and offsets.xml files from station JSON
  * data. These files are then compiled into a binary TCD (Tide Constituent Database)
  * using `build_tide_db` from tcd-utils.
+ *
+ * build_tide_db parses its input with fixed-size buffers and line matching rather
+ * than real parsers; comments prefixed `build_tide_db:` mark each constraint. Source:
+ * https://flaterco.com/files/xtide/tcd-utils-20240222.tar.xz (build_tide_db.c, xml.c)
  */
 
 import { writeFile, mkdir } from "fs/promises";
@@ -162,8 +166,7 @@ function formatTimeOffset(minutes: number): string {
 }
 
 /** Format station name for TCD (replace double quotes with single quotes) */
-// libtcd has a 30-byte buffer for timezone names (29 chars max)
-const TZ_MAX_LEN = 29;
+const TZ_MAX_LEN = 29; // build_tide_db: tzfile is a 30-byte field
 
 function tcdTimezone(tz: string): string {
   if (tz.length <= TZ_MAX_LEN) return tz;
@@ -203,21 +206,12 @@ function joinName(station: Station, parts: string[]): string {
   return station.kind === "current" ? `${name} Current` : name;
 }
 
-/*
- * libtcd stores names in a 90-byte buffer. build_tide_db counts the newline
- * of the harmonics.txt line against it, and reads a subordinate's name from
- * offsets.xml with the `<subordinatestation name="` prefix and closing quote
- * in the same buffer, silently dropping the station when it doesn't fit.
- */
+// build_tide_db: 90-byte name buffer, which also holds the harmonics.txt newline
 const REFERENCE_NAME_MAX_LEN = 88;
+// build_tide_db: reads `<subordinatestation name="…"` into that same buffer and silently drops stations that overflow it
 const SUBORDINATE_NAME_MAX_LEN = 63;
 
-/**
- * TCD names for every station. Subordinates find their reference by name, so
- * current names must be unique; NOAA publishes several currents under one
- * name (different depths or positions), so colliding names get the source id
- * appended. Names over the libtcd limit lose their trailing parts.
- */
+/** Subordinates find their reference by name, so NOAA currents that share a name get their source id appended. */
 function buildStationNames(stations: Station[]): Map<string, string> {
   const counts = new Map<string, number>();
   for (const s of stations) {
@@ -285,7 +279,7 @@ function generateHarmonicsTxt(
   const lines: string[] = [];
   const masterSet = new Set(masterConstituents);
 
-  // Legal boilerplate - build_tide_db requires "MERCHANTABILITY" in the preamble
+  // build_tide_db: skips the preamble up to a line containing MERCHANTABILITY, then requires a lone "#" line
   lines.push(HARMONICS_HEADER);
   lines.push(`#
 # ------------- Begin congen output -------------
@@ -411,11 +405,9 @@ ${NUM_YEARS}`);
       lines.push(`# country: ${station.country}`);
     }
     if (station.disclaimers) {
-      // build_tide_db uses fgets with a 256-byte buffer, so lines must be <255 chars.
-      // Wrap long note lines at word boundaries to avoid splitting mid-word.
       const notePrefix = "# note: ";
       const contPrefix = "# ";
-      const maxLen = 254; // max chars per line (excluding \n)
+      const maxLen = 254; // build_tide_db: reads lines with a 256-byte fgets, so longer lines split mid-record
 
       const words = station.disclaimers.split(/\s+/);
       let currentLine = notePrefix;
@@ -437,8 +429,7 @@ ${NUM_YEARS}`);
         lines.push(currentLine);
       }
     }
-    // Currents are in knots in both unit systems. Their datum offset is the
-    // mean flow, and the harmonic sum is velocity along the flood direction.
+    // Currents stay in knots in both unit systems; their datum offset is the mean flow
     const current = station.kind === "current" ? station.current : undefined;
     const levelUnits = current ? "knots" : unitLabel(units);
     const level = (value: number) =>
@@ -447,6 +438,7 @@ ${NUM_YEARS}`);
     // Determine chart datum for this station
     const chartDatum = station.chart_datum ?? "MLLW";
     if (current) {
+      // No datum line: build_tide_db stores its MLLW default, which XTide doesn't show for currents
       // XTide reads max_direction as flood and min_direction as ebb
       if (current.flood_direction !== undefined) {
         lines.push(`# max_direction: ${Math.round(current.flood_direction)}`);
@@ -467,7 +459,6 @@ ${NUM_YEARS}`);
     lines.push(names.get(station.id)!);
 
     // Time zone: phases are in UTC, so meridian is 0:00
-    // libtcd has a 30-byte tzfile limit (29 chars + null)
     lines.push(`0:00 ${tcdTimezone(station.timezone)}`);
 
     if (current) {
@@ -516,15 +507,9 @@ ${NUM_YEARS}`);
 // Generate offsets.xml
 // ---------------------------------------------------------------------------
 
-/*
- * build_tide_db is not an XML parser. It reads offsets.xml a line at a time
- * through a 256-byte buffer, takes one attribute per line, and copies each
- * value verbatim from between the quotes. So every attribute goes on its own
- * line, as in XTide's own offsets.xml, and values are written unescaped.
- */
-
 type Attributes = [string, string][];
 
+// build_tide_db: copies values verbatim from between the quotes without decoding entities, so values are written unescaped
 function attr(value: string): string {
   if (value.includes('"')) {
     throw new Error(`offsets.xml values can't contain quotes: ${value}`);
@@ -592,11 +577,7 @@ function tideOffsets(station: Station, units: UnitSystem): string[] {
   ];
 }
 
-/**
- * Max is flood and min is ebb. Speed ratios multiply the reference current's
- * velocity, so they carry no units. Slack offsets are omitted when unknown so
- * XTide interpolates them, since libtcd treats an explicit zero as zero.
- */
+/** Max is flood and min is ebb; speed ratios are unitless multipliers on the reference current. */
 function currentOffsets(offsets: CurrentOffsets, station: Station): string[] {
   const extreme = (
     indent: string,
@@ -635,6 +616,7 @@ function currentOffsets(offsets: CurrentOffsets, station: Station): string[] {
     ),
     "      </min>",
   ];
+  // build_tide_db: an explicit 0:00 slack offset means zero; omitted, XTide interpolates it
   if (offsets.slack_before_flood !== undefined) {
     lines.push(
       element("      ", "floodbegins", [
@@ -719,7 +701,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
       ["reference", refName],
     ];
     lines.push(
+      // build_tide_db: finds each station by this literal prefix, so name must share its line
       `  <subordinatestation name=${attr(names.get(station.id)!)}`,
+      // build_tide_db: reads one attribute per line
       ...attrs.map(
         ([k, v], i) =>
           `    ${k}=${attr(v)}${i === attrs.length - 1 ? ">" : ""}`,
@@ -746,18 +730,14 @@ type CurrentOffsets = NonNullable<CurrentData["offsets"]> & {
   ebb_speed_ratio: number;
 };
 
-/**
- * The offsets of a subordinate current, or undefined for a tide station or a
- * current that libtcd can't represent. Extreme times and speed ratios are
- * required. libtcd reads a level multiply of zero as "none", so a published
- * zero speed ratio (no flood or no ebb) would predict at full strength.
- */
+/** The offsets of a subordinate current, or undefined for a tide station or a current libtcd can't represent. */
 function currentOffsetsOf(station: Station): CurrentOffsets | undefined {
   if (station.kind !== "current") return undefined;
   const offsets = station.current?.offsets;
   if (
     offsets?.flood_time === undefined ||
     offsets.ebb_time === undefined ||
+    // build_tide_db: a levelmultiply of 0 means unset (1.0), so a zero speed ratio can't be represented
     !offsets.flood_speed_ratio ||
     !offsets.ebb_speed_ratio
   ) {
