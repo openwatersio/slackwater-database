@@ -94,7 +94,7 @@ final class TideDatabaseTests: XCTestCase {
   }
 
   // Sanity check against the real database, not the fixture. Opt-in because
-  // the file is generated: NEAPS_TCDB=../../src/generated/neaps.tcdb
+  // the file is generated: NEAPS_TCDB=../database/src/generated/neaps.tcdb
   func testOpensTheShippedDatabase() throws {
     guard let path = ProcessInfo.processInfo.environment["NEAPS_TCDB"] else {
       throw XCTSkip("Set NEAPS_TCDB to a database file to run")

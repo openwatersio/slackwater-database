@@ -87,13 +87,13 @@ jobs:
           path: packages/tcd/dist/
 
   swift:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
       - name: Setup mise (flatc)
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -115,7 +115,7 @@ jobs:
       - name: Run Swift tests
         run: npm run test -w swift
         env:
-          NEAPS_TCDB: ${{ github.workspace }}/src/generated/neaps.tcdb
+          NEAPS_TCDB: ${{ github.workspace }}/packages/database/src/generated/neaps.tcdb
 
   lint:
     runs-on: ubuntu-latest

@@ -7,8 +7,8 @@
 import { writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildDatabase } from "../../../src/database/builder.ts";
-import type { StationInput } from "../../../src/types.ts";
+import { buildDatabase } from "../../database/src/database/builder.ts";
+import type { StationInput } from "../../database/src/types.ts";
 
 const stations: StationInput[] = [
   {
