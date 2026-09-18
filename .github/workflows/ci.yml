@@ -86,6 +86,37 @@ jobs:
           name: tcd
           path: packages/tcd/dist/
 
+  swift:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup mise (flatc)
+        uses: jdx/mise-action@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      # The Swift tests need only the fixture generator, which imports the
+      # builder source; skip the root package's prepare build.
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+
+      # The generated Swift is committed (SwiftPM consumers can't run flatc),
+      # so fail when it drifts from the schema.
+      - name: Check generated code matches the schema
+        run: |
+          npm run generate -w swift
+          git diff --exit-code -- packages/swift/Sources
+
+      - name: Run Swift tests
+        run: npm run test -w swift
+        env:
+          NEAPS_TCDB: ${{ github.workspace }}/packages/database/src/generated/neaps.tcdb
+
   lint:
     runs-on: ubuntu-latest
     steps:
