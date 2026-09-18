@@ -104,7 +104,12 @@ final class TideDatabaseTests: XCTestCase {
     XCTAssertGreaterThan(db.count, 1000)
     let first = db[0]
     XCTAssertEqual(db.station(id: first.id)?.name, first.name)
-    let reference = try XCTUnwrap(db.first { $0.type == .reference && $0.accepted })
+    // Reference type alone does not imply harmonics: identity-only registry
+    // ports and current stations are reference-type records without any.
+    let reference = try XCTUnwrap(db.station(id: "noaa/9447130"))
+    XCTAssertEqual(reference.kind, .tide)
+    XCTAssertEqual(reference.type, .reference)
+    XCTAssertTrue(reference.accepted)
     XCTAssertFalse(reference.constituents.isEmpty)
     XCTAssertFalse(reference.datums.isEmpty)
   }
