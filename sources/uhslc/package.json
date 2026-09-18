@@ -1,0 +1,15 @@
+{
+  "name": "@neaps/uhslc",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "inventory": "node inventory.ts"
+  },
+  "dependencies": {
+    "@neaps/stations": "*",
+    "make-fetch-happen": "^16.0.0"
+  },
+  "devDependencies": {
+    "@types/make-fetch-happen": "^10.0.4"
+  }
+}
