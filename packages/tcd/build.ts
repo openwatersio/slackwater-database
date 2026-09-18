@@ -8,9 +8,13 @@
 import { writeFile, mkdir } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import { create } from "xmlbuilder2";
 import tidePredictor, { astro } from "@neaps/tide-predictor";
-import { stations, type Station, type StationData } from "@neaps/tide-database";
+import {
+  stations,
+  type CurrentData,
+  type Station,
+  type StationData,
+} from "@neaps/tide-database";
 
 const constituents = tidePredictor.constituents;
 
@@ -181,15 +185,78 @@ function tcdTimezone(tz: string): string {
   return ":UTC";
 }
 
-function formatStationName(station: Station): string {
-  let name = station.name.replace(/"/g, "'");
-  if (station.region) {
-    name += `, ${station.region}`;
+/**
+ * Name parts from most to least specific. Currents follow XTide's
+ * "Name, Region Current" convention.
+ */
+function nameParts(station: Station): string[] {
+  const parts = [station.name.replace(/"/g, "'")];
+  if (station.region) parts.push(station.region);
+  if (station.country && station.kind !== "current") {
+    parts.push(station.country);
   }
-  if (station.country) {
-    name += `, ${station.country}`;
+  return parts;
+}
+
+function joinName(station: Station, parts: string[]): string {
+  const name = parts.join(", ");
+  return station.kind === "current" ? `${name} Current` : name;
+}
+
+/*
+ * libtcd stores names in a 90-byte buffer. build_tide_db counts the newline
+ * of the harmonics.txt line against it, and reads a subordinate's name from
+ * offsets.xml with the `<subordinatestation name="` prefix and closing quote
+ * in the same buffer, silently dropping the station when it doesn't fit.
+ */
+const REFERENCE_NAME_MAX_LEN = 88;
+const SUBORDINATE_NAME_MAX_LEN = 63;
+
+/**
+ * TCD names for every station. Subordinates find their reference by name, so
+ * current names must be unique; NOAA publishes several currents under one
+ * name (different depths or positions), so colliding names get the source id
+ * appended. Names over the libtcd limit lose their trailing parts.
+ */
+function buildStationNames(stations: Station[]): Map<string, string> {
+  const counts = new Map<string, number>();
+  for (const s of stations) {
+    const name = joinName(s, nameParts(s));
+    counts.set(name, (counts.get(name) ?? 0) + 1);
   }
-  return name;
+
+  const names = new Map<string, string>();
+  const currentNames = new Set<string>();
+  for (const s of stations) {
+    let parts = nameParts(s);
+    const suffix =
+      s.kind === "current" && counts.get(joinName(s, parts))! > 1
+        ? ` (${s.source.id})`
+        : "";
+    const maxLen =
+      s.type === "subordinate"
+        ? SUBORDINATE_NAME_MAX_LEN
+        : REFERENCE_NAME_MAX_LEN;
+
+    let name = joinName(s, parts) + suffix;
+    while (name.length > maxLen && parts.length > 1) {
+      parts = parts.slice(0, -1);
+      name = joinName(s, parts) + suffix;
+    }
+    if (name.length > maxLen) {
+      throw new Error(
+        `Station name "${name}" exceeds ${maxLen} chars (${s.id})`,
+      );
+    }
+    if (s.kind === "current") {
+      if (currentNames.has(name)) {
+        throw new Error(`Duplicate current station name "${name}" (${s.id})`);
+      }
+      currentNames.add(name);
+    }
+    names.set(s.id, name);
+  }
+  return names;
 }
 
 // ---------------------------------------------------------------------------
@@ -211,6 +278,7 @@ const HARMONICS_HEADER = `# Tide Harmonics Database
 
 function generateHarmonicsTxt(
   stations: Station[],
+  names: Map<string, string>,
   masterConstituents: string[],
   units: UnitSystem,
 ): string {
@@ -369,27 +437,48 @@ ${NUM_YEARS}`);
         lines.push(currentLine);
       }
     }
+    // Currents are in knots in both unit systems. Their datum offset is the
+    // mean flow, and the harmonic sum is velocity along the flood direction.
+    const current = station.kind === "current" ? station.current : undefined;
+    const levelUnits = current ? "knots" : unitLabel(units);
+    const level = (value: number) =>
+      current ? value : convertLength(value, units);
+
     // Determine chart datum for this station
     const chartDatum = station.chart_datum ?? "MLLW";
-    lines.push(`# datum: ${chartDatum}`);
+    if (current) {
+      // XTide reads max_direction as flood and min_direction as ebb
+      if (current.flood_direction !== undefined) {
+        lines.push(`# max_direction: ${Math.round(current.flood_direction)}`);
+      }
+      if (current.ebb_direction !== undefined) {
+        lines.push(`# min_direction: ${Math.round(current.ebb_direction)}`);
+      }
+    } else {
+      lines.push(`# datum: ${chartDatum}`);
+    }
     lines.push(`# restriction: Public Domain`);
     lines.push(`# confidence: 10`);
-    lines.push(`# !units: ${unitLabel(units)}`);
+    lines.push(`# !units: ${levelUnits}`);
     lines.push(`# !longitude: ${station.longitude.toFixed(4)}`);
     lines.push(`# !latitude: ${station.latitude.toFixed(4)}`);
 
     // Station name
-    lines.push(formatStationName(station));
+    lines.push(names.get(station.id)!);
 
     // Time zone: phases are in UTC, so meridian is 0:00
     // libtcd has a 30-byte tzfile limit (29 chars + null)
     lines.push(`0:00 ${tcdTimezone(station.timezone)}`);
 
-    // Datum offset Z₀: mean sea level above the station's chart datum
-    const msl = station.datums?.["MSL"] ?? 0;
-    const datumValue = station.datums?.[chartDatum] ?? 0;
-    const datumOffset = convertLength(msl - datumValue, units);
-    lines.push(`${datumOffset.toFixed(4)} ${unitLabel(units)}`);
+    if (current) {
+      lines.push(`${(current.mean_flow ?? 0).toFixed(4)} ${levelUnits}`);
+    } else {
+      // Datum offset Z₀: mean sea level above the station's chart datum
+      const msl = station.datums?.["MSL"] ?? 0;
+      const datumValue = station.datums?.[chartDatum] ?? 0;
+      const datumOffset = convertLength(msl - datumValue, units);
+      lines.push(`${datumOffset.toFixed(4)} ${levelUnits}`);
+    }
 
     // Build constituent map for this station
     const stationConstituents = new Map<
@@ -410,7 +499,7 @@ ${NUM_YEARS}`);
     for (const name of masterConstituents) {
       const hc = stationConstituents.get(name);
       if (hc && (hc.amplitude !== 0 || hc.phase !== 0)) {
-        const amp = convertLength(hc.amplitude, units);
+        const amp = level(hc.amplitude);
         lines.push(
           `${name.padEnd(10)}     ${amp.toFixed(4).padStart(7)}  ${hc.phase.toFixed(2).padStart(6)}`,
         );
@@ -427,40 +516,153 @@ ${NUM_YEARS}`);
 // Generate offsets.xml
 // ---------------------------------------------------------------------------
 
-function addOffsetElements(
-  parent: ReturnType<typeof create>,
+/*
+ * build_tide_db is not an XML parser. It reads offsets.xml a line at a time
+ * through a 256-byte buffer, takes one attribute per line, and copies each
+ * value verbatim from between the quotes. So every attribute goes on its own
+ * line, as in XTide's own offsets.xml, and values are written unescaped.
+ */
+
+type Attributes = [string, string][];
+
+function attr(value: string): string {
+  if (value.includes('"')) {
+    throw new Error(`offsets.xml values can't contain quotes: ${value}`);
+  }
+  return `"${value}"`;
+}
+
+function element(indent: string, tag: string, attrs: Attributes): string {
+  return `${indent}<${tag}${attrs.map(([k, v]) => ` ${k}=${attr(v)}`).join("")}/>`;
+}
+
+function tideOffsetElements(
+  indent: string,
   timeOffset: number,
   heightOffset: number,
   heightType: string,
   units: UnitSystem,
-) {
+): string[] {
+  const lines: string[] = [];
   if (timeOffset !== 0) {
-    parent.ele("timeadd").att("value", formatTimeOffset(timeOffset)).up();
+    lines.push(
+      element(indent, "timeadd", [["value", formatTimeOffset(timeOffset)]]),
+    );
   }
   if (heightType === "fixed" && heightOffset !== 0) {
-    parent
-      .ele("leveladd")
-      .att("value", convertLength(heightOffset, units).toFixed(3))
-      .att("units", unitLabel(units))
-      .up();
+    lines.push(
+      element(indent, "leveladd", [
+        ["value", convertLength(heightOffset, units).toFixed(3)],
+        ["units", unitLabel(units)],
+      ]),
+    );
   }
   if (heightType === "ratio" && heightOffset !== 0 && heightOffset !== 1) {
-    parent.ele("levelmultiply").att("value", heightOffset.toFixed(3)).up();
+    lines.push(
+      element(indent, "levelmultiply", [["value", heightOffset.toFixed(3)]]),
+    );
   }
+  return lines;
+}
+
+function tideOffsets(station: Station, units: UnitSystem): string[] {
+  const offsets = station.offsets!;
+  const timeHigh = offsets.time?.high ?? 0;
+  const timeLow = offsets.time?.low ?? 0;
+  const heightType = offsets.height?.type ?? "ratio";
+  const heightHigh = offsets.height?.high ?? (heightType === "ratio" ? 1 : 0);
+  const heightLow = offsets.height?.low ?? (heightType === "ratio" ? 1 : 0);
+
+  if (timeHigh === timeLow && heightHigh === heightLow) {
+    return [
+      "    <simpleoffsets>",
+      ...tideOffsetElements("      ", timeHigh, heightHigh, heightType, units),
+      "    </simpleoffsets>",
+    ];
+  }
+  return [
+    "    <offsets>",
+    "      <max>",
+    ...tideOffsetElements("        ", timeHigh, heightHigh, heightType, units),
+    "      </max>",
+    "      <min>",
+    ...tideOffsetElements("        ", timeLow, heightLow, heightType, units),
+    "      </min>",
+    "    </offsets>",
+  ];
+}
+
+/**
+ * Max is flood and min is ebb. Speed ratios multiply the reference current's
+ * velocity, so they carry no units. Slack offsets are omitted when unknown so
+ * XTide interpolates them, since libtcd treats an explicit zero as zero.
+ */
+function currentOffsets(offsets: CurrentOffsets, station: Station): string[] {
+  const extreme = (
+    indent: string,
+    time: number,
+    ratio: number,
+    direction: number | undefined,
+  ) => [
+    element(indent, "timeadd", [["value", formatTimeOffset(time)]]),
+    element(indent, "levelmultiply", [["value", ratio.toFixed(3)]]),
+    ...(direction === undefined
+      ? []
+      : [
+          element(indent, "direction", [
+            ["value", String(Math.round(direction))],
+            ["units", "degrees true"],
+          ]),
+        ]),
+  ];
+
+  const lines = [
+    "    <offsets>",
+    "      <max>",
+    ...extreme(
+      "        ",
+      offsets.flood_time,
+      offsets.flood_speed_ratio,
+      station.current?.flood_direction,
+    ),
+    "      </max>",
+    "      <min>",
+    ...extreme(
+      "        ",
+      offsets.ebb_time,
+      offsets.ebb_speed_ratio,
+      station.current?.ebb_direction,
+    ),
+    "      </min>",
+  ];
+  if (offsets.slack_before_flood !== undefined) {
+    lines.push(
+      element("      ", "floodbegins", [
+        ["value", formatTimeOffset(offsets.slack_before_flood)],
+      ]),
+    );
+  }
+  if (offsets.slack_before_ebb !== undefined) {
+    lines.push(
+      element("      ", "ebbbegins", [
+        ["value", formatTimeOffset(offsets.slack_before_ebb)],
+      ]),
+    );
+  }
+  lines.push("    </offsets>");
+  return lines;
 }
 
 function generateOffsetsXml(
   stations: Station[],
-  referenceStations: Station[],
+  names: Map<string, string>,
   units: UnitSystem,
 ): string {
-  const doc = create({ version: "1.0", encoding: "ISO-8859-1" });
-
-  doc.com(" Tide database subordinate stations ");
-  doc.com(
-    " Generated by tide-database (https://openwaters.io/tides/database) ",
-  );
-  doc.com(`
+  const lines = [
+    `<?xml version="1.0" encoding="ISO-8859-1"?>`,
+    `<!-- Tide database subordinate stations -->`,
+    `<!-- Generated by tide-database (https://openwaters.io/tides/database) -->`,
+    `<!--
 
 Offset tide stations for use with XTide version 2.2.2 or later.
 
@@ -477,80 +679,91 @@ This data file is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-`);
-
-  const root = doc.ele("document");
-
-  // Build a map of reference station names for subordinate station references
-  const refNameMap = new Map<string, string>();
-  for (const station of referenceStations) {
-    refNameMap.set(station.id, formatStationName(station));
-  }
+-->`,
+    "<document>",
+  ];
 
   const subordinateStations = stations.filter(
-    (s) => s.type === "subordinate" && s.offsets,
+    (s) => s.type === "subordinate" && (currentOffsetsOf(s) || s.offsets),
   );
   console.error(
     `Writing ${subordinateStations.length} subordinate station records...`,
   );
+  const referenceIds = new Set(
+    stations.filter((s) => s.type === "reference").map((s) => s.id),
+  );
 
   for (const station of subordinateStations) {
-    const offsets = station.offsets!;
-    const refName = refNameMap.get(offsets.reference);
+    const current = currentOffsetsOf(station);
+    const reference = current?.reference ?? station.offsets!.reference;
+    const refName = referenceIds.has(reference)
+      ? names.get(reference)
+      : undefined;
 
     if (!refName) {
       console.error(
-        `WARNING: Subordinate station "${station.name}" references unknown station "${offsets.reference}", skipping`,
+        `WARNING: Subordinate station "${station.name}" references unknown station "${reference}", skipping`,
       );
       continue;
     }
 
-    const stationName = formatStationName(station);
-
-    const el = root
-      .ele("subordinatestation")
-      .att("name", stationName)
-      .att("latitude", station.latitude.toFixed(4))
-      .att("longitude", station.longitude.toFixed(4))
-      .att("timezone", station.timezone)
-      .att("country", station.country ?? "")
-      .att("source", station.source.name)
-      .att("restriction", "Public Domain")
-      .att("station_id_context", station.id.split("/")[0]!)
-      .att("station_id", station.source.id)
-      .att("reference", refName);
-
-    // Determine if we need simple or complex offsets
-    const timeHigh = offsets.time?.high ?? 0;
-    const timeLow = offsets.time?.low ?? 0;
-    const heightType = offsets.height?.type ?? "ratio";
-    const heightHigh = offsets.height?.high ?? (heightType === "ratio" ? 1 : 0);
-    const heightLow = offsets.height?.low ?? (heightType === "ratio" ? 1 : 0);
-
-    const isSimple = timeHigh === timeLow && heightHigh === heightLow;
-
-    if (isSimple) {
-      const simple = el.ele("simpleoffsets");
-      addOffsetElements(simple, timeHigh, heightHigh, heightType, units);
-      simple.up();
-    } else {
-      const offsetsEl = el.ele("offsets");
-
-      const max = offsetsEl.ele("max");
-      addOffsetElements(max, timeHigh, heightHigh, heightType, units);
-      max.up();
-
-      const min = offsetsEl.ele("min");
-      addOffsetElements(min, timeLow, heightLow, heightType, units);
-      min.up();
-
-      offsetsEl.up();
-    }
-
-    el.up();
+    const attrs: Attributes = [
+      ["latitude", station.latitude.toFixed(4)],
+      ["longitude", station.longitude.toFixed(4)],
+      ["timezone", tcdTimezone(station.timezone)],
+      ["country", station.country ?? ""],
+      ["source", station.source.name],
+      ["restriction", "Public Domain"],
+      ["station_id_context", station.id.split("/")[0]!],
+      ["station_id", station.source.id],
+      ["reference", refName],
+    ];
+    lines.push(
+      `  <subordinatestation name=${attr(names.get(station.id)!)}`,
+      ...attrs.map(
+        ([k, v], i) =>
+          `    ${k}=${attr(v)}${i === attrs.length - 1 ? ">" : ""}`,
+      ),
+      ...(current
+        ? currentOffsets(current, station)
+        : tideOffsets(station, units)),
+      "  </subordinatestation>",
+    );
   }
 
-  return doc.end({ prettyPrint: true }) + "\n";
+  lines.push("</document>");
+  return lines.join("\n") + "\n";
+}
+
+// ---------------------------------------------------------------------------
+// Current stations
+// ---------------------------------------------------------------------------
+
+type CurrentOffsets = NonNullable<CurrentData["offsets"]> & {
+  flood_time: number;
+  ebb_time: number;
+  flood_speed_ratio: number;
+  ebb_speed_ratio: number;
+};
+
+/**
+ * The offsets of a subordinate current, or undefined for a tide station or a
+ * current that libtcd can't represent. Extreme times and speed ratios are
+ * required. libtcd reads a level multiply of zero as "none", so a published
+ * zero speed ratio (no flood or no ebb) would predict at full strength.
+ */
+function currentOffsetsOf(station: Station): CurrentOffsets | undefined {
+  if (station.kind !== "current") return undefined;
+  const offsets = station.current?.offsets;
+  if (
+    offsets?.flood_time === undefined ||
+    offsets.ebb_time === undefined ||
+    !offsets.flood_speed_ratio ||
+    !offsets.ebb_speed_ratio
+  ) {
+    return undefined;
+  }
+  return offsets as CurrentOffsets;
 }
 
 // ---------------------------------------------------------------------------
@@ -560,26 +773,46 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 async function main() {
   console.error("Loading stations...");
 
-  // Registry-only tide ports carry identity but no constituents; XTide would
-  // list them and predict a flat line.
-  const tideStations = stations.filter(
+  // Registry-only tide ports and identity-only current references carry no
+  // constituents; XTide would list them and predict a flat line.
+  const predictable = stations.filter(
     (s: Station) =>
-      s.kind !== "current" &&
-      (s.type === "subordinate" || s.harmonic_constituents.length > 0),
+      s.type === "subordinate" || s.harmonic_constituents.length > 0,
   );
-  const referenceStations = tideStations.filter(
+
+  const unrepresentable = predictable.filter(
+    (s) =>
+      s.kind === "current" && s.type === "subordinate" && !currentOffsetsOf(s),
+  );
+  for (const s of unrepresentable) {
+    console.error(
+      `WARNING: Current "${s.name}" (${s.id}) lacks an extreme time or has a zero or missing speed ratio, skipping`,
+    );
+  }
+
+  // Tides first, so adding currents leaves the tide records untouched.
+  const tcdStations = [
+    ...predictable.filter((s) => s.kind !== "current"),
+    ...predictable.filter(
+      (s) => s.kind === "current" && !unrepresentable.includes(s),
+    ),
+  ];
+  const referenceStations = tcdStations.filter(
     (s: Station) => s.type === "reference",
   );
-  const subordinateStations = tideStations.filter(
+  const subordinateStations = tcdStations.filter(
     (s: Station) => s.type === "subordinate",
   );
+  const currentCount = tcdStations.filter((s) => s.kind === "current").length;
 
   console.error(
-    `Found ${tideStations.length} stations (${referenceStations.length} reference, ${subordinateStations.length} subordinate)`,
+    `Found ${tcdStations.length} stations (${referenceStations.length} reference, ${subordinateStations.length} subordinate, ${currentCount} currents)`,
   );
 
+  const names = buildStationNames(tcdStations);
+
   console.error("Building master constituent list...");
-  const masterConstituents = buildConstituentList(tideStations);
+  const masterConstituents = buildConstituentList(tcdStations);
   console.error(
     `Master constituent list: ${masterConstituents.length} constituents`,
   );
@@ -620,17 +853,14 @@ async function main() {
 
     console.error(`\nGenerating harmonics${suffix}.txt...`);
     const harmonicsTxt = generateHarmonicsTxt(
-      tideStations,
+      tcdStations,
+      names,
       masterConstituents,
       units,
     );
 
     console.error(`Generating offsets${suffix}.xml...`);
-    const offsetsXml = generateOffsetsXml(
-      tideStations,
-      referenceStations,
-      units,
-    );
+    const offsetsXml = generateOffsetsXml(tcdStations, names, units);
 
     const harmonicsPath = join(outDir, `harmonics${suffix}.txt`);
     const offsetsPath = join(outDir, `offsets${suffix}.xml`);
@@ -652,9 +882,7 @@ async function main() {
   }
 
   console.error(`\nReference stations: ${referenceStations.length}`);
-  console.error(
-    `Subordinate stations: ${subordinateStations.filter((s) => s.offsets).length}`,
-  );
+  console.error(`Subordinate stations: ${subordinateStations.length}`);
 }
 
 main().catch((err) => {
