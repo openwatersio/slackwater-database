@@ -20,7 +20,10 @@ import {
   computeDatums,
   computeDatumsFromObservations,
   ensureGeslaData,
+  loadRqdSamples,
   parseGeslaSamples,
+  parseRqdId,
+  rqdEnd,
   toFixed,
   GESLA_DIR,
 } from "@neaps/datums";
@@ -38,7 +41,11 @@ const metadata = indexBy(
   "FILE NAME",
 );
 const data = await readFile(dataPath, "utf-8");
-const forceDatums = process.env["FORCE_DATUMS"] === "1";
+// FORCE_DATUMS=1 recomputes every station's datums; a comma-separated list of
+// source suffixes (e.g. FORCE_DATUMS=uhslc_rq) recomputes only those sources.
+const FORCE_DATUMS = process.env["FORCE_DATUMS"] ?? "";
+const forceDatums = (id: string) =>
+  FORCE_DATUMS === "1" || FORCE_DATUMS.split(",").includes(getSourceSuffix(id));
 const forceHarmonics = process.env["FORCE_HARMONICS"] === "1";
 
 type TiconMetaRow = {
@@ -91,7 +98,7 @@ const ensureGesla = () => (geslaReady ??= ensureGeslaData());
  */
 async function main() {
   console.log(
-    `=== Importing TICON stations ===${forceDatums ? " (forcing datum recalculation)" : ""}${forceHarmonics ? " (forcing harmonic re-analysis)" : ""}\n`,
+    `=== Importing TICON stations ===${FORCE_DATUMS ? ` (forcing datum recalculation: ${FORCE_DATUMS})` : ""}${forceHarmonics ? " (forcing harmonic re-analysis)" : ""}\n`,
   );
 
   const groups = Object.values(
@@ -207,17 +214,18 @@ async function main() {
  * Resolve a station's tidal datums.
  *
  * Prefers empirical mean datums derived from GESLA-4 water-level measurements
- * (NOAA CO-OPS first-reduction), keeping the astronomical HAT/LAT from harmonic
+ * (NOAA CO-OPS first-reduction), or from UHSLC hourly RQD where it extends a
+ * UHSLC research-quality record, keeping the astronomical HAT/LAT from harmonic
  * synthesis (observed extremes conflate storm surge) shifted into the observed
  * MSL frame. Falls back to fully synthetic datums when no usable observations
- * exist. Reuses cached datums unless FORCE_DATUMS=1.
+ * exist. Reuses cached datums unless FORCE_DATUMS selects the station.
  */
 async function getDatums(
   id: string,
   obsEpoch: { start: Date; end: Date },
   harmonic_constituents: PartialStationData["harmonic_constituents"],
 ) {
-  if (!forceDatums) {
+  if (!forceDatums(id)) {
     try {
       const existing = await load("ticon", id);
       return {
@@ -243,9 +251,20 @@ async function getDatums(
   // Every TICON station has a GESLA-4 file (100% join), so read it directly — a
   // missing file is a data-prep error and should throw, not silently degrade.
   await ensureGesla();
-  const samples = parseGeslaSamples(
-    await readFile(join(GESLA_DIR, id), "utf-8"),
-  );
+  let samples = parseGeslaSamples(await readFile(join(GESLA_DIR, id), "utf-8"));
+  // UHSLC research-quality records continue past their GESLA-4 copy. Where the
+  // live record is longer, reduce datums from it instead (same record and
+  // station zero, so the frame is unchanged). See #138.
+  if (parseRqdId(id)) {
+    const rqEnd = await rqdEnd(id);
+    const geslaEnd = samples.reduce(
+      (end, s) => Math.max(end, s.time.getTime()),
+      -Infinity,
+    );
+    if (rqEnd && rqEnd.getTime() > geslaEnd) {
+      samples = await loadRqdSamples(id, rqEnd);
+    }
+  }
   const obs = computeDatumsFromObservations(samples);
   if (obs) {
     // Means (MHHW…MLLW) come from observations. The astronomical extremes and
