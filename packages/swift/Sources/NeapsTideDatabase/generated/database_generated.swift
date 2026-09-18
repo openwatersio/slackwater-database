@@ -671,7 +671,7 @@ public struct Neaps_Epoch: FlatBufferObject, Verifiable {
   }
 }
 
-///  Quality-evaluation detail (tools/evaluate-quality.ts). The gate itself —
+///  Quality-evaluation detail (packages/stations/evaluate-quality.ts). The gate itself —
 ///  `accepted` and `score` — lives inline on Station so an identity scan can
 ///  filter and rank without touching this table; the builder writes Quality
 ///  tables at the tail of the file with the other lookup data.
