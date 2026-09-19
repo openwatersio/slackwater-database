@@ -75,7 +75,7 @@ export function pointInPolygon(lon: number, lat: number, ring: Ring): boolean {
 }
 
 /** Minimum distance (degrees, lon scaled by cos lat) from a point to the ring. */
-function distanceToRing(lon: number, lat: number, ring: Ring): number {
+export function distanceToRing(lon: number, lat: number, ring: Ring): number {
   const kx = Math.cos((lat * Math.PI) / 180);
   let best = Infinity;
   for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
@@ -100,4 +100,40 @@ export function isBaltic(lat: number, lon: number): boolean {
       pointInPolygon(lon, lat, ring) ||
       distanceToRing(lon, lat, ring) < NEAR_DEG,
   );
+}
+
+/** Iterative Douglas–Peucker; keeps ring closed. */
+export function simplify(
+  ring: [number, number][],
+  tolerance: number,
+): [number, number][] {
+  const keep = new Uint8Array(ring.length);
+  keep[0] = keep[ring.length - 1] = 1;
+  const stack: [number, number][] = [[0, ring.length - 1]];
+  while (stack.length) {
+    const [first, last] = stack.pop()!;
+    const [x1, y1] = ring[first]!;
+    const [x2, y2] = ring[last]!;
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+    let maxDist = 0;
+    let index = -1;
+    for (let i = first + 1; i < last; i++) {
+      const [x, y] = ring[i]!;
+      const dist =
+        len === 0
+          ? Math.hypot(x - x1, y - y1)
+          : Math.abs(dy * x - dx * y + x2 * y1 - y2 * x1) / len;
+      if (dist > maxDist) {
+        maxDist = dist;
+        index = i;
+      }
+    }
+    if (maxDist > tolerance) {
+      keep[index] = 1;
+      stack.push([first, index], [index, last]);
+    }
+  }
+  return ring.filter((_, i) => keep[i]);
 }

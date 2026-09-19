@@ -6,8 +6,10 @@ import type { StationInput, StationQuality } from "@neaps/tide-database";
 import { buildCatalogue } from "./catalogue.ts";
 import { currentInputs } from "./current-input.ts";
 import { loadGeocoder } from "./geocode.ts";
+import { loadMaritimeZones } from "./maritime-zones.ts";
 import { loadCorrections, loadRegistry } from "./metadata.ts";
 import type { RouteLock, SlugTable, SlugTombstones } from "./routes.ts";
+import { loadWaterBodies } from "./water-bodies.ts";
 
 export async function loadProductionCatalogue(root: string) {
   const quality = new Map<string, StationQuality>(
@@ -56,6 +58,8 @@ export async function loadProductionCatalogue(root: string) {
       slugTombstones,
       routeLock,
       geocoder: await loadGeocoder(),
+      waterBodies: await loadWaterBodies(),
+      maritimeZones: await loadMaritimeZones(),
     }),
     providerTideIds: new Set(tides.map(({ id }) => id)),
     providerCurrentIds: new Set(currents.map(({ id }) => id)),
@@ -63,6 +67,43 @@ export async function loadProductionCatalogue(root: string) {
     previousSlugTombstones: slugTombstones,
     previousRouteLock: routeLock,
   };
+}
+
+/** Every published station position, before metadata resolution. */
+export function stationPositions(root: string): [number, number][] {
+  const dataDir = join(root, "data");
+  const metadataDir = join(root, "metadata");
+  const records = [
+    ...loadRegistry(
+      readFileSync(join(metadataDir, "registry.yaml"), "utf8"),
+    ).values(),
+    ...loadCorrections(
+      readFileSync(join(metadataDir, "corrections.yaml"), "utf8"),
+    ).values(),
+  ];
+  const positions: [number, number][] = [
+    ...walk(dataDir).map((file): [number, number] => {
+      const { latitude, longitude } = JSON.parse(readFileSync(file, "utf8"));
+      return [latitude, longitude];
+    }),
+    ...currentInputs(currentBundle).flatMap(
+      ({ latitude, longitude }): [number, number][] =>
+        latitude === undefined || longitude === undefined
+          ? []
+          : [[latitude, longitude]],
+    ),
+    ...records.flatMap(({ position }) => (position ? [position] : [])),
+  ];
+  const unique = new Map(
+    positions.map(([lat, lon]) => {
+      const rounded: [number, number] = [
+        Number(lat.toFixed(5)),
+        Number(lon.toFixed(5)),
+      ];
+      return [rounded.join(","), rounded];
+    }),
+  );
+  return [...unique.values()];
 }
 
 function walk(dir: string): string[] {

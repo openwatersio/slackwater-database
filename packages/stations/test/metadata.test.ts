@@ -135,6 +135,123 @@ describe("metadata resolution", () => {
     expect(result.context).toBe("Sooke, British Columbia");
   });
 
+  test("names the water body the station sits in", () => {
+    const result = resolveMetadata(baseStation, {
+      geocoder,
+      waterBodies: { at: () => [{ name: "Port Gardner", distance: 0 }] },
+    });
+
+    expect(result.context).toBe("Port Gardner");
+    expect(result.context_derived).toBe(true);
+  });
+
+  test("skips a water body that repeats the name", () => {
+    const result = resolveMetadata(
+      { ...baseStation, name: "NEAH BAY" },
+      {
+        geocoder,
+        waterBodies: {
+          at: () => [
+            { name: "Neah Bay", distance: 0 },
+            { name: "Strait of Juan de Fuca", distance: 0 },
+          ],
+        },
+      },
+    );
+
+    expect(result.context).toBe("Strait of Juan de Fuca");
+  });
+
+  test("falls back to the nearest place outside any water body", () => {
+    const result = resolveMetadata(
+      { ...baseStation, name: "Priest Point" },
+      { geocoder, waterBodies: { at: () => [] } },
+    );
+
+    expect(result.context).toBe("Everett, WA");
+    expect(result.context_derived).toBe(true);
+  });
+
+  test("a provider qualifier outranks the water body", () => {
+    const result = resolveMetadata(
+      { ...baseStation, name: "Friday Harbor, San Juan Island" },
+      {
+        geocoder,
+        waterBodies: { at: () => [{ name: "San Juan Channel", distance: 0 }] },
+      },
+    );
+
+    expect(result.context).toBe("San Juan Island");
+    expect(result.context_derived).toBe(false);
+  });
+
+  describe("across a strait from the nearest places", () => {
+    const sidney: GeocodeResult = {
+      ...everett,
+      country: "Canada",
+      region: "British Columbia",
+      place: {
+        ...everett.place,
+        name: "Sidney",
+        admin1: "British Columbia",
+        admin1Code: "02",
+        countryCode: "CA",
+      },
+    };
+    const fridayHarbor: GeocodeResult = {
+      ...everett,
+      distance: 24,
+      place: { ...everett.place, name: "Friday Harbor" },
+    };
+    const resolve = (zone: string) =>
+      resolveMetadata(
+        { ...baseStation, id: "noaa/PUG1717", name: "Turn Point" },
+        {
+          geocoder: {
+            nearest: () => sidney,
+            near: (_lat, _lon, maxResults = 5) =>
+              maxResults > 10 ? [sidney, fridayHarbor] : [sidney],
+          },
+          maritimeZones: { country: () => zone },
+        },
+      );
+
+    test("finds a region when the maritime zone confirms the country", () => {
+      const result = resolve("US");
+
+      expect(result.country_code).toBe("US");
+      expect(result.region).toBe("Washington");
+      expect(result.region_code).toBe("US-WA");
+      expect(result.locality).toBe("Friday Harbor");
+    });
+
+    test("leaves the region empty when the maritime zone disagrees", () => {
+      const result = resolve("CA");
+
+      expect(result.country_code).toBe("US");
+      expect(result).not.toHaveProperty("region");
+      expect(result).not.toHaveProperty("locality");
+    });
+  });
+
+  test("takes a registry station's country from its maritime zone", () => {
+    const registry = loadRegistry(`
+chs-port-renfrew:
+  name: Port Renfrew
+  position: [48.555, -124.421]
+  provider: chs
+`);
+    const [result] = registryStations({
+      registry,
+      geocoder,
+      maritimeZones: { country: () => "CA" },
+    });
+
+    expect(result!.country).toBe("Canada");
+    expect(result!.country_code).toBe("CA");
+    expect(result).not.toHaveProperty("region");
+  });
+
   test("a curated context is not marked as derived", () => {
     const result = resolveMetadata(
       { ...baseStation, context: "Automated place", context_derived: true },
