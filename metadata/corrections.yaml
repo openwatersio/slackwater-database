@@ -4,7 +4,9 @@
 #
 # `context` is whatever most usefully distinguishes this place — a water body,
 # an island group, a region, a county, or a characteristic. It must never
-# restate the name.
+# restate the name. Without one, a station takes the qualifier in its provider
+# name, then the OpenStreetMap bay or strait it sits in, then the nearest
+# place. Curate `context` only where that answer is wrong or less useful.
 #
 # `formerSlugs` records a slug this station used to resolve to, so a consumer
 # can redirect an old shared link instead of 404ing it. Set it in the same
@@ -19,18 +21,8 @@
 # No validator can make that call. Slug changes are rare; downstream consumers
 # own the redirect consequences either way.
 
-# Turn Point is on the US side of Boundary Pass, but cross-border nearest-place
-# lookup can select a Canadian locality.
-noaa/PUG1717:
-  location:
-    region: Washington
-    regionCode: US-WA
-    country: United States
-    countryCode: US
-
 noaa/9447659:
   name: Everett
-  context: Port Gardner
   slug: everett
   cities: [Everett, Marysville]
   aliases: [port gardner, everett marina]
@@ -47,12 +39,10 @@ noaa/9442396:
 
 noaa/9445133:
   name: Bangor Wharf
-  context: Hood Canal
   cities: [Silverdale, Poulsbo]
 
 noaa/9449424:
   name: Cherry Point
-  context: Strait of Georgia
   cities: [Ferndale, Blaine]
 
 noaa/9445016:
@@ -62,13 +52,11 @@ noaa/9445016:
 
 noaa/9447973:
   name: Naval Air Station Whidbey Island
-  context: Strait of Juan de Fuca
   cities: [Oak Harbor]
   aliases: [nas whidbey, whidbey island naval air station]
 
 noaa/9443090:
   name: Neah Bay
-  context: Strait of Juan de Fuca
   cities: [Neah Bay]
 
 noaa/9449639:
@@ -88,7 +76,6 @@ noaa/9444900:
 
 noaa/9447717:
   name: Priest Point
-  context: Possession Sound
   cities: [Marysville, Everett]
 
 noaa/9446804:
@@ -98,7 +85,6 @@ noaa/9446804:
 
 noaa/9448576:
   name: Sneeoosh Point
-  context: Skagit Bay
   cities: [La Conner]
 
 noaa/9448009:
@@ -122,16 +108,12 @@ noaa/9449746:
   cities: [Friday Harbor]
 
 # These six arrive with their own qualifier already in the raw name (e.g.
-# "Blaine, Semiahmoo Bay"), so the derived-context fallback finds a gazetteer
-# place whose name is a substring of the raw name and suppresses itself via
-# namesOverlap - correctly avoiding a tautology like "Blaine near Blaine, WA",
-# but leaving these six with no context at all. Curated the same as every
-# other entry above rather than loosening namesOverlap, which is doing its
-# job for the 18 stations it was written for.
+# "Blaine, Semiahmoo Bay"), which becomes the context. Bremerton and Tacoma
+# carry a second qualifier ("Sinclair Inlet, Port Orchard"), so their context
+# is curated to the first.
 
 noaa/9449679:
   name: Blaine
-  context: Semiahmoo Bay
   cities: [Blaine]
 
 noaa/9445958:
@@ -141,17 +123,14 @@ noaa/9445958:
 
 noaa/9446807:
   name: Budd Inlet
-  context: Olympia Shoal
   cities: [Olympia]
 
 noaa/9449880:
   name: Friday Harbor
-  context: San Juan Island
   cities: [Friday Harbor]
 
 noaa/9447130:
   name: Seattle
-  context: Elliott Bay
   cities: [Seattle]
   aliases: [madison st, seattle madison street]
 
@@ -161,28 +140,14 @@ noaa/9446484:
   cities: [Tacoma]
   aliases: [sitcum waterway]
 
-# Two NOAA short-term gauges, both decommissioned in 2016, whose published
-# coordinates cannot be pinned to a town or island - the pair issue #1 flagged.
-# Placed instead by the water body NOAA's own chart assignment puts them in,
-# which is the one thing the coordinate states without guessing. No `cities`:
-# each sits mid-strait between shores (Telegraph Bay ~5 km south of the bay it
-# is named for, on Decatur Island), so naming a nearest town would reintroduce
-# exactly the "which side?" ambiguity that made the derived fallback wrong.
-
-# noaa/9449988 - removed 2016-01-31. Coordinate (48.443, -122.805) sits in
-# Rosario Strait, not Puget Sound as the raw name claims; NOAA chart 18429 is
-# "Rosario Strait, southern part". Name override strips the wrong qualifier.
+# noaa/9449988 - a NOAA short-term gauge removed 2016-01-31. Coordinate
+# (48.443, -122.805) sits in Rosario Strait, not Puget Sound as the raw name
+# claims; NOAA chart 18429 is "Rosario Strait, southern part". Name override
+# strips the wrong qualifier. No `cities`: it sits mid-strait, ~5 km south of
+# the bay on Decatur Island it is named for, so naming a nearest town would
+# reintroduce the "which side?" ambiguity.
 noaa/9449988:
   name: Telegraph Bay
-  context: Rosario Strait
-
-# noaa/9443551 - a four-month deployment (2016-05-05 to 2016-09-04). Coordinate
-# (48.187, -124.063) is on the Olympic Peninsula shore of the Strait of Juan de
-# Fuca near Pysht; NOAA chart 18460 is "Strait of Juan de Fuca, entrance". Not
-# the inland Jim Creek near Arlington that the name suggests. Source name is
-# already clean, so only the context is corrected.
-noaa/9443551:
-  context: Strait of Juan de Fuca
 
 # Two lighted buoys 4.4 m apart in the St Johns River, genuinely distinct -
 # different flood and ebb directions, different M2 amplitudes. NOAA files their
