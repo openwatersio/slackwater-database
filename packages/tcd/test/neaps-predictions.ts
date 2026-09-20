@@ -163,3 +163,44 @@ export function getPredictions(
     );
   }
 }
+
+/**
+ * Get max flood (high) and max ebb (low) predictions in knots for a current
+ * station. A reference current is its harmonic sum plus the mean flow; a
+ * subordinate shifts each extreme by its flood or ebb time offset and scales
+ * it by its speed ratio.
+ */
+export function getCurrentPredictions(
+  station: Station,
+  stations: Station[],
+  startDate: Date,
+  endDate: Date,
+): TideEvent[] {
+  const offsets = station.current?.offsets;
+  const reference = offsets
+    ? stations.find((s) => s.id === offsets.reference)
+    : station;
+  if (!reference?.harmonic_constituents.length) {
+    throw new Error(`No reference current with harmonics for ${station.id}`);
+  }
+
+  const predictor = createTidePredictor(reference.harmonic_constituents, {
+    offset: reference.current?.mean_flow ?? 0,
+  });
+  const extremes = predictor.getExtremesPrediction({
+    start: startDate,
+    end: endDate,
+  });
+
+  return extremes.map((extreme) => {
+    const flood = extreme.high;
+    const minutes = (flood ? offsets?.flood_time : offsets?.ebb_time) ?? 0;
+    const ratio =
+      (flood ? offsets?.flood_speed_ratio : offsets?.ebb_speed_ratio) ?? 1;
+    return {
+      time: new Date(extreme.time.getTime() + minutes * 60 * 1000),
+      type: flood ? "high" : "low",
+      height: extreme.level * ratio,
+    };
+  });
+}

@@ -2,7 +2,9 @@
 
 This package generates a TCD (Tide Constituent Database) binary file of the Neaps Tide Database. The TCD file can be used with [XTide](https://flaterco.com/xtide/), [OpenCPN](https://opencpn.org), and any software that reads the [libtcd](https://flaterco.com/xtide/libtcd.html) format.
 
-The TCD file includes all stations in the tide database, and all tidal constituents present in the station data, resolved through the constituent list from [@neaps/tide-predictor](https://github.com/openwatersio/neaps/tree/main/packages/tide-predictor#readme).
+The TCD file includes all tide and current stations in the tide database, and all tidal constituents present in the station data, resolved through the constituent list from [@neaps/tide-predictor](https://github.com/openwatersio/neaps/tree/main/packages/tide-predictor#readme).
+
+Current stations are named `<Name>, <Region> Current`, with the NOAA station id appended where several stations share a name (for example, different depths at one location). Speeds are in knots in both the metric and imperial files. A few stations can't be represented in the format and are left out: reference currents without harmonic constants, and subordinate currents with a speed ratio of zero, which libtcd would read as "no ratio".
 
 ## Usage
 
@@ -46,6 +48,12 @@ Get tide predictions for a station:
 
 ```sh
 tide -l "BOSTON, MA, United States"
+```
+
+Get current predictions (max flood, max ebb, and slack) for a current station:
+
+```sh
+tide -l "Pollock Rip Channel (butler Hole), Massachusetts Current"
 ```
 
 Get predictions for a specific date range in CSV format:

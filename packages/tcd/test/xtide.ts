@@ -6,9 +6,13 @@ import { execFileSync } from "child_process";
 
 export interface TideEvent {
   time: Date;
+  // For currents, high is max flood and low is max ebb
   type: "high" | "low";
-  height: number; // meters
+  height: number; // meters, or knots for currents
+  units?: string; // as printed by XTide, e.g. "m" or "kt"
 }
+
+export type TcdVariant = "metric" | "imperial";
 
 /**
  * Format a date for XTide command line (YYYY-MM-DD HH:MM)
@@ -47,8 +51,10 @@ function parseXTideCSV(output: string): TideEvent[] {
 
     if (!dateStr || !timeStr || !eventStr) continue;
 
-    // Only process tide events
-    if (!eventStr.includes("Tide")) continue;
+    // Only process tide and current extremes
+    const isTide = eventStr.includes("Tide");
+    const isCurrent = eventStr === "Max Flood" || eventStr === "Max Ebb";
+    if (!isTide && !isCurrent) continue;
 
     // Parse date and time
     // Format: "2026-01-01" and "8:35 AM EST"
@@ -60,16 +66,19 @@ function parseXTideCSV(output: string): TideEvent[] {
       continue;
     }
 
-    // Parse height (format: "2.87 m" or "-0.42 m")
-    const heightMatch = valueStr?.match(/-?\d+\.?\d*/);
+    // Parse height (format: "2.87 m", "-0.42 m", or "1.73 kt")
+    const heightMatch = valueStr?.match(/(-?\d+\.?\d*)\s*(\S*)/);
     if (!heightMatch) continue;
-    const height = parseFloat(heightMatch[0]!);
+    const height = parseFloat(heightMatch[1]!);
     if (isNaN(height)) continue;
 
     // Determine type
-    const type = eventStr.toLowerCase().includes("high") ? "high" : "low";
+    const type =
+      eventStr.toLowerCase().includes("high") || eventStr === "Max Flood"
+        ? "high"
+        : "low";
 
-    events.push({ time, type, height });
+    events.push({ time, type, height, units: heightMatch[2]! });
   }
 
   return events;
@@ -87,16 +96,14 @@ export function getXTidePredictions(
   stationName: string,
   startDate: Date,
   endDate: Date,
+  variant: TcdVariant = "metric",
 ): TideEvent[] {
   const startStr = formatXTideDate(startDate);
   const endStr = formatXTideDate(endDate);
 
   // Run XTide via Docker using execFileSync for safety
   const args = [
-    "compose",
-    "run",
-    "--rm",
-    "xtide",
+    ...xtideCommand(variant),
     // -l: location
     "-l",
     stationName,
@@ -131,6 +138,41 @@ export function getXTidePredictions(
       `XTide command failed for station "${stationName}": ${error.message}`,
     );
   }
+}
+
+/**
+ * Get XTide's "about" listing for a station as a map of field to value, e.g.
+ * "Coordinates", "Reference", "Native units", "Flood direction".
+ */
+export function getXTideAbout(
+  stationName: string,
+  variant: TcdVariant = "metric",
+): Map<string, string> {
+  const output = execFileSync(
+    "docker",
+    [...xtideCommand(variant), "-l", stationName, "-m", "a"],
+    { encoding: "latin1", cwd: process.cwd() },
+  );
+
+  const fields = new Map<string, string>();
+  for (const line of output.split("\n")) {
+    const match = line.match(/^(\S+(?: \S+)*)\s{2,}(.*)$/);
+    if (match && !fields.has(match[1]!)) {
+      fields.set(match[1]!, match[2]!.trim());
+    }
+  }
+  return fields;
+}
+
+function xtideCommand(variant: TcdVariant): string[] {
+  return [
+    "compose",
+    "run",
+    "--rm",
+    "-e",
+    `HFILE_PATH=/data/harmonics-${variant}.tcd`,
+    "xtide",
+  ];
 }
 
 /**
