@@ -1,5 +1,7 @@
 import type { DatabaseRoutes, StationInput } from "@neaps/tide-database";
 import type { Geocoder } from "./geocode.ts";
+import type { MaritimeZones } from "./maritime-zones.ts";
+import type { WaterBodies } from "./water-bodies.ts";
 import {
   registryStations,
   resolveMetadata,
@@ -26,6 +28,8 @@ export interface CatalogueInputs {
   slugTombstones: SlugTombstones;
   routeLock: RouteLock;
   geocoder: Geocoder;
+  waterBodies?: WaterBodies;
+  maritimeZones?: MaritimeZones;
 }
 
 export function buildCatalogue(inputs: CatalogueInputs): {
@@ -44,6 +48,11 @@ export function buildCatalogue(inputs: CatalogueInputs): {
   );
   if (errors.length) throw new Error(errors.join("\n"));
 
+  const places = {
+    geocoder: inputs.geocoder,
+    ...(inputs.waterBodies ? { waterBodies: inputs.waterBodies } : {}),
+    ...(inputs.maritimeZones ? { maritimeZones: inputs.maritimeZones } : {}),
+  };
   const providerIds = new Set(sourceStations.map(({ id }) => id));
   const stations = [
     ...sourceStations.map((station) =>
@@ -54,13 +63,12 @@ export function buildCatalogue(inputs: CatalogueInputs): {
         ...(inputs.registry.get(station.id)
           ? { registry: inputs.registry.get(station.id)! }
           : {}),
-        geocoder: inputs.geocoder,
+        ...places,
       }),
     ),
-    ...registryStations({
-      registry: inputs.registry,
-      geocoder: inputs.geocoder,
-    }).filter(({ id }) => !providerIds.has(id)),
+    ...registryStations({ registry: inputs.registry, ...places }).filter(
+      ({ id }) => !providerIds.has(id),
+    ),
   ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 
   validateStationReferences(stations);

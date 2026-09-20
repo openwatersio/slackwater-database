@@ -4,6 +4,8 @@ import { parse } from "yaml";
 import type { StationInput } from "@neaps/tide-database";
 import { cleanName } from "./name-cleanup.ts";
 import type { Geocoder } from "./geocode.ts";
+import type { MaritimeZones } from "./maritime-zones.ts";
+import type { WaterBodies } from "./water-bodies.ts";
 
 export const MAX_CORRECTION_KM = 5;
 export const DERIVED_MAX_KM = 40;
@@ -61,6 +63,8 @@ interface ResolveInputs {
   correction?: Correction;
   registry?: RegistryRecord;
   geocoder: Geocoder;
+  waterBodies?: WaterBodies;
+  maritimeZones?: MaritimeZones;
 }
 
 export function loadCorrections(text: string): Corrections {
@@ -313,7 +317,7 @@ function validateReference(
 
 export function resolveMetadata(
   station: StationInput,
-  { correction, registry, geocoder }: ResolveInputs,
+  { correction, registry, geocoder, waterBodies, maritimeZones }: ResolveInputs,
 ): ResolvedStation {
   const authority = registry ?? correction;
   const position = registry?.position ??
@@ -324,6 +328,7 @@ export function resolveMetadata(
   const nearby = geocoder.near(position[0], position[1], 10, 100);
   const nearest = nearby[0] ?? geocoder.nearest(position[0], position[1], 100);
   const explicitLocation = registry?.location ?? correction?.location;
+  const zoneCountry = maritimeZones?.country(position[0], position[1]);
   const countryName =
     explicitLocation?.country ??
     (explicitLocation?.countryCode
@@ -333,6 +338,7 @@ export function resolveMetadata(
     (station.country_code
       ? countryLookup.byIso(station.country_code)?.country
       : undefined) ??
+    (zoneCountry ? countryLookup.byIso(zoneCountry)?.country : undefined) ??
     nearest?.country;
   if (!nonEmpty(countryName)) throw new Error(`${station.id}: no country`);
   const country = countryLookup.byCountry(countryName);
@@ -356,9 +362,16 @@ export function resolveMetadata(
       `${station.id}: country does not match ${station.country_code}`,
     );
 
+  // Across a strait the ten nearest places can all be foreign. When the
+  // station's maritime zone confirms its country, look further for a place in
+  // that country rather than leave the region empty.
+  const sameCountry = (result: { place: { countryCode: string } }) =>
+    result.place.countryCode === country.iso2;
   const place =
-    nearby.find((result) => result.place.countryCode === country.iso2) ??
-    (nearest?.place.countryCode === country.iso2 ? nearest : undefined);
+    nearby.find(sameCountry) ??
+    (zoneCountry === country.iso2
+      ? geocoder.near(position[0], position[1], 100, 100).find(sameCountry)
+      : undefined);
   const cleaned = cleanName(
     station.name ?? registry?.name ?? "",
     country.country,
@@ -450,6 +463,15 @@ export function resolveMetadata(
       : context
         ? false
         : undefined;
+  if (!context) {
+    const water = waterBodies
+      ?.at(position[0], position[1])
+      .find((body) => !namesOverlap(name, body.name));
+    if (water) {
+      context = water.name;
+      contextDerived = true;
+    }
+  }
   if (!context && place && place.distance <= DERIVED_MAX_KM) {
     const shortRegion = place.region ?? place.place.admin1Code;
     if (!namesOverlap(name, place.place.name))
@@ -503,10 +525,12 @@ export function resolveMetadata(
 
 export function registryStations({
   registry,
-  geocoder,
+  ...places
 }: {
   registry: Registry;
   geocoder: Geocoder;
+  waterBodies?: WaterBodies;
+  maritimeZones?: MaritimeZones;
 }): ResolvedStation[] {
   return [...registry].map(([id, record]) =>
     resolveMetadata(
@@ -532,7 +556,7 @@ export function registryStations({
           url: "https://github.com/openwatersio/tide-database/blob/main/LICENSE",
         },
       },
-      { registry: record, geocoder },
+      { registry: record, ...places },
     ),
   );
 }

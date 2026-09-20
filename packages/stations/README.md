@@ -2,7 +2,7 @@
 
 ## Build and validate the unified catalogue
 
-Station corrections and identities live in `metadata/corrections.yaml` and `metadata/registry.yaml` at the repo root. Use corrections for an existing provider record and the registry for curated records that may not exist in an imported source. `metadata/places.json` is the reviewed GeoNames snapshot used for deterministic location enrichment; builds do not download mutable gazetteer data.
+Station corrections and identities live in `metadata/corrections.yaml` and `metadata/registry.yaml` at the repo root. Use corrections for an existing provider record and the registry for curated records that may not exist in an imported source. `metadata/places.json` is the reviewed GeoNames snapshot used for deterministic location enrichment; builds do not download mutable gazetteer data. `metadata/water-bodies.geojson` (OpenStreetMap bays and straits) supplies a station's derived `context`, and `metadata/maritime-zones.geojson` (Marine Regions EEZs) supplies a registry record's country. Both are reviewed snapshots too; refresh them with `npm run fetch-water-bodies -w packages/stations` and `npm run fetch-maritime-zones -w packages/stations`, then review the context and country changes before committing. See `metadata/PROVENANCE.md` for sources and licenses.
 
 Slug allocations, former paths, and position audits are durable release state. Do not edit their JSON lock files by hand. After changing source or curated metadata, run from the repo root:
 

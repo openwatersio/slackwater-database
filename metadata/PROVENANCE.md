@@ -65,6 +65,20 @@ current station records:
 If that trade ever stops being worth it, the exit is cheap: remove GeoNames from
 the build, and optional location fields remain absent.
 
+### Water bodies
+
+A station with no curated or provider context takes the name of the bay or strait it sits in from **OpenStreetMap, ODbL 1.0, © OpenStreetMap contributors**. GeoNames names the nearest place only when no water body contains the station or lies within 1 km of it.
+
+`water-bodies.geojson` is a reviewed snapshot of the named `natural=bay` and `natural=strait` ways and relations that contain a station in the catalogue or lie within 1 km of one. `packages/stations/fetch-water-bodies.ts` builds it from the Overpass API. The snapshot keeps each relation's outer rings only, simplifies them, and records the English name where OpenStreetMap has one, otherwise a Latin-script local name. Marine Regions' gazetteer was the other candidate, but it has no polygons for water bodies the size of Elliott Bay or Hood Canal.
+
+### Maritime zones
+
+A registry record states no country of its own, so the builder takes it from the **Marine Regions Maritime Boundaries Geodatabase, Exclusive Economic Zones, CC BY 4.0** (Flanders Marine Institute, marineregions.org) before it falls back to the nearest GeoNames place. The zone polygons end at a generalized coastline, so a station within 10 km of a zone takes that zone's country. A gauge up a harbor or inlet is the usual case. Across the Strait of Juan de Fuca the nearest place can be in the other country; the zone cannot.
+
+`maritime-zones.geojson` is a reviewed snapshot built by `packages/stations/fetch-maritime-zones.ts`. It covers the half-degree cells within half a degree of each registry position and lists them as `coverage`. Each zone is clipped to those cells and simplified to about 100 m. Joint regimes and overlapping claims are left out.
+
+Neither snapshot is included in the published database or npm package. Only the derived `context` and country fields reach the TCDB, and neither source publishes tide or current stations.
+
 ## Human review
 
 Every registry station's identity is reviewed by a person before it lands.

@@ -12,6 +12,8 @@
     "validate-datums": "node validate-datums.ts",
     "metadata-lock": "node update-metadata-locks.ts",
     "validate-database": "node validate-database.ts",
+    "fetch-water-bodies": "node fetch-water-bodies.ts",
+    "fetch-maritime-zones": "node fetch-maritime-zones.ts",
     "test": "vitest"
   },
   "dependencies": {
