@@ -88,12 +88,14 @@ function parseXTideCSV(output: string): TideEvent[] {
  * @param stationName - Full station name as it appears in the TCD (e.g., "Boston, MA, United States")
  * @param startDate - Start date for predictions
  * @param endDate - End date for predictions
+ * @param units - Display units XTide converts the file into, meters or feet
  * @returns Array of tide events (high/low)
  */
 export function getXTidePredictions(
   stationName: string,
   startDate: Date,
   endDate: Date,
+  units: "m" | "ft" = "m",
 ): TideEvent[] {
   const startStr = formatXTideDate(startDate);
   const endStr = formatXTideDate(endDate);
@@ -116,9 +118,9 @@ export function getXTidePredictions(
     // -m p: mode=plain (no colors/formatting)
     "-m",
     "p",
-    // -u m: units=meters
+    // -u: display units
     "-u",
-    "m",
+    units,
   ];
 
   try {

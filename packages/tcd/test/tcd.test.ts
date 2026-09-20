@@ -59,6 +59,8 @@ const MAX_TIME_ERROR_MAX = 15; // minutes
 const MAX_HEIGHT_ERROR_MEAN = 0.05; // meters (5 cm)
 const MAX_HEIGHT_ERROR_RMSE = 0.1; // meters (10 cm)
 
+const METERS_PER_FOOT = 0.3048;
+
 describe("XTide TCD", () => {
   beforeAll(() => {
     // Check if XTide is available
@@ -129,6 +131,29 @@ describe("XTide TCD", () => {
         );
         expect(comparison.heightDiffMeters.rmse).toBeLessThan(
           MAX_HEIGHT_ERROR_RMSE,
+        );
+      });
+    });
+  });
+
+  // The file is metric and XTide converts for display, which is why there is no
+  // separate imperial build.
+  describe("Display units", () => {
+    const { name } = TEST_STATIONS[0];
+
+    test("XTide reports the metric file in feet on request", () => {
+      const meters = getXTidePredictions(name, START_DATE, END_DATE);
+      const feet = getXTidePredictions(name, START_DATE, END_DATE, "ft");
+
+      expect(feet.length).toBe(meters.length);
+      expect(new Set(meters.map((e) => e.units))).toEqual(new Set(["m"]));
+      expect(new Set(feet.map((e) => e.units))).toEqual(new Set(["ft"]));
+
+      feet.forEach((event, i) => {
+        expect(event.time).toEqual(meters[i]!.time);
+        expect(event.height).toBeCloseTo(
+          meters[i]!.height / METERS_PER_FOOT,
+          1,
         );
       });
     });
