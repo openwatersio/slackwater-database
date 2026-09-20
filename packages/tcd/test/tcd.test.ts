@@ -135,146 +135,113 @@ describe("XTide TCD", () => {
   });
 
   describe("Subordinate station records", () => {
-    for (const variant of ["metric", "imperial"] as const) {
-      test(`${variant} keeps position and reference`, () => {
-        const about = getXTideAbout("Hanalei Bay, HI, United States", variant);
-        expect(about.get("Coordinates")).toMatch(/^22\.2150. N, 159\.5020. W$/);
-        expect(about.get("Time zone")).toBe("Pacific/Honolulu");
-        expect(about.get("Reference")).toBe("NAWILIWILI, HI, United States");
-      });
-    }
+    test("keeps position and reference", () => {
+      const about = getXTideAbout("Hanalei Bay, HI, United States");
+      expect(about.get("Coordinates")).toMatch(/^22\.2150. N, 159\.5020. W$/);
+      expect(about.get("Time zone")).toBe("Pacific/Honolulu");
+      expect(about.get("Reference")).toBe("NAWILIWILI, HI, United States");
+    });
   });
 
   describe("Current stations", () => {
-    for (const variant of ["metric", "imperial"] as const) {
-      describe(variant, () => {
-        test("reference current carries directions and knots", () => {
-          const station = stations.find((s) => s.id === CURRENT_REFERENCE.id)!;
-          const about = getXTideAbout(CURRENT_REFERENCE.name, variant);
-          expect(about.get("Type")).toBe("Reference station, current");
-          expect(about.get("Native units")).toBe("knots");
-          expect(about.get("Flood direction")).toMatch(
-            new RegExp(`^${station.current!.flood_direction}. true$`),
-          );
-          expect(about.get("Ebb direction")).toMatch(
-            new RegExp(`^${station.current!.ebb_direction}. true$`),
-          );
-        });
+    test("reference current carries directions and knots", () => {
+      const station = stations.find((s) => s.id === CURRENT_REFERENCE.id)!;
+      const about = getXTideAbout(CURRENT_REFERENCE.name);
+      expect(about.get("Type")).toBe("Reference station, current");
+      expect(about.get("Native units")).toBe("knots");
+      expect(about.get("Flood direction")).toMatch(
+        new RegExp(`^${station.current!.flood_direction}. true$`),
+      );
+      expect(about.get("Ebb direction")).toMatch(
+        new RegExp(`^${station.current!.ebb_direction}. true$`),
+      );
+    });
 
-        test("subordinate current carries its offsets", () => {
-          const station = stations.find(
-            (s) => s.id === CURRENT_SUBORDINATE.id,
-          )!;
-          const offsets = station.current!.offsets!;
-          const about = getXTideAbout(CURRENT_SUBORDINATE.name, variant);
-          expect(about.get("Type")).toBe("Subordinate station, current");
-          expect(about.get("Reference")).toBe(CURRENT_REFERENCE.name);
-          expect(about.get("Native units")).toBe("knots");
-          expect(Number(about.get("Max level mult"))).toBeCloseTo(
-            offsets.flood_speed_ratio!,
-          );
-          expect(Number(about.get("Min level mult"))).toBeCloseTo(
-            offsets.ebb_speed_ratio!,
-          );
-          expect(about.get("Flood begins")).toBe("0:00");
-          expect(about.get("Ebb begins")).toBe("+0:18");
-        });
+    test("subordinate current carries its offsets", () => {
+      const station = stations.find((s) => s.id === CURRENT_SUBORDINATE.id)!;
+      const offsets = station.current!.offsets!;
+      const about = getXTideAbout(CURRENT_SUBORDINATE.name);
+      expect(about.get("Type")).toBe("Subordinate station, current");
+      expect(about.get("Reference")).toBe(CURRENT_REFERENCE.name);
+      expect(about.get("Native units")).toBe("knots");
+      expect(Number(about.get("Max level mult"))).toBeCloseTo(
+        offsets.flood_speed_ratio!,
+      );
+      expect(Number(about.get("Min level mult"))).toBeCloseTo(
+        offsets.ebb_speed_ratio!,
+      );
+      expect(about.get("Flood begins")).toBe("0:00");
+      expect(about.get("Ebb begins")).toBe("+0:18");
+    });
 
-        for (const { id, name } of [CURRENT_REFERENCE, CURRENT_SUBORDINATE]) {
-          test(`${name} predictions in knots`, () => {
-            const station = stations.find((s) => s.id === id)!;
-            const expected = getCurrentPredictions(
-              station,
-              stations,
-              START_DATE,
-              END_DATE,
-            );
-            const actual = getXTidePredictions(
-              name,
-              START_DATE,
-              END_DATE,
-              variant,
-            );
+    for (const { id, name } of [CURRENT_REFERENCE, CURRENT_SUBORDINATE]) {
+      test(`${name} predictions in knots`, () => {
+        const station = stations.find((s) => s.id === id)!;
+        const expected = getCurrentPredictions(
+          station,
+          stations,
+          START_DATE,
+          END_DATE,
+        );
+        const actual = getXTidePredictions(name, START_DATE, END_DATE);
 
-            expect(actual.length).toBeGreaterThan(0);
-            // Speeds stay in knots whatever the unit system
-            expect(new Set(actual.map((e) => e.units))).toEqual(
-              new Set(["kt"]),
-            );
+        expect(actual.length).toBeGreaterThan(0);
+        // Speeds are knots even though the file is otherwise in meters
+        expect(new Set(actual.map((e) => e.units))).toEqual(new Set(["kt"]));
 
-            const comparison = comparePredictions(expected, actual);
-            console.log(`\n${name} (${variant}) comparison:`);
-            console.log(formatComparisonResult(comparison));
+        const comparison = comparePredictions(expected, actual);
+        console.log(`\n${name} comparison:`);
+        console.log(formatComparisonResult(comparison));
 
-            const matchRate =
-              comparison.matched / (comparison.matched + comparison.unmatched);
-            expect(matchRate).toBeGreaterThan(0.95);
-            expect(comparison.timeDiffMinutes.mean).toBeLessThan(
-              MAX_TIME_ERROR_MEAN,
-            );
-            expect(comparison.timeDiffMinutes.max).toBeLessThan(
-              MAX_TIME_ERROR_MAX,
-            );
-            // Differences are knots here
-            expect(Math.abs(comparison.heightDiffMeters.mean)).toBeLessThan(
-              MAX_HEIGHT_ERROR_MEAN,
-            );
-            expect(comparison.heightDiffMeters.rmse).toBeLessThan(
-              MAX_HEIGHT_ERROR_RMSE,
-            );
-          });
-        }
+        const matchRate =
+          comparison.matched / (comparison.matched + comparison.unmatched);
+        expect(matchRate).toBeGreaterThan(0.95);
+        expect(comparison.timeDiffMinutes.mean).toBeLessThan(
+          MAX_TIME_ERROR_MEAN,
+        );
+        expect(comparison.timeDiffMinutes.max).toBeLessThan(MAX_TIME_ERROR_MAX);
+        // Differences are knots here
+        expect(Math.abs(comparison.heightDiffMeters.mean)).toBeLessThan(
+          MAX_HEIGHT_ERROR_MEAN,
+        );
+        expect(comparison.heightDiffMeters.rmse).toBeLessThan(
+          MAX_HEIGHT_ERROR_RMSE,
+        );
       });
     }
   });
 
   describe("TCD file integrity", () => {
-    for (const variant of ["metric", "imperial"] as const) {
-      describe(variant, () => {
-        test("TCD file exists and is not empty", () => {
-          const tcdPath = join(
-            process.cwd(),
-            "dist",
-            `harmonics-${variant}.tcd`,
-          );
-          expect(existsSync(tcdPath)).toBe(true);
+    test("TCD file exists and is not empty", () => {
+      const tcdPath = join(process.cwd(), "dist", "harmonics.tcd");
+      expect(existsSync(tcdPath)).toBe(true);
 
-          const stats = statSync(tcdPath);
-          expect(stats.size).toBeGreaterThan(1000); // At least 1KB
-        });
+      const stats = statSync(tcdPath);
+      expect(stats.size).toBeGreaterThan(1000); // At least 1KB
+    });
 
-        test("harmonics.txt exists and is valid", () => {
-          const harmonicsPath = join(
-            process.cwd(),
-            "dist",
-            `harmonics-${variant}.txt`,
-          );
-          expect(existsSync(harmonicsPath)).toBe(true);
+    test("harmonics.txt exists and is valid", () => {
+      const harmonicsPath = join(process.cwd(), "dist", "harmonics.txt");
+      expect(existsSync(harmonicsPath)).toBe(true);
 
-          const content = readFileSync(harmonicsPath, "utf-8");
+      const content = readFileSync(harmonicsPath, "utf-8");
 
-          // Check for required header elements
-          expect(content).toContain("# Tide Harmonics Database");
-          expect(content).toContain("MERCHANTABILITY");
-          expect(content).toContain("Number of constituents");
-        });
+      // Check for required header elements
+      expect(content).toContain("# Tide Harmonics Database");
+      expect(content).toContain("MERCHANTABILITY");
+      expect(content).toContain("Number of constituents");
+    });
 
-        test("offsets.xml exists and is valid", () => {
-          const offsetsPath = join(
-            process.cwd(),
-            "dist",
-            `offsets-${variant}.xml`,
-          );
-          expect(existsSync(offsetsPath)).toBe(true);
+    test("offsets.xml exists and is valid", () => {
+      const offsetsPath = join(process.cwd(), "dist", "offsets.xml");
+      expect(existsSync(offsetsPath)).toBe(true);
 
-          const content = readFileSync(offsetsPath, "utf-8");
+      const content = readFileSync(offsetsPath, "utf-8");
 
-          // Check for required XML structure
-          expect(content).toContain('<?xml version="1.0"');
-          expect(content).toContain("<document>");
-          expect(content).toContain("</document>");
-        });
-      });
-    }
+      // Check for required XML structure
+      expect(content).toContain('<?xml version="1.0"');
+      expect(content).toContain("<document>");
+      expect(content).toContain("</document>");
+    });
   });
 });

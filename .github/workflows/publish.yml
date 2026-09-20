@@ -46,8 +46,7 @@ jobs:
 
       - name: Rename TCD files for release
         run: |
-          mv packages/tcd/dist/harmonics-metric.tcd "packages/tcd/dist/neaps-${RELEASE_VERSION##*.}-metric.tcd"
-          mv packages/tcd/dist/harmonics-imperial.tcd "packages/tcd/dist/neaps-${RELEASE_VERSION##*.}-imperial.tcd"
+          mv packages/tcd/dist/harmonics.tcd "packages/tcd/dist/neaps-${RELEASE_VERSION##*.}.tcd"
 
       - name: Rename database file for release
         run: cp packages/database/dist/generated/neaps.tcdb "packages/database/dist/generated/neaps-${RELEASE_VERSION##*.}.tcdb"

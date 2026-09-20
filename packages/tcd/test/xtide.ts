@@ -12,8 +12,6 @@ export interface TideEvent {
   units?: string; // as printed by XTide, e.g. "m" or "kt"
 }
 
-export type TcdVariant = "metric" | "imperial";
-
 /**
  * Format a date for XTide command line (YYYY-MM-DD HH:MM)
  */
@@ -96,14 +94,13 @@ export function getXTidePredictions(
   stationName: string,
   startDate: Date,
   endDate: Date,
-  variant: TcdVariant = "metric",
 ): TideEvent[] {
   const startStr = formatXTideDate(startDate);
   const endStr = formatXTideDate(endDate);
 
   // Run XTide via Docker using execFileSync for safety
   const args = [
-    ...xtideCommand(variant),
+    ...xtideCommand(),
     // -l: location
     "-l",
     stationName,
@@ -144,13 +141,10 @@ export function getXTidePredictions(
  * Get XTide's "about" listing for a station as a map of field to value, e.g.
  * "Coordinates", "Reference", "Native units", "Flood direction".
  */
-export function getXTideAbout(
-  stationName: string,
-  variant: TcdVariant = "metric",
-): Map<string, string> {
+export function getXTideAbout(stationName: string): Map<string, string> {
   const output = execFileSync(
     "docker",
-    [...xtideCommand(variant), "-l", stationName, "-m", "a"],
+    [...xtideCommand(), "-l", stationName, "-m", "a"],
     { encoding: "latin1", cwd: process.cwd() },
   );
 
@@ -164,15 +158,8 @@ export function getXTideAbout(
   return fields;
 }
 
-function xtideCommand(variant: TcdVariant): string[] {
-  return [
-    "compose",
-    "run",
-    "--rm",
-    "-e",
-    `HFILE_PATH=/data/harmonics-${variant}.tcd`,
-    "xtide",
-  ];
+function xtideCommand(): string[] {
+  return ["compose", "run", "--rm", "xtide"];
 }
 
 /**

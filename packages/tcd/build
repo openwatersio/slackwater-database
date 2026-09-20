@@ -8,7 +8,5 @@ rm -rf dist
 # Build the harmonics and offsets files
 node build.ts
 
-# Build the .tcd files
-for units in metric imperial; do
-  docker compose run --rm build-tcd dist/harmonics-${units}.tcd dist/harmonics-${units}.txt dist/offsets-${units}.xml
-done
+# Build the .tcd file
+docker compose run --rm build-tcd dist/harmonics.tcd dist/harmonics.txt dist/offsets.xml
