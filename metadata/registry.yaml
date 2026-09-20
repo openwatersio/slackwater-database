@@ -1,0 +1,493 @@
+# Stations whose identity this package owns, rather than corrects.
+#
+# Unlike corrections.yaml, these records have no upstream to differ from: the
+# name is not a provider's name and the position is not a correction of a
+# published one. CHS tidal-current gates are the first data like this - the
+# fitting pipeline emits a hand-written label and no position at all.
+#
+# Two bounded, hand-curated classes, told apart by `kind`:
+#   - current gates (`kind: current`, or omitted - the registry was gates-only
+#     first). A current station joins when safe transit requires timing slack:
+#     the gates on the Inside Passage route, not every interesting current.
+#   - tide reference ports (`kind: tide`). A tide station joins when CHS itself
+#     designates it a reference port - an external rule we did not invent.
+# Both rules are expansion-friendly and rule-governed; neither is a cap. A
+# consumer picks the right CHS series (currents vs tides) by a station's kind.
+#
+# --- The rest of Canada, and why it is six stations shorter than you expect ---
+# CHS publishes tidal currents at exactly 30 stations nationally. Twenty are
+# here. The gate rule above rejects the other ten less two: what follows is that
+# survey, written down so the next person does not re-run it and so nobody
+# "discovers" a missing station and adds it back without the reason.
+#
+#   ADMITTED  Nakwakto Rapids, Quatsino Narrows, Masset Sound, Great Bras d'Or.
+#             Each one has a published instruction to transit on slack.
+#
+#   REJECTED - a current station exists, but nothing times a transit on it:
+#     Scott Channel        Sailing Directions: "deep and free of dangers". Tide
+#                          rips on a headland rounding, not a gate. Cruisers
+#                          round Cape Scott on Nahwitti Bar's slack instead.
+#     Hiekish Narrows      No slack caution in PAC 205, and it is the optional
+#                          east branch - Tolmie Channel is the Inner Passage
+#                          route. VTS only asks you to advise if transiting.
+#     Grand Manan Channel  ATL 106: "no dangers in the fairway". Also
+#                          discontinued as a station. Head Harbour Passage
+#                          nearby DOES run to 5 kn - but CHS predicts no
+#                          current there, so there is nothing to admit.
+#     Abegweit Passage     2.0 kn under the Confederation Bridge, across 5.5
+#                          miles of navigable width. ATL 108 gives no stream
+#                          rate and no slack advice at all. The widely-copied
+#                          "4 knots" is Wikipedia, roughly double CHS.
+#     Fairview Terminal    A container berth on Kaien Island. A temporary
+#                          station feeding Prince Rupert's pilotage
+#                          instrumentation - berthing data, not a passage.
+#     Porpoise Channel     The near miss, and the one worth reading before
+#       East               re-adding it. There IS a published HW-slack rule for
+#                          Porpoise Harbour, and Pub 154 does say 6-7 kn - but
+#                          that is an under-keel-clearance window for loaded
+#                          ships at the Ridley-Lelu narrows, and THIS station
+#                          sits east of that pinch, where CHS predicts 2.0 kn.
+#                          A gate whose station is not on the gate is worse
+#                          than no gate.
+#
+# Whether an admitted gate's slack can be PREDICTED is a separate question,
+# asked downstream and answered against published events - Nakwakto is a real
+# gate that no harmonic model fits (see openwatersio/slackwater-ios#9).
+#
+# A current gate may additionally carry a `derived` block when CHS publishes no
+# current station for it and slack is derived from a reference tide port's
+# high/low water (see the "Derived gates" section below). It stays kind:current
+# - it is still a gate - but a consumer reads its slack from the reference, not
+# from a fitted current series.
+#
+# A fitted current gate (one with its own CHS current predictions) may instead
+# carry a `tideReference`: the registry key of the tide reference port whose
+# water a paired tide+current view shows beside it. Sourcing rule, applied to
+# every pair below and verifiable from the positions in this file: the
+# `tideReference` is the *nearest* of the tide reference ports (kind: tide) in
+# the same tidal regime - chosen by position, not guessed. The two a mariner
+# would double-check both match standard published secondary-reference practice:
+# Seymour Narrows -> Campbell River, and Sechelt Rapids (Skookumchuck) -> Point
+# Atkinson (Ports and Passes / Waggoner). A gate with no honestly-near reference
+# port carries none: unpaired beats a wrong pairing. Distinct from and mutually
+# exclusive with `derived` - tideReference is a display companion, derived is
+# where slack comes from - and only an ordinary current gate carries either.
+#
+# Keys match what chs-constituents emits ("chs-" + slug of the label), so a
+# consumer can resolve straight from the id in its own output.
+#
+# These are our own facts, not a copy of a provider's station file. Names and
+# contexts are hand-written here; positions are independently derived from the
+# chs-constituents fitting pipeline and currents-vault pass frontmatter, and
+# agree with chs-constituents/stations/salish-sea.json. The registry ships no
+# provider-minted identifiers - that id lives only in each operator's local,
+# licence-covered pipeline (see PROVENANCE.md). Every station is
+# human-reviewed before it lands. That default provenance is documented once
+# in PROVENANCE.md; set a station's `source` field only when its facts came
+# from somewhere else (see noaa-boundary-pass).
+#
+# `formerSlugs` records a slug this station used to resolve to, so a consumer
+# can redirect an old shared link instead of 404ing it. Set it in the same
+# change that moves `slug` - `npm run metadata:lock` refuses to retire a
+# published path unless the old slug is recorded here.
+# It is also what lets two ids for one station share a slug: see "Two ids may
+# share one slug" in CONTRIBUTING.md.
+#
+# Only record a former slug when the new slug points at the *same place*: a
+# rename qualifies, a mislabel does not - redirecting a mislabel preserves a
+# wrong link, where a 404 is more honest (issue #6, the retired `anacortes`).
+# No validator can make that call. Slug changes are rare; downstream consumers
+# own the redirect consequences either way.
+#
+# One entry is not CHS: noaa-boundary-pass is a NOAA current station, carried
+# here because currents-vault (which curates the same 20 gates) is dropping
+# station identity in favour of this registry.
+
+chs-active-pass:
+  name: Active Pass
+  context: Galiano & Mayne Islands
+  position: [48.8604, -123.3128]
+  provider: chs
+  tideReference: chs-fulford-harbour
+
+chs-arran-rapids:
+  name: Arran Rapids
+  context: Stuart Island
+  position: [50.42, -125.14]
+  provider: chs
+
+chs-beazley-passage:
+  name: Beazley Passage
+  context: Surge Narrows
+  position: [50.2263, -125.142]
+  provider: chs
+  aliases: [surge narrows]
+  tideReference: chs-owen-bay
+
+chs-blackney-passage:
+  name: Blackney Passage
+  context: Blackfish Sound
+  position: [50.555, -126.6842]
+  provider: chs
+
+chs-dent-rapids:
+  name: Dent Rapids
+  context: Cordero Channel
+  position: [50.41, -125.2117]
+  provider: chs
+
+chs-dodd-narrows:
+  name: Dodd Narrows
+  context: Northumberland Channel
+  position: [49.13546639419797, -123.81735084108287]
+  provider: chs
+  cities: [Nanaimo]
+  source: GSC West Coast Topo-Bathymetric DEM v2 hydraulic control section
+
+chs-first-narrows:
+  name: First Narrows
+  context: Lions Gate Bridge
+  position: [49.316, -123.1401]
+  provider: chs
+  cities: [Vancouver]
+  aliases: [lions gate]
+  tideReference: chs-vancouver
+
+chs-gabriola-passage:
+  name: Gabriola Passage
+  context: Gulf Islands
+  position: [49.1291, -123.7043]
+  provider: chs
+
+chs-gillard-passage:
+  name: Gillard Passage
+  context: Yuculta Rapids
+  position: [50.3933, -125.1567]
+  provider: chs
+  aliases: [yucultas]
+
+chs-great-bras-dor:
+  name: Great Bras d'Or
+  context: Cape Breton Island
+  position: [46.2816, -60.4247]
+  provider: chs
+  kind: current
+  aliases: [big bras d'or, bras d'or lakes, boularderie, seal island bridge]
+  source: >-
+    The sea entrance to the Bras d'Or Lakes; the rapid is at the outer narrows
+    between Carey Point and Noir Point, not at the Seal Island Bridge 4.7 miles
+    southwest. Sailing Directions ATL 104 refers the mariner to the current
+    tables for slack water here. CHS names the same station both "Big Bras
+    D'Or" and "Great Bras D'or"; the channel is Great Bras d'Or, so that is the
+    name, with the other carried as an alias. Position from CHS's public
+    current-station list, matched by position and confirmed in the channel -
+    the tide reference ports' method, see PROVENANCE.md. Note for a consumer:
+    slack here lags high and low water by hours - a 3.5 to 4 h median across
+    the 2026 predictions, ranging 2.5 to 5.5 - and the stream direction is
+    inverted relative to the sea tide, flowing out while the tide rises. Slack
+    must never be derived from tide height; read the current table.
+
+chs-hole-in-the-wall:
+  name: Hole in the Wall
+  context: Okisollo Channel
+  position: [50.3001, -125.2083]
+  provider: chs
+  tideReference: chs-owen-bay
+
+chs-johnstone-strait-central:
+  name: Johnstone Strait - Central
+  context: Port Neville
+  position: [50.4717, -126.1367]
+  provider: chs
+  location:
+    {
+      region: British Columbia,
+      regionCode: CA-BC,
+      country: Canada,
+      countryCode: CA,
+    }
+
+chs-juan-de-fuca-east:
+  name: Juan de Fuca - East
+  context: Victoria approaches
+  position: [48.2317, -123.53]
+  provider: chs
+  cities: [Victoria]
+
+chs-masset-sound:
+  name: Masset Sound
+  context: Haida Gwaii
+  position: [54.0029, -132.1543]
+  provider: chs
+  kind: current
+  cities: [Masset]
+  aliases: [masset channel, masset narrows, masset bar, masset harbour]
+  source: >-
+    The long sound on north Graham Island joining Masset Inlet to Dixon
+    Entrance, pinching to under two cables at Cook Point, which Sailing
+    Directions says should be navigated at or near slack water - slack lasting
+    only a few minutes. The 2026 predictions peak at 5.8 knots ebbing and 5.6
+    flooding, with a median peak nearer 3.8 either way. Named for the sound, as
+    the Sailing Directions and tide tables name it; CHS's station file says
+    "Masset Channel", carried as an alias. Cited to PAC 206 when this entry was
+    written; that volume is superseded by PAC 203, which carries the same
+    wording. Position from CHS's public current-station
+    list, matched by position and confirmed in the sound - the tide reference
+    ports' method, see PROVENANCE.md.
+
+chs-nakwakto-rapids:
+  name: Nakwakto Rapids
+  context: Slingsby Channel
+  position: [51.0967, -127.5033]
+  provider: chs
+  kind: current
+  location:
+    {
+      region: British Columbia,
+      regionCode: CA-BC,
+      country: Canada,
+      countryCode: CA,
+    }
+  aliases: [turret rock, tremble island, seymour inlet, belize inlet]
+  source: >-
+    The sole entrance to the Seymour and Belize Inlet complex, at the east end
+    of Slingsby Channel around Bramham Island, with Turret Rock mid-channel.
+    Sailing Directions PAC 202 is unusually direct about the timing: slack runs
+    about six minutes, and it says the rapids cannot be run safely at any other
+    time. The ebb is the faster stream - CHS gives 14.5 knots ebbing against
+    11.5 flooding. Position from CHS's public current-station
+    list, matched by position and confirmed in the channel - the tide reference
+    ports' method, see PROVENANCE.md.
+
+chs-porlier-pass:
+  name: Porlier Pass
+  context: Galiano & Valdes Islands
+  position: [49.015, -123.585]
+  provider: chs
+  tideReference: chs-fulford-harbour
+
+chs-quatsino-narrows:
+  name: Quatsino Narrows
+  context: Holberg & Rupert Inlets
+  position: [50.555, -127.5574]
+  provider: chs
+  kind: current
+  cities: [Coal Harbour]
+  aliases: [drake island, coal harbour]
+  source: >-
+    The mile-and-a-half narrows east of Drake Island joining Quatsino Sound to
+    Holberg and Rupert Inlets, on northwest Vancouver Island. The Pacific
+    Pilotage Authority gates even piloted ships through it on daylight slack.
+    The transit outlasts the slack, so a consumer states the turn, not a
+    window. Position from CHS's public current-station list - the tide
+    reference ports' method, see PROVENANCE.md - held at the published
+    latitude and moved ~170 m west to mid-channel: the published longitude
+    (-127.5550) lands on the islet between the two threads of the narrows, and
+    the on-land audit caught it. Same treatment as chs-malibu-rapids, and the
+    reason the audit is a failure rather than a note.
+
+chs-race-passage:
+  name: Race Passage
+  context: Race Rocks
+  position: [48.3067, -123.5367]
+  provider: chs
+  cities: [Victoria]
+
+chs-sechelt-rapids:
+  name: Sechelt Rapids
+  context: Skookumchuck Narrows
+  position: [49.7383, -123.8983]
+  provider: chs
+  aliases: [skookumchuck]
+  magnitudeNote: 16.5 kn flood · 16 kn ebb
+  source: Canadian Sailing Directions PAC 201 (2023/03), paragraph 224.
+  tideReference: chs-point-atkinson
+
+chs-second-narrows:
+  name: Second Narrows
+  context: Burrard Inlet
+  position: [49.2947, -123.0245]
+  provider: chs
+  cities: [Vancouver]
+  tideReference: chs-vancouver
+
+chs-seymour-narrows:
+  name: Seymour Narrows
+  context: Discovery Passage
+  position: [50.1333, -125.35]
+  provider: chs
+  cities: [Campbell River]
+  tideReference: chs-campbell-river
+
+chs-tillicum-bridge:
+  name: Tillicum Bridge
+  context: Gorge Waterway
+  position: [48.4464, -123.4002]
+  provider: chs
+  cities: [Victoria]
+  tideReference: chs-victoria
+
+chs-weynton-passage:
+  name: Weynton Passage
+  context: Broughton Strait
+  position: [50.6033, -126.8117]
+  provider: chs
+
+noaa-boundary-pass:
+  name: Boundary Pass
+  context: Saturna & Patos Islands
+  position: [48.6912, -123.245]
+  provider: noaa
+  location:
+    {
+      region: Washington,
+      regionCode: US-WA,
+      country: United States,
+      countryCode: US,
+    }
+  source: >-
+    NOAA CO-OPS station; position from the NOAA station page, not the CHS
+    fitting pipeline that supplies the other gates. See PROVENANCE.md.
+  # That NOAA station is `noaa/PUG1717`, published as "Turn Point" - this entry
+  # records no provider id, which is how the join missed it and 4.0.0 gave one
+  # station two slugs 1.5 m apart. Both ids now resolve here. The curated name
+  # wins because this entry exists precisely to hold the gate's identity as
+  # currents-vault drops it.
+  formerSlugs: [turn-point]
+
+# --- Derived gates (kind: current + a `derived` block) ---
+# A current gate CHS publishes no current station for: slack does not come from
+# a fitted current series but is *derived* from a reference tide port's high and
+# low water, plus a fixed per-gate lag. `derived.reference` is the registry key
+# of that tide port; `hwLagMinutes`/`lwLagMinutes` are minutes after its HW/LW
+# that slack occurs. The pass floods on the rising tide and ebbs on the falling
+# one, so a consumer states slack times and a flood/ebb phase, but never a
+# speed - CHS predicts none. Distinct from a fitted gate, which carries its own
+# constituents; a derived gate carries only the reference and the two lags.
+
+chs-malibu-rapids:
+  name: Malibu Rapids
+  context: Princess Louisa Inlet
+  position: [50.1626, -123.8515]
+  provider: chs
+  kind: current
+  location:
+    {
+      region: British Columbia,
+      regionCode: CA-BC,
+      country: Canada,
+      countryCode: CA,
+    }
+  aliases: [princess louisa, malibu islet]
+  magnitudeNote: 9 kn flood & ebb
+  source: >-
+    Current magnitude from Canadian Sailing Directions PAC 201 (2023/03),
+    paragraph 246. No CHS current station; slack is derived from Point Atkinson high/low water
+    (HW+25 / LW+35 min, cruising-community consensus - Points North seminar,
+    Waggoner). Position is in the Malibu Rapids channel on the Jervis Inlet
+    approach, nudged ~110 m off the CHS Malibu Islet station (50.163, -123.85),
+    which sits sub-resolution on the bundled coastline. See PROVENANCE.md.
+  derived:
+    reference: chs-point-atkinson
+    hwLagMinutes: 25
+    lwLagMinutes: 35
+
+# --- Tide reference ports (kind: tide) ---
+# CHS designates these reference ports itself; probing the 47-51.5N / 126.5-122W
+# box found exactly these 10 (chs-online design spec §6b). Positions are from
+# CHS's public prediction-station list, matched by position and confirmed in
+# water by the coastline audit (all 10 land "clear") - not the fitting pipeline
+# that supplies the current gates. See PROVENANCE.md. The pass is naming-led:
+# display names are shortened where safe (the resolver keys on position, not
+# name), contexts never restate the name, aliases are what a local would type.
+
+chs-owen-bay:
+  name: Owen Bay
+  context: Sonora Island
+  position: [50.310, -125.223]
+  provider: chs
+  kind: tide
+
+chs-campbell-river:
+  name: Campbell River
+  context: Discovery Passage
+  position: [50.042, -125.247]
+  provider: chs
+  kind: tide
+
+chs-point-atkinson:
+  name: Point Atkinson
+  context: West Vancouver
+  position: [49.337, -123.254]
+  provider: chs
+  kind: tide
+  aliases: [lighthouse park, caulfeild cove]
+  # `chs-point-atkinson-2` is this same station, 63 m away, entered twice in the
+  # CHS catalogue. 4.0.0 allocated it a slug of its own; both ids now resolve
+  # here. See the duplicate-identity note above the sweep in src/positions.js.
+  formerSlugs: [point-atkinson-west-vancouver-bc]
+
+chs-vancouver:
+  name: Vancouver
+  context: Burrard Inlet
+  position: [49.286, -123.100]
+  provider: chs
+  kind: tide
+  cities: [Vancouver]
+  aliases: [vancouver harbour]
+  # `chs-vancouver-2` is this same station, 40 m away, entered twice in the CHS
+  # catalogue. 4.0.0 allocated it a slug of its own; both ids now resolve here.
+  formerSlugs: [vancouver-bc]
+
+chs-port-alberni:
+  name: Port Alberni
+  context: Alberni Inlet
+  position: [49.226, -124.814]
+  provider: chs
+  kind: tide
+  aliases: [alberni]
+
+chs-tofino:
+  name: Tofino
+  context: Clayoquot Sound
+  position: [49.154, -125.913]
+  provider: chs
+  kind: tide
+  aliases: [clayoquot]
+
+chs-fulford-harbour:
+  name: Fulford Harbour
+  context: Salt Spring Island
+  position: [48.769, -123.451]
+  provider: chs
+  kind: tide
+  aliases: [fulford]
+
+chs-port-renfrew:
+  name: Port Renfrew
+  context: Port San Juan
+  position: [48.555, -124.421]
+  provider: chs
+  kind: tide
+  aliases: [san juan]
+
+chs-victoria:
+  name: Victoria
+  context: Inner Harbour
+  position: [48.424, -123.371]
+  provider: chs
+  kind: tide
+  cities: [Victoria]
+  aliases: [victoria harbour, inner harbour]
+  # `chs-victoria-harbour` is this same station, 42 m away, entered twice in the
+  # CHS catalogue - its whole name is already an alias here, so the curated
+  # entry knew about its own duplicate. Both ids now resolve here.
+  formerSlugs: [victoria-harbour]
+
+chs-sooke:
+  name: Sooke
+  context: Strait of Juan de Fuca
+  position: [48.370, -123.726]
+  provider: chs
+  kind: tide
+  aliases: [sooke basin, sooke harbour]

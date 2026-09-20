@@ -1,10 +1,12 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, expectTypeOf, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import * as flatbuffers from "flatbuffers";
 import { buildDatabase } from "../src/database/builder.ts";
 import { openDatabase } from "../src/database/reader.ts";
 import { Root, Kind } from "../src/generated/fbs/neaps.ts";
-import type { StationInput } from "../src/types.ts";
+import type { Station, StationInput } from "../src/types.ts";
+
+expectTypeOf<Station["chart_datum"]>().toEqualTypeOf<string | undefined>();
 
 const shipped = openDatabase(
   readFileSync(new URL("../src/generated/neaps.tcdb", import.meta.url)),
@@ -60,15 +62,40 @@ describe("the shipped database file", () => {
 });
 
 describe("buildDatabase", () => {
+  const identity = {
+    latitude: 0,
+    longitude: 0,
+    timezone: "Etc/UTC",
+    continent: "Americas",
+    source: {
+      name: "Test",
+      id: "test",
+      published_harmonics: true,
+      url: "https://example.com",
+    },
+    license: {
+      type: "public domain",
+      commercial_use: true,
+      url: "https://example.com/license",
+    },
+  };
   const inputs: StationInput[] = [
     {
+      ...identity,
       id: "test/2",
       name: "Reference",
       latitude: 47.6,
       longitude: -122.3,
       timezone: "America/Los_Angeles",
-      country: "United States",
+      locality: "Victoria",
+      region: "British Columbia",
+      region_code: "CA-BC",
+      country: "Canada",
+      country_code: "CA",
       continent: "Americas",
+      context: "Inner Harbour",
+      context_derived: false,
+      cities: ["Victoria", "Esquimalt"],
       type: "reference",
       chart_datum: "MLLW",
       datums_source: "observed",
@@ -95,8 +122,11 @@ describe("buildDatabase", () => {
       },
     },
     {
+      ...identity,
       id: "test/1",
       name: "Subordinate",
+      country: "Canada",
+      country_code: "CA",
       type: "subordinate",
       quality: {
         id: "test/1",
@@ -112,14 +142,23 @@ describe("buildDatabase", () => {
       },
     },
     {
+      ...identity,
       id: "test/3",
       name: "A current",
+      country: "United States",
+      country_code: "US",
       // No explicit kind: the builder derives Kind.Current from `current`.
       current: {
         flood_direction: 90,
         ebb_direction: 270,
         mean_flow: 0.4,
         tide_reference: "test/2",
+        magnitude_note: "9 kn flood and ebb",
+        derived: {
+          reference: "test/2",
+          high_water_lag_minutes: 25,
+          low_water_lag_minutes: 35,
+        },
         offsets: {
           reference: "test/2",
           slack_before_flood: -30,
@@ -130,12 +169,100 @@ describe("buildDatabase", () => {
   ];
   const db = openDatabase(buildDatabase(inputs, { version: "1.2.3" }));
 
+  const routeInputs = [
+    ...inputs,
+    {
+      ...inputs[0]!,
+      id: "test/4",
+      name: "Second Victoria provider record",
+    },
+  ];
+  const routes = {
+    tide: [
+      {
+        slug: "victoria",
+        station_ids: ["test/2", "test/4", "test/2"],
+        former_paths: ["/tides/victoria-harbour/", "/tides/victoria-harbour/"],
+      },
+      { slug: "alpha", station_ids: ["test/1"] },
+    ],
+    current: [],
+  };
+
   test("round-trips stations sorted by id", () => {
     expect(db.version()).toBe("1.2.3");
     expect(db.stationsLength()).toBe(3);
     expect(db.stations(0)!.id()).toBe("test/1");
     expect(db.stations(1)!.id()).toBe("test/2");
     expect(db.stations(2)!.id()).toBe("test/3");
+  });
+
+  test("round-trips sorted, deduplicated route indexes", () => {
+    const root = openDatabase(
+      buildDatabase(routeInputs, { version: "1.2.3", routes }),
+    );
+    expect(root.tideRoutesLength()).toBe(2);
+    expect(root.tideRoutes(0)!.slug()).toBe("alpha");
+    const victoria = root.tideRoutes(1)!;
+    expect(victoria.slug()).toBe("victoria");
+    expect(victoria.stationIdsLength()).toBe(2);
+    expect(victoria.stationIds(1)).toBe("test/4");
+    expect(victoria.formerPathsLength()).toBe(1);
+    expect(victoria.formerPaths(0)).toBe("/tides/victoria-harbour/");
+  });
+
+  test("rejects routes that point at the other station kind", () => {
+    expect(() =>
+      buildDatabase(inputs, {
+        routes: {
+          tide: [{ slug: "wrong", station_ids: ["test/3"] }],
+          current: [],
+        },
+      }),
+    ).toThrow(/tide\/wrong.*current.*test\/3/);
+  });
+
+  test("rejects contradictory station kinds", () => {
+    expect(() => buildDatabase([{ ...inputs[2]!, kind: "tide" }])).toThrow(
+      /test\/3.*tide.*current/,
+    );
+  });
+
+  test("rejects empty and duplicate station ids", () => {
+    expect(() => buildDatabase([{ ...inputs[0]!, id: "" }])).toThrow(/no id/);
+    expect(() => buildDatabase([inputs[0]!, { ...inputs[0]! }])).toThrow(
+      /duplicate station id test\/2/,
+    );
+  });
+
+  test("rejects malformed route indexes", () => {
+    expect(() =>
+      buildDatabase(inputs, {
+        routes: {
+          tide: [
+            { slug: "same", station_ids: ["test/1"] },
+            { slug: "same", station_ids: ["test/2"] },
+          ],
+          current: [],
+        },
+      }),
+    ).toThrow(/tide.*duplicate.*same/);
+    expect(() =>
+      buildDatabase(inputs, {
+        routes: {
+          tide: [{ slug: "empty", station_ids: [] }],
+          current: [],
+        },
+      }),
+    ).toThrow(/tide\/empty.*no station ids/);
+    expect(() =>
+      buildDatabase(inputs, {
+        routes: {
+          tide: [{ slug: "missing", station_ids: ["test/404"] }],
+          current: [],
+        },
+      }),
+    ).toThrow(/tide\/missing.*test\/404/);
   });
 
   test("round-trips prediction data through the name tables", () => {
@@ -157,6 +284,22 @@ describe("buildDatabase", () => {
     // Aliases are lower-cased per the schema contract.
     expect(station.aliases(0)).toBe("elliott bay");
     expect(station.aliases(1)).toBe("seattle");
+  });
+
+  test("round-trips structured station identity", () => {
+    const station = db.stations(1)!;
+    expect(station.locality()).toBe("Victoria");
+    expect(station.region()).toBe("British Columbia");
+    expect(station.regionCode()).toBe("CA-BC");
+    expect(station.country()).toBe("Canada");
+    expect(station.countryCode()).toBe("CA");
+    expect(station.context()).toBe("Inner Harbour");
+    expect(station.contextDerived()).toBe(false);
+    expect(
+      Array.from({ length: station.citiesLength() }, (_, i) =>
+        station.cities(i),
+      ),
+    ).toEqual(["Victoria", "Esquimalt"]);
   });
 
   test("round-trips quality, gate inline and detail in the table", () => {
@@ -189,9 +332,56 @@ describe("buildDatabase", () => {
   });
 
   test("rejects a station without a name, by id", () => {
-    expect(() => buildDatabase([{ id: "test/nameless" }])).toThrow(
-      /test\/nameless has no name/,
+    expect(() =>
+      buildDatabase([
+        {
+          id: "test/nameless",
+          country: "United States",
+          country_code: "US",
+        },
+      ]),
+    ).toThrow(/test\/nameless has no name/);
+  });
+
+  test("rejects missing, unknown, and mismatched country codes by station id", () => {
+    const missing = { ...inputs[0]!, id: "test/missing" };
+    delete missing.country_code;
+    expect(() => buildDatabase([missing])).toThrow(
+      /test\/missing.*country_code/,
     );
+    expect(() =>
+      buildDatabase([{ ...inputs[0]!, id: "test/bad", country_code: "CAN" }]),
+    ).toThrow(/test\/bad.*country_code/);
+    expect(() =>
+      buildDatabase([
+        { ...inputs[0]!, id: "test/unknown", country_code: "ZZ" },
+      ]),
+    ).toThrow(/test\/unknown.*ZZ/);
+    expect(() =>
+      buildDatabase([
+        {
+          ...inputs[0]!,
+          id: "test/mismatch",
+          country: "Canada",
+          country_code: "US",
+        },
+      ]),
+    ).toThrow(/test\/mismatch.*Canada.*US/);
+    expect(() =>
+      buildDatabase([
+        {
+          ...inputs[0]!,
+          id: "test/region",
+          region_code: "US-WA",
+        },
+      ]),
+    ).toThrow(/test\/region.*US-WA.*CA/);
+  });
+
+  test("rejects incomplete public station identity", () => {
+    expect(() =>
+      buildDatabase([{ ...inputs[0]!, id: "test/incomplete", timezone: "" }]),
+    ).toThrow(/test\/incomplete.*timezone/);
   });
 
   test("round-trips current stations", () => {
@@ -202,9 +392,75 @@ describe("buildDatabase", () => {
     expect(current.ebbDirection()).toBe(270);
     expect(current.meanFlow()).toBeCloseTo(0.4, 6);
     expect(current.tideReference()).toBe("test/2");
+    expect(current.magnitudeNote()).toBe("9 kn flood and ebb");
+    const derived = current.derived()!;
+    expect(derived.reference()).toBe("test/2");
+    expect(derived.highWaterLagMinutes()).toBe(25);
+    expect(derived.lowWaterLagMinutes()).toBe(35);
     const offsets = current.offsets()!;
     expect(offsets.reference()).toBe("test/2");
     expect(offsets.slackBeforeFlood()).toBe(-30);
     expect(offsets.floodSpeedRatio()).toBeCloseTo(0.8, 6);
+  });
+
+  test("exposes kind eagerly and current data lazily", async () => {
+    const bytes = buildDatabase(inputs, { version: "1.2.3" });
+    vi.doMock("#neaps.tcdb", () => ({ default: bytes }));
+    vi.resetModules();
+    const { Station: FlatBufferStation } =
+      await import("../src/generated/fbs/neaps.ts");
+    const currentAccessor = vi.spyOn(FlatBufferStation.prototype, "current");
+
+    try {
+      const { stationsById } = await import("../src/stations.ts");
+      const station = stationsById.get("test/3")!;
+      expect(station.kind).toBe("current");
+      expect(currentAccessor).not.toHaveBeenCalled();
+      const current = station.current!;
+      expect(current).toMatchObject({
+        flood_direction: 90,
+        ebb_direction: 270,
+        tide_reference: "test/2",
+        magnitude_note: "9 kn flood and ebb",
+        derived: {
+          reference: "test/2",
+          high_water_lag_minutes: 25,
+          low_water_lag_minutes: 35,
+        },
+        offsets: {
+          reference: "test/2",
+          slack_before_flood: -30,
+        },
+      });
+      expect(current.mean_flow).toBeCloseTo(0.4, 6);
+      expect(current.offsets?.flood_speed_ratio).toBeCloseTo(0.8, 6);
+      expect(currentAccessor).toHaveBeenCalledTimes(1);
+    } finally {
+      currentAccessor.mockRestore();
+      vi.doUnmock("#neaps.tcdb");
+      vi.resetModules();
+    }
+  });
+
+  test("preserves absent current measurements without confusing them with zero", async () => {
+    const sparse = structuredClone(inputs);
+    sparse[2]!.current = {
+      ebb_direction: 0,
+      offsets: { reference: "test/2", flood_time: 0 },
+    };
+    const bytes = buildDatabase(sparse);
+    vi.doMock("#neaps.tcdb", () => ({ default: bytes }));
+    vi.resetModules();
+
+    try {
+      const { stationsById } = await import("../src/stations.ts");
+      expect(stationsById.get("test/3")!.current).toEqual({
+        ebb_direction: 0,
+        offsets: { reference: "test/2", flood_time: 0 },
+      });
+    } finally {
+      vi.doUnmock("#neaps.tcdb");
+      vi.resetModules();
+    }
   });
 });

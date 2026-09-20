@@ -28,7 +28,7 @@ jobs:
           node-version: "24"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Pack npm module
         run: npm pack -w packages/database
@@ -42,17 +42,11 @@ jobs:
           name: npm-dist
           path: "*.tgz"
 
-      # GeoNames data (cities500 + admin1 codes) is downloaded by the geocode
-      # test on first run. Cache it so we don't re-fetch ~10MB from
-      # download.geonames.org on every run. Bump the -v1 suffix to force a refresh.
-      - name: Cache GeoNames data
-        uses: actions/cache@v6
-        with:
-          path: tmp/geonames
-          key: geonames-v1
-
       - name: Run tests
         run: npm run test
+
+      - name: Validate station metadata
+        run: npm run validate:database
 
   tcd:
     runs-on: ubuntu-latest
@@ -69,7 +63,7 @@ jobs:
           node-version: "24"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build project
         run: npm run build
@@ -132,7 +126,7 @@ jobs:
           node-version: "24"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run tests
         run: npm run lint

@@ -10,8 +10,29 @@ import { fileURLToPath } from "node:url";
 import { buildDatabase } from "../../database/src/database/builder.ts";
 import type { StationInput } from "../../database/src/types.ts";
 
+// Every station carries full identity: the builder requires name, timezone,
+// continent, country, an ISO country code, source, and license on each record.
+const identity = {
+  timezone: "America/Los_Angeles",
+  continent: "Americas",
+  country: "United States",
+  country_code: "US",
+  source: {
+    name: "Test Source",
+    id: "9447130",
+    published_harmonics: true,
+    url: "https://example.com/9447130",
+  },
+  license: {
+    type: "public domain",
+    commercial_use: true,
+    url: "https://example.com/license",
+  },
+};
+
 const stations: StationInput[] = [
   {
+    ...identity,
     id: "test/current",
     name: "A current",
     latitude: 48.1,
@@ -29,14 +50,13 @@ const stations: StationInput[] = [
     },
   },
   {
+    ...identity,
     id: "test/reference",
     name: "Reference",
     latitude: 47.6,
     longitude: -122.3,
-    timezone: "America/Los_Angeles",
     region: "WA",
-    country: "United States",
-    continent: "Americas",
+    region_code: "US-WA",
     type: "reference",
     chart_datum: "MLLW",
     datums_source: "observed",
@@ -47,12 +67,6 @@ const stations: StationInput[] = [
       { name: "S2", amplitude: 0.268, phase: 25.2 },
     ],
     datums: { MLLW: 2.419, MSL: 4.443 },
-    source: {
-      name: "Test Source",
-      id: "9447130",
-      published_harmonics: true,
-      url: "https://example.com/9447130",
-    },
     quality: {
       id: "test/reference",
       accepted: true,
@@ -69,6 +83,7 @@ const stations: StationInput[] = [
     },
   },
   {
+    ...identity,
     id: "test/subordinate",
     name: "Subordinate",
     type: "subordinate",

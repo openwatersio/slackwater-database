@@ -560,19 +560,26 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 async function main() {
   console.error("Loading stations...");
 
-  const referenceStations = stations.filter(
+  // Registry-only tide ports carry identity but no constituents; XTide would
+  // list them and predict a flat line.
+  const tideStations = stations.filter(
+    (s: Station) =>
+      s.kind !== "current" &&
+      (s.type === "subordinate" || s.harmonic_constituents.length > 0),
+  );
+  const referenceStations = tideStations.filter(
     (s: Station) => s.type === "reference",
   );
-  const subordinateStations = stations.filter(
+  const subordinateStations = tideStations.filter(
     (s: Station) => s.type === "subordinate",
   );
 
   console.error(
-    `Found ${stations.length} stations (${referenceStations.length} reference, ${subordinateStations.length} subordinate)`,
+    `Found ${tideStations.length} stations (${referenceStations.length} reference, ${subordinateStations.length} subordinate)`,
   );
 
   console.error("Building master constituent list...");
-  const masterConstituents = buildConstituentList(stations);
+  const masterConstituents = buildConstituentList(tideStations);
   console.error(
     `Master constituent list: ${masterConstituents.length} constituents`,
   );
@@ -613,13 +620,17 @@ async function main() {
 
     console.error(`\nGenerating harmonics${suffix}.txt...`);
     const harmonicsTxt = generateHarmonicsTxt(
-      stations,
+      tideStations,
       masterConstituents,
       units,
     );
 
     console.error(`Generating offsets${suffix}.xml...`);
-    const offsetsXml = generateOffsetsXml(stations, referenceStations, units);
+    const offsetsXml = generateOffsetsXml(
+      tideStations,
+      referenceStations,
+      units,
+    );
 
     const harmonicsPath = join(outDir, `harmonics${suffix}.txt`);
     const offsetsPath = join(outDir, `offsets${suffix}.xml`);

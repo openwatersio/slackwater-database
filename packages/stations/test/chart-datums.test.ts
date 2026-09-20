@@ -7,6 +7,11 @@ import {
   type PartialStationData,
 } from "../station.js";
 import { allStations } from "@neaps/tide-database";
+import type { Station } from "@neaps/tide-database";
+
+const tideStations = allStations.filter(
+  (station) => station.kind === "tide" && station.quality,
+);
 
 const CONSTITUENTS = [
   { name: "M2", amplitude: 1.0, phase: 0 },
@@ -212,18 +217,21 @@ const LAT_ABOVE_CHART_DATUM = new Set([
 const DATUM_ROUNDING_M = 0.06;
 
 describe("astronomical extremes across the database", () => {
-  const references = allStations.filter(
-    (s) => s.type === "reference" && s.datums["LAT"] !== undefined,
+  const references = tideStations.filter(
+    (s): s is Station & { chart_datum: string } =>
+      s.type === "reference" &&
+      s.datums["LAT"] !== undefined &&
+      s.chart_datum !== undefined,
   );
 
   test("covers every reference station the constituents can honestly bound", () => {
-    const missing = allStations.filter(
+    const missing = tideStations.filter(
       (s) => s.type === "reference" && s.datums["HAT"] === undefined,
     );
     // Three publish no MSL, so there is no frame to put a constituent-space
     // result onto. The other eight carry Sa and Ssa at zero amplitude, so a
     // 19-year scan over them returns a confidently narrowed envelope rather
-    // than an extreme. Both are deliberate. See backfill-lat-hat.ts in this package.
+    // than an extreme. Both are deliberate. See packages/stations/backfill-lat-hat.ts.
     expect(missing.map((s) => s.id).sort()).toEqual([
       "noaa/6835001", // Djakarta, Java — seasonless
       "noaa/8414781", // Winterport — seasonless
