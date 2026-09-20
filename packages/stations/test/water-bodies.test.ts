@@ -53,6 +53,10 @@ describe("water body names", () => {
     );
   });
 
+  test("gives no name for an unnamed feature", () => {
+    expect(waterBodyName({})).toBeUndefined();
+  });
+
   test("skips a name in another script", () => {
     expect(waterBodyName({ name: "東京湾" })).toBeUndefined();
   });

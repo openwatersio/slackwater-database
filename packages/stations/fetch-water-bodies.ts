@@ -36,7 +36,9 @@ const CACHE = join(root, "tmp", "water-bodies");
 const OVERPASS = "https://overpass-api.de/api/interpreter";
 const USER_AGENT =
   "tide-database (https://github.com/openwatersio/tide-database)";
-const FILTER = '[natural~"^(bay|strait)$"][name]';
+// Either name tag qualifies: waterBodyName prefers name:en, and a handful of
+// features carry that one alone.
+const FILTER = '[natural~"^(bay|strait)$"][~"^name(:en)?$"~"."]';
 
 type Ring = [number, number][];
 interface OverpassElement {
@@ -67,15 +69,21 @@ async function overpass(query: string, cacheKey: string, attempts = 5) {
       },
       body: new URLSearchParams({ data: query }),
     });
-    if (response.ok) {
-      const text = await response.text();
+    // A busy server answers 200 with an XML error document, so cache the
+    // response only once it parses as the JSON the query asked for.
+    const text = response.ok ? await response.text() : "";
+    if (text.startsWith("{")) {
       mkdirSync(CACHE, { recursive: true });
       writeFileSync(cached, text);
       return JSON.parse(text) as { elements: OverpassElement[] };
     }
-    if (attempt >= attempts || ![429, 502, 503, 504].includes(response.status))
-      throw new Error(`Overpass request failed: ${response.status}`);
-    console.log(`Overpass ${response.status}; retrying in ${attempt * 30}s`);
+    const status = response.ok ? "busy" : response.status;
+    if (
+      attempt >= attempts ||
+      (!response.ok && ![429, 502, 503, 504].includes(response.status))
+    )
+      throw new Error(`Overpass request failed: ${status}`);
+    console.log(`Overpass ${status}; retrying in ${attempt * 30}s`);
     await new Promise((resolve) => setTimeout(resolve, attempt * 30_000));
   }
 }
