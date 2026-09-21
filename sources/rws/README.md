@@ -31,13 +31,13 @@ Content-Type: application/json
 
 Snapshot identity:
 
-| Property | Value |
-| --- | ---: |
-| Bytes | 2,376,937 |
-| SHA-256 | `38ad1bc2a3e3eb490ed4fc38883e982b309f21beb66a5fb9f52f94f6b48dffe5` |
-| Metadata rows | 344 |
-| Locations | 2,499 |
-| Metadata/location links | 30,533 |
+| Property                |                                                              Value |
+| ----------------------- | -----------------------------------------------------------------: |
+| Bytes                   |                                                          2,376,937 |
+| SHA-256                 | `38ad1bc2a3e3eb490ed4fc38883e982b309f21beb66a5fb9f52f94f6b48dffe5` |
+| Metadata rows           |                                                                344 |
+| Locations               |                                                              2,499 |
+| Metadata/location links |                                                             30,533 |
 
 The response was kept outside Git. Repeat the request and join `AquoMetadataLijst`, `LocatieLijst`, and `AquoMetadataLocatieLijst` through their message IDs to reproduce the counts below.
 
@@ -45,12 +45,12 @@ The response was kept outside Git. Repeat the request and join `AquoMetadataLijs
 
 Only rows with `Grootheid.Code = WATHTE` and `ProcesType = astronomisch` are eligible for continuous tide heights. Calculated extrema must be selected as a complete datum-specific grouping.
 
-| Series | Datum | Catalog metadata ID | Locations |
-| --- | --- | ---: | ---: |
-| 10-minute height | MSL | 313 | 13 |
-| Calculated extrema (`GETETBRKDMSL2`) | MSL | 315 | 13 |
-| 10-minute height | NAP | 317 | 101 |
-| Calculated extrema (`GETETBRKD2`) | NAP | 321 | 101 |
+| Series                               | Datum | Catalog metadata ID | Locations |
+| ------------------------------------ | ----- | ------------------: | --------: |
+| 10-minute height                     | MSL   |                 313 |        13 |
+| Calculated extrema (`GETETBRKDMSL2`) | MSL   |                 315 |        13 |
+| 10-minute height                     | NAP   |                 317 |       101 |
+| Calculated extrema (`GETETBRKD2`)    | NAP   |                 321 |       101 |
 
 There are 114 locations with astronomical heights and 114 with calculated extrema. The sets are not identical: 112 have both.
 
@@ -114,10 +114,10 @@ Before publication, inventory start and end availability per eligible location. 
 The committed TICON data contains 254 Netherlands records, including 179 whose source identifier ends in `rws` or `rws_hist`. A nearest-neighbor audit compared all 114 RWS height locations with those 254 records using haversine distance:
 
 | Nearest TICON distance | RWS locations |
-| --- | ---: |
-| At most 100 m | 71 |
-| At most 500 m | 86 |
-| At most 1 km | 92 |
+| ---------------------- | ------------: |
+| At most 100 m          |            71 |
+| At most 500 m          |            86 |
+| At most 1 km           |            92 |
 
 These are proximity counts, not 92 proven identity matches. Names and coordinates change, nearby gauges can be distinct, and the current RWS codes differ from historical provider identifiers embedded in TICON.
 
