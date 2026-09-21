@@ -1,6 +1,10 @@
 // swift-tools-version:5.9
 import PackageDescription
 
+// At the repository root, not beside the sources in packages/swift, because
+// SwiftPM resolves a git dependency only from a manifest at the root of the
+// repository. `path:` on each target points back into packages/swift, so
+// consumers can depend on this repository by URL.
 let package = Package(
   name: "NeapsTideDatabase",
   platforms: [
@@ -21,11 +25,13 @@ let package = Package(
   targets: [
     .target(
       name: "NeapsTideDatabase",
-      dependencies: [.product(name: "FlatBuffers", package: "flatbuffers")]
+      dependencies: [.product(name: "FlatBuffers", package: "flatbuffers")],
+      path: "packages/swift/Sources/NeapsTideDatabase"
     ),
     .testTarget(
       name: "NeapsTideDatabaseTests",
       dependencies: ["NeapsTideDatabase"],
+      path: "packages/swift/Tests/NeapsTideDatabaseTests",
       resources: [.copy("fixture.tcdb")]
     ),
   ]
