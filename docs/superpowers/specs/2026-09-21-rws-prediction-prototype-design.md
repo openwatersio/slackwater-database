@@ -8,7 +8,7 @@ The prototype is successful when it proves the data model, validates keyed reads
 
 ## Why a companion file
 
-The existing `neaps.tcdb` is an 8.4 MiB harmonic/current station database, and the worker bundle already has a constrained size budget. Adding roughly 24 MB of sampled heights would make every existing consumer pay for optional data and would expose tide records that cannot use the current harmonic prediction path.
+The existing `neaps.tcdb` is an 8.4 MiB harmonic/current station database, and the worker bundle already has a constrained size budget. The sampled heights require roughly 24 MB raw and project to 3.9–4.7 MB after delta encoding and gzip. Adding them to `.tcdb` would still make every existing consumer pay for optional, time-bounded data that cannot use the current harmonic prediction path.
 
 A companion file keeps `.tcdb` and its API compatible. Consumers opt in by supplying bytes from a file, fetch, or platform asset. Native clients can memory-map those bytes, while browser and Worker clients can fetch or bind the artifact without inlining it in the package bundle.
 
@@ -16,7 +16,7 @@ A companion file keeps `.tcdb` and its API compatible. Consumers opt in by suppl
 
 The prototype adds an experimental FlatBuffers schema, internal TypeScript builder/reader code, a source probe, and tests. None of these are public package exports. Generated artifacts and downloaded RWS responses stay under `tmp/` and outside Git.
 
-Use a 30-day interval across every catalog-eligible height location rather than downloading the full multi-year JSON source during format evaluation. This exercises every station, both datums, and the extrema shape while respecting the service's fair-use guidance. The synthetic fixture covers missing values and metadata variation when the live interval does not contain them. Project full-interval size from encoded bytes per sample and from independently compressed station data.
+Use a 30-day interval across every catalog-eligible height location rather than downloading the full multi-year JSON source during format evaluation. This exercises every station, both datums, and the extrema shape while respecting the service's fair-use guidance. The synthetic fixture covers missing values when the live interval does not contain them. Project full-interval size from encoded bytes per sample and from independently compressed station data.
 
 ## File model
 
@@ -43,16 +43,16 @@ Each station contains:
 - UTC start, 600-second cadence, and sample count;
 - signed 16-bit centimeter heights;
 - a bit-packed missing-value bitmap;
-- default source metadata plus sparse per-sample overrides;
+- source metadata that is constant for the represented interval;
 - ordered published extrema.
 
 The represented interval is start-inclusive and end-exclusive. The end is derived from start, cadence, and sample count. Chunk boundaries from the inclusive RWS API are deduplicated before encoding.
 
-Default and override metadata preserve the RWS quality code, status, commissioning organization, sampling height, and reference plane without paying a per-sample table cost when values are constant.
+The source audit found no variation in quality code, status, commissioning organization, sampling height, or reference plane across 105,122 samples. Store those values once per station and reject unexpected variation during the prototype. Quality code `99` maps to the missing-value bitmap. Do not add per-sample metadata overrides until source data demonstrates a need.
 
 ### Extrema
 
-Each event stores its UTC timestamp, event-type string-table index, signed centimeter height, and source metadata. Event type remains open-ended so a future RWS classification does not require a format-major change. Events remain in provider order; the format does not assume alternation or a fixed daily count.
+Each event stores its UTC timestamp, event-type string-table index, and signed centimeter height. Event type remains open-ended so a future RWS classification does not require a format-major change. Events remain in provider order; the format does not assume alternation or a fixed daily count.
 
 ## Reader contract
 
@@ -61,7 +61,7 @@ The prototype reader accepts a caller-provided `Uint8Array`. It exposes only:
 - format and dataset metadata;
 - keyed station lookup;
 - station bounds and datum;
-- indexed height/missing/metadata access;
+- indexed height/missing access and station-level source metadata;
 - ordered event access.
 
 It does not fetch, cache, interpolate, extrapolate, merge with `.tcdb`, or expose a tide-prediction API. Wrong magic, unsupported format major, truncated data, and invalid indexes fail explicitly.
@@ -73,6 +73,7 @@ The probe discovers eligible series from the live catalog, then fetches the same
 The probe must reject:
 
 - a changed or unknown datum;
+- per-value metadata variation other than quality code `99` marking a gap;
 - duplicate timestamps after boundary deduplication;
 - a height cadence other than 600 seconds;
 - height values outside signed 16-bit centimeters;
@@ -100,13 +101,13 @@ Keep one companion file only when compressed transfer is below 10 MB. Accept a 3
 One synthetic fixture covers:
 
 - a present and a missing height;
-- default metadata and a sparse override;
+- station-level source metadata;
 - inclusive source chunks sharing a boundary;
 - NAP and MSL stations;
 - ordinary and unknown event types;
 - events that do not follow a four-per-day pattern.
 
-Tests verify builder/reader round-trip, stable keyed lookup, start-inclusive/end-exclusive bounds, missing bitmap behavior, metadata override precedence, event order, wrong-magic and version rejection, truncated input handling, and deterministic output from the same normalized input.
+Tests verify builder/reader round-trip, stable keyed lookup, start-inclusive/end-exclusive bounds, missing bitmap behavior, station metadata, event order, wrong-magic and version rejection, truncated input handling, and deterministic output from the same normalized input.
 
 The repository's FlatBuffers generation check, TypeScript tests, lint, and full test suite must pass. The prototype report must distinguish measured results from projections.
 

@@ -8,7 +8,7 @@ Use the RWS astronomical series as a bounded sampled-prediction artifact, separa
 
 The repository already re-fits harmonics for 56 TICON records whose identifiers end in `-rws`, so derived data and the fixed RWS time offset are existing code paths rather than new risks. A held-out fit against the current RWS series kept height error below the repository's 10 cm RMS ceiling, but failed the existing event-time thresholds and produced hundreds of extra extrema at Hoek van Holland and Den Helder. The exact sampled series projects to only 3.9–4.7 MB compressed for all 114 stations, so preserving the provider's heights and published events is the lower-risk route.
 
-Implementation is blocked on a format contract for sampled predictions. The current database schema and consumers support harmonics and subordinate-station offsets, not time-bounded samples or published event streams.
+The current database schema and consumers support harmonics and subordinate-station offsets, not time-bounded samples or published event streams. The experimental companion-file contract is defined in the [prototype design](../../docs/superpowers/specs/2026-09-21-rws-prediction-prototype-design.md); implementation and measurement are the next milestone.
 
 ## Reuse terms
 
@@ -172,17 +172,17 @@ The current catalog and official documentation reviewed here expose predictions 
 
 Online access does not satisfy the offline requirement and inherits the provider's fair-use limits and lack of uptime guarantee.
 
-## Follow-up contract
+## Follow-up prototype
 
-The next milestone should define one sampled-prediction contract before building an importer. At minimum it must specify:
+The next milestone should implement and measure the experimental companion-file contract. It specifies:
 
 - implicit cadence versus per-sample timestamps;
 - UTC normalization from the explicit fixed offset;
 - NAP/MSL datum identity and centimeter-to-meter conversion;
-- missing and quality encoding;
+- a missing bitmap plus station-level source metadata, with no per-sample overrides until variation is observed;
 - event timestamp/type/height pairing;
 - station crosswalk and precedence relative to TICON;
 - inclusive/exclusive interval rules and chunk deduplication;
 - artifact version, retrieval metadata, checksum, refresh deadline, and out-of-range behavior.
 
-Skipped for this audit: an importer, committed source snapshot, database changes, and consumer changes. Add them only after the sampled format contract is accepted.
+Skipped for this audit: an importer, committed source snapshot, database changes, and consumer changes. Add them only after the prototype confirms the contract and size gate.
