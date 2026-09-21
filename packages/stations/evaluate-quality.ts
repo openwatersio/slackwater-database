@@ -25,10 +25,12 @@ import { DATA_DIR } from "./station.ts";
 import { NODAL_CYCLE_DAYS } from "@neaps/datums";
 import {
   distance,
+  authoritativeDuplicateWinner,
   getSourceSuffix,
   getSourcePriority,
   gaugeKey,
   coordinatePrecision,
+  isDirectAuthoritativeProvider,
   hasQualityIssues,
   epochYears,
   NULL_ISLAND_RADIUS,
@@ -375,7 +377,7 @@ function scoreRecency(
 
 /** Source confidence: mapped from SOURCE_PRIORITY. */
 function scoreSource(station: Station): number {
-  const priority = station.id.startsWith("noaa/")
+  const priority = isDirectAuthoritativeProvider(station.id)
     ? 0
     : getSourcePriority(station.source.id);
   return toFixed(Math.max(0, 1 - priority / 99));
@@ -652,6 +654,8 @@ function pickWinner(
   resultsMap: Map<string, QualityResult>,
   subordinateCounts: Map<string, number>,
 ): [winner: string, loser: string] {
+  const directWinner = authoritativeDuplicateWinner(idA, idB);
+  if (directWinner) return [directWinner, directWinner === idA ? idB : idA];
   const subsA = subordinateCounts.get(idA) ?? 0;
   const subsB = subordinateCounts.get(idB) ?? 0;
   if (subsA > 0 && subsB === 0) return [idA, idB];

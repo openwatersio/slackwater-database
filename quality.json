@@ -1,5 +1,485 @@
 [
   {
+    "id": "kartverket/AES",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/ANX",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/BGO",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/BOH",
+    "accepted": true,
+    "score": 70,
+    "factors": {
+      "epoch": 0,
+      "recency": 0,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/BOO",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/BRJ",
+    "accepted": true,
+    "score": 67,
+    "factors": {
+      "epoch": 0.118,
+      "recency": 0.99,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/EYD",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0,
+      "recency": 0,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": [
+      "P1 amplitude (0.0020) exceeds K1 (0.0010): physically impossible"
+    ],
+    "reason": "constituents"
+  },
+  {
+    "id": "kartverket/HAR",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/HEI",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/HFT",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/HRO",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "P1 amplitude (0.0035) exceeds K1 (0.0019): physically impossible"
+    ],
+    "reason": "constituents"
+  },
+  {
+    "id": "kartverket/HVG",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/KAB",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/KAZ",
+    "accepted": true,
+    "score": 82,
+    "factors": {
+      "epoch": 0.125,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/KSU",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.002
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/LEH",
+    "accepted": true,
+    "score": 67,
+    "factors": {
+      "epoch": 0.12,
+      "recency": 0.99,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/MAY",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/MSU",
+    "accepted": true,
+    "score": 75,
+    "factors": {
+      "epoch": 0.548,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/NVK",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/NYA",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/OSC",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "P1 amplitude (0.0054) exceeds K1 (0.0030): physically impossible"
+    ],
+    "reason": "constituents"
+  },
+  {
+    "id": "kartverket/OSL",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "P1 amplitude (0.0060) exceeds K1 (0.0040): physically impossible"
+    ],
+    "reason": "constituents"
+  },
+  {
+    "id": "kartverket/RVK",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/SBG",
+    "accepted": true,
+    "score": 68,
+    "factors": {
+      "epoch": 0.167,
+      "recency": 0.99,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/SIE",
+    "accepted": true,
+    "score": 67,
+    "factors": {
+      "epoch": 0.124,
+      "recency": 0.98,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/SOY",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.06,
+      "recency": 0.98,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0.379
+    },
+    "issues": [
+      "Missing constituents for prediction: K1"
+    ],
+    "reason": "constituents"
+  },
+  {
+    "id": "kartverket/SVG",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/TAZ",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.078,
+      "recency": 0.99,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 1
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/TOS",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/TRD",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/TRG",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/VAW",
+    "accepted": true,
+    "score": 81,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": []
+  },
+  {
+    "id": "kartverket/VIK",
+    "accepted": false,
+    "score": 0,
+    "factors": {
+      "epoch": 0.806,
+      "recency": 0.94,
+      "source": 1,
+      "quality": 1,
+      "amplitude": 1,
+      "coverage": 0
+    },
+    "issues": [
+      "Missing constituents for prediction: K1"
+    ],
+    "reason": "constituents"
+  },
+  {
     "id": "noaa/1610367",
     "accepted": true,
     "score": 98,
@@ -519,7 +999,7 @@
   },
   {
     "id": "noaa/1732417",
-    "accepted": false,
+    "accepted": true,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -529,9 +1009,7 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [],
-    "reason": "duplicate",
-    "redundant": "ticon/papeete-383-fra-refmar"
+    "issues": []
   },
   {
     "id": "noaa/1770000",
@@ -661,7 +1139,7 @@
   },
   {
     "id": "noaa/2431000",
-    "accepted": false,
+    "accepted": true,
     "score": 55,
     "factors": {
       "epoch": 0,
@@ -671,9 +1149,7 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [],
-    "reason": "duplicate",
-    "redundant": "ticon/diego_garcia-104-gbr-uhslc_fd"
+    "issues": []
   },
   {
     "id": "noaa/2695535",
@@ -20838,7 +21314,7 @@
   },
   {
     "id": "noaa/8723214",
-    "accepted": false,
+    "accepted": true,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -20848,9 +21324,7 @@
       "amplitude": 1,
       "coverage": 0.001
     },
-    "issues": [],
-    "reason": "duplicate",
-    "redundant": "ticon/virginia_key_fl-755-usa-uhslc_fd"
+    "issues": []
   },
   {
     "id": "noaa/8723232",
@@ -29740,7 +30214,7 @@
   },
   {
     "id": "noaa/9410230",
-    "accepted": false,
+    "accepted": true,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -29750,9 +30224,7 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [],
-    "reason": "duplicate",
-    "redundant": "ticon/la_jolla_ca-554-usa-uhslc_fd"
+    "issues": []
   },
   {
     "id": "noaa/9410580",
@@ -32586,7 +33058,7 @@
   },
   {
     "id": "noaa/9435380",
-    "accepted": false,
+    "accepted": true,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -32596,9 +33068,7 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [],
-    "reason": "duplicate",
-    "redundant": "ticon/south_beach_or-592-usa-uhslc_fd"
+    "issues": []
   },
   {
     "id": "noaa/9435385",
@@ -47351,7 +47821,7 @@
   },
   {
     "id": "noaa/TWC0343",
-    "accepted": false,
+    "accepted": true,
     "score": 55,
     "factors": {
       "epoch": 0,
@@ -47361,9 +47831,7 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [],
-    "reason": "duplicate",
-    "redundant": "ticon/quepos-087-cri-uhslc_fd"
+    "issues": []
   },
   {
     "id": "noaa/TWC0345",
@@ -47479,7 +47947,7 @@
   },
   {
     "id": "noaa/TWC0365",
-    "accepted": false,
+    "accepted": true,
     "score": 55,
     "factors": {
       "epoch": 0,
@@ -47489,9 +47957,7 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [],
-    "reason": "duplicate",
-    "redundant": "ticon/la_union-086a-slv-uhslc_rq"
+    "issues": []
   },
   {
     "id": "noaa/TWC0367",
@@ -47509,7 +47975,7 @@
   },
   {
     "id": "noaa/TWC0369",
-    "accepted": false,
+    "accepted": true,
     "score": 55,
     "factors": {
       "epoch": 0,
@@ -47519,9 +47985,7 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [],
-    "reason": "duplicate",
-    "redundant": "ticon/san_jose-675a-gtm-uhslc_rq"
+    "issues": []
   },
   {
     "id": "noaa/TWC0371",
@@ -47567,7 +48031,7 @@
   },
   {
     "id": "noaa/TWC0379",
-    "accepted": false,
+    "accepted": true,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -47577,9 +48041,7 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [],
-    "reason": "duplicate",
-    "redundant": "ticon/manzanillo-395-mex-uhslc_fd"
+    "issues": []
   },
   {
     "id": "noaa/TWC0381",
@@ -49177,7 +49639,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/alesund-aes-nor-nhs"
+    "redundant": "kartverket/AES"
   },
   {
     "id": "ticon/aarhus-aar-dnk-cmems",
@@ -49772,7 +50234,7 @@
     "score": 65,
     "factors": {
       "epoch": 0.085,
-      "recency": 0.9,
+      "recency": 0.89,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -50188,7 +50650,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -50202,7 +50664,7 @@
     "score": 70,
     "factors": {
       "epoch": 0.287,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.99,
       "quality": 1,
       "amplitude": 1,
@@ -50214,7 +50676,7 @@
   },
   {
     "id": "ticon/alesund-aes-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -50224,7 +50686,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/AES"
   },
   {
     "id": "ticon/alexandria_bay_ny-8311062-usa-noaa",
@@ -50672,10 +51136,10 @@
   {
     "id": "ticon/alvarado_flotador-22-mex-unam",
     "accepted": false,
-    "score": 36,
+    "score": 35,
     "factors": {
       "epoch": 0.148,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.141,
       "quality": 0,
       "amplitude": 1,
@@ -50787,7 +51251,7 @@
     "score": 72,
     "factors": {
       "epoch": 0.314,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -50900,7 +51364,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -51105,7 +51569,7 @@
   },
   {
     "id": "ticon/andenes-anx-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -51115,7 +51579,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/ANX"
   },
   {
     "id": "ticon/andenestg-and-nor-cmems",
@@ -51131,7 +51597,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/andenes-anx-nor-nhs"
+    "redundant": "kartverket/ANX"
   },
   {
     "id": "ticon/andratx-and-esp-cmems",
@@ -51713,7 +52179,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -53063,7 +53529,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -53184,7 +53650,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -53757,7 +54223,7 @@
     "score": 87,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -54170,7 +54636,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -54186,7 +54652,7 @@
     "score": 85,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -54294,7 +54760,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -54322,7 +54788,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 0.75,
@@ -54342,7 +54808,7 @@
     "score": 97,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -54506,7 +54972,7 @@
   },
   {
     "id": "ticon/bergen-bgo-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -54516,7 +54982,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/BGO"
   },
   {
     "id": "ticon/bergentg-ber-nor-cmems",
@@ -54532,7 +55000,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/bergen-bgo-nor-nhs"
+    "redundant": "kartverket/BGO"
   },
   {
     "id": "ticon/bergse_diepsluis_west-bergsdswt-nld-rws",
@@ -55377,7 +55845,7 @@
   },
   {
     "id": "ticon/bodo-boo-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -55387,7 +55855,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/BOO"
   },
   {
     "id": "ticon/bodoetg-bod-nor-cmems",
@@ -55403,7 +55873,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/bodo-boo-nor-nhs"
+    "redundant": "kartverket/BOO"
   },
   {
     "id": "ticon/bodrum-bod-tur-cmems",
@@ -55533,7 +56003,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -56505,7 +56975,7 @@
     "score": 90,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -56810,17 +57280,19 @@
   },
   {
     "id": "ticon/bruraviktg-bru-nor-cmems",
-    "accepted": true,
-    "score": 63,
+    "accepted": false,
+    "score": 48,
     "factors": {
       "epoch": 0.139,
       "recency": 0.99,
       "source": 0.02,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/BRJ"
   },
   {
     "id": "ticon/bsum-9510095-deu-wsv",
@@ -57152,7 +57624,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -57952,7 +58424,7 @@
     "score": 89,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -58084,7 +58556,7 @@
     "score": 88,
     "factors": {
       "epoch": 0.945,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -58454,7 +58926,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.86,
-      "recency": 0.54,
+      "recency": 0.53,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -59435,7 +59907,7 @@
     "score": 93,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -59805,7 +60277,7 @@
     "score": 78,
     "factors": {
       "epoch": 0.457,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -60022,7 +60494,7 @@
     "score": 85,
     "factors": {
       "epoch": 1,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.99,
       "quality": 1,
       "amplitude": 1,
@@ -60052,7 +60524,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -60550,7 +61022,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -60783,7 +61255,7 @@
     "score": 95,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -61169,7 +61641,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -61517,7 +61989,7 @@
     "score": 88,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -68696,7 +69168,7 @@
     "score": 73,
     "factors": {
       "epoch": 0.45,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -69329,7 +69801,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -69453,7 +69925,7 @@
   },
   {
     "id": "ticon/diego_garcia-104-gbr-uhslc_fd",
-    "accepted": true,
+    "accepted": false,
     "score": 85,
     "factors": {
       "epoch": 1,
@@ -69463,7 +69935,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/2431000"
   },
   {
     "id": "ticon/diego_garcia-104c-gbr-uhslc_rq",
@@ -71670,7 +72144,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -71926,7 +72400,7 @@
     "score": 67,
     "factors": {
       "epoch": 0.361,
-      "recency": 0.53,
+      "recency": 0.52,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -72281,7 +72755,7 @@
     "score": 66,
     "factors": {
       "epoch": 0.066,
-      "recency": 0.9,
+      "recency": 0.89,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -73304,7 +73778,7 @@
     "score": 39,
     "factors": {
       "epoch": 0.059,
-      "recency": 0.27,
+      "recency": 0.26,
       "source": 0,
       "quality": 1,
       "amplitude": 1,
@@ -75323,7 +75797,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -75387,7 +75861,7 @@
     "score": 89,
     "factors": {
       "epoch": 0.722,
-      "recency": 0.68,
+      "recency": 0.67,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -76592,7 +77066,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -76785,7 +77259,7 @@
     "score": 58,
     "factors": {
       "epoch": 0.09,
-      "recency": 0.91,
+      "recency": 0.9,
       "source": 0.596,
       "quality": 1,
       "amplitude": 1,
@@ -77363,7 +77837,7 @@
   },
   {
     "id": "ticon/hammerfest-hft-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -77373,7 +77847,9 @@
       "amplitude": 1,
       "coverage": 0.003
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/HFT"
   },
   {
     "id": "ticon/hammerfesttg-ham-nor-cmems",
@@ -77385,11 +77861,11 @@
       "source": 0.02,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.003
+      "coverage": 0
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/hammerfest-hft-nor-nhs"
+    "redundant": "kartverket/HFT"
   },
   {
     "id": "ticon/hammond-9439011-usa-noaa",
@@ -77735,7 +78211,7 @@
   },
   {
     "id": "ticon/harstad-har-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -77745,7 +78221,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/HAR"
   },
   {
     "id": "ticon/harstadtg-har-nor-cmems",
@@ -77761,7 +78239,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/harstad-har-nor-nhs"
+    "redundant": "kartverket/HAR"
   },
   {
     "id": "ticon/hartley_bay_bc-9130-can-meds",
@@ -77769,7 +78247,7 @@
     "score": 87,
     "factors": {
       "epoch": 0.419,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -78113,7 +78591,7 @@
   },
   {
     "id": "ticon/heimsjo-hei-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -78123,7 +78601,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/HEI"
   },
   {
     "id": "ticon/heimsjoetg-hei-nor-cmems",
@@ -78139,7 +78619,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/heimsjo-hei-nor-nhs"
+    "redundant": "kartverket/HEI"
   },
   {
     "id": "ticon/helgeroa-hro-nor-nhs",
@@ -78338,7 +78818,7 @@
     "score": 87,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -79531,11 +80011,11 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/honningsvag-hvg-nor-nhs"
+    "redundant": "kartverket/HVG"
   },
   {
     "id": "ticon/honningsvag-801-nor-uhslc_fd",
-    "accepted": true,
+    "accepted": false,
     "score": 85,
     "factors": {
       "epoch": 1,
@@ -79545,7 +80025,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/HVG"
   },
   {
     "id": "ticon/honningsvag-801a-nor-uhslc_rq",
@@ -79577,7 +80059,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/honningsvag-801-nor-uhslc_fd"
+    "redundant": "kartverket/HVG"
   },
   {
     "id": "ticon/honolulu_hawaii-057-usa-uhslc_fd",
@@ -81193,7 +81675,7 @@
     "score": 76,
     "factors": {
       "epoch": 0.321,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -81270,7 +81752,7 @@
     "score": 63,
     "factors": {
       "epoch": 0.196,
-      "recency": 0.44,
+      "recency": 0.43,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -82081,7 +82563,7 @@
     "score": 61,
     "factors": {
       "epoch": 0.698,
-      "recency": 0.86,
+      "recency": 0.85,
       "source": 0.192,
       "quality": 1,
       "amplitude": 1,
@@ -82711,11 +83193,11 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/kabelvag-kab-nor-nhs"
+    "redundant": "kartverket/KAB"
   },
   {
     "id": "ticon/kabelvag-kab-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -82725,7 +83207,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/KAB"
   },
   {
     "id": "ticon/kadoelentg-kad-nld-cmems",
@@ -83669,7 +84153,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.055,
-      "recency": 0.51,
+      "recency": 0.5,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
@@ -84451,10 +84935,10 @@
   {
     "id": "ticon/kingston_ontario-13988-can-meds",
     "accepted": true,
-    "score": 90,
+    "score": 89,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -84485,7 +84969,7 @@
     "score": 89,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -84576,7 +85060,7 @@
     "score": 92,
     "factors": {
       "epoch": 0.633,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -84590,7 +85074,7 @@
     "score": 72,
     "factors": {
       "epoch": 0.372,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -85398,7 +85882,7 @@
   },
   {
     "id": "ticon/kristiansund-ksu-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -85408,7 +85892,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/KSU"
   },
   {
     "id": "ticon/kristiansundtg-kri-nor-cmems",
@@ -85424,7 +85910,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/kristiansund-ksu-nor-nhs"
+    "redundant": "kartverket/KSU"
   },
   {
     "id": "ticon/kristineberg-kri-swe-cmems",
@@ -86037,7 +86523,7 @@
   },
   {
     "id": "ticon/la_jolla_ca-554-usa-uhslc_fd",
-    "accepted": true,
+    "accepted": false,
     "score": 85,
     "factors": {
       "epoch": 1,
@@ -86047,7 +86533,9 @@
       "amplitude": 1,
       "coverage": 0.002
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/9410230"
   },
   {
     "id": "ticon/la_jolla_ca-554a-usa-uhslc_rq",
@@ -86230,7 +86718,7 @@
   },
   {
     "id": "ticon/la_union-086a-slv-uhslc_rq",
-    "accepted": true,
+    "accepted": false,
     "score": 64,
     "factors": {
       "epoch": 1,
@@ -86240,7 +86728,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/TWC0365"
   },
   {
     "id": "ticon/la_union-086b-slv-uhslc_rq",
@@ -86264,7 +86754,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -86347,7 +86837,7 @@
     "score": 75,
     "factors": {
       "epoch": 0.318,
-      "recency": 0.92,
+      "recency": 0.91,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -87729,17 +88219,19 @@
   },
   {
     "id": "ticon/leirviktg-lei-nor-cmems",
-    "accepted": true,
-    "score": 63,
+    "accepted": false,
+    "score": 48,
     "factors": {
       "epoch": 0.142,
       "recency": 0.99,
       "source": 0.02,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 1
+      "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/LEH"
   },
   {
     "id": "ticon/leith-lei-gbr-bodc",
@@ -88485,7 +88977,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -89015,7 +89507,7 @@
     "score": 83,
     "factors": {
       "epoch": 1,
-      "recency": 0.74,
+      "recency": 0.73,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -89434,7 +89926,7 @@
     "score": 88,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -89448,7 +89940,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -90762,7 +91254,7 @@
   },
   {
     "id": "ticon/maloy-802-nor-uhslc_fd",
-    "accepted": true,
+    "accepted": false,
     "score": 85,
     "factors": {
       "epoch": 1,
@@ -90772,7 +91264,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/MAY"
   },
   {
     "id": "ticon/maloy-802a-nor-uhslc_rq",
@@ -90804,7 +91298,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/maloy-802-nor-uhslc_fd"
+    "redundant": "kartverket/MAY"
   },
   {
     "id": "ticon/maloytg-mal-nor-cmems",
@@ -90820,7 +91314,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/maloy-802-nor-uhslc_fd"
+    "redundant": "kartverket/MAY"
   },
   {
     "id": "ticon/manahawkin_bay_at_rt_72_bridge_near_ship_bottom_nj-140914550-usa-usgs",
@@ -91183,7 +91677,7 @@
   },
   {
     "id": "ticon/manzanillo-395-mex-uhslc_fd",
-    "accepted": true,
+    "accepted": false,
     "score": 84,
     "factors": {
       "epoch": 1,
@@ -91193,7 +91687,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/TWC0379"
   },
   {
     "id": "ticon/manzanillo-395-mex-unam_hist",
@@ -92025,7 +92521,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.255,
-      "recency": 0.44,
+      "recency": 0.43,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -92056,7 +92552,7 @@
   },
   {
     "id": "ticon/mausund-msu-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 79,
     "factors": {
       "epoch": 0.783,
@@ -92066,7 +92562,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/MSU"
   },
   {
     "id": "ticon/mausundtg-mau-nor-cmems",
@@ -92082,7 +92580,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/mausund-msu-nor-nhs"
+    "redundant": "kartverket/MSU"
   },
   {
     "id": "ticon/mavholmsbadan_sjov-35171-swe-smhi",
@@ -92749,7 +93247,7 @@
     "score": 60,
     "factors": {
       "epoch": 1,
-      "recency": 0.49,
+      "recency": 0.48,
       "source": 0,
       "quality": 1,
       "amplitude": 1,
@@ -92946,7 +93444,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -93216,7 +93714,7 @@
     "score": 92,
     "factors": {
       "epoch": 0.837,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -94467,7 +94965,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -94625,7 +95123,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -94850,7 +95348,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -95371,7 +95869,7 @@
     "score": 69,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 0,
       "amplitude": 1,
@@ -95487,7 +95985,7 @@
     "score": 79,
     "factors": {
       "epoch": 0.509,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -95883,7 +96381,7 @@
   },
   {
     "id": "ticon/narvik-nvk-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -95893,7 +96391,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/NVK"
   },
   {
     "id": "ticon/narviktg-nar-nor-cmems",
@@ -95909,7 +96409,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/narvik-nvk-nor-nhs"
+    "redundant": "kartverket/NVK"
   },
   {
     "id": "ticon/nassau_river_near_tisonia_fl-2231291-usa-usgs",
@@ -96365,7 +96865,7 @@
     "score": 91,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -96562,7 +97062,7 @@
     "score": 87,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -97625,7 +98125,7 @@
     "score": 69,
     "factors": {
       "epoch": 0.089,
-      "recency": 0.92,
+      "recency": 0.91,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -97774,7 +98274,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -98275,7 +98775,7 @@
   },
   {
     "id": "ticon/ny_alesund-nya-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -98285,7 +98785,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/NYA"
   },
   {
     "id": "ticon/ny_alesundtg-ny_-nor-cmems",
@@ -98301,7 +98803,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/ny_alesund-nya-nor-nhs"
+    "redundant": "kartverket/NYA"
   },
   {
     "id": "ticon/nylesund-823-nor-uhslc_fd",
@@ -98389,7 +98891,7 @@
     "score": 66,
     "factors": {
       "epoch": 0.206,
-      "recency": 0.44,
+      "recency": 0.43,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -100877,7 +101379,7 @@
   },
   {
     "id": "ticon/papeete-383-fra-refmar",
-    "accepted": true,
+    "accepted": false,
     "score": 84,
     "factors": {
       "epoch": 1,
@@ -100887,7 +101389,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/1732417"
   },
   {
     "id": "ticon/papeetetg_60minute-pap-fra-cmems",
@@ -101034,7 +101538,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -101221,7 +101725,7 @@
     "score": 85,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -102411,10 +102915,10 @@
   {
     "id": "ticon/point_atkinson_bc-7795-can-meds",
     "accepted": true,
-    "score": 85,
+    "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -102428,7 +102932,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -102619,7 +103123,7 @@
     "score": 82,
     "factors": {
       "epoch": 1,
-      "recency": 0.58,
+      "recency": 0.57,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -102665,7 +103169,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.95,
+      "recency": 0.94,
       "source": 0.96,
       "quality": 1,
       "amplitude": 0.75,
@@ -102684,7 +103188,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.95,
+      "recency": 0.94,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103111,7 +103615,7 @@
     "score": 75,
     "factors": {
       "epoch": 0.554,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103153,7 +103657,7 @@
     "score": 83,
     "factors": {
       "epoch": 0.752,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103184,7 +103688,7 @@
     "score": 89,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103325,7 +103829,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103478,7 +103982,7 @@
     "score": 92,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103509,7 +104013,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103662,7 +104166,7 @@
     "score": 97,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103676,7 +104180,7 @@
     "score": 75,
     "factors": {
       "epoch": 0.517,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -103863,7 +104367,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104048,7 +104552,7 @@
     "score": 73,
     "factors": {
       "epoch": 0.322,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104259,7 +104763,7 @@
     "score": 78,
     "factors": {
       "epoch": 0.322,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104289,7 +104793,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104383,7 +104887,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.057,
-      "recency": 0.51,
+      "recency": 0.5,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
@@ -104402,7 +104906,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104633,7 +105137,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -104944,7 +105448,7 @@
     "score": 89,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -105426,7 +105930,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -105523,7 +106027,7 @@
     "score": 49,
     "factors": {
       "epoch": 1,
-      "recency": 0.68,
+      "recency": 0.67,
       "source": 0.131,
       "quality": 0,
       "amplitude": 1,
@@ -106396,7 +106900,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -106410,7 +106914,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -106450,7 +106954,7 @@
   },
   {
     "id": "ticon/quepos-087-cri-uhslc_fd",
-    "accepted": true,
+    "accepted": false,
     "score": 67,
     "factors": {
       "epoch": 0.845,
@@ -106460,7 +106964,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/TWC0343"
   },
   {
     "id": "ticon/quepos-087a-cri-uhslc_rq",
@@ -107032,7 +107538,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.537,
-      "recency": 0.55,
+      "recency": 0.54,
       "source": 0.495,
       "quality": 1,
       "amplitude": 1,
@@ -107625,7 +108131,7 @@
     "score": 86,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -107831,7 +108337,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -108964,7 +109470,7 @@
   },
   {
     "id": "ticon/rorvik-rvk-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -108974,7 +109480,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/RVK"
   },
   {
     "id": "ticon/rorviktg-ror-nor-cmems",
@@ -108990,7 +109498,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/rorvik-rvk-nor-nhs"
+    "redundant": "kartverket/RVK"
   },
   {
     "id": "ticon/roscoff-54-fra-refmar",
@@ -109032,7 +109540,7 @@
     "score": 73,
     "factors": {
       "epoch": 0.31,
-      "recency": 0.94,
+      "recency": 0.93,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -109166,7 +109674,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -109649,7 +110157,7 @@
     "score": 67,
     "factors": {
       "epoch": 0.096,
-      "recency": 0.93,
+      "recency": 0.92,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -110342,7 +110850,7 @@
     "score": 87,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -110428,7 +110936,7 @@
     "score": 85,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -110442,7 +110950,7 @@
     "score": 92,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -110456,7 +110964,7 @@
     "score": 81,
     "factors": {
       "epoch": 0.676,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -110570,7 +111078,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.95,
+      "recency": 0.94,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -111653,7 +112161,7 @@
   },
   {
     "id": "ticon/san_jose-675a-gtm-uhslc_rq",
-    "accepted": true,
+    "accepted": false,
     "score": 64,
     "factors": {
       "epoch": 1,
@@ -111663,7 +112171,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/TWC0369"
   },
   {
     "id": "ticon/san_juan_pr-245-usa-uhslc_fd",
@@ -111881,7 +112391,7 @@
     "score": 84,
     "factors": {
       "epoch": 0.961,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -111989,17 +112499,19 @@
   },
   {
     "id": "ticon/sandnestg-san-nor-cmems",
-    "accepted": true,
-    "score": 52,
+    "accepted": false,
+    "score": 49,
     "factors": {
       "epoch": 0.167,
       "recency": 0.99,
       "source": 0.02,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.237
+      "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/SBG"
   },
   {
     "id": "ticon/sandown_pier-sdp-gbr-cco",
@@ -112054,7 +112566,7 @@
     "score": 81,
     "factors": {
       "epoch": 0.816,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -112508,7 +113020,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -112525,7 +113037,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -113157,7 +113669,7 @@
     "score": 76,
     "factors": {
       "epoch": 0.553,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -113313,7 +113825,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -114042,7 +114554,7 @@
     "score": 74,
     "factors": {
       "epoch": 0.448,
-      "recency": 0.94,
+      "recency": 0.93,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -114282,17 +114794,19 @@
   },
   {
     "id": "ticon/sirevagtg-sir-nor-cmems",
-    "accepted": true,
-    "score": 60,
+    "accepted": false,
+    "score": 48,
     "factors": {
       "epoch": 0.151,
       "recency": 0.99,
       "source": 0.02,
       "quality": 1,
       "amplitude": 1,
-      "coverage": 0.809
+      "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/SIE"
   },
   {
     "id": "ticon/sisal_radar-10-mex-unam",
@@ -114978,7 +115492,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -115005,7 +115519,7 @@
   },
   {
     "id": "ticon/south_beach_or-592-usa-uhslc_fd",
-    "accepted": true,
+    "accepted": false,
     "score": 85,
     "factors": {
       "epoch": 1,
@@ -115015,7 +115529,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/9435380"
   },
   {
     "id": "ticon/south_beach_or-592a-usa-uhslc_rq",
@@ -115951,7 +116467,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -116019,7 +116535,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.64,
+      "recency": 0.63,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -116038,7 +116554,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -116271,7 +116787,7 @@
   },
   {
     "id": "ticon/stavanger-svg-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -116281,7 +116797,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/SVG"
   },
   {
     "id": "ticon/stavangertg-sta-nor-cmems",
@@ -116297,7 +116815,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/stavanger-svg-nor-nhs"
+    "redundant": "kartverket/SVG"
   },
   {
     "id": "ticon/stavenisse-stavnse-nld-rws",
@@ -116482,7 +117000,7 @@
     "score": 73,
     "factors": {
       "epoch": 0.44,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -116496,7 +117014,7 @@
     "score": 74,
     "factors": {
       "epoch": 0.461,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -116688,7 +117206,7 @@
     "score": 58,
     "factors": {
       "epoch": 1,
-      "recency": 0.28,
+      "recency": 0.27,
       "source": 0,
       "quality": 1,
       "amplitude": 1,
@@ -117120,7 +117638,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -117716,7 +118234,7 @@
     "score": 88,
     "factors": {
       "epoch": 1,
-      "recency": 0.88,
+      "recency": 0.87,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -118955,7 +119473,7 @@
     "score": 96,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -119161,7 +119679,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -119341,7 +119859,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -119439,7 +119957,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -119788,7 +120306,7 @@
     "score": 98,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -120087,7 +120605,7 @@
   },
   {
     "id": "ticon/tregde-trg-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -120097,7 +120615,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/TRG"
   },
   {
     "id": "ticon/tregdetg-tre-nor-cmems",
@@ -120113,7 +120633,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/tregde-trg-nor-nhs"
+    "redundant": "kartverket/TRG"
   },
   {
     "id": "ticon/tremiti-tre-ita-ispra",
@@ -120308,7 +120828,7 @@
     "score": 87,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -120321,7 +120841,7 @@
   },
   {
     "id": "ticon/tromso-tos-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -120331,7 +120851,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/TOS"
   },
   {
     "id": "ticon/tromsoetg-tro-nor-cmems",
@@ -120347,11 +120869,11 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/tromso-tos-nor-nhs"
+    "redundant": "kartverket/TOS"
   },
   {
     "id": "ticon/trondheim-trd-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -120361,7 +120883,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/TRD"
   },
   {
     "id": "ticon/trondheimtg-tro-nor-cmems",
@@ -120377,7 +120901,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/trondheim-trd-nor-nhs"
+    "redundant": "kartverket/TRD"
   },
   {
     "id": "ticon/trout_creek_at_mouth_near_key_largo_fl-251253080320100-usa-usgs",
@@ -120517,7 +121041,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -120826,10 +121350,10 @@
   {
     "id": "ticon/ucluelet_bc-8595-can-meds",
     "accepted": true,
-    "score": 79,
+    "score": 78,
     "factors": {
       "epoch": 0.242,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -120964,7 +121488,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -121158,7 +121682,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.269,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -121625,7 +122149,7 @@
     "score": 85,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -121757,7 +122281,7 @@
   },
   {
     "id": "ticon/vardo-vaw-nor-nhs",
-    "accepted": true,
+    "accepted": false,
     "score": 83,
     "factors": {
       "epoch": 1,
@@ -121767,7 +122291,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "kartverket/VAW"
   },
   {
     "id": "ticon/vardoetg-var-nor-cmems",
@@ -121783,7 +122309,7 @@
     },
     "issues": [],
     "reason": "duplicate",
-    "redundant": "ticon/vardo-vaw-nor-nhs"
+    "redundant": "kartverket/VAW"
   },
   {
     "id": "ticon/varennes-15660-can-meds",
@@ -121791,7 +122317,7 @@
     "score": 0,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -121983,7 +122509,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.351,
-      "recency": 0.66,
+      "recency": 0.65,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
@@ -122291,7 +122817,7 @@
     "score": 84,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -122351,10 +122877,10 @@
   {
     "id": "ticon/vieux_quebec-3248-can-meds",
     "accepted": true,
-    "score": 82,
+    "score": 81,
     "factors": {
       "epoch": 0.857,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -122582,7 +123108,7 @@
   },
   {
     "id": "ticon/virginia_key_fl-755-usa-uhslc_fd",
-    "accepted": true,
+    "accepted": false,
     "score": 85,
     "factors": {
       "epoch": 1,
@@ -122592,7 +123118,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8723214"
   },
   {
     "id": "ticon/virginia_key_fl-755a-usa-uhslc_rq",
@@ -124723,7 +125251,7 @@
     "score": 88,
     "factors": {
       "epoch": 1,
-      "recency": 0.93,
+      "recency": 0.92,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -125098,10 +125626,10 @@
   {
     "id": "ticon/winter_harbour_bc-8735-can-meds",
     "accepted": true,
-    "score": 98,
+    "score": 97,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -125115,7 +125643,7 @@
     "score": 0,
     "factors": {
       "epoch": 0.537,
-      "recency": 0.7,
+      "recency": 0.69,
       "source": 1,
       "quality": 1,
       "amplitude": 1,
@@ -125257,7 +125785,7 @@
     "score": 77,
     "factors": {
       "epoch": 1,
-      "recency": 0.77,
+      "recency": 0.76,
       "source": 0.727,
       "quality": 1,
       "amplitude": 1,
@@ -125405,7 +125933,7 @@
     "score": 75,
     "factors": {
       "epoch": 0.434,
-      "recency": 0.98,
+      "recency": 0.97,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
@@ -125690,7 +126218,7 @@
     "score": 99,
     "factors": {
       "epoch": 1,
-      "recency": 0.99,
+      "recency": 0.98,
       "source": 0.96,
       "quality": 1,
       "amplitude": 1,
