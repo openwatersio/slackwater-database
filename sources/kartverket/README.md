@@ -16,4 +16,6 @@ All hourly height-series limits pass. The worst station RMSE is 0.010230 m again
 
 High and low water timing does not pass. The check reports 53 failed windows across 15 stations, with a worst time error of 30.894 minutes against the five-minute limit. Some low-amplitude stations also disagree on which turning points belong in the tide table. For example, the pinned SIE hourly series has 34 strict interior turning points in January 2030 while Kartverket's `tab` response publishes 11 events.
 
+A separate datum check finds ten stations where Kartverket publishes LAT 0.2–0.3 m above CD. The importer retains both values as published and records them as known upstream anomalies rather than silently rewriting them.
+
 An experimental 180-degree M3 phase reversal reduces the failed-window count from 53 to 19, but it conflicts with Kartverket's published M3 Doodson metadata and is not part of the importer. The API protocol identifies `tab` as the tide-table response but does not document its event-selection rule. The source remains blocked until those conventions are confirmed or the acceptance criteria are revised. The validator keeps the original thresholds and reports every unmatched event.
