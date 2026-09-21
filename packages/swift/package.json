@@ -5,6 +5,6 @@
   "scripts": {
     "generate": "./generate",
     "pretest": "npm run --prefix ../database generate && node --experimental-transform-types scripts/generate-fixture.ts",
-    "test": "swift test"
+    "test": "swift test --package-path ../.."
   }
 }

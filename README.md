@@ -34,6 +34,14 @@ $ npm install @neaps/tide-database
 
 The module exports every tide and current station in the database, along with stable web routes and geographic, bounding box, and full-text search. [See the package README for the full API.](./packages/database/README.md)
 
+### Swift
+
+```swift
+.package(url: "https://github.com/openwatersio/tide-database.git", from: "0.9.20260921")
+```
+
+`NeapsTideDatabase` reads a memory-mapped `.tcdb` in place: scan station identity, look up a station by id, read its constituents, without decoding the rest of the file. [See the package README for the full API.](./packages/swift/README.md)
+
 ## Data Format
 
 Tide harmonics come from the JSON files in [`data/`](./data), NOAA current data is imported during generation, and curated identity and routing inputs live in [`metadata/`](./metadata). The generated FlatBuffers file is the release source consumed by every runtime. Each tide station file includes basic station information, like location and name, and harmonics or subordinate station offsets. The format is defined by the schema in [schemas/station.schema.json](schemas/station.schema.json), which includes more detailed descriptions of each field. All data is validated against this schema automatically on each change.
@@ -57,6 +65,7 @@ Subordinate stations have four kinds of offsets, two to correct for water level,
 This repo is an npm workspace. Station data lives in [`data/`](./data), and everything that reads or writes it is a workspace package:
 
 - [`packages/database`](./packages/database) — the published [`@neaps/tide-database`](https://www.npmjs.com/package/@neaps/tide-database) npm module
+- [`packages/swift`](./packages/swift) — `NeapsTideDatabase`, the Swift reader for `.tcdb`, published from the [root `Package.swift`](./Package.swift)
 - [`packages/tcd`](./packages/tcd) — TCD harmonics files for XTide-compatible software
 - [`packages/datums`](./packages/datums) — tidal datum computation and sea-region classification
 - [`packages/harmonic-analysis`](./packages/harmonic-analysis) — least-squares harmonic analysis of water level observations

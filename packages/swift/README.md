@@ -51,11 +51,13 @@ To make a decision in code rather than show a string, read `station.raw.license`
 
 ## Adding the package
 
-The package lives in this subdirectory, and SwiftPM cannot fetch a package from a subdirectory of a git URL, so depend on it by path (a checkout, a submodule, or a vendored copy):
+Depend on the repository by URL. The manifest sits at the repository root and points back into this directory, so no checkout, submodule, or vendored copy is needed:
 
 ```swift
-.package(path: "../tide-database/packages/swift")
+.package(url: "https://github.com/openwatersio/tide-database.git", from: "0.9.20260921")
 ```
+
+The package version is the database release it ships with, so a pin names both the reader and the file format it reads.
 
 ## Development
 
@@ -65,7 +67,7 @@ The FlatBuffers accessors in `Sources/NeapsTideDatabase/generated/` are committe
 npm run generate -w swift
 ```
 
-The `flatc` version is pinned in [`mise.toml`](../../mise.toml) and must match the FlatBuffers runtime version pinned in [`Package.swift`](Package.swift); bump them together. CI fails when the generated code drifts from the schema.
+The `flatc` version is pinned in [`mise.toml`](../../mise.toml) and must match the FlatBuffers runtime version pinned in [`Package.swift`](../../Package.swift); bump them together. CI fails when the generated code drifts from the schema.
 
 Tests read a fixture written through the TypeScript `buildDatabase` — the same builder that produces the shipped file. From the repo root:
 
