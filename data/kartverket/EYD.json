@@ -1,0 +1,198 @@
+{
+  "name": "Eydehavn",
+  "country": "Norway",
+  "continent": "Europe",
+  "latitude": 58.494604,
+  "longitude": 8.875352,
+  "timezone": "Europe/Oslo",
+  "source": {
+    "name": "Kartverket / Norwegian Mapping Authority, Hydrographic Service",
+    "id": "EYD",
+    "published_harmonics": true,
+    "url": "https://www.kartverket.no/en/api-and-data/tides-and-water-level-data"
+  },
+  "license": {
+    "type": "cc-by-4.0",
+    "commercial_use": true,
+    "url": "https://www.kartverket.no/en/api-and-data/terms-of-use"
+  },
+  "disclaimers": "Tide and water-level data © Kartverket / Norwegian Mapping Authority, Hydrographic Service, licensed under CC BY 4.0.",
+  "datums": {
+    "HAT": 0.758,
+    "MHWS": 0.647,
+    "MHW": 0.622,
+    "MHWN": 0.597,
+    "NN2000": 0.588,
+    "MSL": 0.514,
+    "MLWN": 0.432,
+    "MLW": 0.407,
+    "MLWS": 0.382,
+    "LAT": 0.2,
+    "CD": 0
+  },
+  "chart_datum": "CD",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "SA_KV",
+      "amplitude": 0.081,
+      "phase": 288.95893332
+    },
+    {
+      "name": "Ssa",
+      "amplitude": 0.026,
+      "phase": 197.71786272
+    },
+    {
+      "name": "Mm",
+      "amplitude": 0.029,
+      "phase": 177.35562535
+    },
+    {
+      "name": "Mf",
+      "amplitude": 0.015,
+      "phase": 178.00196695
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.023,
+      "phase": 277.35696442
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.002,
+      "phase": 68.94106864
+    },
+    {
+      "name": "S1_KV",
+      "amplitude": 0.006,
+      "phase": 261.09999804
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.001,
+      "phase": 101.05893137
+    },
+    {
+      "name": "eps2",
+      "amplitude": 0.007,
+      "phase": 252.5761662
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0.004,
+      "phase": 174.50464508
+    },
+    {
+      "name": "mu2",
+      "amplitude": 0.023,
+      "phase": 276.93179152
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.025,
+      "phase": 62.46027043
+    },
+    {
+      "name": "nu2",
+      "amplitude": 0.009,
+      "phase": 27.48741687
+    },
+    {
+      "name": "alpha2",
+      "amplitude": 0.012,
+      "phase": 349.55696242
+    },
+    {
+      "name": "M2",
+      "amplitude": 0.115,
+      "phase": 102.31589575
+    },
+    {
+      "name": "M(KS)2",
+      "amplitude": 0.009,
+      "phase": 214.27482907
+    },
+    {
+      "name": "MKS2",
+      "amplitude": 0.004,
+      "phase": 190.73375847
+    },
+    {
+      "name": "lambda2",
+      "amplitude": 0.006,
+      "phase": 196.74437466
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.012,
+      "phase": 197.1715211
+    },
+    {
+      "name": "T2",
+      "amplitude": 0.004,
+      "phase": 37.94106669
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.031,
+      "phase": 45.20000001
+    },
+    {
+      "name": "R2",
+      "amplitude": 0.002,
+      "phase": 260.15893334
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.007,
+      "phase": 50.71786274
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.002,
+      "phase": 23.02384364
+    },
+    {
+      "name": "SO3",
+      "amplitude": 0.001,
+      "phase": 177.95696439
+    },
+    {
+      "name": "MK3",
+      "amplitude": 0.002,
+      "phase": 150.07482712
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.003,
+      "phase": 242.27616618
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.008,
+      "phase": 283.53179153
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.002,
+      "phase": 344.61589576
+    },
+    {
+      "name": "2MN6",
+      "amplitude": 0.002,
+      "phase": 230.19206196
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.003,
+      "phase": 263.04768728
+    },
+    {
+      "name": "2MS6",
+      "amplitude": 0.003,
+      "phase": 342.83179151
+    }
+  ],
+  "code": "EYD"
+}

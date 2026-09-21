@@ -1,0 +1,207 @@
+{
+  "name": "Solumstrand",
+  "country": "Norway",
+  "continent": "Europe",
+  "latitude": 59.710622,
+  "longitude": 10.273018,
+  "timezone": "Europe/Oslo",
+  "source": {
+    "name": "Kartverket / Norwegian Mapping Authority, Hydrographic Service",
+    "id": "SOY",
+    "published_harmonics": true,
+    "url": "https://www.kartverket.no/en/api-and-data/tides-and-water-level-data"
+  },
+  "license": {
+    "type": "cc-by-4.0",
+    "commercial_use": true,
+    "url": "https://www.kartverket.no/en/api-and-data/terms-of-use"
+  },
+  "disclaimers": "Tide and water-level data © Kartverket / Norwegian Mapping Authority, Hydrographic Service, licensed under CC BY 4.0.",
+  "datums": {
+    "HAT": 0.948,
+    "MHWS": 0.801,
+    "MHW": 0.773,
+    "MHWN": 0.746,
+    "MSL": 0.621,
+    "NN2000": 0.576,
+    "MLWN": 0.495,
+    "MLW": 0.468,
+    "MLWS": 0.44,
+    "LAT": 0.2,
+    "CD": 0
+  },
+  "chart_datum": "CD",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "SA_KV",
+      "amplitude": 0.0809,
+      "phase": 285.15893332
+    },
+    {
+      "name": "Ssa",
+      "amplitude": 0.0314,
+      "phase": 205.65786272
+    },
+    {
+      "name": "Mm",
+      "amplitude": 0.0293,
+      "phase": 174.93562535
+    },
+    {
+      "name": "Mf",
+      "amplitude": 0.0169,
+      "phase": 171.25196695
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.0085,
+      "phase": 233.10133906
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.0217,
+      "phase": 283.97696442
+    },
+    {
+      "name": "S1_KV",
+      "amplitude": 0.0112,
+      "phase": 301.85999804
+    },
+    {
+      "name": "theta1",
+      "amplitude": 0.0059,
+      "phase": 311.16741028
+    },
+    {
+      "name": "eps2",
+      "amplitude": 0.0134,
+      "phase": 280.8161662
+    },
+    {
+      "name": "mu2",
+      "amplitude": 0.029,
+      "phase": 307.48179152
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.0341,
+      "phase": 94.71027043
+    },
+    {
+      "name": "nu2",
+      "amplitude": 0.015,
+      "phase": 115.39741687
+    },
+    {
+      "name": "alpha2",
+      "amplitude": 0.0184,
+      "phase": 230.74696242
+    },
+    {
+      "name": "M2",
+      "amplitude": 0.1528,
+      "phase": 138.69589575
+    },
+    {
+      "name": "M(KS)2",
+      "amplitude": 0.0113,
+      "phase": 18.04482907
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.0293,
+      "phase": 244.8015211
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.0277,
+      "phase": 84.23000001
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.0055,
+      "phase": 58.82786274
+    },
+    {
+      "name": "MSN2",
+      "amplitude": 0.0123,
+      "phase": 136.45562533
+    },
+    {
+      "name": "MO3",
+      "amplitude": 0.0022,
+      "phase": 19.95286016
+    },
+    {
+      "name": "SO3",
+      "amplitude": 0.0022,
+      "phase": 141.81696439
+    },
+    {
+      "name": "MK3",
+      "amplitude": 0.0035,
+      "phase": 208.03482712
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.0055,
+      "phase": 299.86616618
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.0197,
+      "phase": 343.48179153
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.0072,
+      "phase": 58.29589576
+    },
+    {
+      "name": "MK4",
+      "amplitude": 0.0019,
+      "phase": 63.63375848
+    },
+    {
+      "name": "2MK5",
+      "amplitude": 0.0013,
+      "phase": 85.9207229
+    },
+    {
+      "name": "2MN6",
+      "amplitude": 0.0038,
+      "phase": 359.84206196
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.0071,
+      "phase": 50.79768728
+    },
+    {
+      "name": "2MS6",
+      "amplitude": 0.0076,
+      "phase": 116.23179151
+    },
+    {
+      "name": "2MK6",
+      "amplitude": 0.0024,
+      "phase": 115.19965423
+    },
+    {
+      "name": "2SM6",
+      "amplitude": 0.0021,
+      "phase": 196.19589577
+    },
+    {
+      "name": "MSK6",
+      "amplitude": 0.0012,
+      "phase": 194.4537585
+    }
+  ],
+  "code": "SOY",
+  "epoch": {
+    "start": "2023-11-01",
+    "end": "2024-12-16"
+  }
+}

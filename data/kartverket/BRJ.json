@@ -1,0 +1,262 @@
+{
+  "name": "Bruravik",
+  "country": "Norway",
+  "continent": "Europe",
+  "latitude": 60.492094,
+  "longitude": 6.893949,
+  "timezone": "Europe/Oslo",
+  "source": {
+    "name": "Kartverket / Norwegian Mapping Authority, Hydrographic Service",
+    "id": "BRJ",
+    "published_harmonics": true,
+    "url": "https://www.kartverket.no/en/api-and-data/tides-and-water-level-data"
+  },
+  "license": {
+    "type": "cc-by-4.0",
+    "commercial_use": true,
+    "url": "https://www.kartverket.no/en/api-and-data/terms-of-use"
+  },
+  "disclaimers": "Tide and water-level data © Kartverket / Norwegian Mapping Authority, Hydrographic Service, licensed under CC BY 4.0.",
+  "datums": {
+    "HAT": 1.819,
+    "MHWS": 1.426,
+    "MHW": 1.289,
+    "MHWN": 1.152,
+    "NN2000": 1.011,
+    "MSL": 0.929,
+    "MLWN": 0.706,
+    "MLW": 0.57,
+    "MLWS": 0.433,
+    "LAT": 0,
+    "CD": 0
+  },
+  "chart_datum": "CD",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "SA_KV",
+      "amplitude": 0.1072,
+      "phase": 311.39893332
+    },
+    {
+      "name": "Mm",
+      "amplitude": 0.0263,
+      "phase": 178.90562535
+    },
+    {
+      "name": "Mf",
+      "amplitude": 0.0187,
+      "phase": 186.54196695
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.0096,
+      "phase": 311.13133906
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.0221,
+      "phase": 9.30696442
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.0082,
+      "phase": 165.54106864
+    },
+    {
+      "name": "S1_KV",
+      "amplitude": 0.0075,
+      "phase": 276.75999804
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.0268,
+      "phase": 175.75893137
+    },
+    {
+      "name": "J1",
+      "amplitude": 0.0025,
+      "phase": 235.87455668
+    },
+    {
+      "name": "eps2",
+      "amplitude": 0.0048,
+      "phase": 255.8461662
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0.0107,
+      "phase": 255.05464508
+    },
+    {
+      "name": "mu2",
+      "amplitude": 0.0163,
+      "phase": 274.40179152
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.0677,
+      "phase": 260.14027043
+    },
+    {
+      "name": "nu2",
+      "amplitude": 0.0122,
+      "phase": 254.41741687
+    },
+    {
+      "name": "gamma2",
+      "amplitude": 0.0027,
+      "phase": 205.09874934
+    },
+    {
+      "name": "alpha2",
+      "amplitude": 0.0065,
+      "phase": 255.87696242
+    },
+    {
+      "name": "M2",
+      "amplitude": 0.3597,
+      "phase": 279.10589575
+    },
+    {
+      "name": "M(KS)2",
+      "amplitude": 0.0034,
+      "phase": 12.09482907
+    },
+    {
+      "name": "MKS2",
+      "amplitude": 0.0016,
+      "phase": 337.93375847
+    },
+    {
+      "name": "lambda2",
+      "amplitude": 0.0041,
+      "phase": 257.66437466
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.0147,
+      "phase": 291.6815211
+    },
+    {
+      "name": "T2",
+      "amplitude": 0.0063,
+      "phase": 319.07106669
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.1366,
+      "phase": 323.14000001
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.0397,
+      "phase": 320.95786274
+    },
+    {
+      "name": "MSN2",
+      "amplitude": 0.0018,
+      "phase": 134.13562533
+    },
+    {
+      "name": "eta2",
+      "amplitude": 0.0017,
+      "phase": 331.03348805
+    },
+    {
+      "name": "MO3",
+      "amplitude": 0.0023,
+      "phase": 187.63286016
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.0057,
+      "phase": 212.28384364
+    },
+    {
+      "name": "SO3",
+      "amplitude": 0.0019,
+      "phase": 271.96696439
+    },
+    {
+      "name": "MK3",
+      "amplitude": 0.0038,
+      "phase": 314.22482712
+    },
+    {
+      "name": "SK3",
+      "amplitude": 0.0014,
+      "phase": 49.24893134
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.0042,
+      "phase": 228.27616618
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.0194,
+      "phase": 261.17179153
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.0227,
+      "phase": 1.29589576
+    },
+    {
+      "name": "MK4",
+      "amplitude": 0.0078,
+      "phase": 8.49375848
+    },
+    {
+      "name": "S4",
+      "amplitude": 0.0044,
+      "phase": 159.16999999
+    },
+    {
+      "name": "SK4",
+      "amplitude": 0.0015,
+      "phase": 121.15786271
+    },
+    {
+      "name": "2MK5",
+      "amplitude": 0.005,
+      "phase": 10.2507229
+    },
+    {
+      "name": "2MN6",
+      "amplitude": 0.0416,
+      "phase": 156.91206196
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.0714,
+      "phase": 191.21768728
+    },
+    {
+      "name": "2MS6",
+      "amplitude": 0.0583,
+      "phase": 247.73179151
+    },
+    {
+      "name": "2MK6",
+      "amplitude": 0.0147,
+      "phase": 248.58965423
+    },
+    {
+      "name": "2SM6",
+      "amplitude": 0.0084,
+      "phase": 281.97589577
+    },
+    {
+      "name": "MSK6",
+      "amplitude": 0.005,
+      "phase": 287.0037585
+    }
+  ],
+  "code": "BRJ",
+  "epoch": {
+    "start": "2022-11-25",
+    "end": "2025-02-06"
+  }
+}

@@ -1,0 +1,317 @@
+{
+  "name": "Bergen",
+  "country": "Norway",
+  "continent": "Europe",
+  "latitude": 60.398046,
+  "longitude": 5.320487,
+  "timezone": "Europe/Oslo",
+  "source": {
+    "name": "Kartverket / Norwegian Mapping Authority, Hydrographic Service",
+    "id": "BGO",
+    "published_harmonics": true,
+    "url": "https://www.kartverket.no/en/api-and-data/tides-and-water-level-data"
+  },
+  "license": {
+    "type": "cc-by-4.0",
+    "commercial_use": true,
+    "url": "https://www.kartverket.no/en/api-and-data/terms-of-use"
+  },
+  "disclaimers": "Tide and water-level data © Kartverket / Norwegian Mapping Authority, Hydrographic Service, licensed under CC BY 4.0.",
+  "datums": {
+    "HAT": 1.818,
+    "MHWS": 1.569,
+    "MHW": 1.406,
+    "MHWN": 1.243,
+    "NN2000": 1.022,
+    "MSL": 0.952,
+    "MLWN": 0.662,
+    "MLW": 0.498,
+    "MLWS": 0.335,
+    "LAT": 0,
+    "CD": 0
+  },
+  "chart_datum": "CD",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "SA_KV",
+      "amplitude": 0.1072,
+      "phase": 311.39893332
+    },
+    {
+      "name": "Mm",
+      "amplitude": 0.0263,
+      "phase": 178.90562535
+    },
+    {
+      "name": "Mf",
+      "amplitude": 0.0187,
+      "phase": 186.54196695
+    },
+    {
+      "name": "2Q1",
+      "amplitude": 0.0023,
+      "phase": 281.65571375
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.0094,
+      "phase": 317.39133906
+    },
+    {
+      "name": "rho1",
+      "amplitude": 0.0024,
+      "phase": 322.7784855
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.0309,
+      "phase": 11.57696442
+    },
+    {
+      "name": "NO1",
+      "amplitude": 0.0015,
+      "phase": 98.09330602
+    },
+    {
+      "name": "pi1",
+      "amplitude": 0.0008,
+      "phase": 110.41213532
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.0103,
+      "phase": 153.44106864
+    },
+    {
+      "name": "S1_KV",
+      "amplitude": 0.0064,
+      "phase": 266.36999804
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.0339,
+      "phase": 163.93893137
+    },
+    {
+      "name": "phi1",
+      "amplitude": 0.001,
+      "phase": 173.22679409
+    },
+    {
+      "name": "J1",
+      "amplitude": 0.0015,
+      "phase": 199.96455668
+    },
+    {
+      "name": "OO1",
+      "amplitude": 0.0008,
+      "phase": 308.86089832
+    },
+    {
+      "name": "OQ2_KV",
+      "amplitude": 0.0012,
+      "phase": 221.95901976
+    },
+    {
+      "name": "eps2",
+      "amplitude": 0.0033,
+      "phase": 244.0161662
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0.0115,
+      "phase": 242.25464508
+    },
+    {
+      "name": "mu2",
+      "amplitude": 0.0146,
+      "phase": 265.41179152
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.0885,
+      "phase": 261.84027043
+    },
+    {
+      "name": "nu2",
+      "amplitude": 0.0172,
+      "phase": 260.47741687
+    },
+    {
+      "name": "gamma2",
+      "amplitude": 0.001,
+      "phase": 312.11874934
+    },
+    {
+      "name": "alpha2",
+      "amplitude": 0.0091,
+      "phase": 260.94696242
+    },
+    {
+      "name": "M2",
+      "amplitude": 0.4536,
+      "phase": 283.53589575
+    },
+    {
+      "name": "M(KS)2",
+      "amplitude": 0.0017,
+      "phase": 97.35482907
+    },
+    {
+      "name": "MKS2",
+      "amplitude": 0.0014,
+      "phase": 300.92375847
+    },
+    {
+      "name": "lambda2",
+      "amplitude": 0.0048,
+      "phase": 285.94437466
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.0147,
+      "phase": 296.1115211
+    },
+    {
+      "name": "T2",
+      "amplitude": 0.007,
+      "phase": 324.55106669
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.1631,
+      "phase": 323.83000001
+    },
+    {
+      "name": "R2",
+      "amplitude": 0.0013,
+      "phase": 15.75893334
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.0467,
+      "phase": 321.60786274
+    },
+    {
+      "name": "MSN2",
+      "amplitude": 0.0013,
+      "phase": 157.39562533
+    },
+    {
+      "name": "eta2",
+      "amplitude": 0.0019,
+      "phase": 339.54348805
+    },
+    {
+      "name": "MO3",
+      "amplitude": 0.0033,
+      "phase": 188.07286016
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.0042,
+      "phase": 205.06384364
+    },
+    {
+      "name": "SO3",
+      "amplitude": 0.0019,
+      "phase": 288.12696439
+    },
+    {
+      "name": "MK3",
+      "amplitude": 0.0032,
+      "phase": 324.81482712
+    },
+    {
+      "name": "SK3",
+      "amplitude": 0.0013,
+      "phase": 63.27893134
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.0017,
+      "phase": 217.61616618
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.0096,
+      "phase": 253.32179153
+    },
+    {
+      "name": "SN4",
+      "amplitude": 0.0013,
+      "phase": 66.73027044
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.01,
+      "phase": 10.09589576
+    },
+    {
+      "name": "MK4",
+      "amplitude": 0.0033,
+      "phase": 15.90375848
+    },
+    {
+      "name": "S4",
+      "amplitude": 0.0027,
+      "phase": 157.65999999
+    },
+    {
+      "name": "SK4",
+      "amplitude": 0.0013,
+      "phase": 151.29786271
+    },
+    {
+      "name": "2MK5",
+      "amplitude": 0.0015,
+      "phase": 34.0907229
+    },
+    {
+      "name": "2SK5",
+      "amplitude": 0.0003,
+      "phase": 307.20893136
+    },
+    {
+      "name": "2MN6",
+      "amplitude": 0.0026,
+      "phase": 87.89206196
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.0038,
+      "phase": 112.66768728
+    },
+    {
+      "name": "2MS6",
+      "amplitude": 0.0018,
+      "phase": 97.59179151
+    },
+    {
+      "name": "2MK6",
+      "amplitude": 0.0004,
+      "phase": 65.62965423
+    },
+    {
+      "name": "2SM6",
+      "amplitude": 0.0019,
+      "phase": 96.36589577
+    },
+    {
+      "name": "MSK6",
+      "amplitude": 0.0011,
+      "phase": 91.8137585
+    },
+    {
+      "name": "M8",
+      "amplitude": 0.0004,
+      "phase": 186.71358303
+    }
+  ],
+  "code": "BGO",
+  "epoch": {
+    "start": "2006-01-01",
+    "end": "2020-12-31"
+  }
+}

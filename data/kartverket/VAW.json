@@ -1,0 +1,347 @@
+{
+  "name": "Vardø",
+  "country": "Norway",
+  "continent": "Europe",
+  "latitude": 70.374978,
+  "longitude": 31.104015,
+  "timezone": "Europe/Oslo",
+  "source": {
+    "name": "Kartverket / Norwegian Mapping Authority, Hydrographic Service",
+    "id": "VAW",
+    "published_harmonics": true,
+    "url": "https://www.kartverket.no/en/api-and-data/tides-and-water-level-data"
+  },
+  "license": {
+    "type": "cc-by-4.0",
+    "commercial_use": true,
+    "url": "https://www.kartverket.no/en/api-and-data/terms-of-use"
+  },
+  "disclaimers": "Tide and water-level data © Kartverket / Norwegian Mapping Authority, Hydrographic Service, licensed under CC BY 4.0.",
+  "datums": {
+    "HAT": 3.747,
+    "MHWS": 3.251,
+    "MHW": 2.966,
+    "MHWN": 2.681,
+    "NN2000": 2.179,
+    "MSL": 1.941,
+    "MLWN": 1.202,
+    "MLW": 0.917,
+    "MLWS": 0.632,
+    "LAT": 0,
+    "CD": 0
+  },
+  "chart_datum": "CD",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "SA_KV",
+      "amplitude": 0.1147,
+      "phase": 329.35893332
+    },
+    {
+      "name": "Mm",
+      "amplitude": 0.0203,
+      "phase": 185.09562535
+    },
+    {
+      "name": "Mf",
+      "amplitude": 0.0168,
+      "phase": 191.86196695
+    },
+    {
+      "name": "2Q1",
+      "amplitude": 0.0051,
+      "phase": 323.08571375
+    },
+    {
+      "name": "sigma1",
+      "amplitude": 0.0052,
+      "phase": 333.06286015
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.0196,
+      "phase": 10.74133906
+    },
+    {
+      "name": "rho1",
+      "amplitude": 0.0037,
+      "phase": 14.7884855
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.0245,
+      "phase": 69.12696442
+    },
+    {
+      "name": "tau1",
+      "amplitude": 0.0014,
+      "phase": 248.0548271
+    },
+    {
+      "name": "NO1",
+      "amplitude": 0.0045,
+      "phase": 219.35330602
+    },
+    {
+      "name": "pi1",
+      "amplitude": 0.0023,
+      "phase": 216.10213532
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.0341,
+      "phase": 248.04106864
+    },
+    {
+      "name": "S1_KV",
+      "amplitude": 0.0094,
+      "phase": 345.17999804
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.1215,
+      "phase": 252.88893137
+    },
+    {
+      "name": "psi1",
+      "amplitude": 0.0009,
+      "phase": 332.11786469
+    },
+    {
+      "name": "phi1",
+      "amplitude": 0.0019,
+      "phase": 246.43679409
+    },
+    {
+      "name": "theta1",
+      "amplitude": 0.0014,
+      "phase": 281.25741028
+    },
+    {
+      "name": "J1",
+      "amplitude": 0.0079,
+      "phase": 276.92455668
+    },
+    {
+      "name": "SO1",
+      "amplitude": 0.0018,
+      "phase": 247.2530356
+    },
+    {
+      "name": "OO1",
+      "amplitude": 0.0031,
+      "phase": 331.91089832
+    },
+    {
+      "name": "OQ2_KV",
+      "amplitude": 0.0035,
+      "phase": 11.09901976
+    },
+    {
+      "name": "eps2",
+      "amplitude": 0.0055,
+      "phase": 9.8161662
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0.0302,
+      "phase": 46.08464508
+    },
+    {
+      "name": "mu2",
+      "amplitude": 0.0243,
+      "phase": 37.46179152
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.2233,
+      "phase": 74.04027043
+    },
+    {
+      "name": "nu2",
+      "amplitude": 0.0441,
+      "phase": 79.37741687
+    },
+    {
+      "name": "gamma2",
+      "amplitude": 0.0031,
+      "phase": 93.70874934
+    },
+    {
+      "name": "alpha2",
+      "amplitude": 0.0142,
+      "phase": 92.77696242
+    },
+    {
+      "name": "M2",
+      "amplitude": 1.0244,
+      "phase": 103.52589575
+    },
+    {
+      "name": "M(KS)2",
+      "amplitude": 0.0135,
+      "phase": 0.90482907
+    },
+    {
+      "name": "MKS2",
+      "amplitude": 0.0058,
+      "phase": 70.58375847
+    },
+    {
+      "name": "lambda2",
+      "amplitude": 0.0102,
+      "phase": 136.29437466
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.0294,
+      "phase": 135.2815211
+    },
+    {
+      "name": "T2",
+      "amplitude": 0.0123,
+      "phase": 133.91106669
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.2849,
+      "phase": 148.40000001
+    },
+    {
+      "name": "R2",
+      "amplitude": 0.003,
+      "phase": 291.30893334
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.0808,
+      "phase": 146.97786274
+    },
+    {
+      "name": "MSN2",
+      "amplitude": 0.0026,
+      "phase": 52.01562533
+    },
+    {
+      "name": "eta2",
+      "amplitude": 0.0031,
+      "phase": 151.46348805
+    },
+    {
+      "name": "MO3",
+      "amplitude": 0.0025,
+      "phase": 255.69286016
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.0014,
+      "phase": 152.04384364
+    },
+    {
+      "name": "SO3",
+      "amplitude": 0.0024,
+      "phase": 312.29696439
+    },
+    {
+      "name": "MK3",
+      "amplitude": 0.0017,
+      "phase": 291.67482712
+    },
+    {
+      "name": "SK3",
+      "amplitude": 0.0011,
+      "phase": 338.77893134
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.005,
+      "phase": 37.89616618
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.014,
+      "phase": 68.78179153
+    },
+    {
+      "name": "SN4",
+      "amplitude": 0.0012,
+      "phase": 100.59027044
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.0111,
+      "phase": 136.76589576
+    },
+    {
+      "name": "MK4",
+      "amplitude": 0.0031,
+      "phase": 138.53375848
+    },
+    {
+      "name": "S4",
+      "amplitude": 0.0012,
+      "phase": 259.32999999
+    },
+    {
+      "name": "SK4",
+      "amplitude": 0.0003,
+      "phase": 231.77786271
+    },
+    {
+      "name": "2MK5",
+      "amplitude": 0.0009,
+      "phase": 164.6707229
+    },
+    {
+      "name": "2SK5",
+      "amplitude": 0.0001,
+      "phase": 91.60893136
+    },
+    {
+      "name": "2MN6",
+      "amplitude": 0.0023,
+      "phase": 325.60206196
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.0043,
+      "phase": 5.14768728
+    },
+    {
+      "name": "2MS6",
+      "amplitude": 0.0032,
+      "phase": 54.79179151
+    },
+    {
+      "name": "2MK6",
+      "amplitude": 0.0009,
+      "phase": 50.02965423
+    },
+    {
+      "name": "2SM6",
+      "amplitude": 0.0009,
+      "phase": 83.65589577
+    },
+    {
+      "name": "MSK6",
+      "amplitude": 0.0005,
+      "phase": 84.7637585
+    },
+    {
+      "name": "3MK7",
+      "amplitude": 0.0002,
+      "phase": 45.57661865
+    },
+    {
+      "name": "M8",
+      "amplitude": 0.0005,
+      "phase": 144.86358303
+    }
+  ],
+  "code": "VAW",
+  "epoch": {
+    "start": "2006-01-01",
+    "end": "2020-12-31"
+  }
+}

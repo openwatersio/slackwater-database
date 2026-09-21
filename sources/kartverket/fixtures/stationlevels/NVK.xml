@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<tide>
+<meta licenseurl="http://kartverket.no/data/lisens/"/>
+<locationlevel unit="cm" reflevel="CD">
+<location name="Narvik" code="NVK" latitude="68.428286" longitude="17.425759" delay="0" factor="1.00" place="Narvik" obsname="Narvik" obscode="NVK" landlift="0.41"/>
+<reflevel code="HIGHENDWL" value="558.0" name="High-end water level" descr="High-end water level" type="RETURN"/>
+<reflevel code="1000YMAX" value="490.8" name="1000-years high water (storm surge)" descr="High water that occurs in average every 1000 years." type="RETURN"/>
+<reflevel code="200YMAX" value="474.2" name="200-years high water (storm surge)" descr="High water that occurs in average every 200 years." type="RETURN"/>
+<reflevel code="100YMAX" value="466.7" name="100-years high water (storm surge)" descr="High water that occurs in average every 100 years" type="RETURN"/>
+<reflevel code="HOWL" value="465.2" name="Highest Observed Water Level" descr="The highest observed water level for this tide station." info="29.11.1932" type="OBS"/>
+<reflevel code="50YMAX" value="458.8" name="50-years high water (storm surge)" descr="High water that occurs in average every 50 years." type="RETURN"/>
+<reflevel code="20YMAX" value="447.8" name="High water with 20 year return period" descr="High water that occurs in average every 20 years" type="RETURN"/>
+<reflevel code="10YMAX" value="438.8" name="10-years high water (storm surge)" descr="High water that occurs in average every 10 years." type="RETURN"/>
+<reflevel code="5YMAX" value="428.8" name="5-years high water (storm surge)" descr="High water that occurs in average every 5 years." type="RETURN"/>
+<reflevel code="1YMAX" value="406.7" name="Yearly high water (storm surge)" descr="High water that occurs in average every year." type="RETURN"/>
+<reflevel code="HAT" value="384.9" name="Highest Astronomical Tide" descr="The highest tidal level which can be predicted to occur under average meteorological conditions and under any combination of astronomical conditions." type="ASTROREF"/>
+<reflevel code="MHWS" value="323.2" name="Mean High Water Springs" descr="The average height of the high waters of spring tides." type="ASTRO"/>
+<reflevel code="MHW" value="287.8" name="Mean High Water" descr="The average height of all high waters over a 19-year period." type="ASTROREF"/>
+<reflevel code="MHWN" value="252.5" name="Mean High Water Neaps" descr="The average height of the high waters of neap tides." type="ASTRO"/>
+<reflevel code="NN2000" value="199.9" name="NN 2000" descr="Norwegian vertical datum of 2000" type="REF"/>
+<reflevel code="MSL" value="187.7" epoch="1996-2014" name="Mean Sea Level (1996-2014)" descr="The average height of the surface of the sea for all stages of the tide over a 19-year period" type="REF"/>
+<reflevel code="MLWN" value="122.8" name="Mean Low Water Neaps" descr="The average height of the low waters of neap tides." type="ASTRO"/>
+<reflevel code="MLW" value="87.5" name="Mean Low Water" descr="The average height of all low waters over a 19-year period." type="ASTRO"/>
+<reflevel code="MLWS" value="52.1" name="Mean Low Water Springs" descr="The average height of the low waters of spring tides." type="ASTRO"/>
+<reflevel code="LAT" value="0.0" name="Lowest Astronomical Tide" descr="The lowest tide level which can be predicted to occur under average meteorological conditions and under any combination of astronomical conditions." type="ASTRO"/>
+<reflevel code="CD" value="0.0" name="Chart Datum" descr="Reference level for depths in navigational charts and heights in tide tables" type="REF"/>
+<reflevel code="1YMIN" value="-2.2" name="Yearly low water" descr="Low water that occurs in average every year." type="RETURN"/>
+<reflevel code="5YMIN" value="-18.1" name="5-years low water" descr="Low water that occurs in average every 5 years." type="RETURN"/>
+<reflevel code="LOWL" value="-21.8" name="Lowest Observed Water Level" descr="The lowest observed water level for this tide station." info="18.03.1980 og 19.9.2001" type="OBS"/>
+<reflevel code="20YMIN" value="-31.3" name="20-years low water" descr="Low water that occurs in average every 20 years." type="RETURN"/>
+</locationlevel>
+</tide>

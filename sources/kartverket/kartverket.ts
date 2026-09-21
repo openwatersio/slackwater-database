@@ -26,7 +26,7 @@ export type ParsedConstituents = {
 };
 
 export type ParsedLocationLevels = {
-  location: Pick<KartverketStation, "name" | "code">;
+  location: KartverketStation & { place?: string };
   datums: Record<string, number>;
 };
 
@@ -98,33 +98,38 @@ function number(value: string | undefined, name: string): number {
 }
 
 function location(value: Attributes | undefined): KartverketStation {
-  if (!value?.name || !value.code) throw new Error("Missing location");
+  if (!value?.["name"] || !value["code"]) throw new Error("Missing location");
   return {
-    name: value.name,
-    code: value.code,
-    latitude: number(value.latitude, "latitude"),
-    longitude: number(value.longitude, "longitude"),
+    name: value["name"],
+    code: value["code"],
+    latitude: number(value["latitude"], "latitude"),
+    longitude: number(value["longitude"], "longitude"),
   };
 }
 
-function locationIdentity(value: Attributes | undefined) {
-  if (!value?.name || !value.code) throw new Error("Missing location");
-  return { name: value.name, code: value.code };
+function levelLocation(value: Attributes | undefined) {
+  const parsed = location(value);
+  return {
+    ...parsed,
+    ...(value?.["place"] ? { place: value["place"] } : {}),
+  };
 }
 
 function parseXml(xml: string): Record<string, unknown> {
   const declaration = /<!\s*(DOCTYPE|ENTITY)\b/i.exec(xml);
   if (declaration)
-    throw new Error(`Unsafe XML ${declaration[1].toUpperCase()} declaration`);
+    throw new Error(`Unsafe XML ${declaration[1]!.toUpperCase()} declaration`);
 
   const valid = XMLValidator.validate(xml);
   if (valid !== true) throw new Error(`Invalid XML: ${valid.err.msg}`);
 
   const tide = (parser.parse(xml) as { tide?: XmlNode }).tide;
   if (!tide) throw new Error("Missing tide response");
-  if (tide.error !== undefined) {
-    const error = attributes(tide.error as XmlNode | undefined);
-    throw new Error(error.message ?? error.info ?? "Kartverket XML error");
+  if (tide["error"] !== undefined) {
+    const error = attributes(tide["error"] as XmlNode | undefined);
+    throw new Error(
+      error["message"] ?? error["info"] ?? "Kartverket XML error",
+    );
   }
   return tide;
 }
@@ -136,11 +141,13 @@ function tupleKey({ name, speed, doodson }: KartverketConstituent) {
 function doodsonCoefficients(doodson: string) {
   if (!/^[W-ZA-Z]{7}$/.test(doodson))
     throw new Error(`Invalid Doodson: ${doodson}`);
-  return [...doodson].map((letter) =>
-    letter >= "W" && letter <= "Z"
-      ? letter.charCodeAt(0) - "Z".charCodeAt(0)
-      : letter.charCodeAt(0) - "A".charCodeAt(0) + 1,
-  );
+  return [...doodson].map((letter, index) => {
+    const value =
+      letter >= "U" && letter <= "Z"
+        ? letter.charCodeAt(0) - "Z".charCodeAt(0)
+        : letter.charCodeAt(0) - "A".charCodeAt(0) + 1;
+    return index === 6 ? -value : value;
+  });
 }
 
 export function resolveConstituent(tuple: KartverketConstituent): string {
@@ -178,9 +185,10 @@ export function resolveConstituent(tuple: KartverketConstituent): string {
 
 export function parseStationList(xml: string) {
   const tide = parseXml(xml);
-  const stationinfo = tide.stationinfo as XmlNode | undefined;
+  const stationinfo = tide["stationinfo"] as XmlNode | undefined;
   const stations = asArray(
-    stationinfo?.station as XmlNode | XmlNode[] | undefined,
+    (stationinfo?.["location"] ?? stationinfo?.["station"]) as
+      XmlNode | XmlNode[] | undefined,
   ).map((station) => location(attributes(station)));
   if (stations.length === 0) throw new Error("Missing stations");
   return { stations };
@@ -188,45 +196,46 @@ export function parseStationList(xml: string) {
 
 export function parseConstituents(xml: string): ParsedConstituents {
   const tide = parseXml(xml);
-  const data = tide.constituents as XmlNode | undefined;
+  const data = tide["constituents"] as XmlNode | undefined;
   if (!data) throw new Error("Missing constituents");
   const dataAttributes = attributes(data);
-  if (dataAttributes.unit !== "cm")
-    throw new Error(`Unexpected constituent unit: ${dataAttributes.unit}`);
-  if (dataAttributes.utcoffset !== "+01:00")
-    throw new Error(`Unexpected UTC offset: ${dataAttributes.utcoffset}`);
+  if (dataAttributes["unit"] !== "cm")
+    throw new Error(`Unexpected constituent unit: ${dataAttributes["unit"]}`);
+  if (dataAttributes["utcoffset"] !== "+01:00")
+    throw new Error(`Unexpected UTC offset: ${dataAttributes["utcoffset"]}`);
 
   const constituents = asArray(
-    data.constituent as XmlNode | XmlNode[] | undefined,
+    data["constituent"] as XmlNode | XmlNode[] | undefined,
   ).map((node) => {
     const value = attributes(node);
-    if (!value.name || !value.doodson) throw new Error("Invalid constituent");
-    const speed = number(value.speed, "constituent speed");
-    number(value.amplitude, "constituent amplitude");
+    if (!value["name"] || !value["doodson"])
+      throw new Error("Invalid constituent");
+    const speed = number(value["speed"], "constituent speed");
+    const amplitude = number(value["amplitude"], "constituent amplitude");
     return {
       name: resolveConstituent({
-        name: value.name,
+        name: value["name"],
         speed,
-        doodson: value.doodson,
+        doodson: value["doodson"],
       }),
-      amplitude: decimal(centimetersToMeters(value.amplitude)),
+      amplitude: decimal(amplitude / 100),
       phase: decimal(
-        normalizePhase(number(value.phaseangle, "constituent phase"), speed),
+        normalizePhase(number(value["phaseangle"], "constituent phase"), speed),
       ),
     };
   });
   if (constituents.length === 0) throw new Error("Missing constituent values");
 
-  const observations = attributes(data.observations as XmlNode | undefined);
+  const observations = attributes(data["observations"] as XmlNode | undefined);
   const epoch =
-    observations?.start && observations.end
+    observations?.["start"] && observations["end"]
       ? {
-          start: observations.start.slice(0, 10),
-          end: observations.end.slice(0, 10),
+          start: observations["start"].slice(0, 10),
+          end: observations["end"].slice(0, 10),
         }
       : undefined;
   return {
-    location: location(attributes(data.location as XmlNode | undefined)),
+    location: location(attributes(data["location"] as XmlNode | undefined)),
     constituents,
     ...(epoch ? { epoch } : {}),
   };
@@ -234,26 +243,26 @@ export function parseConstituents(xml: string): ParsedConstituents {
 
 export function parseLocationLevels(xml: string): ParsedLocationLevels {
   const tide = parseXml(xml);
-  const data = tide.locationlevel as XmlNode | undefined;
+  const data = tide["locationlevel"] as XmlNode | undefined;
   if (!data) throw new Error("Missing location levels");
   const dataAttributes = attributes(data);
-  if (dataAttributes.unit !== "cm")
-    throw new Error(`Unexpected level unit: ${dataAttributes.unit}`);
-  if (dataAttributes.reflevel !== "CD")
-    throw new Error(`Unexpected level reflevel: ${dataAttributes.reflevel}`);
+  if (dataAttributes["unit"] !== "cm")
+    throw new Error(`Unexpected level unit: ${dataAttributes["unit"]}`);
+  if (dataAttributes["reflevel"] !== "CD")
+    throw new Error(`Unexpected level reflevel: ${dataAttributes["reflevel"]}`);
 
   const datums = Object.fromEntries(
-    asArray(data.reflevel as XmlNode | XmlNode[] | undefined)
+    asArray(data["reflevel"] as XmlNode | XmlNode[] | undefined)
       .map(attributes)
-      .filter((level) => level.code && DATUMS.has(level.code))
+      .filter((level) => level["code"] && DATUMS.has(level["code"]))
       .map((level) => {
-        number(level.value, "datum value");
-        return [level.code, decimal(centimetersToMeters(level.value))];
+        const value = number(level["value"], "datum value");
+        return [level["code"], decimal(value / 100)];
       }),
   );
   return {
-    location: locationIdentity(
-      attributes(data.location as XmlNode | undefined),
+    location: levelLocation(
+      attributes(data["location"] as XmlNode | undefined),
     ),
     datums,
   };
@@ -264,9 +273,14 @@ export function buildStation(input: {
   constituents: ParsedConstituents;
   levels: ParsedLocationLevels;
 }): StationData {
+  const levelLocationMatches =
+    input.station.code === input.levels.location.code ||
+    (input.station.name === input.levels.location.place &&
+      input.station.latitude === input.levels.location.latitude &&
+      input.station.longitude === input.levels.location.longitude);
   if (
     input.station.code !== input.constituents.location.code ||
-    input.station.code !== input.levels.location.code
+    !levelLocationMatches
   ) {
     throw new Error("Mismatched station response codes");
   }
