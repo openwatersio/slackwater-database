@@ -126,6 +126,7 @@ describe("Kartverket source parser", () => {
         url: "https://www.kartverket.no/en/api-and-data/terms-of-use",
       },
     });
+    expect(station).not.toHaveProperty("code");
   });
 
   it("converts UTC+1 constituent phases and centimetres", () => {

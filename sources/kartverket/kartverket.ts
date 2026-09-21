@@ -286,7 +286,9 @@ export function buildStation(input: {
   }
 
   return normalize({
-    ...input.station,
+    name: input.station.name,
+    latitude: input.station.latitude,
+    longitude: input.station.longitude,
     country: "Norway",
     type: "reference",
     chart_datum: "CD",
