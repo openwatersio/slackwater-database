@@ -271,6 +271,18 @@ describe("gauge deduplication", () => {
     expect(authoritativeDuplicateWinner("ticon/a", "ticon/b")).toBeUndefined();
   });
 
+  test("accepts all Kartverket gauges over co-located TICON records", () => {
+    const kartverket = quality.filter((r) => r.id.startsWith("kartverket/"));
+    expect(kartverket).toHaveLength(33);
+    expect(kartverket.every((r) => r.accepted && r.factors.source === 1)).toBe(
+      true,
+    );
+    expect(quality.find((r) => r.id === "ticon/tromso-tos-nor-nhs")).toMatchObject({
+      accepted: false,
+      redundant: "kartverket/TOS",
+    });
+  });
+
   // A single physical gauge is often split across TICON records that share a
   // station code but differ by segment letter or provider (fast-delivery vs
   // research-quality, or two data centres). Coordinate drift pushes them past

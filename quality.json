@@ -85,8 +85,8 @@
   },
   {
     "id": "kartverket/EYD",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 70,
     "factors": {
       "epoch": 0,
       "recency": 0,
@@ -95,10 +95,7 @@
       "amplitude": 1,
       "coverage": 1
     },
-    "issues": [
-      "P1 amplitude (0.0020) exceeds K1 (0.0010): physically impossible"
-    ],
-    "reason": "constituents"
+    "issues": []
   },
   {
     "id": "kartverket/HAR",
@@ -144,8 +141,8 @@
   },
   {
     "id": "kartverket/HRO",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 81,
     "factors": {
       "epoch": 0.806,
       "recency": 0.94,
@@ -154,10 +151,7 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "P1 amplitude (0.0035) exceeds K1 (0.0019): physically impossible"
-    ],
-    "reason": "constituents"
+    "issues": []
   },
   {
     "id": "kartverket/HVG",
@@ -287,8 +281,8 @@
   },
   {
     "id": "kartverket/OSC",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 81,
     "factors": {
       "epoch": 0.806,
       "recency": 0.94,
@@ -297,15 +291,12 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "P1 amplitude (0.0054) exceeds K1 (0.0030): physically impossible"
-    ],
-    "reason": "constituents"
+    "issues": []
   },
   {
     "id": "kartverket/OSL",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 81,
     "factors": {
       "epoch": 0.806,
       "recency": 0.94,
@@ -314,10 +305,7 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "P1 amplitude (0.0060) exceeds K1 (0.0040): physically impossible"
-    ],
-    "reason": "constituents"
+    "issues": []
   },
   {
     "id": "kartverket/RVK",
@@ -363,8 +351,8 @@
   },
   {
     "id": "kartverket/SOY",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 72,
     "factors": {
       "epoch": 0.06,
       "recency": 0.98,
@@ -373,10 +361,7 @@
       "amplitude": 1,
       "coverage": 0.379
     },
-    "issues": [
-      "Missing constituents for prediction: K1"
-    ],
-    "reason": "constituents"
+    "issues": []
   },
   {
     "id": "kartverket/SVG",
@@ -464,8 +449,8 @@
   },
   {
     "id": "kartverket/VIK",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 81,
     "factors": {
       "epoch": 0.806,
       "recency": 0.94,
@@ -474,10 +459,7 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Missing constituents for prediction: K1"
-    ],
-    "reason": "constituents"
+    "issues": []
   },
   {
     "id": "noaa/1610367",
@@ -14658,7 +14640,7 @@
       "coverage": 0.087
     },
     "issues": [
-      "Missing constituents for prediction: M2, S2, K1, O1"
+      "Missing constituents for prediction: M2, S2, O1"
     ],
     "reason": "constituents"
   },
@@ -28450,7 +28432,7 @@
     },
     "issues": [
       "MLW (-0.04) < MLLW (-0.039)",
-      "Missing constituents for prediction: M2, S2, K1, O1"
+      "Missing constituents for prediction: M2, S2, O1"
     ],
     "reason": "constituents"
   },
@@ -36443,7 +36425,7 @@
       "coverage": 0.254
     },
     "issues": [
-      "Missing constituents for prediction: M2, S2, K1, O1"
+      "Missing constituents for prediction: M2, S2, O1"
     ],
     "reason": "constituents"
   },
@@ -43443,7 +43425,7 @@
       "coverage": 0.074
     },
     "issues": [
-      "Missing constituents for prediction: M2, S2, K1, O1"
+      "Missing constituents for prediction: M2, S2, O1"
     ],
     "reason": "constituents"
   },
