@@ -199,10 +199,13 @@ export function buildDatabase(
           str(id),
           str(url),
           published_harmonics,
-          str(attributionFor(name)),
         ),
       );
     }
+
+    // Assembled here, not in each reader: a reader would otherwise need its own
+    // table of sources and its own reading of what each licence requires.
+    const attribution = str(attributionFor(s.source?.name, s.license));
 
     let license = 0;
     if (s.license) {
@@ -331,6 +334,7 @@ export function buildDatabase(
     Station.addSource(builder, source);
     Station.addLicense(builder, license);
     Station.addDisclaimers(builder, disclaimers);
+    Station.addAttribution(builder, attribution);
     Station.addLocality(builder, locality);
     Station.addRegionCode(builder, regionCode);
     Station.addCountryCode(builder, countryCode);

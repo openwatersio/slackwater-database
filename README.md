@@ -105,7 +105,7 @@ Releases are created by [running the Publish action](https://github.com/openwate
 
 Most stations here are CC BY, which obliges anyone redistributing them to credit the original source — not only this project. That applies to downstream software bundling this database too.
 
-Every station carries the credit it needs as `attribution`, already assembled, so the rule for a consumer is one sentence: **display the station's `attribution`.** Nothing downstream needs its own table of sources.
+Every station carries the notice it needs as `attribution`, already assembled, so the rule for a consumer is one sentence: **display the station's `attribution`.** Nothing downstream needs its own table of sources, or its own reading of what a licence requires.
 
 ```typescript
 import { stationsById } from "@neaps/tide-database";
@@ -113,12 +113,16 @@ import { stationsById } from "@neaps/tide-database";
 console.log(stationsById.get("ticon/newlyn-new-gbr-bodc")?.attribution);
 // Neaps tide database (https://github.com/openwatersio/tide-database). Source:
 // Hart-Davis, M., Dettmering, D., Seitz, F. (2025), TICON-4: TIdal CONstants
-// based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129
+// based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129.
+// Licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified:
+// see https://github.com/openwatersio/tide-database#modifications-to-source-data
 ```
 
 The Swift package exposes the same string as `station.attribution`.
 
-A credit opens with this project and then appends whatever further credit the station's source requires. It never names a licence, because licence is per station rather than per source — read `license` for that. The sources and what each one asks for:
+Under a CC licence that string carries all three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.org/licenses/by/4.0/) asks a redistributor to pass on: who created the material, the licence and its URI, and an indication that it was modified. A station whose licence imposes no notice, such as a public-domain NOAA record, gets the project credit alone. The licence comes from the station rather than its source, because it varies within one source — the TICON stations relayed from CMEMS are CC BY-NC while the rest are CC BY — so `attribution` names the licence that actually applies to the station in hand. `license` still carries the same terms as structured fields if you need to filter on them.
+
+The sources and what each one asks for:
 
 - **TICON-4** — Hart-Davis, Michael; Dettmering, Denise; Seitz, Florian (2025). _TICON-4: TIdal CONstants based on GESLA-4 sea-level records._ SEANOE. https://doi.org/10.17882/109129. Credit required.
 - **NOAA CO-OPS** — a United States government work in the public domain. Attribution is not required, but is appreciated, so the project credit stands alone.

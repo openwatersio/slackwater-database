@@ -138,12 +138,14 @@ public struct Station: Identifiable {
 
   // MARK: Attribution
 
-  /// The credit to display when showing or redistributing this station, ready
-  /// to render as-is. Written into the file by the builder, so this package
-  /// keeps no table of sources; a file predating the field falls back to the
-  /// project credit.
+  /// The complete notice to display when showing or redistributing this
+  /// station: the creator credit and, where a Creative Commons licence
+  /// applies, the licence and a pointer to what was modified. Displaying it is
+  /// the whole of the obligation. Written into the file by the builder, so
+  /// this package keeps no table of sources; a file predating the field falls
+  /// back to the project credit.
   public var attribution: String {
-    raw.source?.attribution ?? Self.projectCredit
+    raw.attribution ?? Self.projectCredit
   }
 
   /// Height of mean sea level above the chart datum

@@ -1,9 +1,13 @@
 /**
- * The project half of every credit. A station's full credit opens with this,
- * then appends whatever further credit its own source requires.
+ * The project half of every notice. A station's full notice opens with this,
+ * then adds whatever its source and licence require.
  */
 export const PROJECT_CREDIT =
   "Neaps tide database (https://github.com/openwatersio/tide-database)";
+
+/** Where a redistributor is pointed to find what this project changed. */
+export const MODIFICATIONS_URL =
+  "https://github.com/openwatersio/tide-database#modifications-to-source-data";
 
 /**
  * Keyed by `source.name`; `null` means the source requires no credit of its
@@ -11,10 +15,6 @@ export const PROJECT_CREDIT =
  * decision rather than an omission — test/attribution.test.ts fails on one
  * that is missing. These strings are the README's Attribution section, and the
  * two must not drift.
- *
- * A credit names the creator, never the licence: licence varies per station
- * within one source (TICON stations relayed from CMEMS are CC BY-NC while the
- * rest are CC BY), so it belongs on `station.license` where it is exact.
  */
 const SOURCE_CREDITS: Record<string, string | null> = {
   "TICON-4":
@@ -26,17 +26,44 @@ const SOURCE_CREDITS: Record<string, string | null> = {
   "Canadian Hydrographic Service": null,
 };
 
+/**
+ * Display names for the licences that oblige a redistributor to pass the
+ * licence on. A licence absent here (public domain, this project's own MIT
+ * records) imposes no notice, so it adds nothing to the station's credit.
+ */
+const LICENSE_NAMES: Record<string, string> = {
+  "cc-by-4.0": "CC BY 4.0",
+  "cc-by-nc-4.0": "CC BY-NC 4.0",
+};
+
 /** Whether a source name has a credit decision recorded. */
 export function isKnownSource(sourceName: string): boolean {
   return sourceName in SOURCE_CREDITS;
 }
 
 /**
- * Build a source's credit line. An unrecognized source falls back to the
- * project credit rather than throwing, so a consumer pinned to an older
- * library still renders a newer database; the test keeps the table complete.
+ * Assemble a station's complete notice, so displaying it is the whole of a
+ * consumer's obligation. Under a Creative Commons licence that means the
+ * creator credit, the licence and its URI, and an indication that the material
+ * was modified — the three things CC BY 4.0 section 3(a)(1) requires be passed
+ * on. Licence is taken per station rather than per source because it varies
+ * within one source: TICON stations relayed from CMEMS are CC BY-NC while the
+ * rest are CC BY.
  */
-export function attributionFor(sourceName: string | undefined): string {
+export function attributionFor(
+  sourceName: string | undefined,
+  license: { type: string; url: string } | undefined,
+): string {
+  const parts = [PROJECT_CREDIT];
+
   const credit = sourceName ? SOURCE_CREDITS[sourceName] : null;
-  return credit ? `${PROJECT_CREDIT}. ${credit}` : PROJECT_CREDIT;
+  if (credit) parts.push(credit);
+
+  const licenseName = license && LICENSE_NAMES[license.type];
+  if (licenseName) {
+    parts.push(`Licensed ${licenseName} (${license!.url})`);
+    parts.push(`Modified: see ${MODIFICATIONS_URL}`);
+  }
+
+  return parts.join(". ");
 }

@@ -225,7 +225,7 @@ function readStation(index: number): Station {
   // Written into the file by the builder, so a reader never needs its own
   // table of sources. Older files predating the field fall back to the
   // project credit.
-  station.attribution = source?.attribution() ?? PROJECT_CREDIT;
+  station.attribution = t.attribution() ?? PROJECT_CREDIT;
 
   const license = t.license();
   if (license) {
