@@ -24,12 +24,12 @@ Use the current `ddapi20-waterwebservices.rijkswaterstaat.nl` catalog and observ
 
 Compare eligible locations with committed TICON station data by distance, then inspect provider identifiers and coordinates for ambiguous matches. Report proximity counts as audit evidence, not as an automatic deduplication rule.
 
-Estimate sampled-artifact size from the observed cadence, eligible station count, and supported future interval. Harmonic fitting is only recommended if no bounded sampled format can meet the consumer requirement; it must be described as derived and would require held-out validation in a later milestone.
+Measure sampled-artifact size from complete station-years in both raw and compressed form. Fit representative ordinary and unusual-tide stations through the repository's existing harmonic-analysis path, then validate heights and event times on a held-out interval against the repository's existing prediction thresholds. Let those measurements choose the representation.
 
 ## Verification
 
-Cross-check catalog joins and sample responses for both NAP and MSL stations. Inspect ordinary and double-extrema locations. Verify fixed-offset timestamp behavior across daylight-saving dates and confirm future cutoffs with bounded requests. Format-check the documentation.
+Cross-check catalog joins and sample responses for both NAP and MSL stations. Inspect ordinary and double-extrema locations. Verify fixed-offset timestamp behavior across daylight-saving dates, confirm future cutoffs with bounded requests, and reproduce the sampled-size and held-out-fit measurements. Format-check the documentation.
 
 ## Out of scope
 
-No importer, schema, generated data, consumer changes, full-catalog snapshot, harmonic fit, publication, or API load test.
+No importer, schema, generated data, consumer changes, full-catalog snapshot, publication, or API load test.

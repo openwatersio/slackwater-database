@@ -6,7 +6,7 @@ This audit evaluates Rijkswaterstaat (RWS) astronomical water levels and calcula
 
 Use the RWS astronomical series as a bounded sampled-prediction artifact, separate from harmonic station records.
 
-This route preserves the provider's heights, native vertical reference, missing values, and event classification. It also keeps source-copy error separate from any interpolation performed by a consumer. Do not fit harmonics unless a consumer demonstrates that the sampled format cannot meet its offline requirement.
+The repository already re-fits harmonics for 56 TICON records whose identifiers end in `-rws`, so derived data and the fixed RWS time offset are existing code paths rather than new risks. A held-out fit against the current RWS series kept height error below the repository's 10 cm RMS ceiling, but failed the existing event-time thresholds and produced hundreds of extra extrema at Hoek van Holland and Den Helder. The exact sampled series projects to only 3.9–4.7 MB compressed for all 114 stations, so preserving the provider's heights and published events is the lower-risk route.
 
 Implementation is blocked on a format contract for sampled predictions. The current database schema and consumers support harmonics and subordinate-station offsets, not time-bounded samples or published event streams.
 
@@ -57,7 +57,7 @@ There are 114 locations with astronomical heights and 114 with calculated extrem
 - Height only: `maasmond.stroommeetpaal`, `zeelandbrug.noord`
 - Extrema only: `oostmahorn`, `zoutkamp`
 
-The earlier “about 825 locations” estimate does not describe the current astronomical-tide catalog. The complete catalog contains 2,499 water-management locations, but only 114 currently expose continuous astronomical heights. These include offshore platforms; publication still needs a geographic eligibility check rather than assigning every record to the Netherlands from the provider name alone.
+The “about 825 locations” estimate can only be traced to the uncited claim in parent issue [#148](https://github.com/openwatersio/tide-database/issues/148). It does not describe another verified current product: the current catalog exposes 114 continuous astronomical-height locations, while the public [Waterinfo astronomical-tide map](https://waterinfo.rws.nl/api/point/latestmeasurement?parameterId=astronomische-getij) returned 94 locations on 2026-09-21. The RWS data register also lists a completed 2013 [astronomical water-level series](https://maps.rijkswaterstaat.nl/dataregister/srv/api/records/usoc5hgv-f4mm-ouyo-hzeh-idijhclc1q11), but publishes neither a location count nor an associated download. Treat 825 as unsubstantiated, not as evidence of broader tide-table coverage. The complete current catalog contains 2,499 water-management locations, and the 114 eligible locations include offshore platforms; publication still needs a geographic eligibility check rather than assigning every record to the Netherlands from the provider name alone.
 
 ## Data semantics
 
@@ -86,11 +86,10 @@ A height request selects the quantity and process explicitly:
 Observed semantics:
 
 - Locations use ETRS89 latitude/longitude (EPSG:4258). RWS says this is equivalent to WGS84 for display, but provenance should retain EPSG:4258.
-- Heights are integer centimeters relative to the row's explicit `NAP` or `MSL` qualification. Do not relabel either as LAT or chart datum.
+- Heights are integer centimeters relative to the series-level `AquoMetadata.Hoedanigheid.Code`, which is explicitly `NAP` or `MSL`. Per-value `WaarnemingMetadata.Referentievlak` was `NVT` and is not the datum. Do not relabel either datum as LAT or chart datum.
 - The series cadence is 10 minutes. Both requested endpoints are included: a one-day request returned 145 samples, so chunk joins must deduplicate their shared boundary.
-- Responses serialize timestamps at fixed `+01:00`, including July. Convert the explicit ISO 8601 offset to UTC; do not reinterpret the wall time with `Europe/Amsterdam` daylight-saving rules.
-- Each value includes `Kwaliteitswaardecode`, `Statuswaarde`, `OpdrachtgevendeInstantie`, `Bemonsteringshoogte`, and `Referentievlak`. Preserve these fields or a lossless normalized equivalent. RWS documents quality code `99` as a gap.
-- The sampled NAP and MSL responses used quality code `00`, status `Ongecontroleerd`, and commissioning organization `RIKZMON_WAT`. Other responses can use different values.
+- Responses serialize timestamps at fixed `+01:00`, including July. A request using `Z` timestamps still returned `+01:00`, so this is response behavior rather than an echo of the request. Convert the explicit ISO 8601 offset to UTC; do not reinterpret the wall time with `Europe/Amsterdam` daylight-saving rules.
+- Across the complete 2026 series for `ameland.nes` and `hoekvanholland` (105,122 samples), per-value metadata did not vary: quality code `00`, status `Ongecontroleerd`, commissioning organization `RIKZMON_WAT`, sampling height `-999999999` (not applicable), and reference plane `NVT`. Do not add sparse per-sample metadata overrides until a broader probe observes variation. RWS documents quality code `99` as a gap, so an importer must still recognize it and reject unexpected metadata rather than silently discard it.
 
 ### High/low-water events
 
@@ -101,7 +100,9 @@ Request `GETETBRKD2` for NAP or `GETETBRKDMSL2` for MSL. Each grouping returns t
 
 Keep the channels paired by timestamp. A caller must not request or interpret one channel in isolation.
 
-The [RWS tide documentation](https://www.rijkswaterstaat.nl/water/waterdata/getij) describes double low water at Hoek van Holland and double high water at Den Helder. The 2026 event samples for `hoekvanholland` and `denhelder.marsdiep` alternated ordinary high/low classifications, but that does not justify a four-events-per-day assumption. Preserve every published event in order and allow repeated classifications or nonstandard daily counts.
+Do not derive events by finding turning points in the integer-centimeter samples. A direct scan of the 2026 `hoekvanholland` series found 1,846 highs and 1,716 lows, versus 1,411 published events total, with as many as 13 apparent highs in one day. One-centimeter plateaus and jitter make ordinary days fail before unusual tide shapes are considered.
+
+The [RWS tide documentation](https://www.rijkswaterstaat.nl/water/waterdata/getij) also describes double low water at Hoek van Holland and double high water at Den Helder. The 2026 event samples for `hoekvanholland` and `denhelder.marsdiep` alternated ordinary high/low classifications, but that does not justify a four-events-per-day assumption. Preserve every published event in order and allow repeated classifications or nonstandard daily counts.
 
 ### Observed date bounds
 
@@ -134,21 +135,38 @@ Source-selection rule:
 
 Store the 10-minute heights as an interval-bounded series with station identity, start/end instants, cadence, native datum, unit, missing/quality information, and provenance. Store published extrema as timestamp/type/height tuples rather than deriving or forcing a daily pattern.
 
-At two bytes per centimeter height, 114 stations over two complete years require approximately **23,983,776 bytes (24.0 MB, 22.9 MiB)** for heights alone:
+At two bytes per sample, 114 stations over two complete years require approximately **23,983,776 bytes (24.0 MB, 22.9 MiB)** uncompressed for heights alone:
 
 ```text
 114 stations × 2 years × 365.25 days × 144 samples/day × 2 bytes
 ```
 
-This excludes validity data, events, indexes, metadata, and container overhead, and precedes compression. For scale, one sampled day was 44,017 bytes as API JSON; projecting that response shape directly would be about 3.66 GB for two years, so raw response JSON is not a shipping format.
+Measured on the complete 2025 and 2026 series (105,122 samples per station), gzip level 9 produced:
+
+| Station          | Raw `int16` |   gzip | gzip after `int16` delta encoding | Projected ×114 |
+| ---------------- | ----------: | -----: | --------------------------------: | -------------: |
+| `ameland.nes`    |     210,244 | 70,856 |                            34,305 |         3.9 MB |
+| `hoekvanholland` |     210,244 | 74,997 |                            40,912 |         4.7 MB |
+
+The transfer-size decision therefore turns on a roughly 4 MB compressed height payload, not the 24 MB raw allocation. Both figures exclude validity data, events, indexes, metadata, and container overhead. For scale, one sampled day was 44,017 bytes as API JSON; projecting that response shape directly would be about 3.66 GB for two years, so raw response JSON is not a shipping format.
 
 Benefits: exact provider values, explicit fidelity, preservation of double extrema, and no model-fitting error. Costs: a fixed horizon, release refreshes, and a new schema/consumer contract.
 
-### 2. Derived harmonic fit: fallback only
+### 2. Derived harmonic fit: measured and rejected
 
-Fitting could reuse the current station format and produce predictions outside a downloaded horizon. It would create a derived product, however, and may not reproduce RWS's constituent definitions, phase convention, nodal treatment, shallow-water behavior, or published extrema.
+Fitting reuses the current station format and already runs for 56 TICON `-rws` records in `sources/ticon/import.ts`. RWS also labels its own values `other:F012`, “Astronomische waterhoogte mbv harmonische analyse,” so derivation alone is not a reason to reject this route.
 
-The current catalog and official documentation reviewed here expose predictions produced by harmonic analysis but no reusable harmonic-constant export with the metadata needed by the existing prediction engine. Confirm that absence with RWS before implementing a sampled format. If a harmonic export is still required, fit through `packages/harmonic-analysis`, preserve the RWS prediction chain of custody, and validate against an excluded interval before shipping.
+The audit fitted the 49 constituents supported by `packages/harmonic-analysis` from the 50-constituent TICON RWS set. It trained on January–June 2026 and validated on July–December. Event matching used the repository's existing TCD validation gate: at least 95% of published events matched by type within 60 minutes, mean time error below 5 minutes, maximum below 15 minutes, and height RMS below 10 cm.
+
+| Station              | Height RMS | Height max | Published/predicted events | Matched | Event mean | Event max |
+| -------------------- | ---------: | ---------: | -------------------------: | ------: | ---------: | --------: |
+| `ameland.nes`        |     6.2 cm |    22.3 cm |                    711/711 |     711 |    8.1 min |  32.3 min |
+| `hoekvanholland`     |     9.2 cm |    33.8 cm |                    711/969 |     633 |   20.8 min |  59.8 min |
+| `denhelder.marsdiep` |     7.9 cm |    32.1 cm |                    711/932 |     653 |   20.7 min |  59.3 min |
+
+All three height fits met the RMS ceiling, but all three failed the event-time gate. The two unusual-tide stations also produced hundreds of extra extrema and fell below the 95% match requirement. A longer training interval may improve height error, but this fit does not preserve the published event stream required by #152.
+
+The current catalog and official documentation reviewed here expose predictions produced by harmonic analysis but no reusable harmonic-constant export with the metadata needed by the existing prediction engine. Provider confirmation remains worthwhile, but the measured fit does not replace the bounded artifact.
 
 ### 3. Online API access: rejected
 
@@ -167,4 +185,4 @@ The next milestone should define one sampled-prediction contract before building
 - inclusive/exclusive interval rules and chunk deduplication;
 - artifact version, retrieval metadata, checksum, refresh deadline, and out-of-range behavior.
 
-Skipped for this audit: an importer, committed source snapshot, harmonic fit, database changes, and consumer changes. Add them only after the sampled format contract is accepted.
+Skipped for this audit: an importer, committed source snapshot, database changes, and consumer changes. Add them only after the sampled format contract is accepted.

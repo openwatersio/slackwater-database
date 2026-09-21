@@ -17,7 +17,7 @@
 - Use `GETETBRKD2` and `GETETBRKDMSL2` only as paired high/low event groupings.
 - Keep NAP and MSL values distinct and retain centimeters as the source unit.
 - Treat coordinate proximity as overlap evidence, never as an automatic identity match.
-- Do not add an importer, schema, generated data, consumer changes, full catalog snapshot, harmonic fit, dependency, or load test.
+- Do not add an importer, schema, generated data, consumer changes, full catalog snapshot, dependency, or load test.
 
 ---
 
@@ -59,17 +59,17 @@ Join `AquoMetadataLijst`, `LocatieLijst`, and `AquoMetadataLocatieLijst` through
 - height only: `maasmond.stroommeetpaal`, `zeelandbrug.noord`;
 - extrema only: `oostmahorn`, `zoutkamp`.
 
-Explain that the earlier “about 825” claim does not describe the current tide-eligible catalog.
+Trace the earlier “about 825” claim to a named current product or record it as unsubstantiated. Compare it with both the current tide-eligible catalog and the public Waterinfo astronomical-tide map.
 
 - [ ] **Step 3: Verify response semantics with bounded samples**
 
 Query one NAP station (`ameland.nes`) and one MSL station (`europlatform`) for a single day using `WATHTE` plus `ProcesType: astronomisch`, then query the matching datum-specific grouping. Record:
 
 - coordinates are ETRS89 latitude/longitude (EPSG:4258);
-- height is returned in centimeters relative to NAP or MSL;
+- height is returned in centimeters relative to the series-level `AquoMetadata.Hoedanigheid.Code` (`NAP` or `MSL`), not per-value `WaarnemingMetadata.Referentievlak`;
 - ordinary heights have a 10-minute cadence and both request endpoints are included;
-- timestamps are serialized at fixed `+01:00`, including summer dates, so conversion must use the explicit offset rather than `Europe/Amsterdam` daylight-saving rules;
-- every value carries quality code, status, commissioning organization, and missing-value metadata;
+- timestamps are serialized at fixed `+01:00`, including when the request uses `Z`, so conversion must use the explicit response offset rather than `Europe/Amsterdam` daylight-saving rules;
+- every value carries quality code, status, commissioning organization, sampling height, and reference-plane metadata; report whether those values vary across complete station-years before designing per-sample overrides;
 - grouped extrema return separate type and height channels paired by timestamp;
 - quality code `99` denotes a gap.
 
@@ -91,13 +91,15 @@ Recommend preserving both provenances and choosing the future RWS record only af
 
 - [ ] **Step 5: Compare representations and make one recommendation**
 
-Document three routes:
+Measure and document three routes:
 
 1. A separate bounded sampled artifact preserves provider heights, datums, missing values, and unusual extrema exactly.
-2. Fitted harmonics reuse the current station schema but are derived, lose exact source-copy fidelity, and require a held-out validation interval.
+2. Fitted harmonics reuse the current station schema and the existing `sources/ticon` re-fit path, but lose exact source-copy fidelity and require a held-out validation interval.
 3. Online API access fails the offline requirement and inherits a service with no uptime guarantee.
 
-Recommend route 1. Estimate the minimum compact height payload as two bytes per 10-minute sample: about 24 MB for 114 stations over two full years, before validity/event/index metadata and before compression. Require a refresh before the supported end date and defined out-of-range behavior. Note that the current database schema and consumers do not support sampled predictions, so implementation remains blocked on a separate format contract.
+Measure raw and delta-encoded gzip sizes on complete station-years. Fit `ameland.nes`, `hoekvanholland`, and `denhelder.marsdiep` through `packages/harmonic-analysis`, train on January–June 2026, and validate on July–December. Use the repository's existing TCD thresholds as the gate: at least 95% of events matched by type within 60 minutes, mean event-time error below 5 minutes, maximum below 15 minutes, and height RMS below 10 cm. Select the sampled artifact only if the fit misses the gate, and record the measured reason for the decision.
+
+For a sampled result, require a refresh before the supported end date and defined out-of-range behavior. Note that the current database schema and consumers do not support sampled predictions, so implementation remains blocked on a separate format contract.
 
 State that no current reusable harmonic-constant export was found in the catalog or official documentation; provider confirmation remains worthwhile before implementation.
 
