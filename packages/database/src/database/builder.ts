@@ -20,6 +20,7 @@ import {
 } from "../generated/fbs/neaps.ts";
 import * as flatbuffers from "flatbuffers";
 import countryLookup from "country-code-lookup";
+import { attributionFor } from "../attribution.ts";
 import type {
   DatabaseRoutes,
   StationInput,
@@ -202,6 +203,10 @@ export function buildDatabase(
       );
     }
 
+    // Assembled here, not in each reader: a reader would otherwise need its own
+    // table of sources and its own reading of what each licence requires.
+    const attribution = str(attributionFor(s.source?.name, s.license));
+
     let license = 0;
     if (s.license) {
       const { type, url, notes, commercial_use } = s.license;
@@ -329,6 +334,7 @@ export function buildDatabase(
     Station.addSource(builder, source);
     Station.addLicense(builder, license);
     Station.addDisclaimers(builder, disclaimers);
+    Station.addAttribution(builder, attribution);
     Station.addLocality(builder, locality);
     Station.addRegionCode(builder, regionCode);
     Station.addCountryCode(builder, countryCode);
