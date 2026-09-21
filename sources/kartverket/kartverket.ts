@@ -91,6 +91,7 @@ function attributes(value: XmlNode | undefined): Attributes {
 }
 
 function number(value: string | undefined, name: string): number {
+  if (!value?.trim()) throw new Error(`Invalid ${name}: ${value}`);
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) throw new Error(`Invalid ${name}: ${value}`);
   return parsed;
@@ -201,6 +202,7 @@ export function parseConstituents(xml: string): ParsedConstituents {
     const value = attributes(node);
     if (!value.name || !value.doodson) throw new Error("Invalid constituent");
     const speed = number(value.speed, "constituent speed");
+    number(value.amplitude, "constituent amplitude");
     return {
       name: resolveConstituent({
         name: value.name,
@@ -234,14 +236,20 @@ export function parseLocationLevels(xml: string): ParsedLocationLevels {
   const tide = parseXml(xml);
   const data = tide.locationlevel as XmlNode | undefined;
   if (!data) throw new Error("Missing location levels");
-  if (attributes(data).unit !== "cm")
-    throw new Error(`Unexpected level unit: ${attributes(data).unit}`);
+  const dataAttributes = attributes(data);
+  if (dataAttributes.unit !== "cm")
+    throw new Error(`Unexpected level unit: ${dataAttributes.unit}`);
+  if (dataAttributes.reflevel !== "CD")
+    throw new Error(`Unexpected level reflevel: ${dataAttributes.reflevel}`);
 
   const datums = Object.fromEntries(
     asArray(data.reflevel as XmlNode | XmlNode[] | undefined)
       .map(attributes)
       .filter((level) => level.code && DATUMS.has(level.code))
-      .map((level) => [level.code, decimal(centimetersToMeters(level.value))]),
+      .map((level) => {
+        number(level.value, "datum value");
+        return [level.code, decimal(centimetersToMeters(level.value))];
+      }),
   );
   return {
     location: locationIdentity(

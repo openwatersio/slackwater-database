@@ -77,6 +77,42 @@ describe("Kartverket source parser", () => {
     ).toThrow(/unit/i);
   });
 
+  it("rejects missing or invalid constituent amplitudes", () => {
+    expect(() =>
+      parseConstituents(tromsoXml.replace(' amplitude="12.86"', "")),
+    ).toThrow(/amplitude/i);
+    expect(() =>
+      parseConstituents(tromsoXml.replace('amplitude="12.86"', 'amplitude=""')),
+    ).toThrow(/amplitude/i);
+    expect(() =>
+      parseConstituents(
+        tromsoXml.replace('amplitude="12.86"', 'amplitude="invalid"'),
+      ),
+    ).toThrow(/amplitude/i);
+  });
+
+  it("rejects missing or invalid datum values", () => {
+    expect(() =>
+      parseLocationLevels(tromsoLevelsXml.replace(' value="174.1"', "")),
+    ).toThrow(/datum/i);
+    expect(() =>
+      parseLocationLevels(tromsoLevelsXml.replace('value="174.1"', 'value=""')),
+    ).toThrow(/datum/i);
+    expect(() =>
+      parseLocationLevels(
+        tromsoLevelsXml.replace('value="174.1"', 'value="invalid"'),
+      ),
+    ).toThrow(/datum/i);
+  });
+
+  it("requires location levels relative to chart datum", () => {
+    expect(() =>
+      parseLocationLevels(
+        tromsoLevelsXml.replace('reflevel="CD"', 'reflevel="LAT"'),
+      ),
+    ).toThrow(/reflevel/i);
+  });
+
   it("uses the exact exceptional constituent tuples", () => {
     expect(
       resolveConstituent({
