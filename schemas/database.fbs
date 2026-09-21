@@ -188,6 +188,14 @@ table Station {
   source: Source;
   license: License;
   disclaimers: string;
+  /// The complete notice to display for this station, assembled by the builder
+  /// so no reader has to hold its own table of sources or know what a licence
+  /// requires. Carries the creator credit and, where a Creative Commons licence
+  /// applies, the licence and a pointer to what was modified — everything
+  /// CC BY 4.0 section 3(a)(1) asks a redistributor to pass on. Derived from
+  /// `source` and `license`, and per station because licence varies within a
+  /// single source.
+  attribution: string;
 
   // ---- structured location ----
   locality: string;

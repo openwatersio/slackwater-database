@@ -997,12 +997,13 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
     case source = 46
     case license = 48
     case disclaimers = 50
-    case locality = 52
-    case regionCode = 54
-    case countryCode = 56
-    case context = 58
-    case contextDerived = 60
-    case cities = 62
+    case attribution = 52
+    case locality = 54
+    case regionCode = 56
+    case countryCode = 58
+    case context = 60
+    case contextDerived = 62
+    case cities = 64
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -1058,6 +1059,15 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
   public var license: Neaps_License? { let o = _accessor.offset(VTOFFSET.license.v); return o == 0 ? nil : Neaps_License(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
   public var disclaimers: String? { let o = _accessor.offset(VTOFFSET.disclaimers.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var disclaimersSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.disclaimers.v) }
+  ///  The complete notice to display for this station, assembled by the builder
+  ///  so no reader has to hold its own table of sources or know what a licence
+  ///  requires. Carries the creator credit and, where a Creative Commons licence
+  ///  applies, the licence and a pointer to what was modified — everything
+  ///  CC BY 4.0 section 3(a)(1) asks a redistributor to pass on. Derived from
+  ///  `source` and `license`, and per station because licence varies within a
+  ///  single source.
+  public var attribution: String? { let o = _accessor.offset(VTOFFSET.attribution.v); return o == 0 ? nil : _accessor.string(at: o) }
+  public var attributionSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.attribution.v) }
   public var locality: String? { let o = _accessor.offset(VTOFFSET.locality.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var localitySegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.locality.v) }
   public var regionCode: String? { let o = _accessor.offset(VTOFFSET.regionCode.v); return o == 0 ? nil : _accessor.string(at: o) }
@@ -1070,7 +1080,7 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
   public var hasCities: Bool { let o = _accessor.offset(VTOFFSET.cities.v); return o == 0 ? false : true }
   public var citiesCount: Int32 { let o = _accessor.offset(VTOFFSET.cities.v); return o == 0 ? 0 : _accessor.vector(count: o) }
   public func cities(at index: Int32) -> String? { let o = _accessor.offset(VTOFFSET.cities.v); return o == 0 ? nil : _accessor.directString(at: _accessor.vector(at: o) + index * 4) }
-  public static func startStation(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 30) }
+  public static func startStation(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 31) }
   public static func add(id: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: id, at: VTOFFSET.id.p) }
   public static func add(name: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: name, at: VTOFFSET.name.p) }
   public static func add(kind: Neaps_Kind, _ fbb: inout FlatBufferBuilder) { fbb.add(element: kind.rawValue, def: 0, at: VTOFFSET.kind.p) }
@@ -1102,6 +1112,7 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
   public static func add(source: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: source, at: VTOFFSET.source.p) }
   public static func add(license: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: license, at: VTOFFSET.license.p) }
   public static func add(disclaimers: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: disclaimers, at: VTOFFSET.disclaimers.p) }
+  public static func add(attribution: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: attribution, at: VTOFFSET.attribution.p) }
   public static func add(locality: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: locality, at: VTOFFSET.locality.p) }
   public static func add(regionCode: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: regionCode, at: VTOFFSET.regionCode.p) }
   public static func add(countryCode: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: countryCode, at: VTOFFSET.countryCode.p) }
@@ -1109,7 +1120,7 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
   public static func add(contextDerived: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: contextDerived, def: false,
    at: VTOFFSET.contextDerived.p) }
   public static func addVectorOf(cities: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: cities, at: VTOFFSET.cities.p) }
-  public static func endStation(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4, 6, 20, 56]); return end }
+  public static func endStation(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4, 6, 20, 58]); return end }
   public static func createStation(
     _ fbb: inout FlatBufferBuilder,
     idOffset id: Offset,
@@ -1136,6 +1147,7 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
     sourceOffset source: Offset = Offset(),
     licenseOffset license: Offset = Offset(),
     disclaimersOffset disclaimers: Offset = Offset(),
+    attributionOffset attribution: Offset = Offset(),
     localityOffset locality: Offset = Offset(),
     regionCodeOffset regionCode: Offset = Offset(),
     countryCodeOffset countryCode: Offset,
@@ -1168,6 +1180,7 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
     Neaps_Station.add(source: source, &fbb)
     Neaps_Station.add(license: license, &fbb)
     Neaps_Station.add(disclaimers: disclaimers, &fbb)
+    Neaps_Station.add(attribution: attribution, &fbb)
     Neaps_Station.add(locality: locality, &fbb)
     Neaps_Station.add(regionCode: regionCode, &fbb)
     Neaps_Station.add(countryCode: countryCode, &fbb)
@@ -1228,6 +1241,7 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.source.p, fieldName: "source", required: false, type: ForwardOffset<Neaps_Source>.self)
     try _v.visit(field: VTOFFSET.license.p, fieldName: "license", required: false, type: ForwardOffset<Neaps_License>.self)
     try _v.visit(field: VTOFFSET.disclaimers.p, fieldName: "disclaimers", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VTOFFSET.attribution.p, fieldName: "attribution", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.locality.p, fieldName: "locality", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.regionCode.p, fieldName: "regionCode", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.countryCode.p, fieldName: "countryCode", required: true, type: ForwardOffset<String>.self)

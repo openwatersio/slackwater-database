@@ -167,6 +167,11 @@ export interface Station extends StationData {
   kind: "tide" | "current";
   current?: CurrentData;
   quality?: StationQuality;
+  /**
+   * The credit to display when showing or redistributing this station, ready
+   * to render as-is. Derived from `source`; see src/attribution.ts.
+   */
+  attribution: string;
 }
 
 // The light fields the search/geo/list paths need. Used at build time to

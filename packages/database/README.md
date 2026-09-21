@@ -155,9 +155,34 @@ The module reads a single [FlatBuffers](https://flatbuffers.dev) file built from
 ## License
 
 - All code in this package is licensed under the [MIT License](./LICENSE).
-- The `license` field of each station specifies the license for that station's data.
-- Unless otherwise noted, all other data is licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license.
+- The `license` field of each station specifies the license for that station's data, as a `type`, a `url`, and a `commercial_use` flag you can filter on.
+- Unless otherwise noted, all other data is licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license. Some stations are CC BY-NC 4.0 and are marked `commercial_use: false`.
 
-If using this project, please attribute it as:
+## Attribution
 
-> Tide harmonic constituents from the Neaps tide database (https://github.com/openwatersio/tide-database)
+Most stations are CC BY, so displaying or redistributing them carries an obligation to the original source, not only to this project. Every station carries the notice that satisfies it as `attribution`, already assembled.
+
+**Display the station's `attribution`.** That is the whole of the rule. Nothing here needs its own table of sources, or its own reading of what a licence requires.
+
+```typescript
+import { stationsById } from "@neaps/tide-database";
+
+console.log(stationsById.get("ticon/newlyn-new-gbr-bodc")?.attribution);
+// Neaps tide database (https://github.com/openwatersio/tide-database). Source:
+// Hart-Davis, M., Dettmering, D., Seitz, F. (2025), TICON-4: TIdal CONstants
+// based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129.
+// Licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified:
+// see https://github.com/openwatersio/tide-database#modifications-to-source-data
+```
+
+What the string contains, and why that is sufficient:
+
+- **The creator credit.** For TICON-4 stations, the citation its authors ask for. A source that requires no credit, such as public-domain NOAA data, contributes nothing here.
+- **The licence and its URI**, taken from the station rather than its source. Licence varies within a single source — the TICON stations relayed from CMEMS are CC BY-NC while the rest are CC BY — so the notice names the one that actually applies to the station in hand.
+- **An indication that the material was modified**, pointing at [what this project changes](https://github.com/openwatersio/tide-database#modifications-to-source-data): derived datums, normalized names, geocoded location fields, and re-fit phases for two GESLA sources.
+
+Those are the three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.org/licenses/by/4.0/) requires a redistributor to pass on. A station whose licence imposes no notice gets the project credit alone:
+
+> Neaps tide database (https://github.com/openwatersio/tide-database)
+
+`attribution` is a display string. It is not a substitute for `license` when you need to make a decision in code — filter on `license.commercial_use` or `license.type` for that.
