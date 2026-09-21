@@ -97,9 +97,28 @@ Releases are created by [running the Publish action](https://github.com/openwate
 ## License
 
 - All code in this repository is licensed under the [MIT License](./LICENSE).
-- The `license` field of each station's JSON file specifies the license for that station.
-- Unless otherwise noted, All other data is licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license.
+- The `license` field of each station's JSON file specifies the license for that station, and the `source` field names where the station came from.
+- Unless otherwise noted, all other data is licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license.
+- A few stations are CC BY-NC 4.0, carried from sources that do not permit commercial use. They are marked `"commercial_use": false` and can be filtered out.
 
-If using this project, please attribute it as:
+### Attribution
+
+Most stations here are CC BY, which obliges anyone redistributing them to credit the original source — not only this project. That applies to downstream software bundling this database too, so please carry both lines.
+
+Attribute this project as:
 
 > Tide harmonic constituents from the Neaps tide database (https://github.com/openwatersio/tide-database)
+
+and the source of the stations you use:
+
+- **TICON-4** — Hart-Davis, Michael; Dettmering, Denise; Seitz, Florian (2025). _TICON-4: TIdal CONstants based on GESLA-4 sea-level records._ SEANOE. https://doi.org/10.17882/109129. Licensed CC BY 4.0.
+- **NOAA CO-OPS** — a United States government work in the public domain. Attribution is not required, but is appreciated.
+
+### Modifications to source data
+
+Station records are not verbatim copies of their sources, and CC BY requires that this is stated. Station names are normalized, and country, region, continent and timezone are geocoded from the station position.
+
+For TICON-4 stations:
+
+- Harmonic constituents are carried through as published, except for the German `wsv` and Dutch `rws` gauges, whose GESLA-4 records are timestamped in local legal time but labeled UTC. Those are re-fit from the water levels so their phases are UTC-referenced like every other station, and a station that cannot be re-fit is dropped rather than published with wrong phases. See [#96](https://github.com/openwatersio/tide-database/issues/96) and [#98](https://github.com/openwatersio/tide-database/issues/98).
+- Datums are computed here from GESLA-4 water levels, since TICON does not publish them. See [sources/ticon/README.md](./sources/ticon/README.md) for the method and its uncertainties.

@@ -6,8 +6,11 @@
 
 - **Source:** [TICON-4 @ SEANOE](https://www.seanoe.org/data/00980/109129/)
 - **Manual:** [TICON Documentation](https://www.seanoe.org/data/00980/109129/data/122852.pdf)
-- **License:** CC-BY-4.0 (Creative Commons Attribution 4.0)
+- **License:** CC BY 4.0 ([Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/)), which permits redistribution, including commercially, with attribution
+- **Citation:** Hart-Davis, Michael; Dettmering, Denise; Seitz, Florian (2025). _TICON-4: TIdal CONstants based on GESLA-4 sea-level records._ SEANOE. https://doi.org/10.17882/109129
 - **Coverage:** Global tide stations with harmonic constituent analysis from GESLA-4 observations
+
+Anything redistributing these stations has to carry that citation. See [Attribution](../../README.md#attribution) for the lines to use and what this project changes.
 
 Each station in this dataset contains harmonic constituents (amplitude and phase for tidal frequency components such as M2, K1, O1, etc.) extracted from historical sea-level records.
 
@@ -38,6 +41,7 @@ Without `FORCE_DATUMS`, the importer reuses each station's cached datums and onl
 
 ## References
 
+- Hart-Davis, Michael; Dettmering, Denise; Seitz, Florian (2025). _TICON-4: TIdal CONstants based on GESLA-4 sea-level records._ SEANOE. https://doi.org/10.17882/109129
 - [TICON-4 Dataset](https://www.seanoe.org/data/00980/109129/)
 - [TICON Manual](https://www.seanoe.org/data/00980/109129/data/122852.pdf)
 - [GESLA-4 Project](https://gesla787883612.wordpress.com)
