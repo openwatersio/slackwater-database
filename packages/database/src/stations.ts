@@ -7,6 +7,7 @@ import {
   StationType,
 } from "./generated/fbs/neaps.ts";
 import databaseBytes from "#neaps.tcdb";
+import { attributionFor } from "./attribution.js";
 import { openDatabase } from "./database/reader.js";
 import type {
   CurrentData,
@@ -221,6 +222,7 @@ function readStation(index: number): Station {
       url: source.url()!,
     };
   }
+  station.attribution = attributionFor(station.source?.name);
 
   const license = t.license();
   if (license) {

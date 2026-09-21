@@ -131,6 +131,12 @@ public struct Station: Identifiable {
   /// The datum key heights on charts are referenced to, e.g. "MLLW".
   public var chartDatum: String? { raw.chartDatum }
 
+  // MARK: Attribution
+
+  /// The credit to display when showing or redistributing this station, ready
+  /// to render as-is.
+  public var attribution: String { Attribution.forSource(raw.source?.name) }
+
   /// Height of mean sea level above the chart datum
   /// (`datums[MSL] - datums[chartDatum]`): add it to a prediction about MSL to
   /// reference the height to the chart datum. Nil when either datum is absent.

@@ -103,16 +103,28 @@ Releases are created by [running the Publish action](https://github.com/openwate
 
 ### Attribution
 
-Most stations here are CC BY, which obliges anyone redistributing them to credit the original source — not only this project. That applies to downstream software bundling this database too, so please carry both lines.
+Most stations here are CC BY, which obliges anyone redistributing them to credit the original source — not only this project. That applies to downstream software bundling this database too.
 
-Attribute this project as:
+Every station carries the credit it needs as `attribution`, already assembled, so the rule for a consumer is one sentence: **display the station's `attribution`.** Nothing downstream needs its own table of sources.
 
-> Tide harmonic constituents from the Neaps tide database (https://github.com/openwatersio/tide-database)
+```typescript
+import { stationsById } from "@neaps/tide-database";
 
-and the source of the stations you use:
+console.log(stationsById.get("ticon/newlyn-new-gbr-bodc")?.attribution);
+// Neaps tide database (https://github.com/openwatersio/tide-database). Source:
+// Hart-Davis, M., Dettmering, D., Seitz, F. (2025), TICON-4: TIdal CONstants
+// based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129
+```
 
-- **TICON-4** — Hart-Davis, Michael; Dettmering, Denise; Seitz, Florian (2025). _TICON-4: TIdal CONstants based on GESLA-4 sea-level records._ SEANOE. https://doi.org/10.17882/109129. Licensed CC BY 4.0.
-- **NOAA CO-OPS** — a United States government work in the public domain. Attribution is not required, but is appreciated.
+The Swift package exposes the same string as `station.attribution`.
+
+A credit opens with this project and then appends whatever further credit the station's source requires. It never names a licence, because licence is per station rather than per source — read `license` for that. The sources and what each one asks for:
+
+- **TICON-4** — Hart-Davis, Michael; Dettmering, Denise; Seitz, Florian (2025). _TICON-4: TIdal CONstants based on GESLA-4 sea-level records._ SEANOE. https://doi.org/10.17882/109129. Credit required.
+- **NOAA CO-OPS** — a United States government work in the public domain. Attribution is not required, but is appreciated, so the project credit stands alone.
+- **Canadian Hydrographic Service** — names the agency operating a current station whose record was authored in this repository under MIT (see [metadata/PROVENANCE.md](./metadata/PROVENANCE.md)). No data is redistributed from CHS, so no credit is owed to it.
+
+Adding a source means adding it to `packages/database/src/attribution.ts` and its Swift counterpart; a source in the database with no entry fails the build.
 
 ### Modifications to source data
 
