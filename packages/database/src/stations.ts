@@ -7,7 +7,7 @@ import {
   StationType,
 } from "./generated/fbs/neaps.ts";
 import databaseBytes from "#neaps.tcdb";
-import { attributionFor } from "./attribution.js";
+import { PROJECT_CREDIT } from "./attribution.js";
 import { openDatabase } from "./database/reader.js";
 import type {
   CurrentData,
@@ -222,7 +222,10 @@ function readStation(index: number): Station {
       url: source.url()!,
     };
   }
-  station.attribution = attributionFor(station.source?.name);
+  // Written into the file by the builder, so a reader never needs its own
+  // table of sources. Older files predating the field fall back to the
+  // project credit.
+  station.attribution = source?.attribution() ?? PROJECT_CREDIT;
 
   const license = t.license();
   if (license) {

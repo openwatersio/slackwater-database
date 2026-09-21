@@ -109,6 +109,11 @@ table Source {
   id: string;
   url: string;
   published_harmonics: bool;
+  /// The credit to display for a station from this source, assembled by the
+  /// builder so no reader has to hold its own table of sources. Names the
+  /// creator, never the licence: licence varies per station within one source,
+  /// so it lives on `License` where it is exact.
+  attribution: string;
 }
 
 table License {

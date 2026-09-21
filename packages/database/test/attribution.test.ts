@@ -24,6 +24,15 @@ describe("attribution", () => {
     expect([...unknown]).toEqual([]);
   });
 
+  // The builder bakes the credit into the file, so a reader in any language
+  // gets it without a table of its own.
+  test("every station in the shipped database carries its credit", () => {
+    for (let i = 0; i < shipped.stationsLength(); i++) {
+      const source = shipped.stations(i)?.source();
+      expect(source?.attribution()).toBe(attributionFor(source?.name()!));
+    }
+  });
+
   test("appends the credit a CC BY source requires", () => {
     const credit = attributionFor("TICON-4");
     expect(credit.startsWith(`${PROJECT_CREDIT}. `)).toBe(true);

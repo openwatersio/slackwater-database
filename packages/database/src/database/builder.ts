@@ -20,6 +20,7 @@ import {
 } from "../generated/fbs/neaps.ts";
 import * as flatbuffers from "flatbuffers";
 import countryLookup from "country-code-lookup";
+import { attributionFor } from "../attribution.ts";
 import type {
   DatabaseRoutes,
   StationInput,
@@ -198,6 +199,7 @@ export function buildDatabase(
           str(id),
           str(url),
           published_harmonics,
+          str(attributionFor(name)),
         ),
       );
     }

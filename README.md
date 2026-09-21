@@ -124,7 +124,7 @@ A credit opens with this project and then appends whatever further credit the st
 - **NOAA CO-OPS** — a United States government work in the public domain. Attribution is not required, but is appreciated, so the project credit stands alone.
 - **Canadian Hydrographic Service** — names the agency operating a current station whose record was authored in this repository under MIT (see [metadata/PROVENANCE.md](./metadata/PROVENANCE.md)). No data is redistributed from CHS, so no credit is owed to it.
 
-Adding a source means adding it to `packages/database/src/attribution.ts` and its Swift counterpart; a source in the database with no entry fails the build.
+The credit is written into the database file itself, so every reader gets it without keeping a table of sources. Adding a source means adding it to `packages/database/src/attribution.ts`, the one place the strings live; a source in the database with no entry there fails the build.
 
 ### Modifications to source data
 

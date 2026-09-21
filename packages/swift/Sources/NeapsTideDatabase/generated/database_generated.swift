@@ -747,6 +747,7 @@ public struct Neaps_Source: FlatBufferObject, Verifiable {
     case id = 6
     case url = 8
     case publishedHarmonics = 10
+    case attribution = 12
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -758,25 +759,34 @@ public struct Neaps_Source: FlatBufferObject, Verifiable {
   public var url: String? { let o = _accessor.offset(VTOFFSET.url.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var urlSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.url.v) }
   public var publishedHarmonics: Bool { let o = _accessor.offset(VTOFFSET.publishedHarmonics.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
-  public static func startSource(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 4) }
+  ///  The credit to display for a station from this source, assembled by the
+  ///  builder so no reader has to hold its own table of sources. Names the
+  ///  creator, never the licence: licence varies per station within one source,
+  ///  so it lives on `License` where it is exact.
+  public var attribution: String? { let o = _accessor.offset(VTOFFSET.attribution.v); return o == 0 ? nil : _accessor.string(at: o) }
+  public var attributionSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.attribution.v) }
+  public static func startSource(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 5) }
   public static func add(name: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: name, at: VTOFFSET.name.p) }
   public static func add(id: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: id, at: VTOFFSET.id.p) }
   public static func add(url: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: url, at: VTOFFSET.url.p) }
   public static func add(publishedHarmonics: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: publishedHarmonics, def: false,
    at: VTOFFSET.publishedHarmonics.p) }
+  public static func add(attribution: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: attribution, at: VTOFFSET.attribution.p) }
   public static func endSource(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createSource(
     _ fbb: inout FlatBufferBuilder,
     nameOffset name: Offset = Offset(),
     idOffset id: Offset = Offset(),
     urlOffset url: Offset = Offset(),
-    publishedHarmonics: Bool = false
+    publishedHarmonics: Bool = false,
+    attributionOffset attribution: Offset = Offset()
   ) -> Offset {
     let __start = Neaps_Source.startSource(&fbb)
     Neaps_Source.add(name: name, &fbb)
     Neaps_Source.add(id: id, &fbb)
     Neaps_Source.add(url: url, &fbb)
     Neaps_Source.add(publishedHarmonics: publishedHarmonics, &fbb)
+    Neaps_Source.add(attribution: attribution, &fbb)
     return Neaps_Source.endSource(&fbb, start: __start)
   }
 
@@ -786,6 +796,7 @@ public struct Neaps_Source: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.id.p, fieldName: "id", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.url.p, fieldName: "url", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.publishedHarmonics.p, fieldName: "publishedHarmonics", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.attribution.p, fieldName: "attribution", required: false, type: ForwardOffset<String>.self)
     _v.finish()
   }
 }

@@ -64,6 +64,11 @@ public struct TideDatabase: RandomAccessCollection {
 /// subordinate offsets) is reachable through `raw`, the generated FlatBuffers
 /// accessor.
 public struct Station: Identifiable {
+  /// The project half of every station credit, and the fallback for a file
+  /// written before credits were stored in it.
+  public static let projectCredit =
+    "Neaps tide database (https://github.com/openwatersio/tide-database)"
+
   /// The generated accessor, for fields without a wrapper property.
   public let raw: Neaps_Station
   let root: Neaps_Root
@@ -134,8 +139,12 @@ public struct Station: Identifiable {
   // MARK: Attribution
 
   /// The credit to display when showing or redistributing this station, ready
-  /// to render as-is.
-  public var attribution: String { Attribution.forSource(raw.source?.name) }
+  /// to render as-is. Written into the file by the builder, so this package
+  /// keeps no table of sources; a file predating the field falls back to the
+  /// project credit.
+  public var attribution: String {
+    raw.source?.attribution ?? Self.projectCredit
+  }
 
   /// Height of mean sea level above the chart datum
   /// (`datums[MSL] - datums[chartDatum]`): add it to a prediction about MSL to
