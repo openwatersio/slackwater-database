@@ -264,7 +264,11 @@ function checkConstituents(station: Station): string | null {
     station.harmonic_constituents.find((c) => c.name === "K1")?.amplitude ?? 0;
   const p1Amp =
     station.harmonic_constituents.find((c) => c.name === "P1")?.amplitude ?? 0;
-  if (!isDirectAuthoritativeProvider(station.id) && k1Amp > 0 && p1Amp > k1Amp) {
+  if (
+    !isDirectAuthoritativeProvider(station.id) &&
+    k1Amp > 0 &&
+    p1Amp > k1Amp
+  ) {
     return `P1 amplitude (${p1Amp.toFixed(4)}) exceeds K1 (${k1Amp.toFixed(4)}): physically impossible`;
   }
 

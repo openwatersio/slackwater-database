@@ -266,7 +266,10 @@ describe("seasonal-contamination gate", () => {
 describe("gauge deduplication", () => {
   test("prefers a direct authoritative gauge over a duplicate TICON record", () => {
     expect(
-      authoritativeDuplicateWinner("kartverket/TOS", "ticon/tromso-123-nor-nhs"),
+      authoritativeDuplicateWinner(
+        "kartverket/TOS",
+        "ticon/tromso-123-nor-nhs",
+      ),
     ).toBe("kartverket/TOS");
     expect(authoritativeDuplicateWinner("ticon/a", "ticon/b")).toBeUndefined();
   });
@@ -277,7 +280,9 @@ describe("gauge deduplication", () => {
     expect(kartverket.every((r) => r.accepted && r.factors.source === 1)).toBe(
       true,
     );
-    expect(quality.find((r) => r.id === "ticon/tromso-tos-nor-nhs")).toMatchObject({
+    expect(
+      quality.find((r) => r.id === "ticon/tromso-tos-nor-nhs"),
+    ).toMatchObject({
       accepted: false,
       redundant: "kartverket/TOS",
     });
