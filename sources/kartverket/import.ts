@@ -125,6 +125,9 @@ export async function verifySnapshot(fixtures = FIXTURES_DIR) {
     const levelPath = `stationlevels/${station.code}.xml`;
     const constituents = parseConstituents(contents.get(constituentPath)!);
     const levels = parseLocationLevels(contents.get(levelPath)!);
+    if (!Object.hasOwn(levels.datums, "MSL")) {
+      throw new Error(`Snapshot station ${station.code} is missing MSL`);
+    }
     buildStation({ station, constituents, levels });
   }
 
@@ -157,6 +160,10 @@ export async function refreshSnapshot(
     const stations = parseStationList(stationXml).stations.sort((a, b) =>
       a.code.localeCompare(b.code),
     );
+    const unsafeStation = stations.find(({ code }) => !/^[A-Z]{3}$/.test(code));
+    if (unsafeStation) {
+      throw new Error(`Unsafe station code: ${unsafeStation.code}`);
+    }
     if (
       stations.length !== EXPECTED_STATION_COUNT ||
       new Set(stations.map(({ code }) => code)).size !== EXPECTED_STATION_COUNT

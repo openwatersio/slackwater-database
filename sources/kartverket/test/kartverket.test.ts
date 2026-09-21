@@ -16,6 +16,41 @@ const stationListXml = `<tide><stationinfo><station name="Tromsø" code="TOS" la
 const currentStationListXml = stationListXml.replace("station ", "location ");
 const tromsoXml = `<tide><constituents unit="cm" utcoffset="+01:00"><location name="Tromsø" code="TOS" latitude="69.646110" longitude="18.954790"/><observations start="2006-01-01T00:00:00+01:00" end="2020-12-31T23:00:00+01:00"/><constituent name="SA" doodson="ZZAZZYZ" speed="0.04106668" phaseangle="330.24" amplitude="12.86"/></constituents></tide>`;
 const tromsoLevelsXml = `<tide><locationlevel unit="cm" reflevel="CD"><location name="Tromsø" code="TOS" latitude="69.646110" longitude="18.954790"/><reflevel code="HAT" value="174.1"/><reflevel code="MSL" value="-6.1" epoch="1996-2014"/><reflevel code="CD" value="-174.1"/><reflevel code="LAT" value="-174.1"/><reflevel code="100YMAX" value="300.0"/></locationlevel></tide>`;
+const stationCodes = [
+  "AES",
+  "ANX",
+  "BGO",
+  "BOH",
+  "BOO",
+  "BRJ",
+  "EYD",
+  "HAR",
+  "HEI",
+  "HFT",
+  "HRO",
+  "HVG",
+  "KAB",
+  "KAZ",
+  "KSU",
+  "LEH",
+  "MAY",
+  "MSU",
+  "NVK",
+  "NYA",
+  "OSC",
+  "OSL",
+  "RVK",
+  "SBG",
+  "SIE",
+  "SOY",
+  "SVG",
+  "TAZ",
+  "TOS",
+  "TRD",
+  "TRG",
+  "VAW",
+  "VIK",
+];
 
 const temporaryDirectories: string[] = [];
 
@@ -31,6 +66,30 @@ async function temporaryDirectory() {
   const directory = await mkdtemp(join(tmpdir(), "kartverket-test-"));
   temporaryDirectories.push(directory);
   return directory;
+}
+
+function snapshotFetch(
+  codes: string[],
+  levelResponse = (code: string) =>
+    tromsoLevelsXml.replaceAll("Tromsø", code).replaceAll("TOS", code),
+) {
+  return vi.fn<typeof globalThis.fetch>(async (input) => {
+    const url = new URL(
+      input instanceof Request ? input.url : input.toString(),
+    );
+    const request = url.searchParams.get("tide_request");
+    const code = url.searchParams.get("stationcode") ?? "";
+    const body =
+      request === "stationlist"
+        ? `<tide><stationinfo>${codes.map((value) => `<location name="${value}" code="${value}" latitude="69.646110" longitude="18.954790" type="PERM"/>`).join("")}</stationinfo></tide>`
+        : request === "constituents"
+          ? tromsoXml.replaceAll("Tromsø", code).replaceAll("TOS", code)
+          : levelResponse(code);
+    return new Response(body, {
+      status: 200,
+      headers: { "content-type": "text/xml" },
+    });
+  });
 }
 
 describe("Kartverket source parser", () => {
@@ -303,6 +362,54 @@ describe("Kartverket fixture snapshot", () => {
     );
     expect(await readFile(join(fixtures, "manifest.json"), "utf8")).toBe(
       manifest,
+    );
+  });
+
+  it("rejects unsafe station codes before touching the current snapshot", async () => {
+    const parent = await temporaryDirectory();
+    const fixtures = join(parent, "fixtures");
+    const manifest = '{"current":true}\n';
+    const stationList = "previous station list\n";
+    await mkdir(fixtures);
+    await writeFile(join(fixtures, "manifest.json"), manifest);
+    await writeFile(join(fixtures, "stationlist.xml"), stationList);
+    const codes = [...stationCodes];
+    codes[0] = "../../fixtures/stationlist";
+
+    await expect(
+      refreshSnapshot(fixtures, snapshotFetch(codes)),
+    ).rejects.toThrow(/station code/i);
+    expect(await readFile(join(fixtures, "manifest.json"), "utf8")).toBe(
+      manifest,
+    );
+    expect(await readFile(join(fixtures, "stationlist.xml"), "utf8")).toBe(
+      stationList,
+    );
+  });
+
+  it("keeps the current snapshot when a station response omits MSL", async () => {
+    const parent = await temporaryDirectory();
+    const fixtures = join(parent, "fixtures");
+    const manifest = '{"current":true}\n';
+    const stationList = "previous station list\n";
+    await mkdir(fixtures);
+    await writeFile(join(fixtures, "manifest.json"), manifest);
+    await writeFile(join(fixtures, "stationlist.xml"), stationList);
+    const fetch = snapshotFetch(stationCodes, (code) => {
+      const xml = tromsoLevelsXml
+        .replaceAll("Tromsø", code)
+        .replaceAll("TOS", code);
+      return code === "AES"
+        ? xml.replace(/<reflevel code="MSL"[^>]*\/>/, "")
+        : xml;
+    });
+
+    await expect(refreshSnapshot(fixtures, fetch)).rejects.toThrow(/MSL/);
+    expect(await readFile(join(fixtures, "manifest.json"), "utf8")).toBe(
+      manifest,
+    );
+    expect(await readFile(join(fixtures, "stationlist.xml"), "utf8")).toBe(
+      stationList,
     );
   });
 });
