@@ -33,7 +33,7 @@ The live API survey on 2026-09-21 found:
 - 41 otherwise complete zones referencing 15 station codes for which the API does not publish constituents;
 - 54 zones without enough tide data to calculate locally.
 
-The initial release publishes all 33 stations and the 495 computable zones. All 590 upstream zone records remain in the pinned source snapshot. The build emits an exclusion report identifying the other 95 by upstream ID and reason.
+The initial release publishes all 33 stations and the 495 computable zones. All 590 upstream zone records remain in the pinned source snapshot and a committed GeoJSON view. The build emits an exclusion report identifying the other 95 by upstream ID and reason.
 
 Twenty-eight Kartverket stations are within one kilometre of an existing TICON record. Five add distinct point coverage: Bøfjorden, Eydehavn, Kaupanger, Solumstrand, and Træna. The quality gate retains both provenance records but prefers the authoritative Kartverket record when the gauges are duplicates.
 
@@ -44,7 +44,7 @@ Twenty-eight Kartverket stations are within one kilometre of an existing TICON r
 Create a `sources/kartverket` workspace following the existing source-package pattern. It has two commands:
 
 - `refresh` downloads responses into a staging directory, rejects HTTP and XML error responses, verifies the complete expected inventory, calculates SHA-256 checksums, then atomically replaces the last valid snapshot;
-- `import` performs no network requests and deterministically transforms the committed snapshot into `data/kartverket/*.json` station records.
+- `import` performs no network requests and deterministically transforms the committed snapshot. Milestone 1 produces `data/kartverket/*.json` station records; milestone 2 also produces `data/kartverket/tide-zones.geojson`.
 
 The manifest records each request URL, retrieval time, and checksum. Retrieval time is excluded from normalized output so importing the same snapshot twice produces byte-identical station JSON. A failed refresh never replaces the previous valid snapshot.
 
@@ -133,13 +133,31 @@ Reuse the existing datum-name table and `Datum` structure. Add only the coordina
 
 Only the 495 computable zones enter TCDB. This keeps every runtime state useful: a returned zone is predictable, and `undefined`/`nil` means the location has no supported zone and should use the existing fallback. The raw snapshot and exclusion report retain the unsupported geometry for future coverage work.
 
+### GeoJSON view
+
+Commit `data/kartverket/tide-zones.geojson` so GitHub renders the source coverage as a map. The file is a GeoJSON `FeatureCollection` containing all 590 upstream polygons, including the 95 zones omitted from TCDB. Each feature has these properties:
+
+- `id` and `name`;
+- `referenceStationCode` when present;
+- `heightFactor` and `delayMinutes` when present;
+- `revision`;
+- `supported`;
+- `exclusionReason` when `supported` is false.
+
+The collection includes top-level `attribution`, `source`, and `license` foreign members. Features are sorted by numeric zone ID, coordinates retain upstream precision in GeoJSON longitude-latitude order, and polygon rings are closed. The generated file has no retrieval timestamp, so importing the same snapshot produces a byte-identical result and a reviewable diff.
+
+The GeoJSON file is a human-facing source artifact, not a runtime dependency. TCDB remains the packaged lookup format. Validation confirms that every supported GeoJSON feature has a matching TCDB zone and every unsupported feature has an exclusion reason.
+
 ### Lookup
 
 Add explicit database APIs equivalent to:
 
 ```ts
 function tideZones(): Iterable<TideZone>;
-function tideZoneAt(position: { latitude: number; longitude: number }): TideZone | undefined;
+function tideZoneAt(position: {
+  latitude: number;
+  longitude: number;
+}): TideZone | undefined;
 ```
 
 Swift exposes the corresponding collection and coordinate lookup.
@@ -180,6 +198,7 @@ Neaps receives a focused zone adapter. Generic subordinate-station semantics and
 ### Milestone 2 acceptance
 
 - TCDB contains exactly the supported zones from the pinned snapshot and every reference resolves to an accepted Kartverket station.
+- The committed GeoJSON contains all 590 source polygons and renders in GitHub's file view.
 - JavaScript and Swift return the same zone for all lookup fixtures.
 - A supported location uses its zone; an unsupported or outside location follows the existing nearest-station fallback.
 - Manual station selection is unchanged.
