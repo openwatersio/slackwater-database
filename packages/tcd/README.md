@@ -4,11 +4,13 @@ This package generates a TCD (Tide Constituent Database) binary file of the Neap
 
 The TCD file includes all tide and current stations in the tide database, and all tidal constituents present in the station data, resolved through the constituent list from [@neaps/tide-predictor](https://github.com/openwatersio/neaps/tree/main/packages/tide-predictor#readme).
 
-Current stations are named `<Name>, <Region> Current`, with the NOAA station id appended where several stations share a name (for example, different depths at one location). Speeds are in knots in both the metric and imperial files. A few stations can't be represented in the format and are left out: reference currents without harmonic constants, and subordinate currents with a speed ratio of zero, which libtcd would read as "no ratio".
+Current stations are named `<Name>, <Region> Current`, with the NOAA station id appended where several stations share a name (for example, different depths at one location). Speeds are in knots. A few stations can't be represented in the format and are left out: reference currents without harmonic constants, and subordinate currents with a speed ratio of zero, which libtcd would read as "no ratio".
 
 ## Usage
 
 Download the latest `neaps-YYYYMMDD.tcd` from [releases](https://github.com/openwatersio/tide-database/releases).
+
+Heights are in meters and current speeds in knots. XTide and OpenCPN convert for display, so use `tide -u ft` or the OpenCPN unit setting to see feet.
 
 ### OpenCPN
 

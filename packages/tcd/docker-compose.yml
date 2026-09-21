@@ -10,5 +10,5 @@ services:
     volumes:
       - ./dist:/data
     environment:
-      - HFILE_PATH=/data/harmonics-metric.tcd
+      - HFILE_PATH=/data/harmonics.tcd
     entrypoint: ["tide"]
