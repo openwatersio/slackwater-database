@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { createHash, randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { cp, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { save } from "@neaps/stations";
@@ -19,13 +20,13 @@ export interface SnapshotManifest {
 
 const API_URL = "https://vannstand.kartverket.no/tideapi.php";
 const SOURCE_DIR = dirname(fileURLToPath(import.meta.url));
-const FIXTURES_DIR = join(SOURCE_DIR, "fixtures");
+export const FIXTURES_DIR = join(SOURCE_DIR, "fixtures");
 const EXPECTED_STATION_COUNT = 33;
 
 const sha256 = (content: string) =>
   createHash("sha256").update(content).digest("hex");
 
-function sourceUrl(parameters: Record<string, string>) {
+export function sourceUrl(parameters: Record<string, string>) {
   const url = new URL(API_URL);
   for (const [name, value] of Object.entries(parameters)) {
     url.searchParams.set(name, value);
@@ -109,14 +110,34 @@ export async function verifySnapshot(fixtures = FIXTURES_DIR) {
     );
   }
 
+  const hasValidation = paths.some((path) => path.startsWith("validation/"));
+  const { validationRequests, parsePredictions } =
+    await import("./validate.ts");
+  const requests = hasValidation ? validationRequests(codes) : [];
   const expected = [
     "stationlist.xml",
     ...codes.map((code) => `constituents/${code}.xml`),
     ...codes.map((code) => `stationlevels/${code}.xml`),
+    ...requests.map(({ path }) => path),
   ].sort();
   if (paths.join("\n") !== expected.join("\n")) {
     throw new Error(
       "Snapshot manifest does not contain the complete response set",
+    );
+  }
+
+  for (const request of requests) {
+    if (
+      manifest.files.find(({ path }) => path === request.path)?.url !==
+      request.url
+    ) {
+      throw new Error(`Unexpected validation request URL: ${request.path}`);
+    }
+    parsePredictions(
+      contents.get(request.path)!,
+      request.code,
+      request.datatype,
+      request.window,
     );
   }
 
@@ -131,7 +152,7 @@ export async function verifySnapshot(fixtures = FIXTURES_DIR) {
     buildStation({ station, constituents, levels });
   }
 
-  return { manifest, stations };
+  return { manifest, stations, contents };
 }
 
 async function fetchResponse(fetcher: typeof globalThis.fetch, url: string) {
@@ -145,6 +166,7 @@ async function fetchResponse(fetcher: typeof globalThis.fetch, url: string) {
 export async function refreshSnapshot(
   fixtures = FIXTURES_DIR,
   fetcher: typeof globalThis.fetch = globalThis.fetch,
+  validationOnly = false,
 ) {
   const suffix = `${process.pid}-${randomUUID()}`;
   const staging = `${fixtures}.tmp-${suffix}`;
@@ -152,56 +174,96 @@ export async function refreshSnapshot(
   const entries: SnapshotManifest["files"] = [];
 
   try {
-    await mkdir(join(staging, "constituents"), { recursive: true });
-    await mkdir(join(staging, "stationlevels"), { recursive: true });
-
-    const stationUrl = stationListUrl();
-    const stationXml = await fetchResponse(fetcher, stationUrl);
-    const stations = parseStationList(stationXml).stations.sort((a, b) =>
-      a.code.localeCompare(b.code),
-    );
-    const unsafeStation = stations.find(({ code }) => !/^[A-Z]{3}$/.test(code));
-    if (unsafeStation) {
-      throw new Error(`Unsafe station code: ${unsafeStation.code}`);
-    }
-    if (
-      stations.length !== EXPECTED_STATION_COUNT ||
-      new Set(stations.map(({ code }) => code)).size !== EXPECTED_STATION_COUNT
-    ) {
-      throw new Error(
-        `Expected ${EXPECTED_STATION_COUNT} unique station codes, got ${stations.length}`,
+    if (validationOnly) {
+      const { manifest, stations } = await verifySnapshot(fixtures);
+      const { validationRequests, parsePredictions } =
+        await import("./validate.ts");
+      await cp(fixtures, staging, { recursive: true });
+      await mkdir(join(staging, "validation", "stations"), { recursive: true });
+      entries.push(
+        ...manifest.files.filter(({ path }) => !path.startsWith("validation/")),
       );
-    }
-    await writeFile(join(staging, "stationlist.xml"), stationXml);
-    entries.push({
-      path: "stationlist.xml",
-      url: stationUrl,
-      sha256: sha256(stationXml),
-    });
+      for (const request of validationRequests(
+        stations.map(({ code }) => code),
+      )) {
+        const xml = await fetchResponse(fetcher, request.url);
+        parsePredictions(xml, request.code, request.datatype, request.window);
+        await writeFile(join(staging, request.path), xml);
+        entries.push({
+          path: request.path,
+          url: request.url,
+          sha256: sha256(xml),
+        });
+      }
+    } else {
+      await mkdir(join(staging, "constituents"), { recursive: true });
+      await mkdir(join(staging, "stationlevels"), { recursive: true });
 
-    for (const { code } of stations) {
-      const constituentUrl = constituentsUrl(code);
-      const constituentXml = await fetchResponse(fetcher, constituentUrl);
-      parseConstituents(constituentXml);
-      await writeFile(
-        join(staging, "constituents", `${code}.xml`),
-        constituentXml,
+      const stationUrl = stationListUrl();
+      const stationXml = await fetchResponse(fetcher, stationUrl);
+      const stations = parseStationList(stationXml).stations.sort((a, b) =>
+        a.code.localeCompare(b.code),
       );
+      const unsafeStation = stations.find(
+        ({ code }) => !/^[A-Z]{3}$/.test(code),
+      );
+      if (unsafeStation) {
+        throw new Error(`Unsafe station code: ${unsafeStation.code}`);
+      }
+      if (
+        stations.length !== EXPECTED_STATION_COUNT ||
+        new Set(stations.map(({ code }) => code)).size !==
+          EXPECTED_STATION_COUNT
+      ) {
+        throw new Error(
+          `Expected ${EXPECTED_STATION_COUNT} unique station codes, got ${stations.length}`,
+        );
+      }
+      await writeFile(join(staging, "stationlist.xml"), stationXml);
       entries.push({
-        path: `constituents/${code}.xml`,
-        url: constituentUrl,
-        sha256: sha256(constituentXml),
+        path: "stationlist.xml",
+        url: stationUrl,
+        sha256: sha256(stationXml),
       });
 
-      const levelUrl = stationLevelsUrl(code);
-      const levelXml = await fetchResponse(fetcher, levelUrl);
-      parseLocationLevels(levelXml);
-      await writeFile(join(staging, "stationlevels", `${code}.xml`), levelXml);
-      entries.push({
-        path: `stationlevels/${code}.xml`,
-        url: levelUrl,
-        sha256: sha256(levelXml),
-      });
+      for (const { code } of stations) {
+        const constituentUrl = constituentsUrl(code);
+        const constituentXml = await fetchResponse(fetcher, constituentUrl);
+        parseConstituents(constituentXml);
+        await writeFile(
+          join(staging, "constituents", `${code}.xml`),
+          constituentXml,
+        );
+        entries.push({
+          path: `constituents/${code}.xml`,
+          url: constituentUrl,
+          sha256: sha256(constituentXml),
+        });
+
+        const levelUrl = stationLevelsUrl(code);
+        const levelXml = await fetchResponse(fetcher, levelUrl);
+        parseLocationLevels(levelXml);
+        await writeFile(
+          join(staging, "stationlevels", `${code}.xml`),
+          levelXml,
+        );
+        entries.push({
+          path: `stationlevels/${code}.xml`,
+          url: levelUrl,
+          sha256: sha256(levelXml),
+        });
+      }
+      if (existsSync(join(fixtures, "validation"))) {
+        const { manifest } = await verifySnapshot(fixtures);
+        await cp(join(fixtures, "validation"), join(staging, "validation"), {
+          recursive: true,
+        });
+        entries.push(
+          ...manifest.files.filter(({ path }) =>
+            path.startsWith("validation/"),
+          ),
+        );
+      }
     }
 
     const manifest: SnapshotManifest = {

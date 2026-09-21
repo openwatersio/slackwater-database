@@ -5,6 +5,8 @@
   "scripts": {
     "import": "node import.ts",
     "refresh": "node import.ts --refresh",
+    "validate": "node validate.ts",
+    "refresh-validation": "node validate.ts --refresh",
     "test": "vitest"
   },
   "dependencies": {

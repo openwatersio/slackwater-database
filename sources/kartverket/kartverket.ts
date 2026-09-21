@@ -115,7 +115,7 @@ function levelLocation(value: Attributes | undefined) {
   };
 }
 
-function parseXml(xml: string): Record<string, unknown> {
+export function parseXml(xml: string): Record<string, unknown> {
   const declaration = /<!\s*(DOCTYPE|ENTITY)\b/i.exec(xml);
   if (declaration)
     throw new Error(`Unsafe XML ${declaration[1]!.toUpperCase()} declaration`);
