@@ -40,6 +40,12 @@ const baseStation: StationInput = {
   country: "United States",
   country_code: "US",
 };
+const corrections = loadCorrections(
+  readFileSync(
+    new URL("../../../metadata/corrections.yaml", import.meta.url),
+    "utf8",
+  ),
+);
 
 describe("metadata resolution", () => {
   test("keeps location components independent", () => {
@@ -111,6 +117,26 @@ describe("metadata resolution", () => {
     expect(result.country_code).toBe("CA");
     expect(result.region).toBe("British Columbia");
     expect(result.region_code).toBe("CA-BC");
+  });
+
+  test("keeps Hanbury Point in Washington despite the maritime boundary", () => {
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        id: "noaa/9449828",
+        name: "Hanbury Point",
+        latitude: 48.5817,
+        longitude: -123.17,
+      },
+      {
+        correction: corrections.get("noaa/9449828")!,
+        geocoder,
+        maritimeZones: { country: () => "CA" },
+      },
+    );
+
+    expect(result.country_code).toBe("US");
+    expect(result.region_code).toBe("US-WA");
   });
 
   test("replaces opaque provider subdivision ids with the display region", () => {
@@ -267,12 +293,6 @@ chs-port-renfrew:
 
 describe("metadata validation", () => {
   test("accepts the migrated metadata sources", () => {
-    const corrections = loadCorrections(
-      readFileSync(
-        new URL("../../../metadata/corrections.yaml", import.meta.url),
-        "utf8",
-      ),
-    );
     const registry = loadRegistry(
       readFileSync(
         new URL("../../../metadata/registry.yaml", import.meta.url),

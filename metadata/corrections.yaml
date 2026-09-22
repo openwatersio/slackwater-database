@@ -165,7 +165,11 @@ noaa/jx0303:
   slug: mile-point-lb-22
   formerSlugs: [mile-point]
 
-# The generalized maritime boundary puts these Canadian border gauges in US water.
+# The generalized maritime boundary puts these border gauges in the neighboring country.
+noaa/9449828:
+  location:
+    countryCode: US
+
 ticon/bedwell_hbr_bc-7350-can-meds:
   location:
     countryCode: CA
