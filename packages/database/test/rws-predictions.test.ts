@@ -552,6 +552,66 @@ describe("RWS response normalization", () => {
     ).toThrow(/nap.*datum.*NAP/);
   });
 
+  test("rejects non-centimeter or non-astronomical height channels", () => {
+    const series = discoverRwsSeries(catalogFixture)[1]!;
+    const sampledUnit = validHeightChunks();
+    sampledUnit[0]!.WaarnemingenLijst[0]!.AquoMetadata.Eenheid.Code = "m";
+    expect(() => normalizeHeightChunks(series, sampledUnit, bounds)).toThrow(
+      /nap.*unit.*cm/,
+    );
+
+    const sampledProcess = validHeightChunks();
+    sampledProcess[0]!.WaarnemingenLijst[0]!.AquoMetadata.ProcesType = "meting";
+    expect(() => normalizeHeightChunks(series, sampledProcess, bounds)).toThrow(
+      /nap.*process.*astronomisch/,
+    );
+
+    const events = eventResponse("nap", "NAP", "GETETBRKD2", [
+      {
+        time: "2026-07-01T01:05:00.000+01:00",
+        type: "hoogwater",
+        height: 91,
+      },
+    ]);
+    events.WaarnemingenLijst[1]!.AquoMetadata.Eenheid.Code = "m";
+    expect(() => normalizeEvents(series, events, bounds)).toThrow(
+      /nap.*event height unit.*cm/,
+    );
+
+    const eventProcess = eventResponse("nap", "NAP", "GETETBRKD2", [
+      {
+        time: "2026-07-01T01:05:00.000+01:00",
+        type: "hoogwater",
+        height: 91,
+      },
+    ]);
+    eventProcess.WaarnemingenLijst[0]!.AquoMetadata.ProcesType = "meting";
+    expect(() => normalizeEvents(series, eventProcess, bounds)).toThrow(
+      /nap.*event process.*astronomisch/,
+    );
+  });
+
+  test("requires explicit timestamp offsets for heights and events", () => {
+    const series = discoverRwsSeries(catalogFixture)[1]!;
+    const heights = validHeightChunks();
+    heights[0]!.WaarnemingenLijst[0]!.MetingenLijst[0]!.Tijdstip =
+      "2026-07-01T00:00:00.000";
+    expect(() => normalizeHeightChunks(series, heights, bounds)).toThrow(
+      /explicit offset/,
+    );
+
+    const events = eventResponse("nap", "NAP", "GETETBRKD2", [
+      {
+        time: "2026-07-01T00:05:00.000",
+        type: "hoogwater",
+        height: 91,
+      },
+    ]);
+    expect(() => normalizeEvents(series, events, bounds)).toThrow(
+      /explicit offset/,
+    );
+  });
+
   test("rejects unexpected quality and station metadata variation", () => {
     const series = discoverRwsSeries(catalogFixture)[1]!;
     const quality = validHeightChunks();

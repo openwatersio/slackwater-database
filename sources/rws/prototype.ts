@@ -431,14 +431,21 @@ export function normalizeEvents(
     heightChannel["AquoMetadata"],
     "height metadata",
   );
+  const typeMetadata = record(typeChannel["AquoMetadata"], "type metadata");
   if (code(heightMetadata, "Hoedanigheid") !== series.datum)
     throw new Error(
       `${series.code} event datum does not match ${series.datum}`,
     );
+  if (code(heightMetadata, "Eenheid") !== "cm")
+    throw new Error(`${series.code} event height unit is not cm`);
+  if (
+    heightMetadata["ProcesType"] !== "astronomisch" ||
+    typeMetadata["ProcesType"] !== "astronomisch"
+  )
+    throw new Error(`${series.code} event process is not astronomisch`);
   if (
     code(heightMetadata, "Groepering") !== series.eventGrouping ||
-    code(record(typeChannel["AquoMetadata"], "type metadata"), "Groepering") !==
-      series.eventGrouping
+    code(typeMetadata, "Groepering") !== series.eventGrouping
   )
     throw new Error(
       `${series.code} event grouping does not match ${series.eventGrouping}`,
@@ -499,6 +506,10 @@ function heightSamples(
     throw new Error(
       `${series.code} height datum does not match ${series.datum}`,
     );
+  if (code(metadata, "Eenheid") !== "cm")
+    throw new Error(`${series.code} height unit is not cm`);
+  if (metadata["ProcesType"] !== "astronomisch")
+    throw new Error(`${series.code} height process is not astronomisch`);
   return array(channel["MetingenLijst"], `${label} measurements`).map(
     (value, index) => {
       const parsed = measurement(value, `${label} measurement ${index}`);
@@ -561,6 +572,8 @@ function responseChannels(
 function measurement(value: unknown, label: string) {
   const item = record(value, label);
   const timestamp = string(item["Tijdstip"], `${label} Tijdstip`);
+  if (!/(?:Z|[+-]\d{2}:\d{2})$/.test(timestamp))
+    throw new Error(`${label} timestamp requires an explicit offset`);
   const timestampMs = Date.parse(timestamp);
   if (!Number.isFinite(timestampMs))
     throw new Error(`${label} has invalid timestamp ${timestamp}`);
