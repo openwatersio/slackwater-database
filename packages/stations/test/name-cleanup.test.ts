@@ -226,6 +226,15 @@ describe("cleanName", () => {
         "Bayou la Batre",
       );
     });
+
+    test("hyphenates canonical French territory country names", () => {
+      expect(
+        cleanName("Port_De_Crozet", "French Southern and Antarctic Lands").name,
+      ).toBe("Port-de-Crozet");
+      expect(cleanName("Baie_De_Marigot", "Saint Barthélemy").name).toBe(
+        "Baie-de-Marigot",
+      );
+    });
   });
 
   describe("bracketed qualifiers", () => {
@@ -248,6 +257,19 @@ describe("cleanName", () => {
       expect(cleanName("Wake_Island_(U.S.)", "United States").name).toBe(
         "Wake Island (U.S.)",
       );
+    });
+
+    test("keeps small words lowercase before a closing bracket", () => {
+      expect(
+        cleanName("Mills Point (south of), Wicomico Riv., Md.", "United States")
+          .name,
+      ).toBe("Mills Point (South of), Wicomico Riv., Md.");
+    });
+
+    test("keeps an ampersand acronym uppercase inside a bracket", () => {
+      expect(
+        cleanName("Apalachicola River (A&N RR bridge)", "United States").name,
+      ).toBe("Apalachicola River (A&N RR Bridge)");
     });
   });
 

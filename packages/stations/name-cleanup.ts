@@ -131,14 +131,14 @@ const FRENCH_HYPHENATING_COUNTRIES = new Set([
   "France",
   "French Guiana",
   "French Polynesia",
-  "French Southern Territories",
+  "French Southern and Antarctic Lands",
   "Guadeloupe",
   "Martinique",
   "Mayotte",
   "Monaco",
   "New Caledonia",
   "Reunion",
-  "Saint Barthelemy",
+  "Saint Barthélemy",
   "Saint Martin",
   "Saint Pierre and Miquelon",
   "Wallis and Futuna",
@@ -244,7 +244,8 @@ function toTitleCase(str: string): string {
     .split(/\s+/)
     .map((word, i) => {
       if (i === 0) return capitalize(word);
-      if (SMALL_WORDS.has(word.toLowerCase())) return word.toLowerCase();
+      const bare = word.replace(/[)\]},]+$/, "");
+      if (SMALL_WORDS.has(bare.toLowerCase())) return word.toLowerCase();
       return capitalize(word);
     })
     .join(" ");
@@ -263,7 +264,7 @@ function capitalize(word: string): string {
     return (wrapped[1] ?? "") + capitalize(wrapped[2]!) + (wrapped[3] ?? "");
   }
   // Preserve all-caps words (acronyms like "NW", "SE", "MBTS")
-  if (word === word.toUpperCase() && /^[A-Z]+$/.test(word)) {
+  if (word === word.toUpperCase() && /^[A-Z]+(?:&[A-Z]+)*$/.test(word)) {
     return word;
   }
   // Preserve dotted acronyms ("U.S.", "N.J."), but not abbreviations like
