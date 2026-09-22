@@ -6,9 +6,9 @@ This audit evaluates Rijkswaterstaat (RWS) astronomical water levels and calcula
 
 Use the RWS astronomical series as a bounded sampled-prediction artifact, separate from harmonic station records.
 
-The repository already re-fits harmonics for 56 TICON records whose identifiers end in `-rws`, so derived data and the fixed RWS time offset are existing code paths rather than new risks. A held-out fit against the current RWS series kept height error below the repository's 10 cm RMS ceiling, but failed the existing event-time thresholds and produced hundreds of extra extrema at Hoek van Holland and Den Helder. The exact sampled series projects to only 3.9–4.7 MB compressed for all 114 stations, so preserving the provider's heights and published events is the lower-risk route.
+The repository already re-fits harmonics for 56 TICON records whose identifiers end in `-rws`, so derived data and the fixed RWS time offset are existing code paths rather than new risks. A held-out fit against the current RWS series kept height error below the repository's 10 cm RMS ceiling, but failed the existing event-time thresholds and produced hundreds of extra extrema at Hoek van Holland and Den Helder. Preserving the provider's heights and published events remains the lower-risk route. The initial two-station estimate projected 3.9–4.7 MB compressed; the conservative all-station prototype projects 13.7 MB and therefore selects shards.
 
-The current database schema and consumers support harmonics and subordinate-station offsets, not time-bounded samples or published event streams. The experimental companion-file contract is defined in the [prototype design](../../docs/superpowers/specs/2026-09-21-rws-prediction-prototype-design.md); implementation and measurement are the next milestone.
+The current database schema and consumers support harmonics and subordinate-station offsets, not time-bounded samples or published event streams. The experimental companion-file contract is defined in the [prototype design](../../docs/superpowers/specs/2026-09-21-rws-prediction-prototype-design.md). The all-station prototype projects to 13.7 MB under the conservative independent-station gzip formula, so the selected packaging direction is per-station FlatBuffers shards behind a small manifest.
 
 ## Reuse terms
 
@@ -56,6 +56,8 @@ There are 114 locations with astronomical heights and 114 with calculated extrem
 
 - Height only: `maasmond.stroommeetpaal`, `zeelandbrug.noord`
 - Extrema only: `oostmahorn`, `zoutkamp`
+
+A 2026-07-01 through 2026-07-31 availability inventory found 99 of the 114 height locations returning data. The remaining 15 returned HTTP 204 for both a one-day probe and the complete 30-day measurement interval: `amelandwestgat`, `antwerpen.prosperpolder`, `beerkanaal`, `beneluxhaven`, `hartelkanaal.kuwaitpetroleum`, `ijmuiden.noordersluis.west`, `maasmond.stroommeetpaal`, `mississippihaven`, `noordwijk.meetpost`, `oosterschelde.13`, `oosterschelde.15`, `petten.zuid`, `rotterdam.dintelhaven`, `scheurhaven`, and `zeelandbrug.noord`. The prototype permits only this audited set to return 204; any newly unavailable catalog location still fails the run.
 
 The “about 825 locations” estimate can only be traced to the uncited claim in parent issue [#148](https://github.com/openwatersio/tide-database/issues/148). It does not describe another verified current product: the current catalog exposes 114 continuous astronomical-height locations, while the public [Waterinfo astronomical-tide map](https://waterinfo.rws.nl/api/point/latestmeasurement?parameterId=astronomische-getij) returned 94 locations on 2026-09-21. The RWS data register also lists a completed 2013 [astronomical water-level series](https://maps.rijkswaterstaat.nl/dataregister/srv/api/records/usoc5hgv-f4mm-ouyo-hzeh-idijhclc1q11), but publishes neither a location count nor an associated download. Treat 825 as unsubstantiated, not as evidence of broader tide-table coverage. The complete current catalog contains 2,499 water-management locations, and the 114 eligible locations include offshore platforms; publication still needs a geographic eligibility check rather than assigning every record to the Netherlands from the provider name alone.
 
@@ -172,17 +174,17 @@ The current catalog and official documentation reviewed here expose predictions 
 
 Online access does not satisfy the offline requirement and inherits the provider's fair-use limits and lack of uptime guarantee.
 
-## Follow-up prototype
+## Prototype measurement
 
-The next milestone should implement and measure the experimental companion-file contract. It specifies:
+The experimental FlatBuffers prototype measured the start-inclusive, end-exclusive interval from 2026-07-01 through 2026-07-31 and projected the complete 2025-01-01 through 2027-01-01 target. Of 114 catalog-linked height locations, 99 returned the requested interval: 87 NAP and 12 MSL stations.
 
-- implicit cadence versus per-sample timestamps;
-- UTC normalization from the explicit fixed offset;
-- NAP/MSL datum identity and centimeter-to-meter conversion;
-- a missing bitmap plus station-level source metadata, with no per-sample overrides until variation is observed;
-- event timestamp/type/height pairing;
-- station crosswalk and precedence relative to TICON;
-- inclusive/exclusive interval rules and chunk deduplication;
-- artifact version, retrieval metadata, checksum, refresh deadline, and out-of-range behavior.
+| Kind      | Interval              | Stations | Height samples | Events | Encoded bytes | Whole-file gzip bytes | Independent-station gzip bytes |
+| --------- | --------------------- | -------: | -------------: | -----: | ------------: | --------------------: | -----------------------------: |
+| Measured  | 2026-07-01–2026-07-31 |       99 |        427,680 | 11,482 |     1,113,112 |               455,597 |                        563,628 |
+| Projected | 2025-01-01–2027-01-01 |       99 |     10,406,880 |      — |    27,085,726 |            13,714,948 |                              — |
 
-Skipped for this audit: an importer, committed source snapshot, database changes, and consumer changes. Add them only after the prototype confirms the contract and size gate.
+The measured file used 11,243.56 encoded bytes per station and 2.602674897 encoded bytes per height sample. Its first live build took 23.490166 ms, and 1,000 keyed reads averaged 5.038292 µs each. A cache-only replay produced the same artifact SHA-256, `7da50b6acf584883c37cae98678fd37a7433664a1f36a81550cfcc3e68241ab3`.
+
+The raw projection is `ceil(measured encoded bytes / measured samples × projected samples)`. The conservative transfer projection is `ceil(summed independent-station gzip bytes × target duration / measured duration)`. At 13,714,948 bytes, it exceeds the 10 MB one-file ceiling, so the selected gate is **shards required**. The 8 MB 30-day-projection headroom gate and the 8–10 MB full-window remeasurement band do not apply.
+
+The file under `tmp/rws/` is experimental and uncommitted. Public API, final extension, release automation, manifest layout, and full-window import remain out of scope.
