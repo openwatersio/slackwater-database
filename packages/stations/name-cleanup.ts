@@ -271,11 +271,7 @@ function toTitleCase(
   return words
     .map((word, i) => {
       const bare = word.replace(/[)\]},]+$/, "");
-      if (
-        i > 0 &&
-        word === word.toUpperCase() &&
-        validRegions?.has(bare)
-      ) {
+      if (i > 0 && word === word.toUpperCase() && validRegions?.has(bare)) {
         return word;
       }
       if (

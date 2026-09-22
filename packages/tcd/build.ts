@@ -208,9 +208,7 @@ function buildStationNames(stations: Station[]): Map<string, string> {
   for (const s of stations) {
     let parts = nameParts(s);
     const suffix =
-      counts.get(joinName(s, parts))! > 1
-        ? ` (${s.source.id})`
-        : "";
+      counts.get(joinName(s, parts))! > 1 ? ` (${s.source.id})` : "";
     const maxLen =
       s.type === "subordinate"
         ? SUBORDINATE_NAME_MAX_LEN

@@ -270,9 +270,12 @@ describe("cleanName", () => {
       ["Foo, WA (NOS)", "Foo, WA (NOS)"],
       ["Duck, NC FRF", "Duck, NC FRF"],
       ["Foo, WA U.S. Army", "Foo, WA U.S. Army"],
-    ])("does not recase region codes or isolated acronyms in %s", (raw, expected) => {
-      expect(cleanName(raw, "United States", "WA").name).toBe(expected);
-    });
+    ])(
+      "does not recase region codes or isolated acronyms in %s",
+      (raw, expected) => {
+        expect(cleanName(raw, "United States", "WA").name).toBe(expected);
+      },
+    );
 
     test.each([
       ["HOEK VAN HOLLAND NL", "Hoek van Holland Nl"],
@@ -348,9 +351,9 @@ describe("cleanName", () => {
         cleanName("La Marque Levee Pump Sta nr la Marque", "United States")
           .name,
       ).toBe("La Marque Levee Pump Sta nr La Marque");
-      expect(
-        cleanName("Pointe a la Hache", "United States").name,
-      ).toBe("Pointe a la Hache");
+      expect(cleanName("Pointe a la Hache", "United States").name).toBe(
+        "Pointe a la Hache",
+      );
     });
 
     test("hyphenates canonical French territory country names", () => {
