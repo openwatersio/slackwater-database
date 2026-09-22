@@ -40,6 +40,12 @@ const baseStation: StationInput = {
   country: "United States",
   country_code: "US",
 };
+const corrections = loadCorrections(
+  readFileSync(
+    new URL("../../../metadata/corrections.yaml", import.meta.url),
+    "utf8",
+  ),
+);
 
 describe("metadata resolution", () => {
   test("keeps location components independent", () => {
@@ -89,7 +95,7 @@ describe("metadata resolution", () => {
     expect(result.context_derived).toBe(false);
   });
 
-  test("a code-only country correction outranks provider country", () => {
+  test("a code-only country correction outranks zone and provider country", () => {
     const canada = {
       ...everett,
       country: "Canada",
@@ -104,12 +110,33 @@ describe("metadata resolution", () => {
     const result = resolveMetadata(baseStation, {
       correction: { location: { countryCode: "CA" } },
       geocoder: { nearest: () => canada, near: () => [canada] },
+      maritimeZones: { country: () => "US" },
     });
 
     expect(result.country).toBe("Canada");
     expect(result.country_code).toBe("CA");
     expect(result.region).toBe("British Columbia");
     expect(result.region_code).toBe("CA-BC");
+  });
+
+  test("keeps Hanbury Point in Washington despite the maritime boundary", () => {
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        id: "noaa/9449828",
+        name: "Hanbury Point",
+        latitude: 48.5817,
+        longitude: -123.17,
+      },
+      {
+        correction: corrections.get("noaa/9449828")!,
+        geocoder,
+        maritimeZones: { country: () => "CA" },
+      },
+    );
+
+    expect(result.country_code).toBe("US");
+    expect(result.region_code).toBe("US-WA");
   });
 
   test("replaces opaque provider subdivision ids with the display region", () => {
@@ -263,12 +290,13 @@ describe("metadata resolution", () => {
       expect(result.locality).toBe("Friday Harbor");
     });
 
-    test("leaves the region empty when the maritime zone disagrees", () => {
+    test("takes country and region from the maritime zone when the provider disagrees", () => {
       const result = resolve("CA");
 
-      expect(result.country_code).toBe("US");
-      expect(result).not.toHaveProperty("region");
-      expect(result).not.toHaveProperty("locality");
+      expect(result.country_code).toBe("CA");
+      expect(result.region).toBe("British Columbia");
+      expect(result.region_code).toBe("CA-BC");
+      expect(result.locality).toBe("Sidney");
     });
   });
 
@@ -303,12 +331,6 @@ chs-port-renfrew:
 
 describe("metadata validation", () => {
   test("accepts the migrated metadata sources", () => {
-    const corrections = loadCorrections(
-      readFileSync(
-        new URL("../../../metadata/corrections.yaml", import.meta.url),
-        "utf8",
-      ),
-    );
     const registry = loadRegistry(
       readFileSync(
         new URL("../../../metadata/registry.yaml", import.meta.url),

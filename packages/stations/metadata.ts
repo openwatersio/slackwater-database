@@ -334,11 +334,11 @@ export function resolveMetadata(
     (explicitLocation?.countryCode
       ? countryLookup.byIso(explicitLocation.countryCode)?.country
       : undefined) ??
+    (zoneCountry ? countryLookup.byIso(zoneCountry)?.country : undefined) ??
     station.country ??
     (station.country_code
       ? countryLookup.byIso(station.country_code)?.country
       : undefined) ??
-    (zoneCountry ? countryLookup.byIso(zoneCountry)?.country : undefined) ??
     nearest?.country;
   if (!nonEmpty(countryName)) throw new Error(`${station.id}: no country`);
   const country = countryLookup.byCountry(countryName);
@@ -356,6 +356,7 @@ export function resolveMetadata(
     !registry &&
     !correction?.location?.country &&
     !correction?.location?.countryCode &&
+    zoneCountry !== country.iso2 &&
     station.country_code !== country.iso2
   )
     throw new Error(
