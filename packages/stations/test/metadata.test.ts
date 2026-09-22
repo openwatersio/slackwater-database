@@ -126,13 +126,51 @@ describe("metadata resolution", () => {
       },
     };
     const result = resolveMetadata(
-      { ...baseStation, country: "Canada", country_code: "CA", region: "02" },
+      {
+        ...baseStation,
+        name: "Alert Bay BC",
+        country: "Canada",
+        country_code: "CA",
+        region: "02",
+      },
       { geocoder: { nearest: () => canada, near: () => [canada] } },
     );
 
+    expect(result.name).toBe("Alert Bay");
     expect(result.region).toBe("British Columbia");
     expect(result.region_code).toBe("CA-BC");
     expect(result.context).toBe("Sooke, British Columbia");
+  });
+
+  test("lifts a trailing territory code when geocoding has no US region", () => {
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        name: "San Juan PR",
+        region: "San Juan",
+      },
+      { geocoder: { nearest: () => null, near: () => [] } },
+    );
+
+    expect(result.name).toBe("San Juan");
+    expect(result.region_code).toBe("US-PR");
+  });
+
+  test("lifts a Canadian province when the provider region is opaque", () => {
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        name: "Alert Bay BC",
+        country: "Canada",
+        country_code: "CA",
+        region: "02",
+      },
+      { geocoder: { nearest: () => null, near: () => [] } },
+    );
+
+    expect(result.name).toBe("Alert Bay");
+    expect(result.region).toBe("British Columbia");
+    expect(result.region_code).toBe("CA-BC");
   });
 
   test("names the water body the station sits in", () => {

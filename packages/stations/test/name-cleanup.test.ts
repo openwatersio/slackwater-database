@@ -114,6 +114,52 @@ describe("cleanName", () => {
       );
       expect(result.region).toBe("DC");
     });
+
+    test("extracts a spaced state code when it matches the existing region", () => {
+      const result = cleanName(
+        "Abercorn Creek near Savannah Ga",
+        "United States",
+        "GA",
+      );
+      expect(result.name).toBe("Abercorn Creek near Savannah");
+      expect(result.region).toBe("GA");
+    });
+
+    test("keeps a spaced state code when it conflicts with the existing region", () => {
+      const result = cleanName(
+        "Abercorn Creek at Mouth near Savannah Ga",
+        "United States",
+        "SC",
+      );
+      expect(result.name).toBe("Abercorn Creek at Mouth near Savannah Ga");
+      expect(result.region).toBeUndefined();
+    });
+
+    test("extracts a matching state code that is also a small word", () => {
+      const result = cleanName(
+        "Black Bay nr Stone Island nr Pointe a la Hache la",
+        "United States",
+        "LA",
+      );
+      expect(result.name).toBe(
+        "Black Bay nr Stone Island nr Pointe a la Hache",
+      );
+      expect(result.region).toBe("LA");
+    });
+
+    test.each([
+      ["Menemsha Harbor, MA", "MA", "Menemsha Harbor"],
+      ["San Juan PR", "San Juan", "San Juan"],
+      ["Alert Bay BC", "02", "Alert Bay"],
+    ])("extracts %s without leaving punctuation", (raw, existing, expected) => {
+      const result = cleanName(
+        raw,
+        raw.endsWith("BC") ? "Canada" : "United States",
+        existing,
+      );
+      expect(result.name).toBe(expected);
+      expect(result.region).toBe(raw.slice(-2));
+    });
   });
 
   describe("PascalCase splitting", () => {
@@ -176,6 +222,82 @@ describe("cleanName", () => {
     });
   });
 
+  describe("all-caps source names", () => {
+    test.each([
+      ["HONOLULU, Downtown, HI", "Honolulu, Downtown"],
+      ["TURKEY POINT, HUDSON RIVER", "Turkey Point, Hudson River"],
+      ["APIA (Observatory), Upolu Island", "Apia (Observatory), Upolu Island"],
+      ["PAGO PAGO Harbor, Tutuila Island", "Pago Pago Harbor, Tutuila Island"],
+      ["WAKE ISLAND (U.S.)", "Wake Island (U.S.)"],
+      ["LA PUSH", "La Push"],
+      ["LOS ANGELES (Outer Harbor)", "Los Angeles (Outer Harbor)"],
+      ["NEW YORK (The Battery)", "New York (The Battery)"],
+    ])("title-cases %s", (raw, expected) => {
+      expect(cleanName(raw, "United States").name).toBe(expected);
+    });
+
+    test.each([
+      ["Martha's Vineyard GPS Buoy", "Martha's Vineyard GPS Buoy"],
+      [
+        "Offshore St Matthew Island (GNSS Buoy)",
+        "Offshore St Matthew Island (GNSS Buoy)",
+      ],
+      ["Fort Eustis (MARAD)", "Fort Eustis (MARAD)"],
+      ["Acapulco API Nivel CBS", "Acapulco API Nivel CBS"],
+      ["USCG STATION NY", "USCG Station"],
+      ["CBBT, CHESAPEAKE CHANNEL", "CBBT, Chesapeake Channel"],
+      ["AWG", "AWG"],
+      [
+        "Grand Bay NERR, Mississippi Sound",
+        "Grand Bay NERR, Mississippi Sound",
+      ],
+      ["VINEYARD HAVEN, VINEYARD HVN HBR", "Vineyard Haven, Vineyard HVN HBR"],
+      ["Ringaskiddy NMCI", "Ringaskiddy NMCI"],
+      ["Miami River MRMS", "Miami River MRMS"],
+      ["Goodnews Bay, ANVSA", "Goodnews Bay, ANVSA"],
+      ["LAWMA, Amerada Pass", "LAWMA, Amerada Pass"],
+      ["Cocohatchee River COCO", "Cocohatchee River COCO"],
+      ["Calahootchie River VALI 75", "Calahootchie River VALI 75"],
+      ["COX WC-53 Platform", "COX WC-53 Platform"],
+      ["Renaissance SA-13 Platform", "Renaissance SA-13 Platform"],
+      ["WCOCO", "WCOCO"],
+    ])("keeps abbreviations in %s", (raw, expected) => {
+      expect(cleanName(raw, "United States").name).toBe(expected);
+    });
+
+    test.each([
+      ["Kings Point, LI NY", "Kings Point, LI NY"],
+      ["Foo, WA (NOS)", "Foo, WA (NOS)"],
+      ["Duck, NC FRF", "Duck, NC FRF"],
+      ["Foo, WA U.S. Army", "Foo, WA U.S. Army"],
+    ])(
+      "does not recase region codes or isolated acronyms in %s",
+      (raw, expected) => {
+        expect(cleanName(raw, "United States", "WA").name).toBe(expected);
+      },
+    );
+
+    test.each([
+      ["HOEK VAN HOLLAND NL", "Hoek van Holland Nl"],
+      ["PUNTA DE LA", "Punta de la"],
+      ["BANDAR ABBAS IN", "Bandar Abbas In"],
+    ])("does not treat foreign words as US regions in %s", (raw, expected) => {
+      expect(cleanName(raw, "Netherlands").name).toBe(expected);
+    });
+
+    test("keeps punctuation after an abbreviation", () => {
+      expect(
+        cleanName("SQUAMSCOTT RIVER RR. BRIDGE", "United States").name,
+      ).toBe("Squamscott River RR. Bridge");
+    });
+
+    test("keeps compass points and units in shouting qualifiers", () => {
+      expect(
+        cleanName("SMITH ISLAND, 3.4 NM SSE OF", "United States").name,
+      ).toBe("Smith Island, 3.4 NM SSE of");
+    });
+  });
+
   describe("network prefix stripping", () => {
     test("strips RMN_ prefix", () => {
       expect(cleanName("RMN_Anzio", "Italy").name).toBe("Anzio");
@@ -223,7 +345,14 @@ describe("cleanName", () => {
         "Havre de Grace",
       );
       expect(cleanName("Bayou_La_Batre", "United States").name).toBe(
-        "Bayou la Batre",
+        "Bayou La Batre",
+      );
+      expect(
+        cleanName("La Marque Levee Pump Sta nr la Marque", "United States")
+          .name,
+      ).toBe("La Marque Levee Pump Sta nr La Marque");
+      expect(cleanName("Pointe a la Hache", "United States").name).toBe(
+        "Pointe a la Hache",
       );
     });
 
@@ -301,6 +430,10 @@ describe("cleanName", () => {
       expect(cleanName("McClellanville", "United States").name).toBe(
         "McClellanville",
       );
+      expect(cleanName("FORT MCHENRY", "United States").name).toBe(
+        "Fort McHenry",
+      );
+      expect(cleanName("PORT MCNEILL", "Canada").name).toBe("Port McNeill");
     });
 
     test("does not split a Mac name", () => {
