@@ -23,6 +23,10 @@ let m2 = station?.constituents.first { $0.name == "M2" }
 let datums = station?.datums // ["MLLW": 2.419, "MSL": 4.443, ...]
 let shift = station?.chartDatumShift // datums[MSL] - datums[chartDatum]
 
+// How low and high a prediction can go, in metres above the chart datum.
+// Reduced through the offsets for a subordinate, which carries no datums.
+let range = station?.astronomicalBounds // (lat: -0.619, hat: 3.681)
+
 // The notice to show wherever the station's data appears.
 let notice = station?.attribution
 ```

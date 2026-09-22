@@ -91,6 +91,51 @@ describe("lazily loaded station data", () => {
     expect(Object.keys(ref.datums).length).toBeGreaterThan(0);
   });
 
+  test("a reference station's bounds are its LAT and HAT above its chart datum", () => {
+    const ref = stations.find(
+      (s) =>
+        s.type === "reference" &&
+        s.datums["LAT"] !== undefined &&
+        s.datums["HAT"] !== undefined,
+    )!;
+    const zero = ref.datums[ref.chart_datum!]!;
+    expect(ref.astronomical_bounds).toEqual({
+      lat: ref.datums["LAT"]! - zero,
+      hat: ref.datums["HAT"]! - zero,
+    });
+  });
+
+  test("a subordinate's bounds are its reference's, reduced through the height offsets", () => {
+    for (const type of ["ratio", "fixed"] as const) {
+      const sub = allStations.find(
+        (s) =>
+          s.offsets?.height.type === type &&
+          stationsById.get(s.offsets.reference)?.astronomical_bounds,
+      );
+      expect(sub, `no subordinate with ${type} height offsets`).toBeDefined();
+      const ref = stationsById.get(
+        sub!.offsets!.reference,
+      )!.astronomical_bounds!;
+      const { high, low } = sub!.offsets!.height;
+      expect(sub!.astronomical_bounds).toEqual(
+        type === "ratio"
+          ? { lat: ref.lat * low, hat: ref.hat * high }
+          : { lat: ref.lat + low, hat: ref.hat + high },
+      );
+    }
+  });
+
+  test("no subordinate is left without bounds its reference could supply", () => {
+    const missing = allStations.filter(
+      (s) =>
+        s.type === "subordinate" &&
+        s.offsets &&
+        stationsById.get(s.offsets.reference)?.astronomical_bounds &&
+        !s.astronomical_bounds,
+    );
+    expect(missing.map((s) => s.id)).toEqual([]);
+  });
+
   test("subordinate stations inherit harmonics, datums, and epoch from their reference", () => {
     const sub = allStations.find(
       (s) =>

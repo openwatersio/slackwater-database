@@ -10,6 +10,7 @@ import databaseBytes from "#neaps.tcdb";
 import { PROJECT_CREDIT } from "./attribution.js";
 import { openDatabase } from "./database/reader.js";
 import type {
+  AstronomicalBounds,
   CurrentData,
   HarmonicConstituent,
   Station,
@@ -127,6 +128,36 @@ function readQuality(
     },
   });
   return quality;
+}
+
+// `index` is the record that holds the datums — the reference's, for a
+// subordinate — so its own chart_datum is the zero the LAT/HAT sit above.
+function readOwnBounds(index: number): AstronomicalBounds | undefined {
+  const chartDatum = db.stations(index)!.chartDatum();
+  if (chartDatum === null) return undefined;
+  const values = readDatums(index);
+  const zero = values[chartDatum];
+  const lat = values["LAT"];
+  const hat = values["HAT"];
+  if (zero === undefined || lat === undefined || hat === undefined)
+    return undefined;
+  return { lat: lat - zero, hat: hat - zero };
+}
+
+function readAstronomicalBounds(
+  station: Station,
+): AstronomicalBounds | undefined {
+  const bounds = readOwnBounds(dataIndex(station));
+  // The same guard dataIndex uses, so the reduction runs exactly when the
+  // bounds above came from another station's record.
+  const offsets = station.type === "subordinate" ? station.offsets : undefined;
+  if (!bounds || !offsets) return bounds;
+  // Exact for both kinds: a ratio scales the height above chart datum, a fixed
+  // offset translates it, and both are monotonic in the reference height.
+  const { type, high, low } = offsets.height;
+  return type === "ratio"
+    ? { lat: bounds.lat * low, hat: bounds.hat * high }
+    : { lat: bounds.lat + low, hat: bounds.hat + high };
 }
 
 function readEpoch(index: number): StationData["epoch"] {
@@ -288,6 +319,11 @@ function readStation(index: number): Station {
       enumerable: true,
       configurable: true,
       get: () => readDatums(dataIndex(station)),
+    },
+    astronomical_bounds: {
+      enumerable: true,
+      configurable: true,
+      get: () => readAstronomicalBounds(station),
     },
     epoch: {
       enumerable: true,

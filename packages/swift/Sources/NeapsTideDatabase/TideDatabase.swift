@@ -158,4 +158,48 @@ public struct Station: Identifiable {
     else { return nil }
     return msl - zero
   }
+
+  // MARK: Astronomical range
+
+  /// The floor and ceiling of this station's predictions, in metres above its
+  /// chart datum.
+  public struct AstronomicalBounds {
+    /// Lowest Astronomical Tide.
+    public let lat: Double
+    /// Highest Astronomical Tide.
+    public let hat: Double
+  }
+
+  /// Lowest and highest astronomical tide, in metres above this station's chart
+  /// datum. Nil when the station predicting for this one has no LAT and HAT.
+  ///
+  /// For a subordinate this is the reference's range reduced through
+  /// `raw.offsets` — the same correction the predictor applies to the extremes
+  /// themselves, and exact for both offset kinds because each is monotonic in
+  /// the reference height. The result is the floor of a prediction rather than
+  /// a hydrographic datum, which is why it is not in `datums`: applied to a
+  /// single pair of levels the extreme corrections leave an object no datum
+  /// ordering holds for (docs/datums.md).
+  public var astronomicalBounds: AstronomicalBounds? {
+    guard let offsets = raw.offsets else { return ownBounds }
+    // One hop only: a reference of a reference carries no datums of its own, so
+    // `ownBounds` is nil there rather than recursing.
+    guard let reference = root.stationsBy(key: offsets.reference),
+      let bounds = Station(raw: reference, root: root).ownBounds
+    else { return nil }
+    let low = Double(offsets.heightLow)
+    let high = Double(offsets.heightHigh)
+    let ratio = offsets.heightType == .ratio
+    return AstronomicalBounds(
+      lat: ratio ? bounds.lat * low : bounds.lat + low,
+      hat: ratio ? bounds.hat * high : bounds.hat + high)
+  }
+
+  private var ownBounds: AstronomicalBounds? {
+    let datums = self.datums
+    guard let chartDatum = raw.chartDatum, let zero = datums[chartDatum],
+      let lat = datums["LAT"], let hat = datums["HAT"]
+    else { return nil }
+    return AstronomicalBounds(lat: lat - zero, hat: hat - zero)
+  }
 }

@@ -16,7 +16,7 @@ final class TideDatabaseTests: XCTestCase {
   func testOpensAMappedFileAndReadsTheVersion() throws {
     let db = try open()
     XCTAssertEqual(db.version, "0.0.0-fixture")
-    XCTAssertEqual(db.count, 3)
+    XCTAssertEqual(db.count, 4)
   }
 
   func testRejectsBytesWithoutTheFileIdentifier() throws {
@@ -30,8 +30,12 @@ final class TideDatabaseTests: XCTestCase {
 
   func testIteratesIdentityInIdOrder() throws {
     let db = try open()
-    XCTAssertEqual(db.map(\.id), ["test/current", "test/reference", "test/subordinate"])
-    XCTAssertEqual(db.map(\.name), ["A current", "Reference", "Subordinate"])
+    XCTAssertEqual(
+      db.map(\.id),
+      ["test/current", "test/reference", "test/subordinate", "test/subordinate-fixed"])
+    XCTAssertEqual(
+      db.map(\.name),
+      ["A current", "Reference", "Subordinate", "Subordinate with fixed offsets"])
 
     let reference = db[1]
     XCTAssertEqual(reference.latitude, 47.6, accuracy: 1e-9)
@@ -78,6 +82,27 @@ final class TideDatabaseTests: XCTestCase {
     XCTAssertEqual(station.datums["MSL"] ?? .nan, 4.443, accuracy: 1e-6)
     XCTAssertEqual(station.chartDatumShift ?? .nan, 4.443 - 2.419, accuracy: 1e-6)
     XCTAssertNil(try XCTUnwrap(open().station(id: "test/subordinate")).chartDatumShift)
+  }
+
+  func testDerivesAstronomicalBoundsAboveChartDatum() throws {
+    let db = try open()
+    let lat = 1.8 - 2.419
+    let hat = 6.1 - 2.419
+
+    let reference = try XCTUnwrap(db.station(id: "test/reference")?.astronomicalBounds)
+    XCTAssertEqual(reference.lat, lat, accuracy: 1e-5)
+    XCTAssertEqual(reference.hat, hat, accuracy: 1e-5)
+
+    let ratio = try XCTUnwrap(db.station(id: "test/subordinate")?.astronomicalBounds)
+    XCTAssertEqual(ratio.lat, lat * 0.9, accuracy: 1e-5)
+    XCTAssertEqual(ratio.hat, hat * 1.1, accuracy: 1e-5)
+
+    let fixed = try XCTUnwrap(db.station(id: "test/subordinate-fixed")?.astronomicalBounds)
+    XCTAssertEqual(fixed.lat, lat - 0.2, accuracy: 1e-5)
+    XCTAssertEqual(fixed.hat, hat + 0.3, accuracy: 1e-5)
+
+    // No LAT and HAT to reduce: the current station carries no datums.
+    XCTAssertNil(db.station(id: "test/current")?.astronomicalBounds)
   }
 
   func testReadsTheQualityGateInline() throws {

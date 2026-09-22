@@ -29,12 +29,16 @@ Niue off Pago Pago) puts the subordinate's "LAT" a quarter-metre _above_ its own
 chart datum, which the datum-ordering gate rightly rejects.
 
 That number is still true about what the predictor produces — it is simply the
-floor of a prediction, not a hydrographic datum. Callers that want it should
-apply `offsets.height` to the reference's LAT/HAT themselves, at the same point
-they apply the offsets to the predicted extremes. The reduction is exact for
-both offset kinds: a `ratio` scales the height above chart datum, a `fixed`
-translates it, and both are monotonic in the reference height, so the lowest low
-maps to the lowest low.
+floor of a prediction, not a hydrographic datum. Both readers expose it outside
+`datums`, where no datum ordering applies: `station.astronomical_bounds` in the
+npm package and `station.astronomicalBounds` in the Swift package, each `{ lat,
+hat }` in metres above the station's own chart datum, absent where the station
+predicting for it has no LAT and HAT. For a subordinate that is the reference's
+range with `offsets.height` applied, at the same point the predictor applies the
+offsets to the extremes themselves. The reduction is exact for both offset
+kinds: a `ratio` scales the height above chart datum, a `fixed` translates it,
+and both are monotonic in the reference height, so the lowest low maps to the
+lowest low.
 
 How the values are produced differs by source:
 

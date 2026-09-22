@@ -146,6 +146,8 @@ Stations are either _reference_ or _subordinate_, given by the station's `type` 
 
 Reference stations have their own `harmonic_constituents`, usually derived from a long record of real water level observations. Subordinate stations predict from a nearby reference station's harmonics, adjusted by four `offsets` — two correcting water level and two correcting the time of high and low tide. Reading a subordinate's `harmonic_constituents` or `datums` returns its reference station's values, so both types predict the same way.
 
+`astronomical_bounds` is how low and high a prediction for the station can go — `{ lat, hat }` in metres above its chart datum — with the height offsets applied for a subordinate. It sits outside `datums` because the reduced pair is the floor and ceiling of a prediction rather than a hydrographic datum; [see the datum documentation](https://github.com/openwatersio/tide-database/blob/main/docs/datums.md).
+
 The full field-by-field description lives in [`schemas/station.schema.json`](https://github.com/openwatersio/tide-database/blob/main/schemas/station.schema.json).
 
 ## The database file
