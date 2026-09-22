@@ -66,7 +66,7 @@ const stations: StationInput[] = [
       { name: "M2", amplitude: 1.063, phase: 10.8 },
       { name: "S2", amplitude: 0.268, phase: 25.2 },
     ],
-    datums: { MLLW: 2.419, MSL: 4.443 },
+    datums: { MLLW: 2.419, MSL: 4.443, LAT: 1.8, HAT: 6.1 },
     quality: {
       id: "test/reference",
       accepted: true,
@@ -89,6 +89,9 @@ const stations: StationInput[] = [
     type: "subordinate",
     latitude: 47.7,
     longitude: -122.5,
+    // Subordinates carry a chart datum of their own but no datums; the values
+    // come from the reference.
+    chart_datum: "MLLW",
     offsets: {
       reference: "test/reference",
       time: { high: 12, low: -6 },
@@ -100,6 +103,20 @@ const stations: StationInput[] = [
       score: 0,
       reason: "duplicate",
       redundant: "test/reference",
+    },
+  },
+  {
+    // Sorts after test/subordinate so the id-ordered assertions above it hold.
+    ...identity,
+    id: "test/subordinate-fixed",
+    name: "Subordinate with fixed offsets",
+    type: "subordinate",
+    latitude: 47.8,
+    longitude: -122.6,
+    offsets: {
+      reference: "test/reference",
+      time: { high: 20, low: 10 },
+      height: { high: 0.3, low: -0.2, type: "fixed" },
     },
   },
 ];

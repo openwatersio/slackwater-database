@@ -161,12 +161,28 @@ export interface StationQuality {
   redundant?: string;
 }
 
+/** The floor and ceiling of a station's predictions, in metres above its chart datum. */
+export interface AstronomicalBounds {
+  /** Lowest Astronomical Tide. */
+  lat: number;
+  /** Highest Astronomical Tide. */
+  hat: number;
+}
+
 export interface Station extends StationData {
   id: string;
   country_code: string;
   kind: "tide" | "current";
   current?: CurrentData;
   quality?: StationQuality;
+  /**
+   * Lowest and highest astronomical tide, in metres above this station's chart
+   * datum; absent when the station predicting for this one has no LAT and HAT.
+   * A subordinate's is the reference's range reduced through `offsets.height`,
+   * the floor of a prediction rather than a hydrographic datum — which is why
+   * it is here and not in `datums`. See docs/datums.md.
+   */
+  astronomical_bounds?: AstronomicalBounds;
   /**
    * The credit to display when showing or redistributing this station, ready
    * to render as-is. Derived from `source`; see src/attribution.ts.

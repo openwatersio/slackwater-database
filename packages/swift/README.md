@@ -23,11 +23,17 @@ let m2 = station?.constituents.first { $0.name == "M2" }
 let datums = station?.datums // ["MLLW": 2.419, "MSL": 4.443, ...]
 let shift = station?.chartDatumShift // datums[MSL] - datums[chartDatum]
 
+// How low and high a prediction can go, in metres above the chart datum.
+// Reduced through the offsets for a subordinate.
+let range = station?.astronomicalBounds // (lat: -0.619, hat: 3.681)
+
 // The notice to show wherever the station's data appears.
 let notice = station?.attribution
 ```
 
 `TideDatabase` is a `RandomAccessCollection` of `Station`, in id order. `Station` wraps identity, the quality gate (`accepted`, `score`), constituents, datums, and `attribution`; the rest of the schema — the structured `license` and `source` tables, quality detail, subordinate offsets, current data — is reachable through `station.raw`, the generated FlatBuffers accessor.
+
+A subordinate station's record holds no constituents or datums of its own, only the offsets that correct its reference's. Reading `constituents`, `datums`, `chartDatumShift`, or `astronomicalBounds` on one resolves the reference for you, so both station types answer the same questions. `station.raw` still shows the file as it is, if you need to tell them apart.
 
 Get the database file from the [latest release](https://github.com/openwatersio/tide-database/releases) and bundle it with your app, or fetch it at runtime.
 
