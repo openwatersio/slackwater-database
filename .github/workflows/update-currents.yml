@@ -1,0 +1,131 @@
+name: Update NOAA Currents
+# Keeps the committed bundle in step with NOAA and files a review issue when it moves.
+#
+# Two cadences, because they catch different things:
+#   weekly  — cheap pre-flight (ONE request for the station list). Full extraction only
+#             if a station was added, removed, or reclassified.
+#   monthly — forced full extraction. The pre-flight cannot see NOAA revising the
+#             constituents of a station that already exists; only a bundle diff can.
+#
+# A full extraction is ~2,800 paced requests, ~25 min, verified to complete from a
+# GitHub-hosted runner without throttling failures.
+on:
+  schedule:
+    - cron: "17 13 * * 1" # Mondays — pre-flight
+    - cron: "17 13 1 * *" # 1st of the month — forced
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Run the full extraction even if the station list is unchanged
+        type: boolean
+        default: true
+permissions:
+  contents: write
+  # The workflow pushes a branch and files an issue carrying the review material plus
+  # a one-click compare link.
+  issues: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Pre-flight — has NOAA's station list changed?
+        id: preflight
+        run: |
+          set +e
+          npm run -s check -w sources/noaa-current 2> drift.txt
+          echo "drifted=$([ $? -eq 0 ] && echo false || echo true)" >> "$GITHUB_OUTPUT"
+          cat drift.txt
+
+      - name: Decide whether to extract
+        id: decide
+        run: |
+          FORCE="${{ github.event.schedule == '17 13 1 * *' || inputs.force }}"
+          DRIFTED="${{ steps.preflight.outputs.drifted }}"
+          if [ "$FORCE" = "true" ] || [ "$DRIFTED" = "true" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Station list unchanged and not a forced run — nothing to do."
+          fi
+
+      - name: Full extraction
+        if: steps.decide.outputs.run == 'true'
+        run: |
+          npm run -s extract -w sources/noaa-current -- --pace 300
+          npm run -s lock -w sources/noaa-current
+
+      # Validate BEFORE pushing anything. A human opens the PR from the compare link in
+      # the issue, so CI does run on it eventually — but this gate fires earlier and
+      # cheaper: a truncated extraction never becomes a branch, an issue, or a review
+      # someone has to reason about. Failing here also keeps the bad bundle off origin.
+      - name: Validate the bundle
+        if: steps.decide.outputs.run == 'true'
+        run: npm run -s validate -w sources/noaa-current
+
+      - name: Push the branch and file a review issue if anything changed
+        if: steps.decide.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # `generated` timestamps change on every run; ignore them when deciding
+          # whether there is a real change to review.
+          if git diff --quiet -- sources/noaa-current/currents.json sources/noaa-current/stations.lock.json; then
+            echo "No changes."; exit 0
+          fi
+          CHANGED=$(git diff --numstat -- sources/noaa-current/currents.json | awk '{print $1" added, "$2" removed"}')
+          if [ "$(git diff --numstat -- sources/noaa-current/currents.json sources/noaa-current/stations.lock.json | wc -l)" -gt 0 ] && \
+             [ -z "$(git diff -U0 -- sources/noaa-current/currents.json sources/noaa-current/stations.lock.json | grep '^[+-]' | grep -v '^[+-][+-]' | grep -v '"generated"')" ]; then
+            echo "Only the generated timestamp changed — nothing to review."; exit 0
+          fi
+
+          BRANCH="noaa-station-update-$(date +%Y%m%d)"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add sources/noaa-current/currents.json sources/noaa-current/stations.lock.json
+          git commit -m "data: refresh NOAA current-station bundle"
+          git push -q origin "$BRANCH"
+
+          COMPARE="${{ github.server_url }}/${{ github.repository }}/compare/main...$BRANCH?expand=1"
+
+          {
+            echo "NOAA's current-station data has changed. The refreshed bundle is pushed"
+            echo "to branch [\`$BRANCH\`](${{ github.server_url }}/${{ github.repository }}/tree/$BRANCH)."
+            echo
+            echo "**[→ Open the pull request]($COMPARE)**"
+            echo
+            echo '```'
+            npm run -s validate -w sources/noaa-current 2>&1
+            echo '```'
+            echo
+            echo "Bundle diff: $CHANGED lines."
+            echo
+            if [ -s drift.txt ]; then
+              echo "<details><summary>Station-list drift</summary>"
+              echo; echo '```'; cat drift.txt; echo '```'; echo "</details>"
+            else
+              echo "The station *list* is unchanged — this is an in-place revision of"
+              echo "existing station data, which only a bundle diff can catch."
+            fi
+            echo
+            echo "Review the diff, merge, then cut a TCDB release."
+            echo
+            echo "<sub>Filed as an issue rather than opened as a PR because GITHUB_TOKEN"
+            echo "is refused \`createPullRequest\` on this org. Close this issue once the"
+            echo "branch is merged.</sub>"
+          } > body.md
+
+          # ponytail: one issue per refresh, no dedup against an already-open one.
+          # Refreshes are rare (monthly forced + drift-only weekly); add dedup if
+          # they ever start stacking up unactioned.
+          gh issue create --title "Refresh NOAA current-station bundle ($BRANCH)" --body-file body.md
+
+          # Also surface it on the run itself, so a failed notification isn't the
+          # only trail back to the branch.
+          cat body.md >> "$GITHUB_STEP_SUMMARY"

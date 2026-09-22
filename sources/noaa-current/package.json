@@ -1,0 +1,15 @@
+{
+  "name": "@openwaters/noaa-current",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "check": "node bin/noaa-current-stations.mjs check",
+    "extract": "node bin/noaa-current-stations.mjs extract currents.json",
+    "golden": "node bin/noaa-current-stations.mjs golden",
+    "lock": "node bin/noaa-current-stations.mjs lock stations.lock.json",
+    "validate": "node bin/noaa-current-stations.mjs validate currents.json",
+    "test": "node --test test/*.node-test.js"
+  }
+}
