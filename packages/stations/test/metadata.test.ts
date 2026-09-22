@@ -126,10 +126,17 @@ describe("metadata resolution", () => {
       },
     };
     const result = resolveMetadata(
-      { ...baseStation, country: "Canada", country_code: "CA", region: "02" },
+      {
+        ...baseStation,
+        name: "Alert Bay BC",
+        country: "Canada",
+        country_code: "CA",
+        region: "02",
+      },
       { geocoder: { nearest: () => canada, near: () => [canada] } },
     );
 
+    expect(result.name).toBe("Alert Bay");
     expect(result.region).toBe("British Columbia");
     expect(result.region_code).toBe("CA-BC");
     expect(result.context).toBe("Sooke, British Columbia");

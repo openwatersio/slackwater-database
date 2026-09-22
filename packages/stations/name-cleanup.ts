@@ -113,6 +113,13 @@ const SMALL_WORDS = new Set([
   "het",
 ]);
 
+// Long all-caps words are recased below, so known acronyms must opt out.
+const PRESERVED_CAPS = new Set(
+  "NNE NE ENE ESE SE SSE SSW SW WSW WNW NW NNW US BC USCG LB ICW ICWW RR NM MBTS MARAD GPS GNSS API CBS OPW USCGS NOAA AFB CBBT AWG NERR HBR HVN NMCI MRMS ANVSA LAWMA COCO VALI COX WC SA".split(
+    " ",
+  ),
+);
+
 // Network prefixes to strip (the remainder is the actual place name)
 const NETWORK_PREFIXES = ["RMN_", "IOC_"];
 
@@ -152,8 +159,13 @@ const FRENCH_HYPHENATING_COUNTRIES = new Set([
  * that suits one publisher's spelling has to be harmless to the rest.
  * `country` is what keeps that tractable: it decides which region codes are
  * valid and which naming conventions apply.
+ * `existingRegionCode` guards removal of a space-separated trailing code.
  */
-export function cleanName(raw: string, country: string): CleanNameResult {
+export function cleanName(
+  raw: string,
+  country: string,
+  existingRegionCode?: string,
+): CleanNameResult {
   const original = raw;
   let name = raw;
   let region: string | undefined;
@@ -192,6 +204,24 @@ export function cleanName(raw: string, country: string): CleanNameResult {
   // Step 3: Replace underscores with spaces
   name = name.replace(/_/g, " ");
 
+  // A few sources append an already-known state or province with a space.
+  const spacedRegion = name.match(/ ([A-Za-z]{2})$/)?.[1]?.toUpperCase();
+  const expectedRegion = existingRegionCode?.toUpperCase().split("-").at(-1);
+  const validRegions =
+    country === "United States"
+      ? US_STATES
+      : country === "Canada"
+        ? CA_PROVINCES
+        : undefined;
+  if (
+    spacedRegion &&
+    spacedRegion === expectedRegion &&
+    validRegions?.has(spacedRegion)
+  ) {
+    region = spacedRegion;
+    name = name.slice(0, -3);
+  }
+
   // Step 4: Split PascalCase
   // Insert space between lowercase→uppercase transitions, except inside a
   // Mc/Mac surname, which is one word however it is cased: "PortAngeles" is
@@ -211,7 +241,7 @@ export function cleanName(raw: string, country: string): CleanNameResult {
   name = name.replace(/(?<=\s|^)([a-zA-Z]{4,})\d$/, "$1");
 
   // Step 6: Title case
-  name = toTitleCase(name);
+  name = toTitleCase(name, country);
 
   // Step 7: Post-processing — French-style hyphenation for small prepositions
   // "Boulogne sur Mer" → "Boulogne-sur-Mer", "Aiguillon sur Mer" → "Aiguillon-sur-Mer"
@@ -239,19 +269,42 @@ export function cleanName(raw: string, country: string): CleanNameResult {
   return { name, region, isOpaque, original };
 }
 
-function toTitleCase(str: string): string {
-  return str
-    .split(/\s+/)
+function toTitleCase(str: string, country: string): string {
+  const words = str.split(/\s+/);
+  const shouting = !/[a-z]/.test(str);
+  const allCaps = words.map((word) => {
+    const letters = word.replace(/[^A-Za-z]/g, "");
+    return letters.length > 1 && letters === letters.toUpperCase();
+  });
+
+  return words
     .map((word, i) => {
-      if (i === 0) return capitalize(word);
       const bare = word.replace(/[)\]},]+$/, "");
-      if (SMALL_WORDS.has(bare.toLowerCase())) return word.toLowerCase();
-      return capitalize(word);
+      if (
+        i === words.length - 1 &&
+        word === word.toUpperCase() &&
+        (US_STATES.has(bare) || CA_PROVINCES.has(bare))
+      ) {
+        return word;
+      }
+      if (
+        i > 0 &&
+        SMALL_WORDS.has(bare.toLowerCase()) &&
+        !(country === "United States" && bare.toLowerCase() === "la")
+      ) {
+        return word.toLowerCase();
+      }
+      return capitalize(
+        word,
+        shouting ||
+          word.replace(/[^A-Za-z]/g, "").length >= 4 ||
+          (allCaps[i] && (allCaps[i - 1] || allCaps[i + 1])),
+      );
     })
     .join(" ");
 }
 
-function capitalize(word: string): string {
+function capitalize(word: string, recaseAllCaps = false): string {
   if (!word) return word;
   // Brackets wrap a word without being part of it. Capitalise what is inside
   // them and put them back, or the bracket absorbs the capital the word was
@@ -261,10 +314,23 @@ function capitalize(word: string): string {
   // ("U.S.") rather than wrapping it.
   const wrapped = /^([([{]+)?(.+?)([)\]}]+)?$/.exec(word);
   if (wrapped && (wrapped[1] ?? wrapped[3])) {
-    return (wrapped[1] ?? "") + capitalize(wrapped[2]!) + (wrapped[3] ?? "");
+    return (
+      (wrapped[1] ?? "") +
+      capitalize(wrapped[2]!, recaseAllCaps) +
+      (wrapped[3] ?? "")
+    );
   }
-  // Preserve all-caps words (acronyms like "NW", "SE", "MBTS")
-  if (word === word.toUpperCase() && /^[A-Z]+(?:&[A-Z]+)*$/.test(word)) {
+  const letters = word.replace(/[^A-Za-z]/g, "");
+  if (letters === letters.toUpperCase() && PRESERVED_CAPS.has(letters)) {
+    return word;
+  }
+  if (/^[A-Z]+(?:&[A-Z]+)+$/.test(word)) return word;
+  // Preserve isolated acronyms in otherwise human-cased names.
+  if (
+    !recaseAllCaps &&
+    word === word.toUpperCase() &&
+    /^[A-Z]+(?:&[A-Z]+)*$/.test(word)
+  ) {
     return word;
   }
   // Preserve dotted acronyms ("U.S.", "N.J."), but not abbreviations like

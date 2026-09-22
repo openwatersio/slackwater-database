@@ -372,9 +372,20 @@ export function resolveMetadata(
     (zoneCountry === country.iso2
       ? geocoder.near(position[0], position[1], 100, 100).find(sameCountry)
       : undefined);
+  const regionCode =
+    explicitLocation?.regionCode ??
+    station.region_code ??
+    (place
+      ? isoSubdivisionCode(
+          country.iso2,
+          place.place.admin1,
+          place.place.admin1Code,
+        )
+      : undefined);
   const cleaned = cleanName(
     station.name ?? registry?.name ?? "",
     country.country,
+    regionCode?.split("-").at(-1) ?? station.region,
   );
   const split = splitQualifier(cleaned.name);
   const name = registry?.name ?? correction?.name ?? split.name;
@@ -425,16 +436,6 @@ export function resolveMetadata(
       place?.place.admin1,
   );
 
-  const regionCode =
-    explicitLocation?.regionCode ??
-    station.region_code ??
-    (place
-      ? isoSubdivisionCode(
-          country.iso2,
-          place.place.admin1,
-          place.place.admin1Code,
-        )
-      : undefined);
   if (regionCode && !regionCode.startsWith(`${country.iso2}-`))
     throw new Error(
       `${station.id}: region code ${regionCode} does not match ${country.iso2}`,
