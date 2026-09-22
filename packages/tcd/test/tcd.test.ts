@@ -164,7 +164,9 @@ describe("XTide TCD", () => {
       const about = getXTideAbout("Hanalei Bay, HI, United States");
       expect(about.get("Coordinates")).toMatch(/^22\.2150. N, 159\.5020. W$/);
       expect(about.get("Time zone")).toBe("Pacific/Honolulu");
-      expect(about.get("Reference")).toBe("Nawiliwili, HI, United States");
+      expect(about.get("Reference")).toBe(
+        "Nawiliwili, HI, United States (1611400)",
+      );
     });
   });
 

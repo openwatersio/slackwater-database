@@ -372,7 +372,7 @@ export function resolveMetadata(
     (zoneCountry === country.iso2
       ? geocoder.near(position[0], position[1], 100, 100).find(sameCountry)
       : undefined);
-  const regionCode =
+  const authoritativeRegionCode =
     explicitLocation?.regionCode ??
     station.region_code ??
     (place
@@ -385,8 +385,11 @@ export function resolveMetadata(
   const cleaned = cleanName(
     station.name ?? registry?.name ?? "",
     country.country,
-    regionCode?.split("-").at(-1) ?? station.region,
+    authoritativeRegionCode ?? station.region,
   );
+  const regionCode =
+    authoritativeRegionCode ??
+    (cleaned.region ? `${country.iso2}-${cleaned.region}` : undefined);
   const split = splitQualifier(cleaned.name);
   const name = registry?.name ?? correction?.name ?? split.name;
   if (!nonEmpty(name)) throw new Error(`${station.id}: no name`);
@@ -433,6 +436,7 @@ export function resolveMetadata(
     "region",
     explicitLocation?.region ??
       normalizedRegion(station.region, country.iso2, place?.place.admin1) ??
+      normalizedRegion(cleaned.region, country.iso2, undefined) ??
       place?.place.admin1,
   );
 

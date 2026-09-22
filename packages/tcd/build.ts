@@ -195,7 +195,7 @@ const REFERENCE_NAME_MAX_LEN = 88;
 // build_tide_db: reads `<subordinatestation name="…"` into that same buffer and silently drops stations that overflow it
 const SUBORDINATE_NAME_MAX_LEN = 63;
 
-/** Subordinates find their reference by name, so NOAA currents that share a name get their source id appended. */
+/** Subordinates find their reference by name, so duplicate names get their source id appended. */
 function buildStationNames(stations: Station[]): Map<string, string> {
   const counts = new Map<string, number>();
   for (const s of stations) {
@@ -204,11 +204,11 @@ function buildStationNames(stations: Station[]): Map<string, string> {
   }
 
   const names = new Map<string, string>();
-  const currentNames = new Set<string>();
+  const stationNames = new Set<string>();
   for (const s of stations) {
     let parts = nameParts(s);
     const suffix =
-      s.kind === "current" && counts.get(joinName(s, parts))! > 1
+      counts.get(joinName(s, parts))! > 1
         ? ` (${s.source.id})`
         : "";
     const maxLen =
@@ -226,12 +226,10 @@ function buildStationNames(stations: Station[]): Map<string, string> {
         `Station name "${name}" exceeds ${maxLen} chars (${s.id})`,
       );
     }
-    if (s.kind === "current") {
-      if (currentNames.has(name)) {
-        throw new Error(`Duplicate current station name "${name}" (${s.id})`);
-      }
-      currentNames.add(name);
+    if (stationNames.has(name)) {
+      throw new Error(`Duplicate station name "${name}" (${s.id})`);
     }
+    stationNames.add(name);
     names.set(s.id, name);
   }
   return names;
