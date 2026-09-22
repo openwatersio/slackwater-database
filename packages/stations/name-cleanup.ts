@@ -145,7 +145,13 @@ const FRENCH_HYPHENATING_COUNTRIES = new Set([
 ]);
 
 /**
- * Deterministic pattern-based name cleanup for TICON station names.
+ * A source's raw station name reduced to a display name, with any trailing US
+ * or Canadian region code lifted out into `region`.
+ *
+ * Every station goes through this, whichever publisher it came from, so a rule
+ * that suits one publisher's spelling has to be harmless to the rest.
+ * `country` is what keeps that tractable: it decides which region codes are
+ * valid and which naming conventions apply.
  */
 export function cleanName(raw: string, country: string): CleanNameResult {
   const original = raw;
