@@ -210,6 +210,110 @@ describe("cleanName", () => {
     test("does not hyphenate when at start of name", () => {
       expect(cleanName("Le_Havre", "France").name).toBe("Le Havre");
     });
+
+    test("leaves Spanish names alone", () => {
+      expect(cleanName("Bahia_De_Chame", "Panama").name).toBe("Bahia de Chame");
+      expect(cleanName("Isla_De_Guanaja", "Honduras").name).toBe(
+        "Isla de Guanaja",
+      );
+    });
+
+    test("leaves American names alone", () => {
+      expect(cleanName("Havre_De_Grace", "United States").name).toBe(
+        "Havre de Grace",
+      );
+      expect(cleanName("Bayou_La_Batre", "United States").name).toBe(
+        "Bayou la Batre",
+      );
+    });
+
+    test("hyphenates canonical French territory country names", () => {
+      expect(
+        cleanName("Port_De_Crozet", "French Southern and Antarctic Lands").name,
+      ).toBe("Port-de-Crozet");
+      expect(cleanName("Baie_De_Marigot", "Saint Barthélemy").name).toBe(
+        "Baie-de-Marigot",
+      );
+    });
+  });
+
+  describe("bracketed qualifiers", () => {
+    test("capitalizes the word inside the bracket", () => {
+      expect(cleanName("Apia_(Observatory)", "Samoa").name).toBe(
+        "Apia (Observatory)",
+      );
+      expect(
+        cleanName("Ferry_Reach_(Biological_Station)", "Bermuda").name,
+      ).toBe("Ferry Reach (Biological Station)");
+    });
+
+    test("keeps an acronym inside a bracket", () => {
+      expect(
+        cleanName("Annapolis_(US_Naval_Academy)", "United States").name,
+      ).toBe("Annapolis (US Naval Academy)");
+    });
+
+    test("keeps a dotted acronym inside a bracket", () => {
+      expect(cleanName("Wake_Island_(U.S.)", "United States").name).toBe(
+        "Wake Island (U.S.)",
+      );
+    });
+
+    test("keeps small words lowercase before a closing bracket", () => {
+      expect(
+        cleanName("Mills Point (south of), Wicomico Riv., Md.", "United States")
+          .name,
+      ).toBe("Mills Point (South of), Wicomico Riv., Md.");
+    });
+
+    test("keeps an ampersand acronym uppercase inside a bracket", () => {
+      expect(
+        cleanName("Apalachicola River (A&N RR bridge)", "United States").name,
+      ).toBe("Apalachicola River (A&N RR Bridge)");
+    });
+  });
+
+  describe("possessives", () => {
+    test("keeps the s after an apostrophe lowercase", () => {
+      expect(cleanName("Marthas_Vineyard", "United States").name).toBe(
+        "Marthas Vineyard",
+      );
+      expect(cleanName("Martha's_Vineyard", "United States").name).toBe(
+        "Martha's Vineyard",
+      );
+      expect(cleanName("Peter's_Ditch", "United States").name).toBe(
+        "Peter's Ditch",
+      );
+    });
+
+    test("still capitalizes a real hyphenated compound", () => {
+      expect(cleanName("Winston-Salem", "United States").name).toBe(
+        "Winston-Salem",
+      );
+    });
+  });
+
+  describe("Mc and Mac surnames", () => {
+    test("does not split a Mc name", () => {
+      expect(cleanName("Fort_McHenry_Marsh", "United States").name).toBe(
+        "Fort McHenry Marsh",
+      );
+      expect(cleanName("McClellanville", "United States").name).toBe(
+        "McClellanville",
+      );
+    });
+
+    test("does not split a Mac name", () => {
+      expect(cleanName("MacLeod_Harbor", "United States").name).toBe(
+        "MacLeod Harbor",
+      );
+    });
+
+    test("still splits PascalCase", () => {
+      expect(cleanName("PortAngeles", "United States").name).toBe(
+        "Port Angeles",
+      );
+    });
   });
 
   describe("D' apostrophe", () => {

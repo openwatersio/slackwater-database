@@ -42,7 +42,7 @@ const TEST_STATIONS = [
 // ebb offsets differ, so a swapped mapping shows up.
 const CURRENT_REFERENCE = {
   id: "noaa/ACT1616",
-  name: "Pollock Rip Channel (butler Hole), Massachusetts Current",
+  name: "Pollock Rip Channel (Butler Hole), Massachusetts Current",
 };
 const CURRENT_SUBORDINATE = {
   id: "noaa/ACT1626",

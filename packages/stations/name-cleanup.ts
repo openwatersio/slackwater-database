@@ -117,7 +117,41 @@ const SMALL_WORDS = new Set([
 const NETWORK_PREFIXES = ["RMN_", "IOC_"];
 
 /**
- * Deterministic pattern-based name cleanup for TICON station names.
+ * Countries whose place names hyphenate a linking preposition
+ * ("Boulogne-sur-Mer"). Metropolitan France and the overseas départements and
+ * collectivités, where the toponymy is French and the convention holds.
+ *
+ * Canada is deliberately absent: Québec hyphenates, but the rest does not, and
+ * a Québec name arrives hyphenated from its source rather than needing one
+ * inferred. Belgium, Switzerland and Luxembourg are absent for the same
+ * reason — partly French-speaking, so the country cannot stand in for the
+ * language of any one name.
+ */
+const FRENCH_HYPHENATING_COUNTRIES = new Set([
+  "France",
+  "French Guiana",
+  "French Polynesia",
+  "French Southern and Antarctic Lands",
+  "Guadeloupe",
+  "Martinique",
+  "Mayotte",
+  "Monaco",
+  "New Caledonia",
+  "Reunion",
+  "Saint Barthélemy",
+  "Saint Martin",
+  "Saint Pierre and Miquelon",
+  "Wallis and Futuna",
+]);
+
+/**
+ * A source's raw station name reduced to a display name, with any trailing US
+ * or Canadian region code lifted out into `region`.
+ *
+ * Every station goes through this, whichever publisher it came from, so a rule
+ * that suits one publisher's spelling has to be harmless to the rest.
+ * `country` is what keeps that tractable: it decides which region codes are
+ * valid and which naming conventions apply.
  */
 export function cleanName(raw: string, country: string): CleanNameResult {
   const original = raw;
@@ -159,8 +193,16 @@ export function cleanName(raw: string, country: string): CleanNameResult {
   name = name.replace(/_/g, " ");
 
   // Step 4: Split PascalCase
-  // Insert space between lowercase→uppercase transitions
-  name = name.replace(/([a-z])([A-Z])/g, "$1 $2");
+  // Insert space between lowercase→uppercase transitions, except inside a
+  // Mc/Mac surname, which is one word however it is cased: "PortAngeles" is
+  // PascalCase to split, "McAllister" and "MacLeod" are not.
+  name = name.replace(
+    /([a-z])([A-Z])/g,
+    (match, lower, upper, offset: number, whole: string) =>
+      /(?:^|[^A-Za-z])(?:Mc|Mac)$/.test(whole.slice(0, offset + 1))
+        ? match
+        : `${lower} ${upper}`,
+  );
   // Insert space between uppercase run and uppercase+lowercase (e.g., "ABCDef" → "ABC Def")
   name = name.replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
 
@@ -173,7 +215,15 @@ export function cleanName(raw: string, country: string): CleanNameResult {
 
   // Step 7: Post-processing — French-style hyphenation for small prepositions
   // "Boulogne sur Mer" → "Boulogne-sur-Mer", "Aiguillon sur Mer" → "Aiguillon-sur-Mer"
-  name = frenchHyphenation(name);
+  //
+  // French place names hyphenate; Spanish and English ones sharing the same
+  // prepositions do not. Applied by country, because the prepositions alone
+  // cannot tell them apart — "de" and "la" turned "Bahia de Chame" into
+  // "Bahia-de-Chame" and Alabama's "Bayou la Batre" into "Bayou-la-Batre",
+  // and NOAA spells "Havre de Grace" with spaces too.
+  if (FRENCH_HYPHENATING_COUNTRIES.has(country)) {
+    name = frenchHyphenation(name);
+  }
 
   // Handle D' apostrophe: "Dumont d Urville" → "Dumont d'Urville"
   name = name.replace(
@@ -194,7 +244,8 @@ function toTitleCase(str: string): string {
     .split(/\s+/)
     .map((word, i) => {
       if (i === 0) return capitalize(word);
-      if (SMALL_WORDS.has(word.toLowerCase())) return word.toLowerCase();
+      const bare = word.replace(/[)\]},]+$/, "");
+      if (SMALL_WORDS.has(bare.toLowerCase())) return word.toLowerCase();
       return capitalize(word);
     })
     .join(" ");
@@ -202,8 +253,29 @@ function toTitleCase(str: string): string {
 
 function capitalize(word: string): string {
   if (!word) return word;
+  // Brackets wrap a word without being part of it. Capitalise what is inside
+  // them and put them back, or the bracket absorbs the capital the word was
+  // owed: "(Observatory)" came back "(observatory)", and "(US" stopped
+  // matching the acronym test below because of the leading "(". Brackets
+  // only, not punctuation generally — a trailing "." belongs to the word
+  // ("U.S.") rather than wrapping it.
+  const wrapped = /^([([{]+)?(.+?)([)\]}]+)?$/.exec(word);
+  if (wrapped && (wrapped[1] ?? wrapped[3])) {
+    return (wrapped[1] ?? "") + capitalize(wrapped[2]!) + (wrapped[3] ?? "");
+  }
   // Preserve all-caps words (acronyms like "NW", "SE", "MBTS")
-  if (word === word.toUpperCase() && /^[A-Z]+$/.test(word)) {
+  if (word === word.toUpperCase() && /^[A-Z]+(?:&[A-Z]+)*$/.test(word)) {
+    return word;
+  }
+  // Preserve dotted acronyms ("U.S.", "N.J."), but not abbreviations like
+  // "ST.", which title-case as the words they stand for.
+  if (/^(?:[A-Z]\.)+$/.test(word)) {
+    return word;
+  }
+  // Preserve the interior capital of a Mc/Mac surname. The PascalCase split
+  // above already leaves "McHenry" whole; without this it arrives here and
+  // comes back "Mchenry".
+  if (/^(?:Mc|Mac)[A-Z][a-z]/.test(word)) {
     return word;
   }
   // Preserve code-like words (uppercase letters + digits: CRMS0572, HC1, S197)
@@ -212,12 +284,18 @@ function capitalize(word: string): string {
   }
   // Handle hyphenated or apostrophe-separated words: capitalize each segment
   if (word.includes("-") || word.includes("'")) {
-    return word
-      .split(/([-'])/)
+    const parts = word.split(/([-'])/);
+    return parts
       .map((seg, i) => {
         // Preserve separators
         if (seg === "-" || seg === "'") return seg;
         if (!seg) return seg;
+        // A possessive is not a compound: "Martha's" kept coming back
+        // "Martha'S" because the s after the apostrophe was capitalised like
+        // the second half of a hyphenated name.
+        if (parts[i - 1] === "'" && seg.toLowerCase() === "s") {
+          return seg.toLowerCase();
+        }
         // Lowercase small words in middle segments (after first separator)
         if (i > 0 && SMALL_WORDS.has(seg.toLowerCase())) {
           return seg.toLowerCase();
