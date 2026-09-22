@@ -1,5 +1,8 @@
-import { describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import * as flatbuffers from "flatbuffers";
+import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { buildRwsPredictions } from "../src/rws-predictions/builder.ts";
 import { openRwsPredictions } from "../src/rws-predictions/reader.ts";
 import { Root } from "../src/generated/fbs/neaps-rws.ts";
@@ -7,6 +10,7 @@ import {
   discoverRwsSeries,
   normalizeEvents,
   normalizeHeightChunks,
+  runRwsPrototype,
 } from "../../../sources/rws/prototype.ts";
 import type { RwsPredictionsInput } from "../src/rws-predictions/types.ts";
 
@@ -225,6 +229,79 @@ function validHeightChunks() {
       { time: "2026-07-01T01:30:00.000+01:00", value: 20 },
     ]),
   ];
+}
+
+const temporaryDirectories: string[] = [];
+
+afterEach(async () => {
+  await Promise.all(
+    temporaryDirectories
+      .splice(0)
+      .map((directory) => rm(directory, { recursive: true, force: true })),
+  );
+});
+
+async function prototypePaths() {
+  const root = await mkdtemp(join(tmpdir(), "rws-prototype-test-"));
+  temporaryDirectories.push(root);
+  return { cacheDir: join(root, "cache"), outPath: join(root, "fixture.rwsp") };
+}
+
+function providerTime(timestampMs: number): string {
+  return new Date(timestampMs + 3_600_000).toISOString().replace("Z", "+01:00");
+}
+
+function runHeightResponse(code: string, datum: string) {
+  return heightResponse(
+    code,
+    datum,
+    [0, 600_000, 1_200_000, 1_800_000].map((offset, index) => ({
+      time: providerTime(startMs + offset),
+      value: index,
+    })),
+  );
+}
+
+function runEventResponse(code: string, datum: string, grouping: string) {
+  return eventResponse(code, datum, grouping, [
+    {
+      time: providerTime(startMs + 300_000),
+      type: "hoogwater",
+      height: 91,
+    },
+    {
+      time: providerTime(startMs + 900_000),
+      type: "laagwater",
+      height: -34,
+    },
+  ]);
+}
+
+function rwsFetch(failHeightCode?: string) {
+  const bodies: unknown[] = [];
+  const fetch = vi.fn(
+    async (_url: string | URL | Request, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body));
+      bodies.push(body);
+      if (body.CatalogusFilter)
+        return new Response(JSON.stringify(catalogFixture), { status: 200 });
+      const code = body.Locatie.Code as string;
+      const grouping = body.AquoPlusWaarnemingMetadata.AquoMetadata.Groepering
+        ?.Code as string | undefined;
+      if (!grouping && code === failHeightCode)
+        return new Response("service error", { status: 500 });
+      const datum = code === "nap" ? "NAP" : "MSL";
+      return new Response(
+        JSON.stringify(
+          grouping
+            ? runEventResponse(code, datum, grouping)
+            : runHeightResponse(code, datum),
+        ),
+        { status: 200 },
+      );
+    },
+  );
+  return { fetch: fetch as unknown as typeof globalThis.fetch, bodies };
 }
 
 describe("RWS predictions companion", () => {
@@ -592,5 +669,139 @@ describe("RWS response normalization", () => {
     expect(() => discoverRwsSeries(duplicate)).toThrow(
       /duplicate RWS location code nap/,
     );
+  });
+});
+
+describe("RWS prototype run", () => {
+  test("fetches, caches, builds, measures, and replays deterministically", async () => {
+    const paths = await prototypePaths();
+    const source = rwsFetch();
+    const options = {
+      ...paths,
+      fetch: source.fetch,
+      startMs,
+      endMs: bounds.endMs,
+      targetStartMs: startMs,
+      targetEndMs: startMs + 3_600_000,
+      nowMs: Date.parse("2026-09-21T12:00:00.000Z"),
+    };
+
+    const measurements = await runRwsPrototype(options);
+    const bytes = await readFile(paths.outPath);
+    const database = openRwsPredictions(bytes);
+    expect(database.station("rws/nap")?.height(0)).toBe(0);
+    expect(database.station("rws/msl")?.datum).toBe("MSL");
+    expect(source.bodies).toHaveLength(5);
+    expect(source.bodies).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ CatalogusFilter: expect.any(Object) }),
+        expect.objectContaining({ Locatie: { Code: "nap" } }),
+        expect.objectContaining({ Locatie: { Code: "msl" } }),
+        expect.objectContaining({
+          AquoPlusWaarnemingMetadata: {
+            AquoMetadata: { Groepering: { Code: "GETETBRKD2" } },
+          },
+        }),
+        expect.objectContaining({
+          AquoPlusWaarnemingMetadata: {
+            AquoMetadata: { Groepering: { Code: "GETETBRKDMSL2" } },
+          },
+        }),
+      ]),
+    );
+    const cacheFiles = await readdir(paths.cacheDir);
+    expect(cacheFiles).toHaveLength(5);
+    const cached = JSON.parse(
+      await readFile(join(paths.cacheDir, cacheFiles[0]!), "utf8"),
+    );
+    expect(cached).toEqual({
+      fetchedAtMs: options.nowMs,
+      url: expect.any(String),
+      body: expect.any(Object),
+      sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
+      responseText: expect.any(String),
+    });
+    expect(
+      (await readdir(join(paths.outPath, ".."))).some((name) =>
+        name.includes(".tmp-"),
+      ),
+    ).toBe(false);
+    expect(measurements.measured).toMatchObject({
+      stationCount: 2,
+      napStationCount: 1,
+      mslStationCount: 1,
+      sampleCount: 6,
+      eventCount: 4,
+    });
+    for (const value of [
+      measurements.measured.encodedBytes,
+      measurements.measured.gzipBytes,
+      measurements.measured.bytesPerStation,
+      measurements.measured.bytesPerSample,
+      measurements.measured.independentStationGzipBytes,
+      measurements.measured.buildMilliseconds,
+      measurements.measured.lookupMicroseconds,
+      measurements.projected.rawBytes,
+      measurements.projected.gzipBytes,
+    ])
+      expect(value).toBeGreaterThan(0);
+    expect(measurements.projected.sampleCount).toBe(12);
+
+    const offline = vi.fn(async () => {
+      throw new Error("network must not be used");
+    }) as unknown as typeof globalThis.fetch;
+    const replay = await runRwsPrototype({
+      ...options,
+      fetch: offline,
+      nowMs: options.nowMs + 1,
+    });
+    expect(offline).not.toHaveBeenCalled();
+    expect(await readFile(paths.outPath)).toEqual(bytes);
+    expect(replay.measured.encodedBytes).toBe(
+      measurements.measured.encodedBytes,
+    );
+  });
+
+  test("rejects a corrupt cache entry before parsing it", async () => {
+    const paths = await prototypePaths();
+    const source = rwsFetch();
+    const options = {
+      ...paths,
+      fetch: source.fetch,
+      startMs,
+      endMs: bounds.endMs,
+      targetStartMs: startMs,
+      targetEndMs: startMs + 3_600_000,
+      nowMs: Date.parse("2026-09-21T12:00:00.000Z"),
+    };
+    await runRwsPrototype(options);
+    const file = join(paths.cacheDir, (await readdir(paths.cacheDir))[0]!);
+    const cached = JSON.parse(await readFile(file, "utf8"));
+    cached.responseText += " ";
+    await writeFile(file, JSON.stringify(cached));
+    await expect(runRwsPrototype(options)).rejects.toThrow(/cache.*checksum/);
+  });
+
+  test("preserves an existing artifact after a partial HTTP failure", async () => {
+    const paths = await prototypePaths();
+    await writeFile(paths.outPath, "known-good");
+    const source = rwsFetch("nap");
+    await expect(
+      runRwsPrototype({
+        ...paths,
+        fetch: source.fetch,
+        startMs,
+        endMs: bounds.endMs,
+        targetStartMs: startMs,
+        targetEndMs: startMs + 3_600_000,
+        nowMs: Date.parse("2026-09-21T12:00:00.000Z"),
+      }),
+    ).rejects.toThrow(/HTTP 500/);
+    expect(await readFile(paths.outPath, "utf8")).toBe("known-good");
+    expect(
+      (await readdir(join(paths.outPath, ".."))).some((name) =>
+        name.includes(".tmp-"),
+      ),
+    ).toBe(false);
   });
 });

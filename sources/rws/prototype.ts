@@ -1,5 +1,13 @@
+import { createHash } from "node:crypto";
+import { gzipSync } from "node:zlib";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { dirname, join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+import { buildRwsPredictions } from "../../packages/database/src/rws-predictions/builder.ts";
+import { openRwsPredictions } from "../../packages/database/src/rws-predictions/reader.ts";
 import type {
   RwsEventInput,
+  RwsPredictionsInput,
   RwsSourceMetadata,
   RwsStationInput,
 } from "../../packages/database/src/rws-predictions/types.ts";
@@ -16,6 +24,191 @@ export type RwsSeries = {
 
 type Bounds = { startMs: number; endMs: number };
 type JsonRecord = Record<string, unknown>;
+
+export type PrototypeOptions = {
+  fetch: typeof fetch;
+  cacheDir: string;
+  outPath: string;
+  startMs: number;
+  endMs: number;
+  targetStartMs: number;
+  targetEndMs: number;
+  nowMs: number;
+};
+
+export type PrototypeMeasurements = {
+  measured: {
+    startMs: number;
+    endMs: number;
+    stationCount: number;
+    napStationCount: number;
+    mslStationCount: number;
+    sampleCount: number;
+    eventCount: number;
+    encodedBytes: number;
+    gzipBytes: number;
+    bytesPerStation: number;
+    bytesPerSample: number;
+    independentStationGzipBytes: number;
+    buildMilliseconds: number;
+    lookupMicroseconds: number;
+  };
+  projected: {
+    startMs: number;
+    endMs: number;
+    sampleCount: number;
+    rawBytes: number;
+    gzipBytes: number;
+    gate: "one-file" | "full-window-required" | "shards-required";
+  };
+};
+
+const CATALOG_URL =
+  "https://ddapi20-waterwebservices.rijkswaterstaat.nl/METADATASERVICES/OphalenCatalogus";
+const OBSERVATIONS_URL =
+  "https://ddapi20-waterwebservices.rijkswaterstaat.nl/ONLINEWAARNEMINGENSERVICES/OphalenWaarnemingen";
+const SOURCE_URL = "https://rijkswaterstaatdata.nl/waterdata/";
+const LICENSE_URL = "https://creativecommons.org/publicdomain/zero/1.0/";
+
+export async function runRwsPrototype(
+  options: PrototypeOptions,
+): Promise<PrototypeMeasurements> {
+  const catalogBody = {
+    CatalogusFilter: {
+      Compartimenten: true,
+      Grootheden: true,
+      Eenheden: true,
+      Hoedanigheden: true,
+      ProcesTypes: true,
+      Groeperingen: true,
+    },
+  };
+  const catalog = await fetchCachedJson(CATALOG_URL, catalogBody, options);
+  const series = discoverRwsSeries(catalog.value);
+  if (series.length === 0)
+    throw new Error("RWS catalog contains no height stations");
+  const stations: RwsStationInput[] = [];
+  let retrievedAtMs = catalog.fetchedAtMs;
+  for (const item of series) {
+    const height = await fetchCachedJson(
+      OBSERVATIONS_URL,
+      observationBody(item.code, options, {
+        Grootheid: { Code: "WATHTE" },
+        ProcesType: "astronomisch",
+      }),
+      options,
+    );
+    retrievedAtMs = Math.max(retrievedAtMs, height.fetchedAtMs);
+    const station = normalizeHeightChunks(item, [height.value], options);
+    if (item.eventGrouping) {
+      const events = await fetchCachedJson(
+        OBSERVATIONS_URL,
+        observationBody(item.code, options, {
+          Groepering: { Code: item.eventGrouping },
+        }),
+        options,
+      );
+      retrievedAtMs = Math.max(retrievedAtMs, events.fetchedAtMs);
+      station.events = normalizeEvents(item, events.value, options);
+    }
+    stations.push(station);
+  }
+  if (stations.length !== series.length)
+    throw new Error(
+      `built ${stations.length} of ${series.length} RWS stations`,
+    );
+
+  const rootInput: RwsPredictionsInput = {
+    formatMajor: 1,
+    datasetVersion: "rws-prototype-2026-07",
+    retrievedAtMs,
+    catalogRequest: JSON.stringify({ url: CATALOG_URL, body: catalogBody }),
+    catalogSha256: catalog.sha256,
+    sourceUrl: SOURCE_URL,
+    licenseUrl: LICENSE_URL,
+    supportedStartMs: options.startMs,
+    supportedEndMs: options.endMs,
+    refreshAfterMs: options.endMs,
+    stations,
+  };
+  const buildStarted = performance.now();
+  const bytes = buildRwsPredictions(rootInput);
+  const buildMilliseconds = performance.now() - buildStarted;
+  const database = openRwsPredictions(bytes);
+  const lookupId = stations[Math.floor(stations.length / 2)]!.id;
+  const lookupStarted = performance.now();
+  for (let index = 0; index < 1_000; index++) {
+    if (database.station(lookupId)?.id !== lookupId)
+      throw new Error(`keyed lookup failed for ${lookupId}`);
+  }
+  const lookupMicroseconds =
+    ((performance.now() - lookupStarted) * 1_000) / 1_000;
+
+  let independentStationGzipBytes = 0;
+  for (const station of stations) {
+    independentStationGzipBytes += gzipSync(
+      buildRwsPredictions({ ...rootInput, stations: [station] }),
+      { level: 9 },
+    ).length;
+  }
+  const sampleCount = stations.reduce(
+    (total, station) => total + station.heightsCm.length,
+    0,
+  );
+  const eventCount = stations.reduce(
+    (total, station) => total + station.events.length,
+    0,
+  );
+  const ratio =
+    (options.targetEndMs - options.targetStartMs) /
+    (options.endMs - options.startMs);
+  const projectedSampleCount = Math.round(sampleCount * ratio);
+  const projectedGzipBytes = Math.ceil(independentStationGzipBytes * ratio);
+  const gate =
+    projectedGzipBytes <= 8_000_000
+      ? "one-file"
+      : projectedGzipBytes <= 10_000_000
+        ? "full-window-required"
+        : "shards-required";
+  const measurements: PrototypeMeasurements = {
+    measured: {
+      startMs: options.startMs,
+      endMs: options.endMs,
+      stationCount: stations.length,
+      napStationCount: stations.filter((station) => station.datum === "NAP")
+        .length,
+      mslStationCount: stations.filter((station) => station.datum === "MSL")
+        .length,
+      sampleCount,
+      eventCount,
+      encodedBytes: bytes.length,
+      gzipBytes: gzipSync(bytes, { level: 9 }).length,
+      bytesPerStation: bytes.length / stations.length,
+      bytesPerSample: bytes.length / sampleCount,
+      independentStationGzipBytes,
+      buildMilliseconds,
+      lookupMicroseconds,
+    },
+    projected: {
+      startMs: options.targetStartMs,
+      endMs: options.targetEndMs,
+      sampleCount: projectedSampleCount,
+      rawBytes: Math.ceil((bytes.length / sampleCount) * projectedSampleCount),
+      gzipBytes: projectedGzipBytes,
+      gate,
+    },
+  };
+
+  await mkdir(dirname(options.outPath), { recursive: true });
+  const temporary = `${options.outPath}.tmp-${process.pid}`;
+  try {
+    await writeFile(temporary, bytes);
+    await rename(temporary, options.outPath);
+  } finally {
+    await rm(temporary, { force: true });
+  }
+  return measurements;
+}
 
 export function discoverRwsSeries(catalog: unknown): RwsSeries[] {
   const root = record(catalog, "catalog");
@@ -402,4 +595,125 @@ function parseInteger(value: unknown, name: string): number {
 
 function isInt16(value: number): boolean {
   return Number.isInteger(value) && value >= -32_768 && value <= 32_767;
+}
+
+function observationBody(
+  code: string,
+  options: Pick<PrototypeOptions, "startMs" | "endMs">,
+  metadata: JsonRecord,
+) {
+  return {
+    Locatie: { Code: code },
+    AquoPlusWaarnemingMetadata: { AquoMetadata: metadata },
+    Periode: {
+      Begindatumtijd: new Date(options.startMs).toISOString(),
+      Einddatumtijd: new Date(options.endMs).toISOString(),
+    },
+  };
+}
+
+async function fetchCachedJson(
+  url: string,
+  body: JsonRecord,
+  options: PrototypeOptions,
+): Promise<{
+  value: unknown;
+  fetchedAtMs: number;
+  responseText: string;
+  sha256: string;
+}> {
+  const request = JSON.stringify({ url, body });
+  const key = sha256(request);
+  const path = join(options.cacheDir, `${key}.json`);
+  try {
+    const cached = record(
+      JSON.parse(await readFile(path, "utf8")),
+      "cache entry",
+    );
+    const responseText = string(cached["responseText"], "cache responseText");
+    const checksum = string(cached["sha256"], "cache sha256");
+    if (checksum !== sha256(responseText))
+      throw new Error(`cache checksum mismatch for ${key}`);
+    if (
+      cached["url"] !== url ||
+      JSON.stringify(cached["body"]) !== JSON.stringify(body)
+    )
+      throw new Error(`cache request mismatch for ${key}`);
+    return {
+      value: JSON.parse(responseText),
+      fetchedAtMs: number(cached["fetchedAtMs"], "cache fetchedAtMs"),
+      responseText,
+      sha256: checksum,
+    };
+  } catch (error) {
+    if (!isErrno(error, "ENOENT")) throw error;
+  }
+
+  const response = await options.fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (response.status !== 200)
+    throw new Error(`RWS ${url} returned HTTP ${response.status}`);
+  const responseText = await response.text();
+  if (!responseText) throw new Error(`RWS ${url} returned an empty response`);
+  const value: unknown = JSON.parse(responseText);
+  const checksum = sha256(responseText);
+  const entry = {
+    fetchedAtMs: options.nowMs,
+    url,
+    body,
+    sha256: checksum,
+    responseText,
+  };
+  await mkdir(options.cacheDir, { recursive: true });
+  const temporary = `${path}.tmp-${process.pid}`;
+  try {
+    await writeFile(temporary, JSON.stringify(entry));
+    await rename(temporary, path);
+  } finally {
+    await rm(temporary, { force: true });
+  }
+  return {
+    value,
+    fetchedAtMs: options.nowMs,
+    responseText,
+    sha256: checksum,
+  };
+}
+
+function sha256(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
+}
+
+function isErrno(error: unknown, code: string): boolean {
+  return (
+    error instanceof Error &&
+    "code" in error &&
+    (error as NodeJS.ErrnoException).code === code
+  );
+}
+
+const executable = process.argv[1];
+if (executable && import.meta.url === pathToFileURL(executable).href) {
+  const directory = resolve("tmp/rws");
+  runRwsPrototype({
+    fetch: globalThis.fetch,
+    cacheDir: join(directory, "cache"),
+    outPath: join(directory, "rws-predictions.rwsp"),
+    startMs: Date.parse("2026-07-01T00:00:00.000Z"),
+    endMs: Date.parse("2026-07-31T00:00:00.000Z"),
+    targetStartMs: Date.parse("2025-01-01T00:00:00.000Z"),
+    targetEndMs: Date.parse("2027-01-01T00:00:00.000Z"),
+    nowMs: Date.now(),
+  })
+    .then((measurements) => {
+      console.log(JSON.stringify(measurements, null, 2));
+      console.log(measurements.projected.gate);
+    })
+    .catch((error: unknown) => {
+      console.error(error);
+      process.exitCode = 1;
+    });
 }
