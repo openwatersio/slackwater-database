@@ -22,28 +22,6 @@ npm run validate -w sources/noaa-current
 > A full US extraction is ~2,800 paced requests and takes several minutes. NOAA
 > throttles bulk callers — leave the pacing alone unless you have a reason.
 
-The extractor and live API client are available to other workspace code:
-
-```js
-import {
-  extractBundle,
-  fetchCurrentPredictions,
-  fetchHarcon,
-} from "@neaps/noaa-current";
-
-// A bundle you can ship and predict from offline.
-const { bundle, skipped } = await extractBundle({ stations: ["PUG1717"] });
-
-// Or NOAA's own published predictions, live.
-const events = await fetchCurrentPredictions(
-  "PUG1717",
-  35,
-  new Date("2026-07-19"),
-  new Date("2026-07-21"),
-);
-// → [{ time: '2026-07-19T01:44:00.000Z', kind: 'flood', velocityMajor: 2.85, … }]
-```
-
 ## What a bundle looks like
 
 ```json
