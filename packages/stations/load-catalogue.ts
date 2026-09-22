@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import currentBundle from "./noaa-current/currents.json" with { type: "json" };
+import currentBundle from "@neaps/noaa-current/currents.json" with { type: "json" };
 import countryLookup from "country-code-lookup";
 import type { StationInput, StationQuality } from "@neaps/tide-database";
 import { buildCatalogue } from "./catalogue.ts";

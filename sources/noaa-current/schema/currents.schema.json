@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/openwatersio/tide-database/blob/main/packages/stations/noaa-current/schema/currents.schema.json",
+  "$id": "https://github.com/openwatersio/tide-database/blob/main/sources/noaa-current/schema/currents.schema.json",
   "title": "NOAA current-station bundle",
   "description": "Tidal-current stations extracted from NOAA CO-OPS metadata. Harmonic stations carry their own constituents; subordinate stations reduce against a harmonic reference. Speeds are knots, directions degrees true, time offsets seconds.",
   "type": "object",

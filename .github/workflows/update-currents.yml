@@ -38,7 +38,7 @@ jobs:
         id: preflight
         run: |
           set +e
-          npm run -s currents:check -w packages/stations 2> drift.txt
+          npm run -s check -w sources/noaa-current 2> drift.txt
           echo "drifted=$([ $? -eq 0 ] && echo false || echo true)" >> "$GITHUB_OUTPUT"
           cat drift.txt
 
@@ -57,8 +57,8 @@ jobs:
       - name: Full extraction
         if: steps.decide.outputs.run == 'true'
         run: |
-          npm run -s currents:extract -w packages/stations -- --pace 300
-          npm run -s currents:lock -w packages/stations
+          npm run -s extract -w sources/noaa-current -- --pace 300
+          npm run -s lock -w sources/noaa-current
 
       # Validate BEFORE pushing anything. A human opens the PR from the compare link in
       # the issue, so CI does run on it eventually — but this gate fires earlier and
@@ -66,7 +66,7 @@ jobs:
       # someone has to reason about. Failing here also keeps the bad bundle off origin.
       - name: Validate the bundle
         if: steps.decide.outputs.run == 'true'
-        run: npm run -s currents:validate -w packages/stations
+        run: npm run -s validate -w sources/noaa-current
 
       - name: Push the branch and file a review issue if anything changed
         if: steps.decide.outputs.run == 'true'
@@ -75,12 +75,12 @@ jobs:
         run: |
           # `generated` timestamps change on every run; ignore them when deciding
           # whether there is a real change to review.
-          if git diff --quiet -- packages/stations/noaa-current/currents.json packages/stations/noaa-current/stations.lock.json; then
+          if git diff --quiet -- sources/noaa-current/currents.json sources/noaa-current/stations.lock.json; then
             echo "No changes."; exit 0
           fi
-          CHANGED=$(git diff --numstat -- packages/stations/noaa-current/currents.json | awk '{print $1" added, "$2" removed"}')
-          if [ "$(git diff --numstat -- packages/stations/noaa-current/currents.json packages/stations/noaa-current/stations.lock.json | wc -l)" -gt 0 ] && \
-             [ -z "$(git diff -U0 -- packages/stations/noaa-current/currents.json packages/stations/noaa-current/stations.lock.json | grep '^[+-]' | grep -v '^[+-][+-]' | grep -v '"generated"')" ]; then
+          CHANGED=$(git diff --numstat -- sources/noaa-current/currents.json | awk '{print $1" added, "$2" removed"}')
+          if [ "$(git diff --numstat -- sources/noaa-current/currents.json sources/noaa-current/stations.lock.json | wc -l)" -gt 0 ] && \
+             [ -z "$(git diff -U0 -- sources/noaa-current/currents.json sources/noaa-current/stations.lock.json | grep '^[+-]' | grep -v '^[+-][+-]' | grep -v '"generated"')" ]; then
             echo "Only the generated timestamp changed — nothing to review."; exit 0
           fi
 
@@ -88,7 +88,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
-          git add packages/stations/noaa-current/currents.json packages/stations/noaa-current/stations.lock.json
+          git add sources/noaa-current/currents.json sources/noaa-current/stations.lock.json
           git commit -m "data: refresh NOAA current-station bundle"
           git push -q origin "$BRANCH"
 
@@ -101,7 +101,7 @@ jobs:
             echo "**[→ Open the pull request]($COMPARE)**"
             echo
             echo '```'
-            npm run -s currents:validate -w packages/stations 2>&1
+            npm run -s validate -w sources/noaa-current 2>&1
             echo '```'
             echo
             echo "Bundle diff: $CHANGED lines."

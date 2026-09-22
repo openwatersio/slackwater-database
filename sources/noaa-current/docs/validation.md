@@ -16,7 +16,7 @@ Both halves come from NOAA, so the comparison is self-contained:
    speed error.
 
 ```bash
-npm run currents:golden -w packages/stations -- pug1741.json --station PUG1741 --bin 27 \
+npm run golden -w sources/noaa-current -- pug1741.json --station PUG1741 --bin 27 \
   --start 2026-07-19 --end 2026-07-21
 ```
 

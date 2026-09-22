@@ -7,16 +7,16 @@ NOAA publishes harmonic constituents for **856 tidal-current stations** in US wa
 plus offset tables for **1,700-odd subordinate** stations. That is enough to predict slack
 water and max flood/ebb offline, anywhere in US waters, with no network at runtime.
 
-This directory is the NOAA-current source inside `@neaps/stations`. Its reviewed bundle feeds the unified TCDB release. It is not a separate npm package.
+This private source workspace owns NOAA-current extraction and its reviewed bundle. The bundle feeds the unified TCDB release and is not published as a separate npm package.
 
 ## Use it
 
 ```bash
-npm run currents:check -w packages/stations
-npm run currents:extract -w packages/stations -- --pace 300
-npm run currents:golden -w packages/stations -- pug1741.json --station PUG1741 --bin 27 --start 2026-07-19 --end 2026-07-21
-npm run currents:lock -w packages/stations
-npm run currents:validate -w packages/stations
+npm run check -w sources/noaa-current
+npm run extract -w sources/noaa-current -- --pace 300
+npm run golden -w sources/noaa-current -- pug1741.json --station PUG1741 --bin 27 --start 2026-07-19 --end 2026-07-21
+npm run lock -w sources/noaa-current
+npm run validate -w sources/noaa-current
 ```
 
 > A full US extraction is ~2,800 paced requests and takes several minutes. NOAA
@@ -29,7 +29,7 @@ import {
   extractBundle,
   fetchCurrentPredictions,
   fetchHarcon,
-} from "@neaps/stations";
+} from "@neaps/noaa-current";
 
 // A bundle you can ship and predict from offline.
 const { bundle, skipped } = await extractBundle({ stations: ["PUG1717"] });
@@ -112,7 +112,7 @@ Four details that are easy to get wrong and expensive to debug:
 ## Maintenance
 
 `currents.json` is committed, pretty-printed, so a change in NOAA's data is reviewable
-as a diff. [`update-currents`](../../../.github/workflows/update-currents.yml) keeps it current:
+as a diff. [`update-currents`](../../.github/workflows/update-currents.yml) keeps it current:
 
 | Cadence | What runs                                               | Catches                                                   |
 | ------- | ------------------------------------------------------- | --------------------------------------------------------- |
@@ -127,8 +127,8 @@ review issue with the validation summary and pull-request link — nothing updat
 pre-flight you can run yourself, and exits non-zero on drift.
 
 ```bash
-npm run currents:check -w packages/stations
-npm run currents:validate -w packages/stations
+npm run check -w sources/noaa-current
+npm run validate -w sources/noaa-current
 ```
 
 `validate` gates the automated review branch: it fails on a subordinate whose reference

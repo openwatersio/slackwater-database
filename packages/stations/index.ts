@@ -7,6 +7,5 @@ export * from "./catalogue.ts";
 export * from "./current-input.ts";
 export * from "./load-catalogue.ts";
 export * from "./metadata.ts";
-export * from "./noaa-current/index.js";
 export * from "./position-audit.ts";
 export * from "./routes.ts";

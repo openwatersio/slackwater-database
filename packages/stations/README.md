@@ -1,6 +1,6 @@
 # Station tooling
 
-NOAA current extraction, validation, and its reviewed bundle live in [`noaa-current`](./noaa-current). The catalogue consumes that local bundle directly and has no separately released current-stations dependency.
+NOAA current extraction, validation, and its reviewed bundle live in [`sources/noaa-current`](../../sources/noaa-current). The catalogue consumes that workspace bundle directly and has no separately released current-stations dependency.
 
 ## Build and validate the unified catalogue
 

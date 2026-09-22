@@ -1,7 +1,4 @@
-import type {
-  HarmonicStation,
-  SubordinateStation,
-} from "./noaa-current/index.js";
+import type { HarmonicStation, SubordinateStation } from "@neaps/noaa-current";
 import { find as findTimezone } from "geo-tz/all";
 import type { CurrentData, StationInput } from "@neaps/tide-database";
 
