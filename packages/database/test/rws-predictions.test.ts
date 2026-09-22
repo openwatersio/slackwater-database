@@ -3,6 +3,11 @@ import * as flatbuffers from "flatbuffers";
 import { buildRwsPredictions } from "../src/rws-predictions/builder.ts";
 import { openRwsPredictions } from "../src/rws-predictions/reader.ts";
 import { Root } from "../src/generated/fbs/neaps-rws.ts";
+import {
+  discoverRwsSeries,
+  normalizeEvents,
+  normalizeHeightChunks,
+} from "../../../sources/rws/prototype.ts";
 import type { RwsPredictionsInput } from "../src/rws-predictions/types.ts";
 
 const startMs = Date.parse("2026-07-01T00:00:00.000Z");
@@ -70,6 +75,157 @@ const input: RwsPredictionsInput = {
     },
   ],
 };
+
+const bounds = { startMs, endMs: startMs + 1_800_000 };
+
+const metadata = (
+  id: number,
+  datum: string,
+  grouping = "",
+  process = "astronomisch",
+) => ({
+  AquoMetadata_MessageID: id,
+  Eenheid: { Code: "cm", Omschrijving: "centimeter" },
+  Groepering: { Code: grouping, Omschrijving: grouping },
+  Grootheid: { Code: "WATHTE", Omschrijving: "Waterhoogte" },
+  Hoedanigheid: { Code: datum, Omschrijving: datum },
+  ProcesType: process,
+});
+
+const catalogFixture = {
+  Succesvol: true,
+  AquoMetadataLijst: [
+    metadata(313, "MSL"),
+    metadata(315, "MSL", "GETETBRKDMSL2"),
+    metadata(317, "NAP"),
+    metadata(321, "NAP", "GETETBRKD2"),
+    metadata(999, "NAP", "", "meting"),
+  ],
+  LocatieLijst: [
+    {
+      Locatie_MessageID: 1,
+      Code: "nap",
+      Coordinatenstelsel: "ETRS89",
+      Lat: 53.45,
+      Lon: 5.77,
+      Naam: "NAP fixture",
+      Omschrijving: "NAP fixture",
+    },
+    {
+      Locatie_MessageID: 2,
+      Code: "msl",
+      Coordinatenstelsel: "ETRS89",
+      Lat: 52,
+      Lon: 3.28,
+      Naam: "MSL fixture",
+      Omschrijving: "MSL fixture",
+    },
+  ],
+  AquoMetadataLocatieLijst: [
+    { AquoMetaData_MessageID: 317, Locatie_MessageID: 1 },
+    { AquoMetaData_MessageID: 321, Locatie_MessageID: 1 },
+    { AquoMetaData_MessageID: 313, Locatie_MessageID: 2 },
+    { AquoMetaData_MessageID: 315, Locatie_MessageID: 2 },
+    { AquoMetaData_MessageID: 999, Locatie_MessageID: 1 },
+  ],
+};
+
+type SampleFixture = {
+  time: string;
+  value: number;
+  quality?: string;
+  status?: string;
+  organization?: string;
+  samplingHeight?: string;
+  referencePlane?: string;
+};
+
+function heightResponse(code: string, datum: string, samples: SampleFixture[]) {
+  return {
+    Succesvol: true,
+    WaarnemingenLijst: [
+      {
+        AquoMetadata: {
+          Eenheid: { Code: "cm" },
+          Groepering: { Code: "" },
+          Grootheid: { Code: "WATHTE" },
+          Hoedanigheid: { Code: datum },
+          ProcesType: "astronomisch",
+        },
+        Locatie: { Code: code },
+        MetingenLijst: samples.map((sample) => ({
+          Meetwaarde: {
+            Waarde_Alfanumeriek: String(sample.value),
+            Waarde_Numeriek: sample.value,
+          },
+          Tijdstip: sample.time,
+          WaarnemingMetadata: {
+            Bemonsteringshoogte: sample.samplingHeight ?? "-999999999",
+            Kwaliteitswaardecode: sample.quality ?? "00",
+            OpdrachtgevendeInstantie: sample.organization ?? "RIKZMON_WAT",
+            Referentievlak: sample.referencePlane ?? "NVT",
+            Statuswaarde: sample.status ?? "Ongecontroleerd",
+          },
+        })),
+      },
+    ],
+  };
+}
+
+function eventResponse(
+  code: string,
+  datum: string,
+  grouping: string,
+  events: { time: string; type: string; height: number }[],
+) {
+  const channel = (type: boolean) => ({
+    AquoMetadata: {
+      Eenheid: { Code: type ? "DIMSLS" : "cm" },
+      Groepering: { Code: grouping },
+      Grootheid: { Code: type ? "NVT" : "WATHTE" },
+      Hoedanigheid: { Code: type ? "NVT" : datum },
+      ProcesType: "astronomisch",
+      Typering: { Code: type ? "GETETTPE" : "NVT" },
+    },
+    Locatie: { Code: code },
+    MetingenLijst: events.map((event) => ({
+      Meetwaarde: {
+        Waarde_Alfanumeriek: type ? event.type : String(event.height),
+        Waarde_Numeriek: type ? 0 : event.height,
+      },
+      Tijdstip: event.time,
+      WaarnemingMetadata: {
+        Bemonsteringshoogte: "-999999999",
+        Kwaliteitswaardecode: "00",
+        OpdrachtgevendeInstantie: "RIKZMON_WAT",
+        Referentievlak: "NVT",
+        Statuswaarde: "Ongecontroleerd",
+      },
+    })),
+  });
+  return {
+    Succesvol: true,
+    WaarnemingenLijst: [channel(true), channel(false)],
+  };
+}
+
+function validHeightChunks() {
+  return [
+    heightResponse("nap", "NAP", [
+      { time: "2026-07-01T01:00:00.000+01:00", value: 0 },
+      {
+        time: "2026-07-01T01:10:00.000+01:00",
+        value: -999_999_999,
+        quality: "99",
+      },
+      { time: "2026-07-01T01:20:00.000+01:00", value: 17 },
+    ]),
+    heightResponse("nap", "NAP", [
+      { time: "2026-07-01T01:20:00.000+01:00", value: 17 },
+      { time: "2026-07-01T01:30:00.000+01:00", value: 20 },
+    ]),
+  ];
+}
 
 describe("RWS predictions companion", () => {
   test("round-trips keyed stations, gaps, metadata, and ordered events", () => {
@@ -218,5 +374,223 @@ describe("RWS predictions companion", () => {
     expect(() =>
       openRwsPredictions(corrupt).station("rws/nap")!.events(),
     ).toThrow(/rws\/nap.*event type index.*out of range/);
+  });
+});
+
+describe("RWS response normalization", () => {
+  test("discovers astronomical height series and matching datum events", () => {
+    expect(discoverRwsSeries(catalogFixture)).toEqual([
+      {
+        code: "msl",
+        name: "MSL fixture",
+        latitude: 52,
+        longitude: 3.28,
+        datum: "MSL",
+        heightMetadataId: "313",
+        eventGrouping: "GETETBRKDMSL2",
+      },
+      {
+        code: "nap",
+        name: "NAP fixture",
+        latitude: 53.45,
+        longitude: 5.77,
+        datum: "NAP",
+        heightMetadataId: "317",
+        eventGrouping: "GETETBRKD2",
+      },
+    ]);
+  });
+
+  test("deduplicates inclusive chunks and preserves zero beside a gap", () => {
+    const series = discoverRwsSeries(catalogFixture)[1]!;
+    expect(normalizeHeightChunks(series, validHeightChunks(), bounds)).toEqual({
+      id: "rws/nap",
+      name: "NAP fixture",
+      latitude: 53.45,
+      longitude: 5.77,
+      datum: "NAP",
+      startMs,
+      cadenceSeconds: 600,
+      heightsCm: [0, null, 17],
+      sourceMetadata: input.stations[0]!.sourceMetadata,
+      events: [],
+    });
+  });
+
+  test("pairs open-ended event types with heights in provider order", () => {
+    const series = discoverRwsSeries(catalogFixture)[1]!;
+    const response = eventResponse("nap", "NAP", "GETETBRKD2", [
+      {
+        time: "2026-07-01T01:05:00.000+01:00",
+        type: "hoogwater",
+        height: 91,
+      },
+      {
+        time: "2026-07-01T01:15:00.000+01:00",
+        type: "laagwater",
+        height: -34,
+      },
+      {
+        time: "2026-07-01T01:25:00.000+01:00",
+        type: "dubbel-laagwater",
+        height: -31,
+      },
+      {
+        time: "2026-07-01T01:30:00.000+01:00",
+        type: "boundary",
+        height: 0,
+      },
+    ]);
+
+    expect(normalizeEvents(series, response, bounds)).toEqual([
+      { timestampMs: startMs + 300_000, type: "hoogwater", heightCm: 91 },
+      { timestampMs: startMs + 900_000, type: "laagwater", heightCm: -34 },
+      {
+        timestampMs: startMs + 1_500_000,
+        type: "dubbel-laagwater",
+        heightCm: -31,
+      },
+    ]);
+  });
+
+  test("rejects unknown catalog and mismatched response datums", () => {
+    const unknown = structuredClone(catalogFixture);
+    unknown.AquoMetadataLijst[2]!.Hoedanigheid.Code = "LAT";
+    expect(() => discoverRwsSeries(unknown)).toThrow(/unknown.*datum LAT/);
+
+    const series = discoverRwsSeries(catalogFixture)[1]!;
+    expect(() =>
+      normalizeHeightChunks(
+        series,
+        [
+          heightResponse("nap", "MSL", [
+            { time: "2026-07-01T01:00:00.000+01:00", value: 0 },
+            { time: "2026-07-01T01:30:00.000+01:00", value: 1 },
+          ]),
+        ],
+        bounds,
+      ),
+    ).toThrow(/nap.*datum.*NAP/);
+  });
+
+  test("rejects unexpected quality and station metadata variation", () => {
+    const series = discoverRwsSeries(catalogFixture)[1]!;
+    const quality = validHeightChunks();
+    for (const chunk of quality)
+      for (const sample of chunk.WaarnemingenLijst[0]!.MetingenLijst)
+        sample.WaarnemingMetadata.Kwaliteitswaardecode = "77";
+    expect(() => normalizeHeightChunks(series, quality, bounds)).toThrow(
+      /nap.*quality code 77/,
+    );
+
+    const allMissing = validHeightChunks();
+    for (const chunk of allMissing)
+      for (const sample of chunk.WaarnemingenLijst[0]!.MetingenLijst)
+        sample.WaarnemingMetadata.Kwaliteitswaardecode = "99";
+    expect(() => normalizeHeightChunks(series, allMissing, bounds)).toThrow(
+      /nap.*no present height/,
+    );
+
+    const changed = validHeightChunks();
+    changed[0]!.WaarnemingenLijst[0]!.MetingenLijst[1]!.WaarnemingMetadata.Statuswaarde =
+      "Gecontroleerd";
+    expect(() => normalizeHeightChunks(series, changed, bounds)).toThrow(
+      /nap.*status varies/,
+    );
+  });
+
+  test("deduplicates only matching chunk boundaries", () => {
+    const series = discoverRwsSeries(catalogFixture)[1]!;
+    const conflicting = validHeightChunks();
+    conflicting[1]!.WaarnemingenLijst[0]!.MetingenLijst[0]!.Meetwaarde.Waarde_Numeriek = 18;
+    expect(() => normalizeHeightChunks(series, conflicting, bounds)).toThrow(
+      /nap.*conflicting duplicate timestamp/,
+    );
+
+    const withinChunk = validHeightChunks();
+    withinChunk[0]!.WaarnemingenLijst[0]!.MetingenLijst.splice(
+      2,
+      0,
+      structuredClone(withinChunk[0]!.WaarnemingenLijst[0]!.MetingenLijst[1]!),
+    );
+    expect(() => normalizeHeightChunks(series, withinChunk, bounds)).toThrow(
+      /nap.*duplicate timestamp/,
+    );
+  });
+
+  test.each([
+    ["5-minute", "2026-07-01T01:05:00.000+01:00"],
+    ["20-minute", "2026-07-01T01:20:00.000+01:00"],
+  ])("rejects %s height cadence", (_name, secondTime) => {
+    const series = discoverRwsSeries(catalogFixture)[1]!;
+    const response = heightResponse("nap", "NAP", [
+      { time: "2026-07-01T01:00:00.000+01:00", value: 0 },
+      { time: secondTime, value: 1 },
+      { time: "2026-07-01T01:30:00.000+01:00", value: 2 },
+    ]);
+    expect(() => normalizeHeightChunks(series, [response], bounds)).toThrow(
+      /nap.*cadence.*600/,
+    );
+  });
+
+  test("rejects heights outside int16", () => {
+    const series = discoverRwsSeries(catalogFixture)[1]!;
+    const chunks = validHeightChunks();
+    chunks[0]!.WaarnemingenLijst[0]!.MetingenLijst[0]!.Meetwaarde.Waarde_Numeriek = 32_768;
+    expect(() => normalizeHeightChunks(series, chunks, bounds)).toThrow(
+      /nap.*height 0.*int16/,
+    );
+  });
+
+  test("rejects incomplete or unpaired event channels", () => {
+    const series = discoverRwsSeries(catalogFixture)[1]!;
+    const events = [
+      {
+        time: "2026-07-01T01:05:00.000+01:00",
+        type: "hoogwater",
+        height: 91,
+      },
+    ];
+    const missingType = eventResponse("nap", "NAP", "GETETBRKD2", events);
+    missingType.WaarnemingenLijst.shift();
+    expect(() => normalizeEvents(series, missingType, bounds)).toThrow(
+      /nap.*type channel.*missing/,
+    );
+
+    const missingHeight = eventResponse("nap", "NAP", "GETETBRKD2", events);
+    missingHeight.WaarnemingenLijst.pop();
+    expect(() => normalizeEvents(series, missingHeight, bounds)).toThrow(
+      /nap.*height channel.*missing/,
+    );
+
+    const unequal = eventResponse("nap", "NAP", "GETETBRKD2", events);
+    unequal.WaarnemingenLijst[1]!.MetingenLijst.push(
+      structuredClone(unequal.WaarnemingenLijst[1]!.MetingenLijst[0]!),
+    );
+    expect(() => normalizeEvents(series, unequal, bounds)).toThrow(
+      /nap.*lengths.*match/,
+    );
+
+    const mismatched = eventResponse("nap", "NAP", "GETETBRKD2", events);
+    mismatched.WaarnemingenLijst[1]!.MetingenLijst[0]!.Tijdstip =
+      "2026-07-01T01:06:00.000+01:00";
+    expect(() => normalizeEvents(series, mismatched, bounds)).toThrow(
+      /nap.*timestamps.*pair/,
+    );
+  });
+
+  test("rejects duplicate catalog location codes", () => {
+    const duplicate = structuredClone(catalogFixture);
+    duplicate.LocatieLijst.push({
+      ...structuredClone(duplicate.LocatieLijst[0]!),
+      Locatie_MessageID: 3,
+    });
+    duplicate.AquoMetadataLocatieLijst.push({
+      AquoMetaData_MessageID: 317,
+      Locatie_MessageID: 3,
+    });
+    expect(() => discoverRwsSeries(duplicate)).toThrow(
+      /duplicate RWS location code nap/,
+    );
   });
 });
