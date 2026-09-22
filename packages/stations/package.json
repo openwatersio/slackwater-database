@@ -14,11 +14,15 @@
     "validate-database": "node validate-database.ts",
     "fetch-water-bodies": "node fetch-water-bodies.ts",
     "fetch-maritime-zones": "node fetch-maritime-zones.ts",
-    "test": "vitest"
+    "currents:check": "node noaa-current/bin/noaa-current-stations.mjs check",
+    "currents:extract": "node noaa-current/bin/noaa-current-stations.mjs extract noaa-current/currents.json",
+    "currents:golden": "node noaa-current/bin/noaa-current-stations.mjs golden",
+    "currents:lock": "node noaa-current/bin/noaa-current-stations.mjs lock noaa-current/stations.lock.json",
+    "currents:validate": "node noaa-current/bin/noaa-current-stations.mjs validate noaa-current/currents.json",
+    "test": "vitest && node --test noaa-current/test/*.node-test.js"
   },
   "dependencies": {
     "@neaps/datums": "*",
-    "@openwaters/noaa-current-stations": "^0.5.0",
     "@turf/boolean-point-in-polygon": "^7.4.0",
     "@turf/helpers": "^7.4.0",
     "country-code-lookup": "^0.1.3",

@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openwatersio/tide-database/blob/main/packages/stations/noaa-current/schema/currents.schema.json",
+  "title": "NOAA current-station bundle",
+  "description": "Tidal-current stations extracted from NOAA CO-OPS metadata. Harmonic stations carry their own constituents; subordinate stations reduce against a harmonic reference. Speeds are knots, directions degrees true, time offsets seconds.",
+  "type": "object",
+  "required": ["note", "stations"],
+  "properties": {
+    "note": { "type": "string", "description": "Provenance and licensing." },
+    "generated": { "type": "string", "format": "date-time" },
+    "crossFlow": {
+      "type": ["object", "null"],
+      "description": "Census of NOAA `minorMeanSpeed` — flow perpendicular to the flood axis, present at all times including slack. This bundle's major-axis model drops it; this records how much it drops. Not carried per station. Null when the bundle has no harmonic stations.",
+      "properties": {
+        "measured": { "type": "string" },
+        "records": {
+          "type": "integer",
+          "description": "Harmonic records sampled, `@bin` entries included."
+        },
+        "gte0_25kn": { "type": "integer" },
+        "gte0_50kn": { "type": "integer" },
+        "worstRatio": {
+          "type": "object",
+          "description": "Largest crossFlow/alongAxisPeak — where the flood axis describes the station worst.",
+          "properties": {
+            "id": { "type": "string" },
+            "crossFlow": { "type": "number" },
+            "alongAxisPeak": {
+              "type": "number",
+              "description": "Σ|majorAmplitude| + |Z0| — a theoretical maximum reached only if every constituent aligned in phase, not a realized peak speed. The denominator `ratio` and the 0.5 bound are only meaningful given this definition."
+            },
+            "ratio": { "type": "number" }
+          }
+        },
+        "worstAbsolute": {
+          "type": "object",
+          "description": "Largest crossFlow in knots — usually a different station from worstRatio.",
+          "properties": {
+            "id": { "type": "string" },
+            "crossFlow": { "type": "number" }
+          }
+        }
+      }
+    },
+    "stations": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/harmonic" },
+          { "$ref": "#/$defs/subordinate" }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "harmonic": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "latitude",
+        "longitude",
+        "type",
+        "floodDirection",
+        "ebbDirection",
+        "offset",
+        "constituents"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "NOAA station id at its primary bin, or `id@bin` for a reference at a non-primary bin. Constituents vary by depth bin, so identity is (station, bin)."
+        },
+        "name": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "type": { "const": "harmonic" },
+        "floodDirection": {
+          "type": "number",
+          "description": "Major-axis azimuth (NOAA `azi`), degrees true."
+        },
+        "ebbDirection": {
+          "type": "number",
+          "description": "floodDirection + 180."
+        },
+        "offset": {
+          "type": "number",
+          "description": "Z0 — net mean flow along the major axis, knots, signed (NOAA `majorMeanSpeed`). A DC offset on the velocity curve; omitting it moves every slack."
+        },
+        "constituents": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "amplitude", "phase"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Darwin symbol, e.g. M2, K1."
+              },
+              "amplitude": {
+                "type": "number",
+                "description": "Knots (NOAA `majorAmplitude` under units=english)."
+              },
+              "phase": {
+                "type": "number",
+                "description": "Greenwich phase, degrees (NOAA `majorPhaseGMT`)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "subordinate": {
+      "type": "object",
+      "required": ["id", "name", "latitude", "longitude", "type", "reference"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "type": { "const": "subordinate" },
+        "reference": {
+          "type": "string",
+          "description": "`id` of the harmonic station in this bundle to reduce against — including the `@bin` suffix when the reference is at a non-primary bin."
+        },
+        "floodDirection": { "type": "number" },
+        "ebbDirection": { "type": "number" },
+        "slackBeforeFloodOffset": {
+          "type": "number",
+          "description": "Seconds. Applied to a slack that precedes a flood."
+        },
+        "slackBeforeEbbOffset": {
+          "type": "number",
+          "description": "Seconds. Applied to a slack that precedes an ebb."
+        },
+        "floodTimeOffset": {
+          "type": "number",
+          "description": "Seconds, applied to max flood."
+        },
+        "ebbTimeOffset": {
+          "type": "number",
+          "description": "Seconds, applied to max ebb."
+        },
+        "floodSpeedRatio": {
+          "type": "number",
+          "description": "Multiplier on the reference max flood speed. A ratio, not a delta."
+        },
+        "ebbSpeedRatio": {
+          "type": "number",
+          "description": "Multiplier on the reference max ebb speed."
+        }
+      }
+    }
+  }
+}
