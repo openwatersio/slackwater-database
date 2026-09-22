@@ -65,9 +65,11 @@ final class TideDatabaseTests: XCTestCase {
     XCTAssertEqual(constituents[0].amplitude, 1.063, accuracy: 1e-6)
     XCTAssertEqual(constituents[0].phase, 10.8, accuracy: 1e-5)
 
-    // Subordinates carry no constituents; prediction goes through offsets.
+    // A subordinate's record holds no constituents of its own; the accessor
+    // reports the reference's, which its prediction starts from.
     let subordinate = try XCTUnwrap(open().station(id: "test/subordinate"))
-    XCTAssertEqual(subordinate.constituents, [])
+    XCTAssertEqual(subordinate.raw.constituentsCount, 0)
+    XCTAssertEqual(subordinate.constituents, constituents)
     let offsets = try XCTUnwrap(subordinate.raw.offsets)
     XCTAssertEqual(offsets.reference, "test/reference")
     XCTAssertEqual(offsets.timeHigh, 12)
@@ -81,7 +83,16 @@ final class TideDatabaseTests: XCTestCase {
     XCTAssertEqual(station.datums["MLLW"] ?? .nan, 2.419, accuracy: 1e-6)
     XCTAssertEqual(station.datums["MSL"] ?? .nan, 4.443, accuracy: 1e-6)
     XCTAssertEqual(station.chartDatumShift ?? .nan, 4.443 - 2.419, accuracy: 1e-6)
-    XCTAssertNil(try XCTUnwrap(open().station(id: "test/subordinate")).chartDatumShift)
+
+    // A subordinate reports its reference's datums, unreduced, against its own
+    // chart datum.
+    let subordinate = try XCTUnwrap(open().station(id: "test/subordinate"))
+    XCTAssertEqual(subordinate.raw.datumsCount, 0)
+    XCTAssertEqual(subordinate.datums, station.datums)
+    XCTAssertEqual(subordinate.chartDatumShift ?? .nan, 4.443 - 2.419, accuracy: 1e-6)
+
+    // No chart datum of its own, so no shift to take.
+    XCTAssertNil(try XCTUnwrap(open().station(id: "test/subordinate-fixed")).chartDatumShift)
   }
 
   func testDerivesAstronomicalBoundsAboveChartDatum() throws {
@@ -137,6 +148,13 @@ final class TideDatabaseTests: XCTestCase {
     XCTAssertTrue(reference.accepted)
     XCTAssertFalse(reference.constituents.isEmpty)
     XCTAssertFalse(reference.datums.isEmpty)
+
+    // Every subordinate in the file resolves its reference, so no read of
+    // prediction data comes back empty on real data.
+    let subordinates = db.filter { $0.kind == .tide && $0.type == .subordinate }
+    XCTAssertGreaterThan(subordinates.count, 1000)
+    XCTAssertEqual(subordinates.filter { $0.constituents.isEmpty }.count, 0)
+    XCTAssertEqual(subordinates.filter { $0.astronomicalBounds == nil }.count, 0)
   }
 
   func testReachesTheFullSchemaThroughRaw() throws {

@@ -13,11 +13,12 @@ Every reference station stores:
   constituents).
 - **`epoch`** — the period the underlying data actually came from.
 
-Subordinate stations carry no datums of their own in the source data, but the
-quality-filtered `stations` export from `@neaps/tide-database` copies datums and
-constituents from each subordinate's reference station at load time.
+Subordinate stations carry no datums of their own in the source data, and none
+are stored for them in the database file. Both readers resolve them at load
+time: reading a subordinate's `datums` or constituents through the npm package
+or the Swift package gives its reference station's.
 
-Those copied datums describe the **reference's** water, and this library
+Those inherited datums describe the **reference's** water, and this library
 deliberately does not reduce them through the subordinate's offsets. It is
 tempting to — a subordinate's own floor and ceiling are what a caller usually
 wants — but the result would not be a datum. NOAA's height corrections are

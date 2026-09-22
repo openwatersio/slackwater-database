@@ -89,6 +89,9 @@ const stations: StationInput[] = [
     type: "subordinate",
     latitude: 47.7,
     longitude: -122.5,
+    // Subordinates carry a chart datum of their own but no datums; the values
+    // come from the reference.
+    chart_datum: "MLLW",
     offsets: {
       reference: "test/reference",
       time: { high: 12, low: -6 },

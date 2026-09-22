@@ -101,6 +101,17 @@ public struct Station: Identifiable {
 
   // MARK: Prediction data
 
+  /// The station whose record holds the prediction data this one predicts from:
+  /// a subordinate's reference, otherwise itself. One hop — a reference that is
+  /// itself subordinate is not resolved again, and neither is a station whose
+  /// reference is missing from the file.
+  private var predictionSource: Station {
+    guard let reference = raw.offsets?.reference,
+      let source = root.stationsBy(key: reference)
+    else { return self }
+    return Station(raw: source, root: root)
+  }
+
   /// Amplitude in metres (tides) or knots (currents); phase in degrees.
   public struct Constituent {
     public let name: String
@@ -108,10 +119,12 @@ public struct Station: Identifiable {
     public let phase: Double
   }
 
-  /// Harmonic constituents, names resolved through the file's name table.
-  /// Empty for subordinate stations — predict via `raw.offsets`.
+  /// Harmonic constituents, names resolved through the file's name table. A
+  /// subordinate carries none of its own and reports its reference's, which are
+  /// the ones its prediction starts from.
   public var constituents: [Constituent] {
-    (0..<raw.constituentsCount).compactMap { index in
+    let raw = predictionSource.raw
+    return (0..<raw.constituentsCount).compactMap { index in
       guard let c = raw.constituents(at: index),
         let name = root.constituentNames(at: Int32(c.name))
       else { return nil }
@@ -121,8 +134,12 @@ public struct Station: Identifiable {
   }
 
   /// Vertical datums in metres above the station's zero, keyed by name
-  /// ("MLLW", "MSL", ...).
+  /// ("MLLW", "MSL", ...). A subordinate reports its reference's, which describe
+  /// the reference's water: they are not reduced through `raw.offsets`, because
+  /// the extreme corrections have no principled meaning for a mean level like
+  /// MSL or MTL. For the pair that does reduce, see `astronomicalBounds`.
   public var datums: [String: Double] {
+    let raw = predictionSource.raw
     var values: [String: Double] = [:]
     for index in 0..<raw.datumsCount {
       guard let d = raw.datums(at: index),
@@ -181,25 +198,22 @@ public struct Station: Identifiable {
   /// single pair of levels the extreme corrections leave an object no datum
   /// ordering holds for (docs/datums.md).
   public var astronomicalBounds: AstronomicalBounds? {
-    guard let offsets = raw.offsets else { return ownBounds }
-    // One hop only: a reference of a reference carries no datums of its own, so
-    // `ownBounds` is nil there rather than recursing.
-    guard let reference = root.stationsBy(key: offsets.reference),
-      let bounds = Station(raw: reference, root: root).ownBounds
+    // The datums are in the prediction source's frame, so its own chart datum
+    // is the zero they sit above — not this station's, which can name a
+    // different datum than the record the values came from.
+    let source = predictionSource
+    let datums = source.datums
+    guard let chartDatum = source.raw.chartDatum, let zero = datums[chartDatum],
+      let lat = datums["LAT"], let hat = datums["HAT"]
     else { return nil }
+    guard let offsets = raw.offsets else {
+      return AstronomicalBounds(lat: lat - zero, hat: hat - zero)
+    }
     let low = Double(offsets.heightLow)
     let high = Double(offsets.heightHigh)
     let ratio = offsets.heightType == .ratio
     return AstronomicalBounds(
-      lat: ratio ? bounds.lat * low : bounds.lat + low,
-      hat: ratio ? bounds.hat * high : bounds.hat + high)
-  }
-
-  private var ownBounds: AstronomicalBounds? {
-    let datums = self.datums
-    guard let chartDatum = raw.chartDatum, let zero = datums[chartDatum],
-      let lat = datums["LAT"], let hat = datums["HAT"]
-    else { return nil }
-    return AstronomicalBounds(lat: lat - zero, hat: hat - zero)
+      lat: ratio ? (lat - zero) * low : (lat - zero) + low,
+      hat: ratio ? (hat - zero) * high : (hat - zero) + high)
   }
 }
