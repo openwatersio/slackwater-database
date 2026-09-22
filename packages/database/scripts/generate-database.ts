@@ -20,20 +20,24 @@ const outDir = join(root, "src", "generated");
 // rewrite them to ".ts" so node can run this code directly (the repo
 // convention for node-run TypeScript — bundlers and vitest resolve it too).
 mkdirSync(outDir, { recursive: true });
-execFileSync("flatc", ["--ts", "-o", join(outDir, "fbs"), "database.fbs"], {
-  cwd: join(root, "..", "..", "schemas"),
-  stdio: "inherit",
-});
-// Rewrite the entrypoint (fbs/database.ts) and the per-type files it
-// re-exports (fbs/neaps/*.ts).
-for (const dir of [join(outDir, "fbs"), join(outDir, "fbs", "neaps")]) {
-  for (const file of readdirSync(dir)) {
-    const path = join(dir, file);
-    if (!file.endsWith(".ts")) continue;
-    const source = readFileSync(path, "utf8");
-    writeFileSync(path, source.replaceAll(`.js';`, `.ts';`));
+for (const schema of ["database.fbs", "rws-predictions.fbs"]) {
+  execFileSync("flatc", ["--ts", "-o", join(outDir, "fbs"), schema], {
+    cwd: join(root, "..", "..", "schemas"),
+    stdio: "inherit",
+  });
+}
+
+function rewriteImports(dir: string): void {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) rewriteImports(path);
+    else if (entry.name.endsWith(".ts")) {
+      const source = readFileSync(path, "utf8");
+      writeFileSync(path, source.replaceAll(`.js';`, `.ts';`));
+    }
   }
 }
+rewriteImports(join(outDir, "fbs"));
 
 // The builder imports the code generated above, so load it only now.
 const { buildDatabase } = await import("../src/database/builder.ts");
