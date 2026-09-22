@@ -164,3 +164,25 @@ noaa/jx0303:
   context: St Johns River
   slug: mile-point-lb-22
   formerSlugs: [mile-point]
+
+# The generalized maritime boundary puts these Canadian border gauges in US water.
+ticon/bedwell_hbr_bc-7350-can-meds:
+  location:
+    countryCode: CA
+
+ticon/tsawwassen_bc-7590-can-meds:
+  location:
+    countryCode: CA
+
+ticon/tumbo_channel_bc-7510-can-meds:
+  location:
+    countryCode: CA
+
+# The maritime snapshot has no inland coverage, and MEDS reports its publisher's country.
+ticon/ogdensburg_ny-14505-can-meds:
+  slug: ogdensburg-ny
+  location:
+    countryCode: US
+
+ticon/ogdensburg_ny-8311030-usa-noaa:
+  slug: ogdensburg

@@ -89,7 +89,7 @@ describe("metadata resolution", () => {
     expect(result.context_derived).toBe(false);
   });
 
-  test("a code-only country correction outranks provider country", () => {
+  test("a code-only country correction outranks zone and provider country", () => {
     const canada = {
       ...everett,
       country: "Canada",
@@ -104,6 +104,7 @@ describe("metadata resolution", () => {
     const result = resolveMetadata(baseStation, {
       correction: { location: { countryCode: "CA" } },
       geocoder: { nearest: () => canada, near: () => [canada] },
+      maritimeZones: { country: () => "US" },
     });
 
     expect(result.country).toBe("Canada");
@@ -225,12 +226,13 @@ describe("metadata resolution", () => {
       expect(result.locality).toBe("Friday Harbor");
     });
 
-    test("leaves the region empty when the maritime zone disagrees", () => {
+    test("takes country and region from the maritime zone when the provider disagrees", () => {
       const result = resolve("CA");
 
-      expect(result.country_code).toBe("US");
-      expect(result).not.toHaveProperty("region");
-      expect(result).not.toHaveProperty("locality");
+      expect(result.country_code).toBe("CA");
+      expect(result.region).toBe("British Columbia");
+      expect(result.region_code).toBe("CA-BC");
+      expect(result.locality).toBe("Sidney");
     });
   });
 
