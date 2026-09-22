@@ -277,7 +277,7 @@ function runEventResponse(code: string, datum: string, grouping: string) {
   ]);
 }
 
-function rwsFetch(failHeightCode?: string) {
+function rwsFetch(failHeightCode?: string, failHeightStatus = 500) {
   const bodies: unknown[] = [];
   const fetch = vi.fn(
     async (_url: string | URL | Request, init?: RequestInit) => {
@@ -289,7 +289,9 @@ function rwsFetch(failHeightCode?: string) {
       const grouping = body.AquoPlusWaarnemingMetadata.AquoMetadata.Groepering
         ?.Code as string | undefined;
       if (!grouping && code === failHeightCode)
-        return new Response("service error", { status: 500 });
+        return new Response(failHeightStatus === 204 ? null : "service error", {
+          status: failHeightStatus,
+        });
       const datum = code === "nap" ? "NAP" : "MSL";
       return new Response(
         JSON.stringify(
@@ -718,6 +720,7 @@ describe("RWS prototype run", () => {
       fetchedAtMs: options.nowMs,
       url: expect.any(String),
       body: expect.any(Object),
+      status: 200,
       sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
       responseText: expect.any(String),
     });
@@ -803,5 +806,42 @@ describe("RWS prototype run", () => {
         name.includes(".tmp-"),
       ),
     ).toBe(false);
+  });
+
+  test("skips only explicitly audited stations with no interval data", async () => {
+    const paths = await prototypePaths();
+    const source = rwsFetch("nap", 204);
+    const options = {
+      ...paths,
+      fetch: source.fetch,
+      startMs,
+      endMs: bounds.endMs,
+      targetStartMs: startMs,
+      targetEndMs: startMs + 3_600_000,
+      nowMs: Date.parse("2026-09-21T12:00:00.000Z"),
+    };
+
+    await expect(runRwsPrototype(options)).rejects.toThrow(/HTTP 204/);
+    await expect(
+      runRwsPrototype({
+        ...options,
+        expectedCatalogStationCount: 3,
+        knownUnavailableCodes: ["nap"],
+      }),
+    ).rejects.toThrow(/expected 3.*found 2/);
+    const measurements = await runRwsPrototype({
+      ...options,
+      expectedCatalogStationCount: 2,
+      knownUnavailableCodes: ["nap"],
+    });
+
+    expect(measurements.measured).toMatchObject({
+      catalogStationCount: 2,
+      stationCount: 1,
+      unavailableStationCodes: ["nap"],
+    });
+    expect(
+      openRwsPredictions(await readFile(paths.outPath)).station("rws/nap"),
+    ).toBeUndefined();
   });
 });

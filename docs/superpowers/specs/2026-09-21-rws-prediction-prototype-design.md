@@ -16,7 +16,7 @@ A companion file keeps `.tcdb` and its API compatible. Consumers opt in by suppl
 
 The prototype adds an experimental FlatBuffers schema, internal TypeScript builder/reader code, a source probe, and tests. None of these are public package exports. Generated artifacts and downloaded RWS responses stay under `tmp/` and outside Git.
 
-Use a 30-day interval across every catalog-eligible height location rather than downloading the full multi-year JSON source during format evaluation. This exercises every station, both datums, and the extrema shape while respecting the service's fair-use guidance. The synthetic fixture covers missing values when the live interval does not contain them. Project full-interval size from encoded bytes per sample and from independently compressed station data.
+Use a 30-day interval across every available catalog-eligible height location rather than downloading the full multi-year JSON source during format evaluation. The current catalog links 114 locations, but 15 audited locations return HTTP 204 for the complete interval, leaving 99 measured stations. Keep those 15 codes as an explicit prototype allowlist so a newly missing location still fails closed. This exercises both datums and the extrema shape while respecting the service's fair-use guidance. The synthetic fixture covers missing values when the live interval does not contain them. Project full-interval size from encoded bytes per sample and from independently compressed station data.
 
 ## File model
 
@@ -68,7 +68,7 @@ It does not fetch, cache, interpolate, extrapolate, merge with `.tcdb`, or expos
 
 ## Source probe
 
-The probe discovers eligible series from the live catalog, then fetches the same 30-day UTC interval for every height station and its matching extrema grouping where available. Requests are bounded and cached under `tmp/` with their parameters and response checksums.
+The probe discovers eligible series from the live catalog, then fetches the same 30-day UTC interval for every height station and its matching extrema grouping where available. Requests are bounded and cached under `tmp/` with their parameters, HTTP status, and response checksums. HTTP 204 is accepted only for the 15 codes whose absence was confirmed over both a one-day probe and the complete measurement interval; the report preserves the catalog count and their codes.
 
 The probe must reject:
 
@@ -78,7 +78,7 @@ The probe must reject:
 - a height cadence other than 600 seconds;
 - height values outside signed 16-bit centimeters;
 - event type and height channels whose timestamps do not pair exactly;
-- a partial HTTP response, service error, or missing eligible station.
+- a partial HTTP response, service error, or newly missing eligible station.
 
 It writes to a temporary path and renames the artifact only after every station passes validation. A failed run cannot replace a valid prototype.
 

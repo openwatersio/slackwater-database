@@ -34,13 +34,17 @@ export type PrototypeOptions = {
   targetStartMs: number;
   targetEndMs: number;
   nowMs: number;
+  expectedCatalogStationCount?: number;
+  knownUnavailableCodes?: readonly string[];
 };
 
 export type PrototypeMeasurements = {
   measured: {
     startMs: number;
     endMs: number;
+    catalogStationCount: number;
     stationCount: number;
+    unavailableStationCodes: string[];
     napStationCount: number;
     mslStationCount: number;
     sampleCount: number;
@@ -87,7 +91,16 @@ export async function runRwsPrototype(
   const series = discoverRwsSeries(catalog.value);
   if (series.length === 0)
     throw new Error("RWS catalog contains no height stations");
+  if (
+    options.expectedCatalogStationCount !== undefined &&
+    series.length !== options.expectedCatalogStationCount
+  )
+    throw new Error(
+      `expected ${options.expectedCatalogStationCount} RWS catalog stations, found ${series.length}`,
+    );
   const stations: RwsStationInput[] = [];
+  const unavailableStationCodes: string[] = [];
+  const knownUnavailableCodes = new Set(options.knownUnavailableCodes ?? []);
   let retrievedAtMs = catalog.fetchedAtMs;
   for (const item of series) {
     const height = await fetchCachedJson(
@@ -97,7 +110,14 @@ export async function runRwsPrototype(
         ProcesType: "astronomisch",
       }),
       options,
+      true,
     );
+    if (!height) {
+      if (!knownUnavailableCodes.has(item.code))
+        throw new Error(`RWS ${item.code} returned HTTP 204`);
+      unavailableStationCodes.push(item.code);
+      continue;
+    }
     retrievedAtMs = Math.max(retrievedAtMs, height.fetchedAtMs);
     const station = normalizeHeightChunks(item, [height.value], options);
     if (item.eventGrouping) {
@@ -113,7 +133,7 @@ export async function runRwsPrototype(
     }
     stations.push(station);
   }
-  if (stations.length !== series.length)
+  if (stations.length + unavailableStationCodes.length !== series.length)
     throw new Error(
       `built ${stations.length} of ${series.length} RWS stations`,
     );
@@ -174,7 +194,9 @@ export async function runRwsPrototype(
     measured: {
       startMs: options.startMs,
       endMs: options.endMs,
+      catalogStationCount: series.length,
       stationCount: stations.length,
+      unavailableStationCodes,
       napStationCount: stations.filter((station) => station.datum === "NAP")
         .length,
       mslStationCount: stations.filter((station) => station.datum === "MSL")
@@ -616,12 +638,19 @@ async function fetchCachedJson(
   url: string,
   body: JsonRecord,
   options: PrototypeOptions,
-): Promise<{
-  value: unknown;
-  fetchedAtMs: number;
-  responseText: string;
-  sha256: string;
-}> {
+): Promise<FetchedJson>;
+async function fetchCachedJson(
+  url: string,
+  body: JsonRecord,
+  options: PrototypeOptions,
+  allowNoContent: true,
+): Promise<FetchedJson | undefined>;
+async function fetchCachedJson(
+  url: string,
+  body: JsonRecord,
+  options: PrototypeOptions,
+  allowNoContent = false,
+): Promise<FetchedJson | undefined> {
   const request = JSON.stringify({ url, body });
   const key = sha256(request);
   const path = join(options.cacheDir, `${key}.json`);
@@ -632,6 +661,10 @@ async function fetchCachedJson(
     );
     const responseText = string(cached["responseText"], "cache responseText");
     const checksum = string(cached["sha256"], "cache sha256");
+    const status =
+      cached["status"] === undefined
+        ? 200
+        : number(cached["status"], "cache status");
     if (checksum !== sha256(responseText))
       throw new Error(`cache checksum mismatch for ${key}`);
     if (
@@ -639,6 +672,8 @@ async function fetchCachedJson(
       JSON.stringify(cached["body"]) !== JSON.stringify(body)
     )
       throw new Error(`cache request mismatch for ${key}`);
+    if (status === 204 && allowNoContent) return undefined;
+    if (status !== 200) throw new Error(`RWS ${url} returned HTTP ${status}`);
     return {
       value: JSON.parse(responseText),
       fetchedAtMs: number(cached["fetchedAtMs"], "cache fetchedAtMs"),
@@ -654,16 +689,17 @@ async function fetchCachedJson(
     headers: { "content-type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (response.status !== 200)
+  if (response.status !== 200 && !(allowNoContent && response.status === 204))
     throw new Error(`RWS ${url} returned HTTP ${response.status}`);
   const responseText = await response.text();
-  if (!responseText) throw new Error(`RWS ${url} returned an empty response`);
-  const value: unknown = JSON.parse(responseText);
+  if (response.status === 200 && !responseText)
+    throw new Error(`RWS ${url} returned an empty response`);
   const checksum = sha256(responseText);
   const entry = {
     fetchedAtMs: options.nowMs,
     url,
     body,
+    status: response.status,
     sha256: checksum,
     responseText,
   };
@@ -675,13 +711,21 @@ async function fetchCachedJson(
   } finally {
     await rm(temporary, { force: true });
   }
+  if (response.status === 204) return undefined;
   return {
-    value,
+    value: JSON.parse(responseText),
     fetchedAtMs: options.nowMs,
     responseText,
     sha256: checksum,
   };
 }
+
+type FetchedJson = {
+  value: unknown;
+  fetchedAtMs: number;
+  responseText: string;
+  sha256: string;
+};
 
 function sha256(value: string): string {
   return createHash("sha256").update(value).digest("hex");
@@ -707,6 +751,24 @@ if (executable && import.meta.url === pathToFileURL(executable).href) {
     targetStartMs: Date.parse("2025-01-01T00:00:00.000Z"),
     targetEndMs: Date.parse("2027-01-01T00:00:00.000Z"),
     nowMs: Date.now(),
+    expectedCatalogStationCount: 114,
+    knownUnavailableCodes: [
+      "amelandwestgat",
+      "antwerpen.prosperpolder",
+      "beerkanaal",
+      "beneluxhaven",
+      "hartelkanaal.kuwaitpetroleum",
+      "ijmuiden.noordersluis.west",
+      "maasmond.stroommeetpaal",
+      "mississippihaven",
+      "noordwijk.meetpost",
+      "oosterschelde.13",
+      "oosterschelde.15",
+      "petten.zuid",
+      "rotterdam.dintelhaven",
+      "scheurhaven",
+      "zeelandbrug.noord",
+    ],
   })
     .then((measurements) => {
       console.log(JSON.stringify(measurements, null, 2));
