@@ -77,6 +77,21 @@ export const DEFAULT_PRIORITY = 50;
 /** GESLA sources that restrict commercial/consultancy use */
 export const NON_COMMERCIAL_SOURCES = ["cmems", "cv", "uz"];
 
+/** Direct records from authoritative tide-gauge providers. */
+export function isDirectAuthoritativeProvider(id: string): boolean {
+  return id.startsWith("noaa/") || id.startsWith("kartverket/");
+}
+
+/** Prefer the direct authoritative record when exactly one duplicate is direct. */
+export function authoritativeDuplicateWinner(
+  idA: string,
+  idB: string,
+): string | undefined {
+  const directA = isDirectAuthoritativeProvider(idA);
+  const directB = isDirectAuthoritativeProvider(idB);
+  return directA === directB ? undefined : directA ? idA : idB;
+}
+
 /**
  * Extract the source suffix from a TICON source ID
  * Example: "abashiri-347-jpn-uhslc_fd" -> "uhslc_fd"

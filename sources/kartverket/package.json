@@ -1,0 +1,21 @@
+{
+  "name": "@neaps/kartverket",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "node import.ts",
+    "refresh": "node import.ts --refresh",
+    "validate": "node validate.ts",
+    "refresh-validation": "node validate.ts --refresh",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@neaps/stations": "*",
+    "@neaps/tide-predictor": "^0.11.0",
+    "fast-xml-parser": "^5.11.1"
+  },
+  "devDependencies": {
+    "@neaps/tide-database": "*",
+    "vitest": "^4.1.11"
+  }
+}

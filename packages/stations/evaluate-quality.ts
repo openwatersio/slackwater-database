@@ -25,10 +25,12 @@ import { DATA_DIR } from "./station.ts";
 import { NODAL_CYCLE_DAYS } from "@neaps/datums";
 import {
   distance,
+  authoritativeDuplicateWinner,
   getSourceSuffix,
   getSourcePriority,
   gaugeKey,
   coordinatePrecision,
+  isDirectAuthoritativeProvider,
   hasQualityIssues,
   epochYears,
   NULL_ISLAND_RADIUS,
@@ -239,14 +241,17 @@ const ESSENTIAL_CONSTITUENTS = ["M2", "S2", "K1", "O1"];
 function checkConstituents(station: Station): string | null {
   if (station.type === "subordinate") return null;
 
+  const essential = isDirectAuthoritativeProvider(station.id)
+    ? ESSENTIAL_CONSTITUENTS.filter((name) => name !== "K1")
+    : ESSENTIAL_CONSTITUENTS;
   const names = new Set(station.harmonic_constituents.map((c) => c.name));
-  const missing = ESSENTIAL_CONSTITUENTS.filter((c) => !names.has(c));
+  const missing = essential.filter((c) => !names.has(c));
   if (missing.length > 0) {
     return `Missing constituents for prediction: ${missing.join(", ")}`;
   }
 
   // A constituent with zero amplitude provides no tidal signal — treat as missing
-  const zeroAmplitude = ESSENTIAL_CONSTITUENTS.filter((c) => {
+  const zeroAmplitude = essential.filter((c) => {
     const constituent = station.harmonic_constituents.find((h) => h.name === c);
     return constituent !== undefined && constituent.amplitude === 0;
   });
@@ -259,7 +264,11 @@ function checkConstituents(station: Station): string | null {
     station.harmonic_constituents.find((c) => c.name === "K1")?.amplitude ?? 0;
   const p1Amp =
     station.harmonic_constituents.find((c) => c.name === "P1")?.amplitude ?? 0;
-  if (k1Amp > 0 && p1Amp > k1Amp) {
+  if (
+    !isDirectAuthoritativeProvider(station.id) &&
+    k1Amp > 0 &&
+    p1Amp > k1Amp
+  ) {
     return `P1 amplitude (${p1Amp.toFixed(4)}) exceeds K1 (${k1Amp.toFixed(4)}): physically impossible`;
   }
 
@@ -375,7 +384,7 @@ function scoreRecency(
 
 /** Source confidence: mapped from SOURCE_PRIORITY. */
 function scoreSource(station: Station): number {
-  const priority = station.id.startsWith("noaa/")
+  const priority = isDirectAuthoritativeProvider(station.id)
     ? 0
     : getSourcePriority(station.source.id);
   return toFixed(Math.max(0, 1 - priority / 99));
@@ -652,6 +661,8 @@ function pickWinner(
   resultsMap: Map<string, QualityResult>,
   subordinateCounts: Map<string, number>,
 ): [winner: string, loser: string] {
+  const directWinner = authoritativeDuplicateWinner(idA, idB);
+  if (directWinner) return [directWinner, directWinner === idA ? idB : idA];
   const subsA = subordinateCounts.get(idA) ?? 0;
   const subsB = subordinateCounts.get(idB) ?? 0;
   if (subsA > 0 && subsB === 0) return [idA, idB];

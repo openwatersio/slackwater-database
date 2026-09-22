@@ -201,6 +201,18 @@ describe("normalize — subordinate stations without datums", () => {
 //
 // Listed so a NEW gross violation fails the build instead of joining the noise.
 const LAT_ABOVE_CHART_DATUM = new Set([
+  // Kartverket publishes these LAT values 0.2–0.3 m above CD. Keep the
+  // provider values visible until its datum convention is clarified.
+  "kartverket/EYD",
+  "kartverket/HRO",
+  "kartverket/OSC",
+  "kartverket/OSL",
+  "kartverket/SBG",
+  "kartverket/SIE",
+  "kartverket/SOY",
+  "kartverket/SVG",
+  "kartverket/TRG",
+  "kartverket/VIK",
   "noaa/1778000", // APIA (Observatory), Upolu Island — 0.93 m
   "ticon/cote_ste_catherine-15450-can-meds",
   "ticon/pointe_claire-15330-can-meds",

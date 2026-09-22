@@ -133,6 +133,7 @@ Under a CC licence that string carries all three things [CC BY 4.0 section 3(a)(
 
 The sources and what each one asks for:
 
+- **Kartverket / Norwegian Mapping Authority, Hydrographic Service** — credit required under CC BY 4.0.
 - **TICON-4** — Hart-Davis, Michael; Dettmering, Denise; Seitz, Florian (2025). _TICON-4: TIdal CONstants based on GESLA-4 sea-level records._ SEANOE. https://doi.org/10.17882/109129. Credit required.
 - **NOAA CO-OPS** — a United States government work in the public domain. Attribution is not required, but is appreciated, so the project credit stands alone.
 - **Canadian Hydrographic Service** — names the agency operating a current station whose record was authored in this repository under MIT (see [metadata/PROVENANCE.md](./metadata/PROVENANCE.md)). No data is redistributed from CHS, so no credit is owed to it.
@@ -147,3 +148,5 @@ For TICON-4 stations:
 
 - Harmonic constituents are carried through as published, except for the German `wsv` and Dutch `rws` gauges, whose GESLA-4 records are timestamped in local legal time but labeled UTC. Those are re-fit from the water levels so their phases are UTC-referenced like every other station, and a station that cannot be re-fit is dropped rather than published with wrong phases. See [#96](https://github.com/openwatersio/tide-database/issues/96) and [#98](https://github.com/openwatersio/tide-database/issues/98).
 - Datums are computed here from GESLA-4 water levels, since TICON does not publish them. See [sources/ticon/README.md](./sources/ticon/README.md) for the method and its uncertainties.
+
+For Kartverket stations, published harmonic phases are converted from UTC+1 to UTC and centimetres are converted to metres. The original responses and comparison results are pinned under [sources/kartverket](./sources/kartverket/README.md).

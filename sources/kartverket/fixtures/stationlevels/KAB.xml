@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<tide>
+<meta licenseurl="http://kartverket.no/data/lisens/"/>
+<locationlevel unit="cm" reflevel="CD">
+<location name="Kabelvåg" code="KAB" latitude="68.212639" longitude="14.482149" delay="0" factor="1.00" place="Kabelvåg" obsname="Kabelvåg" obscode="KAB" landlift="0.21"/>
+<reflevel code="HIGHENDWL" value="536.8" name="High-end water level" descr="High-end water level" type="RETURN"/>
+<reflevel code="1000YMAX" value="464.9" name="1000-years high water (storm surge)" descr="High water that occurs in average every 1000 years." type="RETURN"/>
+<reflevel code="200YMAX" value="449.0" name="200-years high water (storm surge)" descr="High water that occurs in average every 200 years." type="RETURN"/>
+<reflevel code="100YMAX" value="441.7" name="100-years high water (storm surge)" descr="High water that occurs in average every 100 years" type="RETURN"/>
+<reflevel code="HOWL" value="437.0" name="Highest Observed Water Level" descr="The highest observed water level for this tide station." info="26.11.2011 under stormen Berit" type="OBS"/>
+<reflevel code="50YMAX" value="434.2" name="50-years high water (storm surge)" descr="High water that occurs in average every 50 years." type="RETURN"/>
+<reflevel code="20YMAX" value="423.6" name="High water with 20 year return period" descr="High water that occurs in average every 20 years" type="RETURN"/>
+<reflevel code="10YMAX" value="414.9" name="10-years high water (storm surge)" descr="High water that occurs in average every 10 years." type="RETURN"/>
+<reflevel code="5YMAX" value="405.4" name="5-years high water (storm surge)" descr="High water that occurs in average every 5 years." type="RETURN"/>
+<reflevel code="1YMAX" value="384.2" name="Yearly high water (storm surge)" descr="High water that occurs in average every year." type="RETURN"/>
+<reflevel code="HAT" value="358.9" name="Highest Astronomical Tide" descr="The highest tidal level which can be predicted to occur under average meteorological conditions and under any combination of astronomical conditions." type="ASTROREF"/>
+<reflevel code="MHWS" value="303.3" name="Mean High Water Springs" descr="The average height of the high waters of spring tides." type="ASTRO"/>
+<reflevel code="MHW" value="270.6" name="Mean High Water" descr="The average height of all high waters over a 19-year period." type="ASTROREF"/>
+<reflevel code="MHWN" value="237.9" name="Mean High Water Neaps" descr="The average height of the high waters of neap tides." type="ASTRO"/>
+<reflevel code="NN2000" value="188.7" name="NN 2000" descr="Norwegian vertical datum of 2000" type="REF"/>
+<reflevel code="MSL" value="177.5" epoch="1996-2014" name="Mean Sea Level (1996-2014)" descr="The average height of the surface of the sea for all stages of the tide over a 19-year period" type="REF"/>
+<reflevel code="MLWN" value="117.1" name="Mean Low Water Neaps" descr="The average height of the low waters of neap tides." type="ASTRO"/>
+<reflevel code="MLW" value="84.4" name="Mean Low Water" descr="The average height of all low waters over a 19-year period." type="ASTRO"/>
+<reflevel code="MLWS" value="51.7" name="Mean Low Water Springs" descr="The average height of the low waters of spring tides." type="ASTRO"/>
+<reflevel code="CD" value="0.0" name="Chart Datum" descr="Reference level for depths in navigational charts and heights in tide tables" type="REF"/>
+<reflevel code="LAT" value="0.0" name="Lowest Astronomical Tide" descr="The lowest tide level which can be predicted to occur under average meteorological conditions and under any combination of astronomical conditions." type="ASTRO"/>
+<reflevel code="1YMIN" value="-3.8" name="Yearly low water" descr="Low water that occurs in average every year." type="RETURN"/>
+<reflevel code="5YMIN" value="-17.3" name="5-years low water" descr="Low water that occurs in average every 5 years." type="RETURN"/>
+<reflevel code="20YMIN" value="-27.7" name="20-years low water" descr="Low water that occurs in average every 20 years." type="RETURN"/>
+<reflevel code="LOWL" value="-33.1" name="Lowest Observed Water Level" descr="The lowest observed water level for this tide station." type="OBS"/>
+</locationlevel>
+</tide>

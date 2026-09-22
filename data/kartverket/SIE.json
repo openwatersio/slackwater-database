@@ -1,0 +1,196 @@
+{
+  "name": "Sirevåg",
+  "country": "Norway",
+  "continent": "Europe",
+  "latitude": 58.5052,
+  "longitude": 5.791602,
+  "timezone": "Europe/Oslo",
+  "source": {
+    "name": "Kartverket / Norwegian Mapping Authority, Hydrographic Service",
+    "id": "SIE",
+    "published_harmonics": true,
+    "url": "https://www.kartverket.no/en/api-and-data/tides-and-water-level-data"
+  },
+  "license": {
+    "type": "cc-by-4.0",
+    "commercial_use": true,
+    "url": "https://www.kartverket.no/en/api-and-data/terms-of-use"
+  },
+  "disclaimers": "Tide and water-level data © Kartverket / Norwegian Mapping Authority, Hydrographic Service, licensed under CC BY 4.0.",
+  "datums": {
+    "HAT": 0.654,
+    "NN2000": 0.516,
+    "MHWS": 0.497,
+    "MHW": 0.465,
+    "MHWN": 0.432,
+    "MSL": 0.432,
+    "MLWN": 0.432,
+    "MLW": 0.399,
+    "MLWS": 0.367,
+    "LAT": 0.2,
+    "CD": 0
+  },
+  "chart_datum": "CD",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "SA_KV",
+      "amplitude": 0.092,
+      "phase": 304.15893332
+    },
+    {
+      "name": "Mm",
+      "amplitude": 0.0232,
+      "phase": 178.44562535
+    },
+    {
+      "name": "Mf",
+      "amplitude": 0.0158,
+      "phase": 191.77196695
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.0083,
+      "phase": 351.53696442
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.003,
+      "phase": 171.41106864
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.0076,
+      "phase": 179.56893137
+    },
+    {
+      "name": "eps2",
+      "amplitude": 0.0041,
+      "phase": 248.5061662
+    },
+    {
+      "name": "mu2",
+      "amplitude": 0.0143,
+      "phase": 278.80179152
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.0052,
+      "phase": 315.23027043
+    },
+    {
+      "name": "nu2",
+      "amplitude": 0.0025,
+      "phase": 128.13741687
+    },
+    {
+      "name": "alpha2",
+      "amplitude": 0.0063,
+      "phase": 229.08696242
+    },
+    {
+      "name": "M2",
+      "amplitude": 0.0328,
+      "phase": 266.07589575
+    },
+    {
+      "name": "M(KS)2",
+      "amplitude": 0.0049,
+      "phase": 4.46482907
+    },
+    {
+      "name": "lambda2",
+      "amplitude": 0.0029,
+      "phase": 202.62437466
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.0073,
+      "phase": 248.5715211
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.0325,
+      "phase": 339.10000001
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.0103,
+      "phase": 331.38786274
+    },
+    {
+      "name": "MSN2",
+      "amplitude": 0.0025,
+      "phase": 103.90562533
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.0017,
+      "phase": 199.36384364
+    },
+    {
+      "name": "MK3",
+      "amplitude": 0.0012,
+      "phase": 292.40482712
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.0018,
+      "phase": 336.77589576
+    },
+    {
+      "name": "MK4",
+      "amplitude": 0.0008,
+      "phase": 337.85375848
+    },
+    {
+      "name": "S4",
+      "amplitude": 0.0006,
+      "phase": 160.92999999
+    },
+    {
+      "name": "2MK5",
+      "amplitude": 0.0009,
+      "phase": 226.7607229
+    },
+    {
+      "name": "2MN6",
+      "amplitude": 0.0055,
+      "phase": 21.24206196
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.0107,
+      "phase": 55.22768728
+    },
+    {
+      "name": "2MS6",
+      "amplitude": 0.0118,
+      "phase": 115.86179151
+    },
+    {
+      "name": "2MK6",
+      "amplitude": 0.0034,
+      "phase": 118.74965423
+    },
+    {
+      "name": "2SM6",
+      "amplitude": 0.0028,
+      "phase": 176.47589577
+    },
+    {
+      "name": "MSK6",
+      "amplitude": 0.0016,
+      "phase": 176.9437585
+    },
+    {
+      "name": "M8",
+      "amplitude": 0.0013,
+      "phase": 262.03358303
+    }
+  ],
+  "epoch": {
+    "start": "2022-09-07",
+    "end": "2024-12-31"
+  }
+}

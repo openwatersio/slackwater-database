@@ -1,0 +1,246 @@
+{
+  "name": "Træna",
+  "country": "Norway",
+  "continent": "Europe",
+  "latitude": 66.496624,
+  "longitude": 12.088633,
+  "timezone": "Europe/Oslo",
+  "source": {
+    "name": "Kartverket / Norwegian Mapping Authority, Hydrographic Service",
+    "id": "TAZ",
+    "published_harmonics": true,
+    "url": "https://www.kartverket.no/en/api-and-data/tides-and-water-level-data"
+  },
+  "license": {
+    "type": "cc-by-4.0",
+    "commercial_use": true,
+    "url": "https://www.kartverket.no/en/api-and-data/terms-of-use"
+  },
+  "disclaimers": "Tide and water-level data © Kartverket / Norwegian Mapping Authority, Hydrographic Service, licensed under CC BY 4.0.",
+  "datums": {
+    "HAT": 3.031,
+    "MHWS": 2.597,
+    "MHW": 2.325,
+    "MHWN": 2.053,
+    "NN2000": 1.653,
+    "MSL": 1.538,
+    "MLWN": 1.023,
+    "MLW": 0.751,
+    "MLWS": 0.479,
+    "LAT": 0,
+    "CD": 0
+  },
+  "chart_datum": "CD",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "SA_KV",
+      "amplitude": 0.1425,
+      "phase": 329.35893332
+    },
+    {
+      "name": "Mm",
+      "amplitude": 0.0287,
+      "phase": 179.56562535
+    },
+    {
+      "name": "Mf",
+      "amplitude": 0.0188,
+      "phase": 188.06196695
+    },
+    {
+      "name": "2Q1",
+      "amplitude": 0.0044,
+      "phase": 304.58571375
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.0216,
+      "phase": 354.51133906
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.0406,
+      "phase": 44.72696442
+    },
+    {
+      "name": "tau1",
+      "amplitude": 0.0089,
+      "phase": 229.8448271
+    },
+    {
+      "name": "NO1",
+      "amplitude": 0.0036,
+      "phase": 184.60330602
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.0257,
+      "phase": 175.68106864
+    },
+    {
+      "name": "S1_KV",
+      "amplitude": 0.0095,
+      "phase": 310.76999804
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.088,
+      "phase": 186.57893137
+    },
+    {
+      "name": "J1",
+      "amplitude": 0.0056,
+      "phase": 255.02455668
+    },
+    {
+      "name": "eps2",
+      "amplitude": 0.0048,
+      "phase": 257.6761662
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0.0202,
+      "phase": 285.97464508
+    },
+    {
+      "name": "mu2",
+      "amplitude": 0.0224,
+      "phase": 276.88179152
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.1616,
+      "phase": 301.31027043
+    },
+    {
+      "name": "nu2",
+      "amplitude": 0.0315,
+      "phase": 304.19741687
+    },
+    {
+      "name": "gamma2",
+      "amplitude": 0.0028,
+      "phase": 324.48874934
+    },
+    {
+      "name": "alpha2",
+      "amplitude": 0.0033,
+      "phase": 344.98696242
+    },
+    {
+      "name": "M2",
+      "amplitude": 0.7869,
+      "phase": 323.96589575
+    },
+    {
+      "name": "lambda2",
+      "amplitude": 0.0064,
+      "phase": 343.98437466
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.0255,
+      "phase": 355.2715211
+    },
+    {
+      "name": "T2",
+      "amplitude": 0.0145,
+      "phase": 0.60106669
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.2721,
+      "phase": 3.00000001
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.0775,
+      "phase": 359.89786274
+    },
+    {
+      "name": "eta2",
+      "amplitude": 0.0038,
+      "phase": 358.20348805
+    },
+    {
+      "name": "MO3",
+      "amplitude": 0.0042,
+      "phase": 273.73286016
+    },
+    {
+      "name": "SK3",
+      "amplitude": 0.0028,
+      "phase": 131.98893134
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.0067,
+      "phase": 204.76616618
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.0149,
+      "phase": 238.84179153
+    },
+    {
+      "name": "SN4",
+      "amplitude": 0.0015,
+      "phase": 315.39027044
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.0065,
+      "phase": 320.94589576
+    },
+    {
+      "name": "MK4",
+      "amplitude": 0.0022,
+      "phase": 320.04375848
+    },
+    {
+      "name": "S4",
+      "amplitude": 0.001,
+      "phase": 170.43999999
+    },
+    {
+      "name": "2MK5",
+      "amplitude": 0.0015,
+      "phase": 303.2607229
+    },
+    {
+      "name": "2MN6",
+      "amplitude": 0.003,
+      "phase": 142.50206196
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.006,
+      "phase": 172.89768728
+    },
+    {
+      "name": "2MS6",
+      "amplitude": 0.0059,
+      "phase": 235.28179151
+    },
+    {
+      "name": "2MK6",
+      "amplitude": 0.0017,
+      "phase": 232.69965423
+    },
+    {
+      "name": "2SM6",
+      "amplitude": 0.0012,
+      "phase": 289.83589577
+    },
+    {
+      "name": "MSK6",
+      "amplitude": 0.0008,
+      "phase": 292.3937585
+    }
+  ],
+  "epoch": {
+    "start": "2023-10-04",
+    "end": "2025-03-14"
+  }
+}
