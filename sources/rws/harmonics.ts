@@ -275,6 +275,10 @@ export function selectExtraConstituents(
       (name) => modelByName.get(name.toUpperCase())?.name ?? name,
     ),
   );
+  const usedSpeeds = excludedNames.flatMap((name) => {
+    const model = modelByName.get(name.toUpperCase());
+    return model ? [model.speed] : [];
+  });
   return canonicalModels
     .filter((model) => !excluded.has(model.name))
     .flatMap((model) => {
@@ -299,13 +303,21 @@ export function selectExtraConstituents(
       if (determinant === 0) return [];
       const p = (cy * ss - sy * cs) / determinant;
       const q = (sy * cc - cy * cs) / determinant;
-      return [{ name: model.name, amplitude: Math.hypot(p, q) }];
+      return [
+        { name: model.name, speed: model.speed, amplitude: Math.hypot(p, q) },
+      ];
     })
     .sort((left, right) =>
       right.amplitude === left.amplitude
         ? left.name.localeCompare(right.name)
         : right.amplitude - left.amplitude,
     )
+    .filter(({ speed }) => {
+      if (usedSpeeds.some((used) => Math.abs(used - speed) <= 1e-9))
+        return false;
+      usedSpeeds.push(speed);
+      return true;
+    })
     .slice(0, count)
     .map(({ name }) => name);
 }

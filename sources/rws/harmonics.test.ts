@@ -80,6 +80,16 @@ function eventResponse(
   };
 }
 
+function excludeOtherSpeeds(...speeds: number[]) {
+  return [
+    ...new Map(
+      Object.values(constituents).map((model) => [model.name, model]),
+    ).values(),
+  ]
+    .filter((model) => !speeds.includes(model.speed))
+    .map(({ name }) => name);
+}
+
 test("spread sampling and residual ranking are deterministic", () => {
   const screenSamples = Array.from({ length: 400 }, (_, index) => ({
     t: Date.UTC(2020, 0, 1) + index * 3_600_000,
@@ -102,12 +112,49 @@ test("spread sampling and residual ranking are deterministic", () => {
     }, 0);
   });
   expect(spreadSample([...Array(20).keys()], 5, 3)).toEqual([3, 4, 9, 14, 19]);
-  const excluded = [
-    ...new Set(Object.values(constituents).map(({ name }) => name)),
-  ].filter((name) => name !== "M2" && name !== "S2");
-  expect(
-    selectExtraConstituents(screenSamples, residuals, excluded, 2),
-  ).toEqual(["M2", "S2"]);
+  const selected = selectExtraConstituents(
+    screenSamples,
+    residuals,
+    excludeOtherSpeeds(constituents.M2!.speed, constituents.S2!.speed),
+    2,
+  );
+  expect(selected.map((name) => constituents[name]!.speed)).toEqual([
+    constituents.M2!.speed,
+    constituents.S2!.speed,
+  ]);
+});
+
+test("selects at most one extra constituent per exact speed", () => {
+  const samples = Array.from({ length: 400 }, (_, index) => ({
+    t: Date.UTC(2020, 0, 1) + index * 3_600_000,
+    level: 0,
+  }));
+  const residuals = samples.map(({ t }) => {
+    const astronomy = astro(new Date(t));
+    return [
+      ["2MK2", 1],
+      ["M2", 0.5],
+    ].reduce((level, [name, amplitude]) => {
+      const model = constituents[String(name)]!;
+      const { f, u } = model.correction(astronomy);
+      return (
+        level +
+        Number(amplitude) *
+          f *
+          Math.cos((model.value(astronomy) + u) * (Math.PI / 180))
+      );
+    }, 0);
+  });
+  const selected = selectExtraConstituents(
+    samples,
+    residuals,
+    excludeOtherSpeeds(constituents["2MK2"]!.speed, constituents.M2!.speed),
+    2,
+  );
+  expect(selected.map((name) => constituents[name]!.speed)).toEqual([
+    constituents["2MK2"]!.speed,
+    constituents.M2!.speed,
+  ]);
 });
 
 const bounds = {
