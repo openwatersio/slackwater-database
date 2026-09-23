@@ -91,11 +91,16 @@ async function main() {
 }
 
 async function buildStation(meta: any): Promise<StationData> {
+  // The nearest gazetteer place can sit across a state line or, on the Alaska
+  // panhandle, in British Columbia; NOAA's own state code settles both.
+  // Territories are published as their own country, so they stay geocoded.
+  const stateless =
+    !meta.state || ["PR", "VI", "GU", "AS", "FM"].includes(meta.state);
   const {
     country = "United States",
     continent = "North America",
     region = meta.state || undefined,
-  } = geocoder.nearest(meta.lat, meta.lng) || {};
+  } = (stateless && geocoder.nearest(meta.lat, meta.lng)) || {};
 
   const station: Partial<StationData> = {
     name: meta.name,
