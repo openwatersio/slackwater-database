@@ -8,18 +8,24 @@
 # name, then the OpenStreetMap bay or strait it sits in, then the nearest
 # place. Curate `context` only where that answer is wrong or less useful.
 #
-# `formerSlugs` records a slug this station used to resolve to, so a consumer
-# can redirect an old shared link instead of 404ing it. Set it in the same
-# change that moves `slug` - `npm run metadata:lock` refuses to retire a
-# published path unless the old slug is recorded here.
-# It is also what lets two ids for one station share a slug: see "Two ids may
-# share one slug" in CONTRIBUTING.md.
+# A slug, once published, belongs to its station for good. When a station's
+# slug moves, `npm run metadata:lock` records the old one in
+# `metadata/former-slugs.json` so consumers redirect it, and the allocator
+# treats every retired slug as taken so it can never name other water. A
+# deliberate migration re-ladders chosen ids with `npm run metadata:lock --
+# ids.json`; resetting the lock is never the way, because it forgets every
+# published address at once.
 #
-# Only record a former slug when the new slug points at the *same place*: a
-# rename qualifies, a mislabel does not - redirecting a mislabel preserves a
-# wrong link, where a 404 is more honest (issue #6, the retired `anacortes`).
-# No validator can make that call. Slug changes are rare; downstream consumers
-# own the redirect consequences either way.
+# `formerSlugs` is for a redirect the table cannot know about: a slug this
+# station answered to before the lock existed, or under a retired id. Record
+# one only when the old slug named the *same place* - a rename qualifies, a
+# mislabel does not, since redirecting a mislabel preserves a wrong link where
+# a 404 is more honest (issue #6, the retired `anacortes`).
+#
+# Two ids for one station share a slug: a curated record beside the provider's
+# own row for the same water. Point the provider row at the curated slug with
+# `slug:` in corrections.yaml; the lock allows the pair and refuses a second
+# registry owner or a share between two provider rows.
 
 noaa/9447659:
   name: Everett
@@ -190,3 +196,42 @@ ticon/ogdensburg_ny-14505-can-meds:
 
 ticon/ogdensburg_ny-8311030-usa-noaa:
   slug: ogdensburg
+
+# --- Provider rows for water the registry already names ---
+# Each of these is the CHS gauge behind a curated `chs-*` record above: the
+# same tide station, carried once by MEDS or UHSLC with its constituents and
+# once by the registry with its identity. Pointing the provider row at the
+# curated slug makes the pair one route, so `/tides/victoria/` is one page with
+# the registry's name and the provider's harmonics rather than two pages a few
+# hundred metres apart that neither holds the bare slug. A shared slug has
+# exactly one registry owner; `metadata:lock` refuses a second.
+
+ticon/campbell_river_bc-8074-can-meds:
+  slug: campbell-river
+
+ticon/fulford_harbour_bc-7330-can-meds:
+  slug: fulford-harbour
+
+ticon/owen_bay_bc-8120-can-meds:
+  slug: owen-bay
+
+ticon/point_atkinson_bc-7795-can-meds:
+  slug: point-atkinson
+
+ticon/port_alberni_bc-8575-can-meds:
+  slug: port-alberni
+
+ticon/port_renfrew_bc-8525-can-meds:
+  slug: port-renfrew
+
+ticon/sooke_bc-7020-can-meds:
+  slug: sooke
+
+ticon/tofino-542-can-uhslc_fd:
+  slug: tofino
+
+ticon/vancouver_bc-7735-can-meds:
+  slug: vancouver
+
+ticon/victoria_bc-543a-can-uhslc_rq:
+  slug: victoria

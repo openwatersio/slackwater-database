@@ -86,18 +86,24 @@
 # in PROVENANCE.md; set a station's `source` field only when its facts came
 # from somewhere else (see noaa-boundary-pass).
 #
-# `formerSlugs` records a slug this station used to resolve to, so a consumer
-# can redirect an old shared link instead of 404ing it. Set it in the same
-# change that moves `slug` - `npm run metadata:lock` refuses to retire a
-# published path unless the old slug is recorded here.
-# It is also what lets two ids for one station share a slug: see "Two ids may
-# share one slug" in CONTRIBUTING.md.
+# A slug, once published, belongs to its station for good. When a station's
+# slug moves, `npm run metadata:lock` records the old one in
+# `metadata/former-slugs.json` so consumers redirect it, and the allocator
+# treats every retired slug as taken so it can never name other water. A
+# deliberate migration re-ladders chosen ids with `npm run metadata:lock --
+# ids.json`; resetting the lock is never the way, because it forgets every
+# published address at once.
 #
-# Only record a former slug when the new slug points at the *same place*: a
-# rename qualifies, a mislabel does not - redirecting a mislabel preserves a
-# wrong link, where a 404 is more honest (issue #6, the retired `anacortes`).
-# No validator can make that call. Slug changes are rare; downstream consumers
-# own the redirect consequences either way.
+# `formerSlugs` is for a redirect the table cannot know about: a slug this
+# station answered to before the lock existed, or under a retired id. Record
+# one only when the old slug named the *same place* - a rename qualifies, a
+# mislabel does not, since redirecting a mislabel preserves a wrong link where
+# a 404 is more honest (issue #6, the retired `anacortes`).
+#
+# Two ids for one station share a slug: a curated record beside the provider's
+# own row for the same water. Point the provider row at the curated slug with
+# `slug:` in corrections.yaml; the lock allows the pair and refuses a second
+# registry owner or a share between two provider rows.
 #
 # One entry is not CHS: noaa-boundary-pass is a NOAA current station, carried
 # here because currents-vault (which curates the same 20 gates) is dropping
@@ -404,6 +410,7 @@ chs-malibu-rapids:
 chs-owen-bay:
   name: Owen Bay
   context: Sonora Island
+  slug: owen-bay
   position: [50.310, -125.223]
   provider: chs
   kind: tide
@@ -411,6 +418,7 @@ chs-owen-bay:
 chs-campbell-river:
   name: Campbell River
   context: Discovery Passage
+  slug: campbell-river
   position: [50.042, -125.247]
   provider: chs
   kind: tide
@@ -418,6 +426,7 @@ chs-campbell-river:
 chs-point-atkinson:
   name: Point Atkinson
   context: West Vancouver
+  slug: point-atkinson
   position: [49.337, -123.254]
   provider: chs
   kind: tide
@@ -430,6 +439,7 @@ chs-point-atkinson:
 chs-vancouver:
   name: Vancouver
   context: Burrard Inlet
+  slug: vancouver
   position: [49.286, -123.100]
   provider: chs
   kind: tide
@@ -442,6 +452,7 @@ chs-vancouver:
 chs-port-alberni:
   name: Port Alberni
   context: Alberni Inlet
+  slug: port-alberni
   position: [49.226, -124.814]
   provider: chs
   kind: tide
@@ -450,6 +461,7 @@ chs-port-alberni:
 chs-tofino:
   name: Tofino
   context: Clayoquot Sound
+  slug: tofino
   position: [49.154, -125.913]
   provider: chs
   kind: tide
@@ -458,6 +470,7 @@ chs-tofino:
 chs-fulford-harbour:
   name: Fulford Harbour
   context: Salt Spring Island
+  slug: fulford-harbour
   position: [48.769, -123.451]
   provider: chs
   kind: tide
@@ -466,6 +479,7 @@ chs-fulford-harbour:
 chs-port-renfrew:
   name: Port Renfrew
   context: Port San Juan
+  slug: port-renfrew
   position: [48.555, -124.421]
   provider: chs
   kind: tide
@@ -474,6 +488,7 @@ chs-port-renfrew:
 chs-victoria:
   name: Victoria
   context: Inner Harbour
+  slug: victoria
   position: [48.424, -123.371]
   provider: chs
   kind: tide
@@ -487,6 +502,7 @@ chs-victoria:
 chs-sooke:
   name: Sooke
   context: Strait of Juan de Fuca
+  slug: sooke
   position: [48.370, -123.726]
   provider: chs
   kind: tide
