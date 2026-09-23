@@ -6,6 +6,21 @@ import {
   type Sample,
 } from "../index.js";
 
+function predictionRms(
+  fit: ReturnType<typeof fitHarmonics>,
+  samples: Sample[],
+): number {
+  const predictor = neaps.createTidePredictor(fit, { offset: false });
+  return Math.sqrt(
+    samples.reduce((sum, sample) => {
+      const error =
+        predictor.getWaterLevelAtTime({ time: new Date(sample.t) }).level -
+        sample.level;
+      return sum + error * error;
+    }, 0) / samples.length,
+  );
+}
+
 describe("fitHarmonics", () => {
   test("recovers known amplitude/phase from a synthetic tide", () => {
     // Synthesize 400 days of hourly heights from known constituents using the
@@ -38,6 +53,78 @@ describe("fitHarmonics", () => {
       expect(got.amplitude).toBeCloseTo(H, 3);
       expect(got.phase).toBeCloseTo(G, 2);
     }
+  });
+
+  test("SVD reconstructs a broad synthetic constituent set", () => {
+    const excluded = new Set(["SA", "MKS2", "3N2", "3L2", "T3", "R3"]);
+    const names = [
+      ...new Map(
+        Object.values(neaps.constituents)
+          .filter(
+            (model) =>
+              model.speed > 0 && !excluded.has(model.name.toUpperCase()),
+          )
+          .map((model) => [model.name, model]),
+      ).keys(),
+    ].slice(0, 99);
+    const terms = names.map((name, index) => ({
+      name,
+      amplitude: 0.005,
+      phase: (index * 37) % 360,
+    }));
+    const t0 = Date.UTC(2018, 0, 1);
+    const duration = 6 * 365.25 * 86_400_000;
+    const samples = Array.from({ length: 4_000 }, (_, index) => {
+      const t = t0 + (duration * index) / 3_999;
+      const a = neaps.astro(new Date(t));
+      const level = terms.reduce((sum, { name, amplitude, phase }) => {
+        const model = neaps.constituents[name]!;
+        const { f, u } = model.correction(a);
+        return (
+          sum +
+          amplitude *
+            f *
+            Math.cos((model.value(a) + u - phase) * (Math.PI / 180))
+        );
+      }, 0);
+      return { t, level };
+    });
+
+    const fit = fitHarmonics(samples, names, { solver: "svd" });
+    expect(fit).toHaveLength(99);
+    expect(
+      fit.every(
+        ({ amplitude, phase }) =>
+          Number.isFinite(amplitude) && Number.isFinite(phase),
+      ),
+    ).toBe(true);
+    expect(predictionRms(fit, samples)).toBeLessThan(0.003);
+  });
+
+  test("SVD returns finite predictions for duplicate constituents", () => {
+    const t0 = Date.UTC(2018, 0, 1);
+    const m2Samples = Array.from({ length: 4_000 }, (_, index) => {
+      const t = t0 + (6 * 365.25 * 86_400_000 * index) / 3_999;
+      const a = neaps.astro(new Date(t));
+      const model = neaps.constituents["M2"]!;
+      const { f, u } = model.correction(a);
+      return {
+        t,
+        level: 0.05 * f * Math.cos((model.value(a) + u - 110) * (Math.PI / 180)),
+      };
+    });
+
+    const duplicate = fitHarmonics(m2Samples, ["M2", "M2"], {
+      solver: "svd",
+    });
+    expect(duplicate).toHaveLength(2);
+    expect(
+      duplicate.every(
+        ({ amplitude, phase }) =>
+          Number.isFinite(amplitude) && Number.isFinite(phase),
+      ),
+    ).toBe(true);
+    expect(predictionRms(duplicate, m2Samples)).toBeLessThan(0.003);
   });
 });
 
