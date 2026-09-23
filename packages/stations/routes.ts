@@ -56,6 +56,18 @@ export function buildSlugTable(
       (station) =>
         station.routed !== false && (station.kind ?? "tide") === kind,
     );
+    const localNames = new Map<string, number>();
+    const localContexts = new Map<string, number>();
+    for (const station of candidates) {
+      const key = `${station.region_code || station.country_code}\0${(station.name || station.id).toLowerCase()}`;
+      const context = toSlug(station.context ?? "");
+      localNames.set(key, (localNames.get(key) ?? 0) + 1);
+      if (context)
+        localContexts.set(
+          `${key}\0${context}`,
+          (localContexts.get(`${key}\0${context}`) ?? 0) + 1,
+        );
+    }
     const ids = new Set(candidates.map((station) => station.id));
     const allocated = new Map(Object.entries(previous[kind] ?? {}));
 
@@ -101,12 +113,23 @@ export function buildSlugTable(
       .filter((candidate) => !allocated.has(candidate.id))
       .sort((a, b) => compare(a.id, b.id))) {
       const base = toSlug(station.name ?? "") || toSlug(station.id);
+      const localKey = `${station.region_code || station.country_code}\0${(station.name || station.id).toLowerCase()}`;
+      const context = toSlug(station.context ?? "");
       const region = toSlug(station.region ?? "");
-      const ladder = [
-        base,
-        ...(region ? [`${base}-${region}`] : []),
-        `${base}-${toSlug(station.id)}`,
-      ];
+      const localCollision = (localNames.get(localKey) ?? 0) > 1;
+      const ladder = localCollision
+        ? [
+            ...(context && localContexts.get(`${localKey}\0${context}`) === 1
+              ? [`${base}-${context}`]
+              : []),
+            `${base}-${toSlug(station.id)}`,
+          ]
+        : [
+            base,
+            ...(context ? [`${base}-${context}`] : []),
+            ...(region ? [`${base}-${region}`] : []),
+            `${base}-${toSlug(station.id)}`,
+          ];
       const slug = ladder.find((candidate) => !used.has(candidate));
       if (!slug)
         throw new Error(
