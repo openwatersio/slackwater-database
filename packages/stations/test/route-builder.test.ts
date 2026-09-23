@@ -65,8 +65,43 @@ describe("slug allocation", () => {
     expect(forward.table).toEqual(reverse.table);
     expect(forward.table.tide).toMatchObject({
       "noaa/existing": "seattle",
-      "noaa/1": "aberdeen",
-      "noaa/2": "aberdeen-washington",
+      "noaa/1": "aberdeen-noaa-1",
+      "noaa/2": "aberdeen-noaa-2",
+    });
+  });
+
+  test("qualifies every same-place name collision", () => {
+    const result = buildSlugTable(
+      [
+        {
+          ...station("noaa/8724369", "Sawyer Key", "tide", "FL"),
+          context: "Inside · Cudjoe Channel",
+          region_code: "US-FL",
+        },
+        {
+          ...station("noaa/8724370", "Sawyer Key", "tide", "FL"),
+          context: "Outside · Cudjoe Channel",
+          region_code: "US-FL",
+        },
+        {
+          ...station("ticon/crms0119", "Port Sulphur", "tide", "LA"),
+          context: "LA",
+          region_code: "US-LA",
+        },
+        {
+          ...station("ticon/crms0129", "Port Sulphur", "tide", "LA"),
+          context: "LA",
+          region_code: "US-LA",
+        },
+      ],
+      emptySlugs(),
+    );
+
+    expect(result.table.tide).toMatchObject({
+      "noaa/8724369": "sawyer-key-inside-cudjoe-channel",
+      "noaa/8724370": "sawyer-key-outside-cudjoe-channel",
+      "ticon/crms0119": "port-sulphur-ticon-crms0119",
+      "ticon/crms0129": "port-sulphur-ticon-crms0129",
     });
   });
 
@@ -197,12 +232,7 @@ describe("geographic routes", () => {
         "utf8",
       ),
     ) as SlugTable;
-    const shared = [
-      ["tide", "point-atkinson"],
-      ["tide", "vancouver"],
-      ["tide", "victoria"],
-      ["current", "boundary-pass"],
-    ] as const;
+    const shared = [["current", "boundary-pass"]] as const;
     const members = shared.flatMap(([kind, slug]) =>
       Object.entries(table[kind])
         .filter(([, allocated]) => allocated === slug)
@@ -210,12 +240,7 @@ describe("geographic routes", () => {
     );
     const routes = buildRoutes(members, {
       routeLock: emptyRoutes(),
-      registryIds: new Set([
-        "chs-point-atkinson",
-        "chs-vancouver",
-        "chs-victoria",
-        "noaa-boundary-pass",
-      ]),
+      registryIds: new Set(["noaa-boundary-pass"]),
     });
 
     for (const [kind, slug] of shared)
