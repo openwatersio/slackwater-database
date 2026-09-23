@@ -320,8 +320,9 @@ test("rejects invalid event type values", () => {
     "NAP",
     "GETETBRKD2",
   );
-  invalid.WaarnemingenLijst[0]!.MetingenLijst[0]!.Meetwaarde.Waarde_Alfanumeriek =
-    "NVT";
+  invalid.WaarnemingenLijst[0]!.MetingenLijst[0]!.Meetwaarde = {
+    Waarde_Alfanumeriek: "NVT",
+  };
 
   expect(() =>
     parseEvents("nap", "NAP", "GETETBRKD2", invalid, bounds),
