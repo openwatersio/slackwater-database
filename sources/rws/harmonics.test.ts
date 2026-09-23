@@ -115,12 +115,12 @@ test("spread sampling and residual ranking are deterministic", () => {
   const selected = selectExtraConstituents(
     screenSamples,
     residuals,
-    excludeOtherSpeeds(constituents.M2!.speed, constituents.S2!.speed),
+    excludeOtherSpeeds(constituents["M2"]!.speed, constituents["S2"]!.speed),
     2,
   );
   expect(selected.map((name) => constituents[name]!.speed)).toEqual([
-    constituents.M2!.speed,
-    constituents.S2!.speed,
+    constituents["M2"]!.speed,
+    constituents["S2"]!.speed,
   ]);
 });
 
@@ -148,12 +148,12 @@ test("selects at most one extra constituent per exact speed", () => {
   const selected = selectExtraConstituents(
     samples,
     residuals,
-    excludeOtherSpeeds(constituents["2MK2"]!.speed, constituents.M2!.speed),
+    excludeOtherSpeeds(constituents["2MK2"]!.speed, constituents["M2"]!.speed),
     2,
   );
   expect(selected.map((name) => constituents[name]!.speed)).toEqual([
     constituents["2MK2"]!.speed,
-    constituents.M2!.speed,
+    constituents["M2"]!.speed,
   ]);
 });
 
