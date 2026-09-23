@@ -90,6 +90,25 @@ async function main() {
   );
 }
 
+const DETAILS_ATTEMPTS = 3;
+
+async function fetchDetails(id: string): Promise<any> {
+  const url = `https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/${id}.json?expand=details,datums,harcon,disclaimers,notices&units=metric`;
+  let res: any;
+  for (let attempt = 1; attempt <= DETAILS_ATTEMPTS; attempt++) {
+    // NOAA occasionally answers 200 with an error body and no stations array,
+    // and a retry has to bypass the cache or it reads that same body back.
+    res = await fetch(url, attempt > 1 ? { cache: "reload" } : {}).then((r) =>
+      r.json(),
+    );
+    if (res.stations?.[0]) return res.stations[0];
+    await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+  }
+  throw new Error(
+    `No data for station ${id} after ${DETAILS_ATTEMPTS} attempts: ${JSON.stringify(res).slice(0, 200)}`,
+  );
+}
+
 async function buildStation(meta: any): Promise<StationData> {
   // The nearest gazetteer place can sit across a state line or, on the Alaska
   // panhandle, in British Columbia; NOAA's own state code settles both.
@@ -142,14 +161,7 @@ async function buildStation(meta: any): Promise<StationData> {
       },
     });
   } else {
-    // Fetch full station details
-    const res = await fetch(
-      `https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/${meta.id}.json?expand=details,datums,harcon,disclaimers,notices&units=metric`,
-    ).then((r) => r.json());
-    const data = res.stations[0];
-
-    // This should never happen, but just in case
-    if (!data) throw new Error(`No data found for station ID: ${meta.id}`);
+    const data = await fetchDetails(meta.id);
 
     // Parse epoch from datums (e.g., "1983-2001" -> start: 1983-01-01, end: 2001-12-31)
     let epoch: { start: string; end: string } | undefined;
@@ -195,4 +207,4 @@ async function buildStation(meta: any): Promise<StationData> {
   return normalize(station as StationData);
 }
 
-main().catch(console.error);
+await main();
