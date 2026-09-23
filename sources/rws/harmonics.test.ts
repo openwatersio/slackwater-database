@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { astro, constituents } from "@neaps/tide-predictor";
 import { expect, test } from "vitest";
 import {
+  eventMetrics,
   parseEvents,
   parseHeightChunks,
   readCachedJson,
@@ -240,5 +241,31 @@ test("applies height and event gates independently", () => {
     height: true,
     events: false,
     publishable: false,
+  });
+});
+
+test("matches the nearest unused event of the same type within 60 minutes", () => {
+  const minute = 60_000;
+  const events = eventMetrics(
+    [
+      { t: 0, type: "hoogwater", level: 0 },
+      { t: 10 * minute, type: "hoogwater", level: 0 },
+      { t: 120 * minute, type: "laagwater", level: 0 },
+      { t: 300 * minute, type: "laagwater", level: 0 },
+    ],
+    [
+      { t: 0, type: "laagwater", level: 0 },
+      { t: 9 * minute, type: "hoogwater", level: 0 },
+      { t: minute, type: "hoogwater", level: 0 },
+      { t: 180 * minute, type: "laagwater", level: 0 },
+      { t: 361 * minute, type: "laagwater", level: 0 },
+    ],
+  );
+  expect(events).toEqual({
+    provider: 4,
+    predicted: 5,
+    matched: 3,
+    meanMinutes: 62 / 3,
+    maxMinutes: 60,
   });
 });

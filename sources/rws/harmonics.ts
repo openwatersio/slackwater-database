@@ -656,7 +656,7 @@ function rms(values: number[]): number {
   );
 }
 
-function eventMetrics(
+export function eventMetrics(
   provider: RwsEvent[],
   predicted: RwsEvent[],
 ): EventMetrics {
