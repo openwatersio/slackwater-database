@@ -1,4 +1,5 @@
 import * as neaps from "@neaps/tide-predictor";
+import { Matrix, SingularValueDecomposition } from "ml-matrix";
 
 /**
  * Re-analyze tidal harmonics from raw water-level observations.
@@ -25,6 +26,10 @@ export interface HarmonicConstituent {
 export interface Sample {
   t: number; // UTC epoch ms
   level: number; // meters
+}
+
+export interface FitOptions {
+  solver?: "normal-equations" | "svd";
 }
 
 const DEG = Math.PI / 180;
@@ -161,6 +166,7 @@ export function isAnalyzable(
 export function fitHarmonics(
   samples: Sample[],
   names: string[],
+  options: FitOptions = {},
 ): HarmonicConstituent[] {
   const cons = names
     .map((name) => ({
@@ -173,6 +179,39 @@ export function fitHarmonics(
     );
 
   const ncol = 1 + 2 * cons.length;
+  if (options.solver === "svd") {
+    const rows = samples.map((sample) => {
+      const row = new Array<number>(ncol).fill(0);
+      row[0] = 1;
+      const a = neaps.astro(new Date(sample.t));
+      for (let k = 0; k < cons.length; k++) {
+        const con = cons[k]!.c;
+        const { f, u } = con.correction(a);
+        const arg = (con.value(a) + u) * DEG;
+        row[1 + 2 * k] = f * Math.cos(arg);
+        row[2 + 2 * k] = f * Math.sin(arg);
+      }
+      return row;
+    });
+    const x = new SingularValueDecomposition(new Matrix(rows), {
+      autoTranspose: true,
+    })
+      .solve(Matrix.columnVector(samples.map(({ level }) => level)))
+      .getColumn(0);
+    if (!x.every(Number.isFinite))
+      throw new Error("non-finite harmonic SVD solution");
+    return cons.map((co, k) => {
+      const p = x[1 + 2 * k]!;
+      const q = x[2 + 2 * k]!;
+      return {
+        name: co.name,
+        amplitude: Math.round(Math.hypot(p, q) * 1000) / 1000,
+        phase:
+          Math.round(((((Math.atan2(q, p) / DEG) % 360) + 360) % 360) * 100) /
+          100,
+      };
+    });
+  }
   const ATA = Array.from({ length: ncol }, () => new Float64Array(ncol));
   const ATy = new Float64Array(ncol);
   const row = new Float64Array(ncol);
