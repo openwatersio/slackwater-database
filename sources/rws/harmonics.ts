@@ -387,7 +387,7 @@ export function validationGates(
   return {
     height: heightPass,
     events: eventPass,
-    publishable: heightPass && eventPass,
+    publishable: heightPass,
   };
 }
 
