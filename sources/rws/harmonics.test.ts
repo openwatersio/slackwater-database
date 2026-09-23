@@ -148,6 +148,26 @@ test("requires offsets and accepts only identical chunk boundaries", () => {
   ).toThrow(/conflicting duplicate timestamp/);
 });
 
+test("sorts height measurements within each response chunk", () => {
+  const response = heightResponse(
+    [
+      "2026-07-01T00:00:00Z",
+      "2026-07-01T00:20:00Z",
+      "2026-07-01T00:10:00Z",
+      "2026-07-01T00:30:00Z",
+    ],
+    [0, 2, 1, 3],
+    "NAP",
+  );
+
+  expect(parseHeightChunks("nap", "NAP", [response], bounds)).toEqual([
+    { t: bounds.startMs, level: 0 },
+    { t: bounds.startMs + 600_000, level: 0.01 },
+    { t: bounds.startMs + 1_200_000, level: 0.02 },
+    { t: bounds.endMs, level: 0.03 },
+  ]);
+});
+
 test("rejects changed datum, cadence, and non-finite heights", () => {
   const mslResponse = structuredClone(matchingBoundary);
   mslResponse[0]!.WaarnemingenLijst[0]!.AquoMetadata.Hoedanigheid.Code = "MSL";

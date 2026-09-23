@@ -131,8 +131,8 @@ export function parseHeightChunks(
     if (metadata["ProcesType"] !== "astronomisch")
       throw new Error(`${station} height process is not astronomisch`);
 
-    array(channel["MetingenLijst"], "height measurements").forEach(
-      (value, sampleIndex) => {
+    const measurements = array(channel["MetingenLijst"], "height measurements")
+      .map((value, sampleIndex) => {
         const item = record(value, `height measurement ${sampleIndex}`);
         const t = timestamp(
           item["Tijdstip"],
@@ -147,20 +147,23 @@ export function parseHeightChunks(
         );
         if (observation["Kwaliteitswaardecode"] !== "00")
           throw new Error(`${station} height series contains a gap`);
-        const previous = result.at(-1);
-        if (previous?.t === t) {
-          if (chunkIndex > 0 && sampleIndex === 0) {
-            if (previous.level !== level)
-              throw new Error(
-                `${station} has conflicting duplicate timestamp ${t}`,
-              );
-            return;
-          }
-          throw new Error(`${station} has duplicate timestamp ${t}`);
+        return { t, level };
+      })
+      .sort((left, right) => left.t - right.t);
+    measurements.forEach(({ t, level }, sampleIndex) => {
+      const previous = result.at(-1);
+      if (previous?.t === t) {
+        if (chunkIndex > 0 && sampleIndex === 0) {
+          if (previous.level !== level)
+            throw new Error(
+              `${station} has conflicting duplicate timestamp ${t}`,
+            );
+          return;
         }
-        result.push({ t, level });
-      },
-    );
+        throw new Error(`${station} has duplicate timestamp ${t}`);
+      }
+      result.push({ t, level });
+    });
   });
   if (result[0]?.t !== bounds.startMs)
     throw new Error(
