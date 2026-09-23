@@ -110,7 +110,8 @@ describe("fitHarmonics", () => {
       const { f, u } = model.correction(a);
       return {
         t,
-        level: 0.05 * f * Math.cos((model.value(a) + u - 110) * (Math.PI / 180)),
+        level:
+          0.05 * f * Math.cos((model.value(a) + u - 110) * (Math.PI / 180)),
       };
     });
 

@@ -207,9 +207,8 @@ export function fitHarmonics(
         name: co.name,
         amplitude: Math.round(Math.hypot(p, q) * 1000) / 1000,
         phase:
-          Math.round(
-            ((((Math.atan2(q, p) / DEG) % 360) + 360) % 360) * 100,
-          ) / 100,
+          Math.round(((((Math.atan2(q, p) / DEG) % 360) + 360) % 360) * 100) /
+          100,
       };
     });
   }
