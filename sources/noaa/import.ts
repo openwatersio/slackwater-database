@@ -146,10 +146,12 @@ async function buildStation(meta: any): Promise<StationData> {
     const res = await fetch(
       `https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/${meta.id}.json?expand=details,datums,harcon,disclaimers,notices&units=metric`,
     ).then((r) => r.json());
-    const data = res.stations[0];
-
-    // This should never happen, but just in case
-    if (!data) throw new Error(`No data found for station ID: ${meta.id}`);
+    // NOAA occasionally answers 200 with an error body and no stations array.
+    const data = res.stations?.[0];
+    if (!data)
+      throw new Error(
+        `No data for station ${meta.id}: ${JSON.stringify(res).slice(0, 200)}`,
+      );
 
     // Parse epoch from datums (e.g., "1983-2001" -> start: 1983-01-01, end: 2001-12-31)
     let epoch: { start: string; end: string } | undefined;
@@ -195,4 +197,4 @@ async function buildStation(meta: any): Promise<StationData> {
   return normalize(station as StationData);
 }
 
-main().catch(console.error);
+await main();
