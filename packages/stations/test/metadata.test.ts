@@ -200,6 +200,60 @@ describe("metadata resolution", () => {
     expect(result.context).toBe("Sooke, British Columbia");
   });
 
+  test("prefers the GeoNames display region over a name-derived code", () => {
+    const newYork: GeocodeResult = {
+      ...everett,
+      region: "NY",
+      place: {
+        ...everett.place,
+        name: "Niagara Falls",
+        admin1: "New York",
+        admin1Code: "NY",
+      },
+    };
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        name: "Ashland Ave NY",
+        region: "08",
+      },
+      { geocoder: { nearest: () => newYork, near: () => [newYork] } },
+    );
+
+    expect(result.region).toBe("New York");
+    expect(result.region_code).toBe("US-NY");
+  });
+
+  test("omits numeric GeoNames subdivision sentinels", () => {
+    const apia: GeocodeResult = {
+      ...everett,
+      country: "Western Samoa",
+      continent: "Oceania",
+      region: undefined,
+      place: {
+        ...everett.place,
+        name: "Vaiala",
+        admin1: "00",
+        admin1Code: "00",
+        countryCode: "WS",
+      },
+    };
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        id: "ticon/apia-401-wsm-uhslc_fd",
+        name: "Apia",
+        country: "Western Samoa",
+        country_code: "WS",
+        region: "00",
+      },
+      { geocoder: { nearest: () => apia, near: () => [apia] } },
+    );
+
+    expect(result).not.toHaveProperty("region");
+    expect(result.context).toBe("Vaiala");
+  });
+
   test("lifts a trailing territory code when geocoding has no US region", () => {
     const result = resolveMetadata(
       {
