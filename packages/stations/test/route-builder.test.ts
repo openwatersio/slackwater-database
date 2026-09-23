@@ -185,8 +185,16 @@ describe("slug history", () => {
       tide: { "noaa/a": "sawyer-key", "noaa/b": "sawyer-key-fl" },
     };
     const inputs = [
-      { ...station("noaa/a", "Sawyer Key", "tide", "FL"), context: "Inside", region_code: "US-FL" },
-      { ...station("noaa/b", "Sawyer Key", "tide", "FL"), context: "Outside", region_code: "US-FL" },
+      {
+        ...station("noaa/a", "Sawyer Key", "tide", "FL"),
+        context: "Inside",
+        region_code: "US-FL",
+      },
+      {
+        ...station("noaa/b", "Sawyer Key", "tide", "FL"),
+        context: "Outside",
+        region_code: "US-FL",
+      },
     ];
     const migrated = buildSlugTable(inputs, previous, undefined, undefined, {
       reallocate: new Set(["noaa/a", "noaa/b"]),
@@ -222,8 +230,16 @@ describe("slug history", () => {
     };
     const result = buildSlugTable(
       [
-        { ...station("noaa/a", "Palm Beach", "tide", "FL"), context: "Highway 704 Bridge", region_code: "US-FL" },
-        { ...station("noaa/b", "Palm Beach", "tide", "FL"), context: "FL", region_code: "US-FL" },
+        {
+          ...station("noaa/a", "Palm Beach", "tide", "FL"),
+          context: "Highway 704 Bridge",
+          region_code: "US-FL",
+        },
+        {
+          ...station("noaa/b", "Palm Beach", "tide", "FL"),
+          context: "FL",
+          region_code: "US-FL",
+        },
       ],
       previous,
       undefined,
@@ -247,7 +263,10 @@ describe("slug history", () => {
   test("a slug vacated by a reset still belongs to its first owner", () => {
     // The table was reset, so `previous` has forgotten that noaa/old held
     // `esperance`; the history has not, and a later station cannot take it.
-    const history = { ...emptyFormerSlugs(), tide: { "noaa/old": ["esperance"] } };
+    const history = {
+      ...emptyFormerSlugs(),
+      tide: { "noaa/old": ["esperance"] },
+    };
     const result = buildSlugTable(
       [station("noaa/new", "Esperance", "tide", "WA")],
       emptySlugs(),
@@ -260,7 +279,10 @@ describe("slug history", () => {
   test("two ids merge on a curated slug only when one of them is a registry record", () => {
     const previous = {
       ...emptySlugs(),
-      tide: { "chs-victoria": "victoria-inner-harbour", "ticon/victoria": "victoria-james-bay" },
+      tide: {
+        "chs-victoria": "victoria-inner-harbour",
+        "ticon/victoria": "victoria-james-bay",
+      },
     };
     const curated = (id: string) => ({
       ...station(id, "Victoria", "tide", "British Columbia"),
@@ -288,15 +310,27 @@ describe("slug history", () => {
 
     // Two provider rows may not share a slug: that is a collision, not a merge.
     expect(() =>
-      buildSlugTable([curated("ticon/a"), curated("ticon/b")], emptySlugs(), undefined, undefined, {
-        registryIds: new Set(),
-      }),
+      buildSlugTable(
+        [curated("ticon/a"), curated("ticon/b")],
+        emptySlugs(),
+        undefined,
+        undefined,
+        {
+          registryIds: new Set(),
+        },
+      ),
     ).toThrow(/ticon\/b.*victoria.*ticon\/a/);
     // Nor may two registry records: a shared slug has exactly one curated owner.
     expect(() =>
-      buildSlugTable([curated("chs-a"), curated("chs-b")], emptySlugs(), undefined, undefined, {
-        registryIds: new Set(["chs-a", "chs-b"]),
-      }),
+      buildSlugTable(
+        [curated("chs-a"), curated("chs-b")],
+        emptySlugs(),
+        undefined,
+        undefined,
+        {
+          registryIds: new Set(["chs-a", "chs-b"]),
+        },
+      ),
     ).toThrow(/victoria.*two registry/);
   });
 

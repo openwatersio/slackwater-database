@@ -93,7 +93,10 @@ export function buildSlugTable(
       Object.entries(formerSlugs.tide).map(([id, slugs]) => [id, [...slugs]]),
     ),
     current: Object.fromEntries(
-      Object.entries(formerSlugs.current).map(([id, slugs]) => [id, [...slugs]]),
+      Object.entries(formerSlugs.current).map(([id, slugs]) => [
+        id,
+        [...slugs],
+      ]),
     ),
   };
   const gone: string[] = [];
@@ -151,7 +154,8 @@ export function buildSlugTable(
       );
       if (owner) {
         const curatedOwners =
-          Number(registryIds.has(owner[0])) + Number(registryIds.has(station.id));
+          Number(registryIds.has(owner[0])) +
+          Number(registryIds.has(station.id));
         if (curatedOwners === 0)
           throw new Error(
             `${station.id}: slug ${JSON.stringify(station.slug)} is allocated to ${owner[0]}`,
