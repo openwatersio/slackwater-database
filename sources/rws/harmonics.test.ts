@@ -255,8 +255,8 @@ test("matches the nearest unused event of the same type within 60 minutes", () =
     ],
     [
       { t: 0, type: "laagwater", level: 0 },
-      { t: 9 * minute, type: "hoogwater", level: 0 },
-      { t: minute, type: "hoogwater", level: 0 },
+      { t: 50 * minute, type: "hoogwater", level: 0 },
+      { t: 4 * minute, type: "hoogwater", level: 0 },
       { t: 180 * minute, type: "laagwater", level: 0 },
       { t: 361 * minute, type: "laagwater", level: 0 },
     ],
@@ -265,7 +265,7 @@ test("matches the nearest unused event of the same type within 60 minutes", () =
     provider: 4,
     predicted: 5,
     matched: 3,
-    meanMinutes: 62 / 3,
+    meanMinutes: 104 / 3,
     maxMinutes: 60,
   });
 });
