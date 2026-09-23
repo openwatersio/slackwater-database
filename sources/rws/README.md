@@ -49,7 +49,7 @@ The live report is:
 
 ## Decision
 
-Harmonics pass the height representation gates for all three stations. Provider
-event reproduction fails, so no RWS station is publishable.
-
-Event semantics must be solved before an importer or station artifact exists.
+Harmonics pass the height representation gates for all three stations. Ameland
+also passes its individual event gate; Hoek van Holland and Den Helder do not.
+RWS stations remain unpublished until provider event semantics are resolved
+across the validation set.
