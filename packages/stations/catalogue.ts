@@ -13,6 +13,8 @@ import {
 import {
   buildRoutes,
   buildSlugTable,
+  emptyFormerSlugs,
+  type FormerSlugs,
   type RouteLock,
   type RouteMember,
   type SlugTable,
@@ -26,6 +28,9 @@ export interface CatalogueInputs {
   registry: Registry;
   slugTable: SlugTable;
   slugTombstones: SlugTombstones;
+  formerSlugs?: FormerSlugs;
+  /** Ids to re-ladder, recording the slug each leaves behind. */
+  reallocate?: Set<string>;
   routeLock: RouteLock;
   geocoder: Geocoder;
   waterBodies?: WaterBodies;
@@ -38,6 +43,7 @@ export function buildCatalogue(inputs: CatalogueInputs): {
   routes: DatabaseRoutes;
   slugTable: SlugTable;
   slugTombstones: SlugTombstones;
+  formerSlugs: FormerSlugs;
   gone: string[];
 } {
   const sourceStations = [...inputs.tides, ...inputs.currents];
@@ -76,19 +82,37 @@ export function buildCatalogue(inputs: CatalogueInputs): {
   const {
     table: slugs,
     tombstones: slugTombstones,
+    formerSlugs,
     gone,
-  } = buildSlugTable(routedStations, inputs.slugTable, inputs.slugTombstones);
+  } = buildSlugTable(
+    routedStations,
+    inputs.slugTable,
+    inputs.slugTombstones,
+    inputs.formerSlugs ?? emptyFormerSlugs(),
+    {
+      ...(inputs.reallocate ? { reallocate: inputs.reallocate } : {}),
+      registryIds: new Set(inputs.registry.keys()),
+    },
+  );
   const members: RouteMember[] = routedStations.map((station) => {
     const kind = station.kind ?? "tide";
     const slug = slugs[kind][station.id];
     if (!slug) throw new Error(`${station.id}: no ${kind} slug`);
+    // A curated former slug and a recorded one are the same fact from two
+    // sources; the route redirects both.
+    const former = [
+      ...new Set([
+        ...(station.former_slugs ?? []),
+        ...(formerSlugs[kind][station.id] ?? []),
+      ]),
+    ].filter((old) => old !== slug);
     return {
       id: station.id,
       kind,
       slug,
       country_code: station.country_code,
       ...(station.region_code ? { region_code: station.region_code } : {}),
-      ...(station.former_slugs ? { former_slugs: station.former_slugs } : {}),
+      ...(former.length ? { former_slugs: former } : {}),
     };
   });
 
@@ -101,6 +125,7 @@ export function buildCatalogue(inputs: CatalogueInputs): {
     }),
     slugTable: slugs,
     slugTombstones,
+    formerSlugs,
     gone,
   };
 }

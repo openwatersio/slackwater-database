@@ -6,6 +6,7 @@ import {
   buildRoutes,
   buildSlugTable,
   checkSlugTable,
+  emptyFormerSlugs,
   departures,
   routeHistoryProblems,
   routePath,
@@ -174,6 +175,141 @@ describe("slug allocation", () => {
     expect(departures(["noaa/3", "noaa/1"], ["noaa/3"])).toEqual(["noaa/1"]);
     expect(DEPARTURE_LIMIT).toBeGreaterThan(0);
     expect(DEPARTURE_LIMIT).toBeLessThan(100);
+  });
+});
+
+describe("slug history", () => {
+  test("records the slug an id moved off, and hands it to nobody else", () => {
+    const previous = {
+      ...emptySlugs(),
+      tide: { "noaa/a": "sawyer-key", "noaa/b": "sawyer-key-fl" },
+    };
+    const inputs = [
+      { ...station("noaa/a", "Sawyer Key", "tide", "FL"), context: "Inside", region_code: "US-FL" },
+      { ...station("noaa/b", "Sawyer Key", "tide", "FL"), context: "Outside", region_code: "US-FL" },
+    ];
+    const migrated = buildSlugTable(inputs, previous, undefined, undefined, {
+      reallocate: new Set(["noaa/a", "noaa/b"]),
+    });
+    expect(migrated.table.tide).toEqual({
+      "noaa/a": "sawyer-key-inside",
+      "noaa/b": "sawyer-key-outside",
+    });
+    expect(migrated.formerSlugs.tide).toEqual({
+      "noaa/a": ["sawyer-key"],
+      "noaa/b": ["sawyer-key-fl"],
+    });
+
+    // A new station named for the same key cannot pick up either retired slug,
+    // even though the allocation table no longer mentions them.
+    const later = buildSlugTable(
+      [...inputs, station("noaa/c", "Sawyer Key", "tide", "FL")],
+      migrated.table,
+      undefined,
+      migrated.formerSlugs,
+    );
+    expect(later.table.tide["noaa/c"]).not.toBe("sawyer-key");
+    expect(later.table.tide["noaa/c"]).not.toBe("sawyer-key-fl");
+    expect(later.formerSlugs).toEqual(migrated.formerSlugs);
+  });
+
+  test("a slug vacated during a migration cannot be taken in the same pass", () => {
+    // noaa/a leaves `palm-beach-fl` for a context-qualified slug; noaa/b, laddering
+    // later in the same pass, would otherwise land on the freshly vacated slug.
+    const previous = {
+      ...emptySlugs(),
+      tide: { "noaa/a": "palm-beach-fl", "noaa/b": "palm-beach-fl-noaa-b" },
+    };
+    const result = buildSlugTable(
+      [
+        { ...station("noaa/a", "Palm Beach", "tide", "FL"), context: "Highway 704 Bridge", region_code: "US-FL" },
+        { ...station("noaa/b", "Palm Beach", "tide", "FL"), context: "FL", region_code: "US-FL" },
+      ],
+      previous,
+      undefined,
+      undefined,
+      { reallocate: new Set(["noaa/a", "noaa/b"]) },
+    );
+    expect(result.table.tide["noaa/a"]).toBe("palm-beach-highway-704-bridge");
+    expect(result.table.tide["noaa/b"]).not.toBe("palm-beach-fl");
+    // An id whose ladder still lands on its own old slug keeps it.
+    const kept = buildSlugTable(
+      [station("noaa/a", "Seattle")],
+      { ...emptySlugs(), tide: { "noaa/a": "seattle" } },
+      undefined,
+      undefined,
+      { reallocate: new Set(["noaa/a"]) },
+    );
+    expect(kept.table.tide["noaa/a"]).toBe("seattle");
+    expect(kept.formerSlugs.tide).toEqual({});
+  });
+
+  test("a slug vacated by a reset still belongs to its first owner", () => {
+    // The table was reset, so `previous` has forgotten that noaa/old held
+    // `esperance`; the history has not, and a later station cannot take it.
+    const history = { ...emptyFormerSlugs(), tide: { "noaa/old": ["esperance"] } };
+    const result = buildSlugTable(
+      [station("noaa/new", "Esperance", "tide", "WA")],
+      emptySlugs(),
+      undefined,
+      history,
+    );
+    expect(result.table.tide["noaa/new"]).not.toBe("esperance");
+  });
+
+  test("two ids merge on a curated slug only when one of them is a registry record", () => {
+    const previous = {
+      ...emptySlugs(),
+      tide: { "chs-victoria": "victoria-inner-harbour", "ticon/victoria": "victoria-james-bay" },
+    };
+    const curated = (id: string) => ({
+      ...station(id, "Victoria", "tide", "British Columbia"),
+      country: "Canada",
+      country_code: "CA",
+      region_code: "CA-BC",
+      slug: "victoria",
+    });
+    const merged = buildSlugTable(
+      [curated("chs-victoria"), curated("ticon/victoria")],
+      previous,
+      undefined,
+      undefined,
+      { registryIds: new Set(["chs-victoria"]) },
+    );
+    expect(merged.table.tide).toEqual({
+      "chs-victoria": "victoria",
+      "ticon/victoria": "victoria",
+    });
+    // Both halves moved, so both old links keep resolving.
+    expect(merged.formerSlugs.tide).toEqual({
+      "chs-victoria": ["victoria-inner-harbour"],
+      "ticon/victoria": ["victoria-james-bay"],
+    });
+
+    // Two provider rows may not share a slug: that is a collision, not a merge.
+    expect(() =>
+      buildSlugTable([curated("ticon/a"), curated("ticon/b")], emptySlugs(), undefined, undefined, {
+        registryIds: new Set(),
+      }),
+    ).toThrow(/ticon\/b.*victoria.*ticon\/a/);
+    // Nor may two registry records: a shared slug has exactly one curated owner.
+    expect(() =>
+      buildSlugTable([curated("chs-a"), curated("chs-b")], emptySlugs(), undefined, undefined, {
+        registryIds: new Set(["chs-a", "chs-b"]),
+      }),
+    ).toThrow(/victoria.*two registry/);
+  });
+
+  test("rejects a tombstone for a slug that is still live under another id", () => {
+    // A tombstone means the id left holding that slug. If the slug is also
+    // allocated, it changed hands — which is what tombstones exist to forbid.
+    expect(() =>
+      buildSlugTable(
+        [station("chs-victoria", "Victoria")],
+        { ...emptySlugs(), tide: { "chs-victoria": "victoria" } },
+        { tide: { "chs-victoria-harbour": "victoria" }, current: {} },
+      ),
+    ).toThrow(/victoria.*chs-victoria-harbour.*chs-victoria/);
   });
 });
 

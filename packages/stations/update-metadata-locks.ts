@@ -4,11 +4,37 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadProductionCatalogue } from "./load-catalogue.ts";
 import { buildAuditLock, diffAuditLock } from "./position-audit.ts";
-import { buildRouteLock, routeHistoryProblems } from "./routes.ts";
+import {
+  buildRouteLock,
+  checkSlugTable,
+  routeHistoryProblems,
+} from "./routes.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const metadataDir = join(root, "metadata");
-const catalogue = await loadProductionCatalogue(root);
+// `npm run metadata:lock -- <ids.json>` sends the listed ids back through the
+// slug ladder, recording the slug each leaves as a redirect. That is how a
+// slug migration is done deliberately: the alternative — resetting the lock —
+// forgets every published address at once.
+const reallocateFile = process.argv[2];
+const reallocate = reallocateFile
+  ? new Set<string>(JSON.parse(readFileSync(reallocateFile, "utf8")))
+  : undefined;
+const catalogue = await loadProductionCatalogue(
+  root,
+  reallocate ? { reallocate } : {},
+);
+const slugProblems = checkSlugTable(
+  catalogue.previousSlugTable,
+  catalogue.slugTable,
+  catalogue.slugTombstones,
+  {
+    tide: Object.values(catalogue.formerSlugs.tide).flat(),
+    current: Object.values(catalogue.formerSlugs.current).flat(),
+  },
+);
+if (slugProblems.length)
+  throw new Error(`slug history would be lost\n${slugProblems.join("\n")}`);
 const routeIds = new Set(
   [...catalogue.routes.tide, ...catalogue.routes.current].flatMap(
     ({ station_ids }) => station_ids,
@@ -47,6 +73,7 @@ for (const id of diff.removed) console.log(`removed: ${id}`);
 for (const [name, value] of [
   ["slugs.json", catalogue.slugTable],
   ["slug-tombstones.json", catalogue.slugTombstones],
+  ["former-slugs.json", catalogue.formerSlugs],
   ["routes.lock.json", routeLock],
   ["audit.lock.json", auditLock],
 ] as const)

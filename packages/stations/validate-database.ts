@@ -23,6 +23,11 @@ assert.deepEqual(
   catalogue.previousSlugTombstones,
   "slug tombstones changed; run npm run metadata:lock",
 );
+assert.deepEqual(
+  catalogue.formerSlugs,
+  catalogue.previousFormerSlugs,
+  "slug history changed; run npm run metadata:lock",
+);
 
 const routeIds = new Set(
   [...catalogue.routes.tide, ...catalogue.routes.current].flatMap(
