@@ -376,6 +376,11 @@ export function resolveMetadata(
   const authoritativeRegionCode =
     explicitLocation?.regionCode ??
     station.region_code ??
+    // The provider's own state code beats the nearest place, which can sit
+    // across a state line or, on the Alaska panhandle, not exist within reach.
+    (country.iso2 === "US" && /^[A-Z]{2}$/.test(station.region ?? "")
+      ? `US-${station.region}`
+      : undefined) ??
     (place
       ? isoSubdivisionCode(
           country.iso2,

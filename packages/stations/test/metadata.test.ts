@@ -84,6 +84,37 @@ describe("metadata resolution", () => {
     expect(result).not.toHaveProperty("region_code");
   });
 
+  test("codes a US state from the provider when the nearest place is foreign", () => {
+    const stewart: GeocodeResult = {
+      ...everett,
+      place: {
+        ...everett.place,
+        name: "Stewart",
+        admin1: "British Columbia",
+        admin1Code: "02",
+        countryCode: "CA",
+      },
+      country: "Canada",
+      region: "British Columbia",
+    };
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        id: "noaa/9450831",
+        name: "Hyder, Portland Canal",
+        region: "AK",
+      },
+      { geocoder: { nearest: () => stewart, near: () => [stewart] } },
+    );
+
+    expect(result).toMatchObject({
+      country_code: "US",
+      region: "AK",
+      region_code: "US-AK",
+    });
+    expect(result).not.toHaveProperty("locality");
+  });
+
   test("preserves a provider name qualifier as context", () => {
     const result = resolveMetadata(
       { ...baseStation, name: "Friday Harbor, San Juan Island" },
