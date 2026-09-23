@@ -442,8 +442,8 @@ export function resolveMetadata(
     "region",
     explicitLocation?.region ??
       normalizedRegion(station.region, country.iso2, place?.place.admin1) ??
-      normalizedRegion(cleaned.region, country.iso2, undefined) ??
-      place?.place.admin1,
+      normalizedRegion(cleaned.region, country.iso2) ??
+      normalizedRegion(place?.place.admin1, country.iso2),
   );
 
   if (regionCode && !regionCode.startsWith(`${country.iso2}-`))
@@ -484,7 +484,10 @@ export function resolveMetadata(
     }
   }
   if (!context && place && place.distance <= DERIVED_MAX_KM) {
-    const shortRegion = place.region ?? place.place.admin1Code;
+    const shortRegion = normalizedRegion(
+      place.region ?? place.place.admin1Code,
+      country.iso2,
+    );
     if (!namesOverlap(name, place.place.name))
       context = [place.place.name, shortRegion].filter(Boolean).join(", ");
     else if (shortRegion && !namesOverlap(name, shortRegion))
@@ -672,18 +675,19 @@ const CANADIAN_SUBDIVISIONS: Record<string, string> = {
 function normalizedRegion(
   region: string | undefined,
   countryCode: string,
-  fallback: string | undefined,
+  fallback?: string,
 ): string | undefined {
   if (!region) return undefined;
+  const normalizedFallback = normalizedRegion(fallback, countryCode);
   if (countryCode === "CA") {
     if (CANADIAN_SUBDIVISIONS[region]) return region;
     return (
       Object.entries(CANADIAN_SUBDIVISIONS).find(
         ([, code]) => code === region.toUpperCase(),
-      )?.[0] ?? fallback
+      )?.[0] ?? normalizedFallback
     );
   }
-  return /^\d+$/.test(region) ? fallback : region;
+  return /^\d+$/.test(region) ? normalizedFallback : region;
 }
 
 function isoSubdivisionCode(
