@@ -1,0 +1,16 @@
+{
+  "name": "@neaps/rws",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "validate": "node harmonics.ts"
+  },
+  "dependencies": {
+    "@neaps/harmonic-analysis": "*",
+    "@neaps/tide-predictor": "^0.11.0"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.1"
+  }
+}
