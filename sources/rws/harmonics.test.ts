@@ -11,6 +11,7 @@ import {
   readCachedJson,
   selectExtraConstituents,
   spreadSample,
+  trainingSamplesBefore,
   validationGates,
 } from "./harmonics.js";
 
@@ -66,6 +67,7 @@ function eventResponse(
           Meetwaarde: {
             Waarde_Alfanumeriek: index % 2 ? "laagwater" : "hoogwater",
           },
+          WaarnemingMetadata: { Kwaliteitswaardecode: "00" },
         })),
       },
       {
@@ -74,6 +76,7 @@ function eventResponse(
         MetingenLijst: heightTimes.map((Tijdstip, index) => ({
           Tijdstip,
           Meetwaarde: { Waarde_Numeriek: index % 2 ? -30 : 90 },
+          WaarnemingMetadata: { Kwaliteitswaardecode: "00" },
         })),
       },
     ],
@@ -122,6 +125,16 @@ test("spread sampling and residual ranking are deterministic", () => {
     constituents["M2"]!.speed,
     constituents["S2"]!.speed,
   ]);
+});
+
+test("training selections exclude the validation boundary", () => {
+  const validationStart = Date.parse("2025-01-01T00:00:00Z");
+  const samples = [
+    { t: validationStart - 600_000, level: 1 },
+    { t: validationStart, level: 2 },
+  ];
+
+  expect(trainingSamplesBefore(samples, validationStart)).toEqual([samples[0]]);
 });
 
 test("selects at most one extra constituent per exact speed", () => {
@@ -266,6 +279,53 @@ test("requires paired event channels and explicit offsets", () => {
   expect(() =>
     parseEvents("nap", "NAP", "GETETBRKD2", noOffsetEvent, bounds),
   ).toThrow(/explicit offset/);
+});
+
+test("requires quality 00 in both event channels", () => {
+  const valid = eventResponse(
+    ["2026-07-01T00:05:00Z"],
+    ["2026-07-01T00:05:00Z"],
+    "NAP",
+    "GETETBRKD2",
+  );
+
+  for (const channel of valid.WaarnemingenLijst) {
+    const quality99 = structuredClone(valid);
+    quality99.WaarnemingenLijst[
+      valid.WaarnemingenLijst.indexOf(channel)
+    ]!.MetingenLijst[0]!.WaarnemingMetadata.Kwaliteitswaardecode = "99";
+    expect(() =>
+      parseEvents("nap", "NAP", "GETETBRKD2", quality99, bounds),
+    ).toThrow(/quality.*00/);
+  }
+});
+
+test("rejects duplicate event timestamps", () => {
+  const duplicate = eventResponse(
+    ["2026-07-01T00:05:00Z", "2026-07-01T00:05:00Z"],
+    ["2026-07-01T00:05:00Z", "2026-07-01T00:05:00Z"],
+    "NAP",
+    "GETETBRKD2",
+  );
+
+  expect(() =>
+    parseEvents("nap", "NAP", "GETETBRKD2", duplicate, bounds),
+  ).toThrow(/duplicate event timestamp/);
+});
+
+test("rejects invalid event type values", () => {
+  const invalid = eventResponse(
+    ["2026-07-01T00:05:00Z"],
+    ["2026-07-01T00:05:00Z"],
+    "NAP",
+    "GETETBRKD2",
+  );
+  invalid.WaarnemingenLijst[0]!.MetingenLijst[0]!.Meetwaarde.Waarde_Alfanumeriek =
+    "NVT";
+
+  expect(() =>
+    parseEvents("nap", "NAP", "GETETBRKD2", invalid, bounds),
+  ).toThrow(/event type.*invalid/);
 });
 
 test("rejects corrupt or mismatched cache entries", async () => {

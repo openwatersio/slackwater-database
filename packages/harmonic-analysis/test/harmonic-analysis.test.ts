@@ -127,6 +127,22 @@ describe("fitHarmonics", () => {
     ).toBe(true);
     expect(predictionRms(duplicate, m2Samples)).toBeLessThan(0.003);
   });
+
+  test("SVD returns a finite solution with fewer rows than columns", () => {
+    const fit = fitHarmonics(
+      [{ t: Date.UTC(2025, 0, 1), level: 0.25 }],
+      ["M2"],
+      { solver: "svd" },
+    );
+
+    expect(fit).toHaveLength(1);
+    expect(
+      fit.every(
+        ({ amplitude, phase }) =>
+          Number.isFinite(amplitude) && Number.isFinite(phase),
+      ),
+    ).toBe(true);
+  });
 });
 
 describe("parseGeslaSamplesInZone", () => {

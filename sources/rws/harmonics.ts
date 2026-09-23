@@ -102,6 +102,13 @@ export function spreadSample<T>(
   });
 }
 
+export function trainingSamplesBefore<T extends { t: number }>(
+  points: readonly T[],
+  validationStartMs: number,
+): T[] {
+  return points.filter(({ t }) => t < validationStartMs);
+}
+
 export function parseHeightChunks(
   station: string,
   datum: "NAP" | "MSL",
@@ -231,6 +238,7 @@ export function parseEvents(
   const heights = array(heightChannel["MetingenLijst"], "event heights");
   if (types.length !== heights.length)
     throw new Error(`${station} event channel lengths do not match`);
+  const timestamps = new Set<number>();
   return types.map((typeValue, index) => {
     const typeItem = record(typeValue, `event type ${index}`);
     const heightItem = record(heights[index], `event height ${index}`);
@@ -245,12 +253,28 @@ export function parseEvents(
       );
     if (typeTime < bounds.startMs || typeTime > bounds.endMs)
       throw new Error(`${station} event timestamp is outside requested bounds`);
+    if (timestamps.has(typeTime))
+      throw new Error(`${station} has duplicate event timestamp ${typeTime}`);
+    timestamps.add(typeTime);
+    for (const [item, label] of [
+      [typeItem, "event type"],
+      [heightItem, "event height"],
+    ] as const) {
+      const observation = record(
+        item["WaarnemingMetadata"],
+        `${label} WaarnemingMetadata`,
+      );
+      if (observation["Kwaliteitswaardecode"] !== "00")
+        throw new Error(`${station} ${label} quality must be 00`);
+    }
     const type = string(
       record(typeItem["Meetwaarde"], "event type Meetwaarde")[
         "Waarde_Alfanumeriek"
       ],
       "event type",
     );
+    if (type !== "hoogwater" && type !== "laagwater")
+      throw new Error(`${station} event type is invalid`);
     const level =
       number(
         record(heightItem["Meetwaarde"], "event height Meetwaarde")[
@@ -418,11 +442,19 @@ export async function runRwsHarmonicValidation(
       ),
       validationBounds,
     );
+    const fitTraining = trainingSamplesBefore(
+      training,
+      validationBounds.startMs,
+    );
     const baselineNames = await readTiconNames(station.ticon);
-    const baselineRows = spreadSample(training, 12_000, station.code.length);
+    const baselineRows = spreadSample(fitTraining, 12_000, station.code.length);
     const baselineFit = fitHarmonics(baselineRows, baselineNames);
     const baselineOffset = meanOffset(baselineRows, baselineFit);
-    const scoreRows = spreadSample(training, 24_000, station.code.length * 17);
+    const scoreRows = spreadSample(
+      fitTraining,
+      24_000,
+      station.code.length * 17,
+    );
     const baselinePredictor = createTidePredictor(baselineFit, {
       offset: baselineOffset,
     });
@@ -439,9 +471,13 @@ export async function runRwsHarmonicValidation(
       50,
     );
     const names = [...baselineNames, ...extraNames];
-    const firstRows = spreadSample(training, 4_000, station.code.length * 97);
+    const firstRows = spreadSample(
+      fitTraining,
+      4_000,
+      station.code.length * 97,
+    );
     const secondRows = spreadSample(
-      training,
+      fitTraining,
       4_000,
       station.code.length * 97 + 1,
     );
@@ -482,7 +518,7 @@ export async function runRwsHarmonicValidation(
     stations.push({
       station: station.code,
       terms: firstFit.length,
-      samples: { train: training.length, validation: validation.length },
+      samples: { train: fitTraining.length, validation: validation.length },
       height,
       stabilityRms,
       amplitudeMax: Math.max(...firstFit.map(({ amplitude }) => amplitude)),

@@ -1,5 +1,5 @@
 import * as neaps from "@neaps/tide-predictor";
-import { Matrix, solve } from "ml-matrix";
+import { Matrix, SingularValueDecomposition } from "ml-matrix";
 
 /**
  * Re-analyze tidal harmonics from raw water-level observations.
@@ -193,11 +193,11 @@ export function fitHarmonics(
       }
       return row;
     });
-    const x = solve(
-      new Matrix(rows),
-      Matrix.columnVector(samples.map(({ level }) => level)),
-      true,
-    ).getColumn(0);
+    const x = new SingularValueDecomposition(new Matrix(rows), {
+      autoTranspose: true,
+    })
+      .solve(Matrix.columnVector(samples.map(({ level }) => level)))
+      .getColumn(0);
     if (!x.every(Number.isFinite))
       throw new Error("non-finite harmonic SVD solution");
     return cons.map((co, k) => {
