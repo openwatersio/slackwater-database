@@ -20,7 +20,7 @@ const outDir = join(root, "src", "generated");
 // rewrite them to ".ts" so node can run this code directly (the repo
 // convention for node-run TypeScript — bundlers and vitest resolve it too).
 mkdirSync(outDir, { recursive: true });
-for (const schema of ["database.fbs", "rws-predictions.fbs"]) {
+for (const schema of ["database.fbs"]) {
   execFileSync("flatc", ["--ts", "-o", join(outDir, "fbs"), schema], {
     cwd: join(root, "..", "..", "schemas"),
     stdio: "inherit",
