@@ -3,7 +3,7 @@
  * This serves as the baseline for validating XTide TCD predictions.
  */
 
-import createTidePredictor from "@slackwater/engine";
+import { createTidePredictor } from "@slackwater/engine";
 import type { Station } from "@slackwater/database";
 import type { TideEvent } from "./xtide.js";
 

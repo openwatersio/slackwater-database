@@ -12,15 +12,13 @@
 import { writeFile, mkdir } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import tidePredictor, { astro } from "@slackwater/engine";
+import { astro, constituents } from "@slackwater/engine";
 import {
   stations,
   type CurrentData,
   type Station,
   type StationData,
 } from "@slackwater/database";
-
-const constituents = tidePredictor.constituents;
 
 const outDir = join(dirname(fileURLToPath(import.meta.url)), "dist");
 
