@@ -199,11 +199,22 @@ export function buildSlugTable(
       const context = toSlug(station.context ?? "");
       const region = toSlug(station.region ?? "");
       const localCollision = (localNames.get(localKey) ?? 0) > 1;
+      const contextRung =
+        context && localContexts.get(`${localKey}\0${context}`) === 1
+          ? [`${base}-${context}`]
+          : [];
+      // A collision withholds the bare slug so an ambiguous name is not handed
+      // to an arbitrary one of its stations. A station that already published
+      // it is not arbitrary — that is the address people have — so it moves
+      // only to a slug that says more than the bare one did. A unique context
+      // does; the id rung does not, and a published `kahului` is worth more
+      // than `kahului-noaa-1615680` with a redirect.
+      const keepsBase =
+        arrived.get(station.id) === base && contextRung.length === 0;
       const ladder = localCollision
         ? [
-            ...(context && localContexts.get(`${localKey}\0${context}`) === 1
-              ? [`${base}-${context}`]
-              : []),
+            ...(keepsBase ? [base] : []),
+            ...contextRung,
             `${base}-${toSlug(station.id)}`,
           ]
         : [
