@@ -260,6 +260,35 @@ describe("slug history", () => {
     expect(kept.formerSlugs.tide).toEqual({});
   });
 
+  test("a published bare slug survives a name collision", () => {
+    // noaa/a has held `kahului` since it was published. A relay of the same
+    // gauge arriving under the same name is a collision for the newcomer, not
+    // a reason to take an address away from the station that already has it.
+    const previous = { ...emptySlugs(), tide: { "noaa/a": "kahului" } };
+    const inputs = [
+      {
+        ...station("noaa/a", "Kahului", "tide", "HI"),
+        context: "Kahului Harbor",
+        region_code: "US-HI",
+      },
+      {
+        ...station("ticon/b", "Kahului", "tide", "HI"),
+        context: "Kahului Harbor",
+        region_code: "US-HI",
+      },
+    ];
+    const fresh = buildSlugTable(inputs, previous);
+    expect(fresh.table.tide["noaa/a"]).toBe("kahului");
+    expect(fresh.table.tide["ticon/b"]).not.toBe("kahului");
+    // The same holds when the holder is sent back through the ladder on purpose:
+    // a migration must not turn a clean published slug into an id-suffixed one.
+    const migrated = buildSlugTable(inputs, previous, undefined, undefined, {
+      reallocate: new Set(["noaa/a"]),
+    });
+    expect(migrated.table.tide["noaa/a"]).toBe("kahului");
+    expect(migrated.formerSlugs.tide).toEqual({});
+  });
+
   test("a slug vacated by a reset still belongs to its first owner", () => {
     // The table was reset, so `previous` has forgotten that noaa/old held
     // `esperance`; the history has not, and a later station cannot take it.
