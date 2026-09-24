@@ -6,7 +6,7 @@ import Foundation
 public struct NotATideDatabase: Error {}
 
 /// A tide database file (`.tcdb`, schemas/database.fbs in
-/// openwatersio/tide-database), read in place.
+/// openwatersio/slackwater-database), read in place.
 ///
 /// The buffer is never decoded up front. Opening a memory-mapped file and
 /// iterating identity (id, name, coordinates) touches only the head pages of
@@ -20,7 +20,7 @@ public struct NotATideDatabase: Error {}
 ///     let station = db.station(id: "noaa/9447130")
 ///     let m2 = station?.constituents.first { $0.name == "M2" }
 public struct TideDatabase: RandomAccessCollection {
-  let root: Neaps_Root
+  let root: Slackwater_Root
 
   /// Read a database from bytes already in memory (e.g. downloaded).
   public init(data: Data) throws {
@@ -67,18 +67,18 @@ public struct Station: Identifiable {
   /// The project half of every station credit, and the fallback for a file
   /// written before credits were stored in it.
   public static let projectCredit =
-    "Neaps tide database (https://github.com/openwatersio/tide-database)"
+    "Slackwater database (https://github.com/openwatersio/slackwater-database)"
 
   /// The generated accessor, for fields without a wrapper property.
-  public let raw: Neaps_Station
-  let root: Neaps_Root
+  public let raw: Slackwater_Station
+  let root: Slackwater_Root
 
   // MARK: Identity
 
   public var id: String { raw.id }
   public var name: String { raw.name }
-  public var kind: Neaps_Kind { raw.kind }
-  public var type: Neaps_StationType { raw.type }
+  public var kind: Slackwater_Kind { raw.kind }
+  public var type: Slackwater_StationType { raw.type }
   public var latitude: Double { raw.latitude }
   public var longitude: Double { raw.longitude }
   /// IANA timezone identifier, e.g. "America/Los_Angeles".

@@ -1,4 +1,4 @@
-// Neaps database — FlatBuffers schema.
+// Slackwater database — FlatBuffers schema.
 //
 // One file serves three reads without decoding what it does not touch:
 //   identity scan   — id, name, coordinates of every station, for ranking and search
@@ -13,7 +13,7 @@
 // them faults the whole file in for the cheapest read. Assert in tests that
 // the lowest constituents offset is past the highest station table offset.
 
-namespace Neaps;
+namespace Slackwater;
 
 table StationRoute {
   slug: string (key, required);

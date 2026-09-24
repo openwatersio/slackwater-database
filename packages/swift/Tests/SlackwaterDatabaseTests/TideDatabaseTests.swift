@@ -1,7 +1,7 @@
 import Foundation
 import XCTest
 
-@testable import NeapsTideDatabase
+@testable import SlackwaterDatabase
 
 /// Reads the fixture that scripts/generate-fixture.ts writes through the
 /// TypeScript buildDatabase — the same builder that produces the shipped
@@ -130,10 +130,10 @@ final class TideDatabaseTests: XCTestCase {
   }
 
   // Sanity check against the real database, not the fixture. Opt-in because
-  // the file is generated: NEAPS_TCDB=../database/src/generated/neaps.tcdb
+  // the file is generated: SLACKWATER_TCDB=../database/src/generated/slackwater.tcdb
   func testOpensTheShippedDatabase() throws {
-    guard let path = ProcessInfo.processInfo.environment["NEAPS_TCDB"] else {
-      throw XCTSkip("Set NEAPS_TCDB to a database file to run")
+    guard let path = ProcessInfo.processInfo.environment["SLACKWATER_TCDB"] else {
+      throw XCTSkip("Set SLACKWATER_TCDB to a database file to run")
     }
     let db = try TideDatabase(contentsOf: URL(fileURLWithPath: path))
     XCTAssertNotNil(db.version)

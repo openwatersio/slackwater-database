@@ -1,6 +1,6 @@
-import databaseBytes from "#neaps.tcdb";
+import databaseBytes from "#slackwater.tcdb";
 import { openDatabase } from "./database/reader.js";
-import { StationRoute as StationRouteTable } from "./generated/fbs/neaps.ts";
+import { StationRoute as StationRouteTable } from "./generated/fbs/slackwater.ts";
 import type { StationRoute } from "./types.js";
 
 const db = openDatabase(databaseBytes);

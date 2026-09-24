@@ -2,14 +2,14 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { fitHarmonics, type Sample } from "@neaps/harmonic-analysis";
+import { fitHarmonics, type Sample } from "@slackwater/harmonic-analysis";
 import {
   astro,
   constituents,
   createTidePredictor,
   type Constituent,
   type HarmonicConstituent,
-} from "@neaps/tide-predictor";
+} from "@slackwater/engine";
 
 type Bounds = { startMs: number; endMs: number };
 type JsonRecord = Record<string, unknown>;

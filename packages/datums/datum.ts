@@ -2,7 +2,7 @@ import {
   createTidePredictor,
   type TidePredictionOptions,
   type HarmonicConstituent,
-} from "@neaps/tide-predictor";
+} from "@slackwater/engine";
 
 export interface EpochSpec {
   end?: Date;
@@ -278,7 +278,7 @@ function computeTLT(
 }
 
 /**
- * Use @neaps/tide-predictor to synthesize a multi-year tidal timeline
+ * Use @slackwater/engine to synthesize a multi-year tidal timeline
  * for a given set of constituents, and compute tidal datums from it.
  */
 export function computeDatums(
@@ -288,7 +288,7 @@ export function computeDatums(
 ): TidalDatumsResult {
   const { start, end } = resolveEpoch(epochSpec);
 
-  // Build predictor from @neaps/tide-predictor
+  // Build predictor from @slackwater/engine
   const predictor = createTidePredictor(constituents, tidePredictorOptions);
 
   // Get extremes over the epoch

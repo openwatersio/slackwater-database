@@ -126,7 +126,7 @@ const out = join(
   dirname(fileURLToPath(import.meta.url)),
   "..",
   "Tests",
-  "NeapsTideDatabaseTests",
+  "SlackwaterDatabaseTests",
   "fixture.tcdb",
 );
 writeFileSync(out, bytes);

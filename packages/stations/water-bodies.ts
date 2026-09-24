@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { distanceToRing, pointInPolygon } from "@neaps/datums";
+import { distanceToRing, pointInPolygon } from "@slackwater/datums";
 
 const WATER_BODIES_URL = new URL(
   "../../metadata/water-bodies.geojson",

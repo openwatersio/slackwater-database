@@ -55,7 +55,7 @@ Admiralty Inlet 3.5 · Race Rocks 6.0.
 
 And independently, from a second implementation
 ([signalk-currents](https://github.com/sailingnaturali/signalk-currents), TypeScript
-over [Neaps](https://github.com/neaps/neaps)) — the Z₀ measurement at Turn Point,
+over [Slackwater](https://github.com/openwatersio/slackwater)) — the Z₀ measurement at Turn Point,
 three days, 24 events:
 
 |            | mean timing | worst      | mean speed   |

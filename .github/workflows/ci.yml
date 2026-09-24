@@ -109,7 +109,7 @@ jobs:
       - name: Run Swift tests
         run: npm run test -w swift
         env:
-          NEAPS_TCDB: ${{ github.workspace }}/packages/database/src/generated/neaps.tcdb
+          SLACKWATER_TCDB: ${{ github.workspace }}/packages/database/src/generated/slackwater.tcdb
 
   lint:
     runs-on: ubuntu-latest

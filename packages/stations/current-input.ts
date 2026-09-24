@@ -3,7 +3,7 @@ import type {
   SubordinateStation,
 } from "../../sources/noaa-current/index.js";
 import { find as findTimezone } from "geo-tz/all";
-import type { CurrentData, StationInput } from "@neaps/tide-database";
+import type { CurrentData, StationInput } from "@slackwater/database";
 
 type NullableDirections = {
   floodDirection: number | null;

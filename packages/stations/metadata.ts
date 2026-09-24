@@ -1,7 +1,7 @@
 import countryLookup from "country-code-lookup";
 import { find as findTimezone } from "geo-tz/all";
 import { parse } from "yaml";
-import type { StationInput } from "@neaps/tide-database";
+import type { StationInput } from "@slackwater/database";
 import { cleanName } from "./name-cleanup.ts";
 import type { Geocoder } from "./geocode.ts";
 import type { MaritimeZones } from "./maritime-zones.ts";
@@ -562,12 +562,12 @@ export function registryStations({
               : "US National Oceanic and Atmospheric Administration",
           id,
           published_harmonics: false,
-          url: "https://github.com/openwatersio/tide-database/blob/main/metadata/PROVENANCE.md",
+          url: "https://github.com/openwatersio/slackwater-database/blob/main/metadata/PROVENANCE.md",
         },
         license: {
           type: "MIT",
           commercial_use: true,
-          url: "https://github.com/openwatersio/tide-database/blob/main/LICENSE",
+          url: "https://github.com/openwatersio/slackwater-database/blob/main/LICENSE",
         },
       },
       { registry: record, ...places },

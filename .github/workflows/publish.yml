@@ -46,14 +46,14 @@ jobs:
 
       - name: Rename TCD files for release
         run: |
-          mv packages/tcd/dist/harmonics.tcd "packages/tcd/dist/neaps-${RELEASE_VERSION##*.}.tcd"
+          mv packages/tcd/dist/harmonics.tcd "packages/tcd/dist/slackwater-${RELEASE_VERSION##*.}.tcd"
 
       - name: Rename database file for release
-        run: cp packages/database/dist/generated/neaps.tcdb "packages/database/dist/generated/neaps-${RELEASE_VERSION##*.}.tcdb"
+        run: cp packages/database/dist/generated/slackwater.tcdb "packages/database/dist/generated/slackwater-${RELEASE_VERSION##*.}.tcdb"
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ env.RELEASE_VERSION }}
           generateReleaseNotes: true
-          artifacts: "packages/tcd/dist/*.tcd,packages/database/dist/generated/neaps-*.tcdb"
+          artifacts: "packages/tcd/dist/*.tcd,packages/database/dist/generated/slackwater-*.tcdb"

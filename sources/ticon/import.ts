@@ -15,7 +15,7 @@ import {
   cleanName,
   loadGeocoder,
   type PartialStationData,
-} from "@neaps/stations";
+} from "@slackwater/stations";
 import {
   computeDatums,
   computeDatumsFromObservations,
@@ -26,12 +26,12 @@ import {
   rqdEnd,
   toFixed,
   GESLA_DIR,
-} from "@neaps/datums";
+} from "@slackwater/datums";
 import {
   parseGeslaSamplesInZone,
   fitHarmonics,
   isAnalyzable,
-} from "@neaps/harmonic-analysis";
+} from "@slackwater/harmonic-analysis";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const metaPath = join(__dirname, "..", "..", "tmp", "TICON-4", "meta.csv");

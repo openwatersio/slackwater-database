@@ -6,4 +6,4 @@
 set -e
 cd "$(dirname "$0")"
 
-flatc --swift -o Sources/NeapsTideDatabase/generated ../../schemas/database.fbs
+flatc --swift -o Sources/SlackwaterDatabase/generated ../../schemas/database.fbs

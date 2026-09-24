@@ -1,5 +1,5 @@
 {
-  "name": "@neaps/datums",
+  "name": "@slackwater/datums",
   "private": true,
   "type": "module",
   "exports": {
@@ -10,7 +10,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@neaps/tide-predictor": "^0.11.0",
+    "@slackwater/engine": "1.0.0-beta.0",
     "make-fetch-happen": "^16.0.0"
   },
   "devDependencies": {

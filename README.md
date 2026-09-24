@@ -1,8 +1,8 @@
-# Neaps Tide and Current Station Database
+# Slackwater Tide and Current Station Database
 
 > A public database of tide and current stations
 
-This database includes station identity, structured location, stable web routes, and harmonic data from sources around the world. Tide constants can be used with a harmonic calculator like [Neaps](https://github.com/openwatersio/neaps) to create astronomical predictions.
+This database includes station identity, structured location, stable web routes, and harmonic data from sources around the world. Tide constants can be used with a harmonic calculator like [Slackwater](https://github.com/openwatersio/slackwater) to create astronomical predictions.
 
 ## Sources
 
@@ -10,9 +10,9 @@ This database includes station identity, structured location, stable web routes,
   ~3400 stations, mostly in the United States and its territories. Updated monthly via [NOAA's API](https://api.tidesandcurrents.noaa.gov/mdapi/prod/).
 
 - ✅ [**TICON-4**](sources/ticon/README.md): TIdal CONstants based on GESLA-4 sea-level records
-  ~4200+ global stations - ([#16](https://github.com/openwatersio/tide-database/pull/16))
+  ~4200+ global stations - ([#16](https://github.com/openwatersio/slackwater-database/pull/16))
 
-If you know of other public sources of harmonic constituents, please [open an issue](https://github.com/openwatersio/tide-database/issues/new) to discuss adding them.
+If you know of other public sources of harmonic constituents, please [open an issue](https://github.com/openwatersio/slackwater-database/issues/new) to discuss adding them.
 
 ## Usage
 
@@ -24,12 +24,12 @@ A pre-built [TCD file](./packages/tcd/README.md) compatible with XTide, OpenCPN,
 
 ### FlatBuffers file
 
-Each release attaches `neaps-<date>.tcdb`, the whole database as one [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](./schemas/database.fbs). It is the same file the NPM package reads; native apps can bundle and memory-map it, generating a reader in their language from the schema. [See the format documentation.](./docs/database-format.md)
+Each release attaches `slackwater-<date>.tcdb`, the whole database as one [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](./schemas/database.fbs). It is the same file the NPM package reads; native apps can bundle and memory-map it, generating a reader in their language from the schema. [See the format documentation.](./docs/database-format.md)
 
 ### JavaScript / TypeScript
 
 ```sh
-$ npm install @neaps/tide-database
+$ npm install @slackwater/database
 ```
 
 The module exports every tide and current station in the database, along with stable web routes and geographic, bounding box, and full-text search. [See the package README for the full API.](./packages/database/README.md)
@@ -37,10 +37,10 @@ The module exports every tide and current station in the database, along with st
 ### Swift
 
 ```swift
-.package(url: "https://github.com/openwatersio/tide-database.git", from: "0.9.20260921")
+.package(url: "https://github.com/openwatersio/slackwater-database.git", from: "1.0.0")
 ```
 
-`NeapsTideDatabase` reads a memory-mapped `.tcdb` in place: scan station identity, look up a station by id, read its constituents, without decoding the rest of the file. [See the package README for the full API.](./packages/swift/README.md)
+`SlackwaterDatabase` reads a memory-mapped `.tcdb` in place: scan station identity, look up a station by id, read its constituents, without decoding the rest of the file. [See the package README for the full API.](./packages/swift/README.md)
 
 ## Data Format
 
@@ -64,8 +64,8 @@ Subordinate stations have four kinds of offsets, two to correct for water level,
 
 This repo is an npm workspace. Station data lives in [`data/`](./data), and everything that reads or writes it is a workspace package:
 
-- [`packages/database`](./packages/database) — the published [`@neaps/tide-database`](https://www.npmjs.com/package/@neaps/tide-database) npm module
-- [`packages/swift`](./packages/swift) — `NeapsTideDatabase`, the Swift reader for `.tcdb`, published from the [root `Package.swift`](./Package.swift)
+- [`packages/database`](./packages/database) — the published [`@slackwater/database`](https://www.npmjs.com/package/@slackwater/database) npm module
+- [`packages/swift`](./packages/swift) — `SlackwaterDatabase`, the Swift reader for `.tcdb`, published from the [root `Package.swift`](./Package.swift)
 - [`packages/tcd`](./packages/tcd) — TCD harmonics files for XTide-compatible software
 - [`packages/datums`](./packages/datums) — tidal datum computation and sea-region classification
 - [`packages/harmonic-analysis`](./packages/harmonic-analysis) — least-squares harmonic analysis of water level observations
@@ -101,7 +101,7 @@ Releases of this database use [Semantic Versioning](https://semver.org/), with t
 
 ## Releasing
 
-Releases are created by [running the Publish action](https://github.com/openwatersio/tide-database/actions/workflows/publish.yml) on GitHub Actions. This action will use the major and minor `version` defined in `packages/database/package.json`, and set the patch version to the current date.
+Releases are created by [running the Publish action](https://github.com/openwatersio/slackwater-database/actions/workflows/publish.yml) on GitHub Actions. This action will use the major and minor `version` defined in `packages/database/package.json`, and set the patch version to the current date.
 
 ## License
 
@@ -117,14 +117,14 @@ Most stations here are CC BY, which obliges anyone redistributing them to credit
 Every station carries the notice it needs as `attribution`, already assembled, so the rule for a consumer is one sentence: **display the station's `attribution`.** Nothing downstream needs its own table of sources, or its own reading of what a licence requires.
 
 ```typescript
-import { stationsById } from "@neaps/tide-database";
+import { stationsById } from "@slackwater/database";
 
 console.log(stationsById.get("ticon/newlyn-new-gbr-bodc")?.attribution);
-// Neaps tide database (https://github.com/openwatersio/tide-database). Source:
+// Slackwater database (https://github.com/openwatersio/slackwater-database). Source:
 // Hart-Davis, M., Dettmering, D., Seitz, F. (2025), TICON-4: TIdal CONstants
 // based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129.
 // Licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified:
-// see https://github.com/openwatersio/tide-database#modifications-to-source-data
+// see https://github.com/openwatersio/slackwater-database#modifications-to-source-data
 ```
 
 The Swift package exposes the same string as `station.attribution`.
@@ -146,7 +146,7 @@ Station records are not verbatim copies of their sources, and CC BY requires tha
 
 For TICON-4 stations:
 
-- Harmonic constituents are carried through as published, except for the German `wsv` and Dutch `rws` gauges, whose GESLA-4 records are timestamped in local legal time but labeled UTC. Those are re-fit from the water levels so their phases are UTC-referenced like every other station, and a station that cannot be re-fit is dropped rather than published with wrong phases. See [#96](https://github.com/openwatersio/tide-database/issues/96) and [#98](https://github.com/openwatersio/tide-database/issues/98).
+- Harmonic constituents are carried through as published, except for the German `wsv` and Dutch `rws` gauges, whose GESLA-4 records are timestamped in local legal time but labeled UTC. Those are re-fit from the water levels so their phases are UTC-referenced like every other station, and a station that cannot be re-fit is dropped rather than published with wrong phases. See [#96](https://github.com/openwatersio/slackwater-database/issues/96) and [#98](https://github.com/openwatersio/slackwater-database/issues/98).
 - Datums are computed here from GESLA-4 water levels, since TICON does not publish them. See [sources/ticon/README.md](./sources/ticon/README.md) for the method and its uncertainties.
 
 For Kartverket stations, published harmonic phases are converted from UTC+1 to UTC and centimetres are converted to metres. The original responses and comparison results are pinned under [sources/kartverket](./sources/kartverket/README.md).

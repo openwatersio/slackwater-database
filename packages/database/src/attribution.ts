@@ -3,11 +3,11 @@
  * then adds whatever its source and licence require.
  */
 export const PROJECT_CREDIT =
-  "Neaps tide database (https://github.com/openwatersio/tide-database)";
+  "Slackwater database (https://github.com/openwatersio/slackwater-database)";
 
 /** Where a redistributor is pointed to find what this project changed. */
 export const MODIFICATIONS_URL =
-  "https://github.com/openwatersio/tide-database#modifications-to-source-data";
+  "https://github.com/openwatersio/slackwater-database#modifications-to-source-data";
 
 /**
  * Keyed by `source.name`; `null` means the source requires no credit of its

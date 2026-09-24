@@ -1,5 +1,5 @@
 {
-  "name": "@neaps/harmonic-analysis",
+  "name": "@slackwater/harmonic-analysis",
   "private": true,
   "type": "module",
   "exports": {
@@ -9,7 +9,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@neaps/tide-predictor": "^0.11.0",
+    "@slackwater/engine": "1.0.0-beta.0",
     "ml-matrix": "^6.15.0"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 {
-  "name": "@neaps/rws",
+  "name": "@slackwater/rws",
   "private": true,
   "type": "module",
   "scripts": {
@@ -7,8 +7,8 @@
     "validate": "node harmonics.ts"
   },
   "dependencies": {
-    "@neaps/harmonic-analysis": "*",
-    "@neaps/tide-predictor": "^0.11.0"
+    "@slackwater/harmonic-analysis": "*",
+    "@slackwater/engine": "1.0.0-beta.0"
   },
   "devDependencies": {
     "vitest": "^5.0.1"

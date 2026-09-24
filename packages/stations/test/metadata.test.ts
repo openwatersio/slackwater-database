@@ -8,7 +8,7 @@ import {
   resolveMetadata,
   validateMetadata,
 } from "../metadata.ts";
-import type { StationInput } from "@neaps/tide-database";
+import type { StationInput } from "@slackwater/database";
 
 const everett: GeocodeResult = {
   place: {

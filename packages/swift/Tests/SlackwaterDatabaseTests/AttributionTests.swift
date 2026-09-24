@@ -1,7 +1,7 @@
 import Foundation
 import XCTest
 
-@testable import NeapsTideDatabase
+@testable import SlackwaterDatabase
 
 final class AttributionTests: XCTestCase {
   func testEveryStationCarriesACredit() throws {
@@ -21,8 +21,8 @@ final class AttributionTests: XCTestCase {
   // Opt-in like testOpensTheShippedDatabase: a CC BY station only exists in
   // the real database. Checks the whole notice a redistributor must pass on.
   func testACCBYStationGetsACompleteNotice() throws {
-    guard let path = ProcessInfo.processInfo.environment["NEAPS_TCDB"] else {
-      throw XCTSkip("Set NEAPS_TCDB to a database file to run")
+    guard let path = ProcessInfo.processInfo.environment["SLACKWATER_TCDB"] else {
+      throw XCTSkip("Set SLACKWATER_TCDB to a database file to run")
     }
     let db = try TideDatabase(contentsOf: URL(fileURLWithPath: path))
     let notice = try XCTUnwrap(db.station(id: "ticon/newlyn-new-gbr-bodc")?.attribution)
