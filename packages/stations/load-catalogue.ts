@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import currentBundle from "../../sources/noaa-current/currents.json" with { type: "json" };
 import countryLookup from "country-code-lookup";
@@ -8,10 +8,19 @@ import { currentInputs } from "./current-input.ts";
 import { loadGeocoder } from "./geocode.ts";
 import { loadMaritimeZones } from "./maritime-zones.ts";
 import { loadCorrections, loadRegistry } from "./metadata.ts";
-import type { RouteLock, SlugTable, SlugTombstones } from "./routes.ts";
+import {
+  emptyFormerSlugs,
+  type FormerSlugs,
+  type RouteLock,
+  type SlugTable,
+  type SlugTombstones,
+} from "./routes.ts";
 import { loadWaterBodies } from "./water-bodies.ts";
 
-export async function loadProductionCatalogue(root: string) {
+export async function loadProductionCatalogue(
+  root: string,
+  { reallocate }: { reallocate?: Set<string> } = {},
+) {
   const quality = new Map<string, StationQuality>(
     JSON.parse(readFileSync(join(root, "quality.json"), "utf8")).map(
       (entry: StationQuality) => [entry.id, entry],
@@ -44,6 +53,10 @@ export async function loadProductionCatalogue(root: string) {
   const routeLock = JSON.parse(
     readFileSync(join(metadataDir, "routes.lock.json"), "utf8"),
   ) as RouteLock;
+  const formerSlugsPath = join(metadataDir, "former-slugs.json");
+  const formerSlugs = existsSync(formerSlugsPath)
+    ? (JSON.parse(readFileSync(formerSlugsPath, "utf8")) as FormerSlugs)
+    : emptyFormerSlugs();
   return {
     ...buildCatalogue({
       tides,
@@ -56,6 +69,8 @@ export async function loadProductionCatalogue(root: string) {
       ),
       slugTable,
       slugTombstones,
+      formerSlugs,
+      ...(reallocate ? { reallocate } : {}),
       routeLock,
       geocoder: await loadGeocoder(),
       waterBodies: await loadWaterBodies(),
@@ -65,6 +80,7 @@ export async function loadProductionCatalogue(root: string) {
     providerCurrentIds: new Set(currents.map(({ id }) => id)),
     previousSlugTable: slugTable,
     previousSlugTombstones: slugTombstones,
+    previousFormerSlugs: formerSlugs,
     previousRouteLock: routeLock,
   };
 }

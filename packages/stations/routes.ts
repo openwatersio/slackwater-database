@@ -35,11 +35,50 @@ export interface RouteLock {
 
 export const DEPARTURE_LIMIT = 10;
 
+/**
+ * Every slug an id has ever resolved to and no longer does, by kind.
+ *
+ * Append-only, and the reason a slug can never change hands: the allocator
+ * treats every entry here as taken, so a station that moves keeps its old
+ * address as a redirect and nothing else can be minted at it — even after the
+ * allocation table itself has been reset. `metadata:lock` writes it, so a
+ * migration records its own history rather than relying on a curated
+ * `formerSlugs` that only a registry record can carry.
+ */
+export interface FormerSlugs {
+  tide: Record<string, string[]>;
+  current: Record<string, string[]>;
+}
+
+export const emptyFormerSlugs = (): FormerSlugs => ({ tide: {}, current: {} });
+
+export interface SlugTableOptions {
+  /**
+   * Ids to send back through the ladder even though they hold a slug. This is
+   * how a deliberate migration happens: the old slug is recorded as former
+   * rather than the table being reset and the history lost with it.
+   */
+  reallocate?: Set<string>;
+  /**
+   * Curated identity records. Two ids may share a curated slug only when
+   * exactly one of them is here — a provider row joining the registry record
+   * for the same water. Two provider rows on one slug is a collision.
+   */
+  registryIds?: Set<string>;
+}
+
 export function buildSlugTable(
   stations: ResolvedStation[],
   previous: SlugTable,
   tombstones: SlugTombstones = { tide: {}, current: {} },
-): { table: SlugTable; tombstones: SlugTombstones; gone: string[] } {
+  formerSlugs: FormerSlugs = emptyFormerSlugs(),
+  { reallocate = new Set(), registryIds = new Set() }: SlugTableOptions = {},
+): {
+  table: SlugTable;
+  tombstones: SlugTombstones;
+  formerSlugs: FormerSlugs;
+  gone: string[];
+} {
   const table: SlugTable = {
     catalogue: { ...previous.catalogue },
     tide: {},
@@ -48,6 +87,17 @@ export function buildSlugTable(
   const nextTombstones: SlugTombstones = {
     tide: { ...tombstones.tide },
     current: { ...tombstones.current },
+  };
+  const nextFormer: FormerSlugs = {
+    tide: Object.fromEntries(
+      Object.entries(formerSlugs.tide).map(([id, slugs]) => [id, [...slugs]]),
+    ),
+    current: Object.fromEntries(
+      Object.entries(formerSlugs.current).map(([id, slugs]) => [
+        id,
+        [...slugs],
+      ]),
+    ),
   };
   const gone: string[] = [];
 
@@ -70,6 +120,14 @@ export function buildSlugTable(
     }
     const ids = new Set(candidates.map((station) => station.id));
     const allocated = new Map(Object.entries(previous[kind] ?? {}));
+    // The slug each id arrived with, so a move can be recorded whichever pass
+    // caused it — the ladder or a curated slug.
+    const arrived = new Map(allocated);
+    const retire = (id: string, slug: string | undefined) => {
+      if (slug === undefined || allocated.get(id) === slug) return;
+      const history = (nextFormer[kind][id] ??= []);
+      if (!history.includes(slug)) history.push(slug);
+    };
 
     for (const [id, slug] of [...allocated]) {
       if (ids.has(id)) continue;
@@ -83,17 +141,30 @@ export function buildSlugTable(
       allocated.set(station.id, slug);
       delete nextTombstones[kind][station.id];
     }
-    // A curated `slug` outranks any earlier allocation; the route lock still
-    // demands the old path in `formerSlugs` before it will let it move.
+    for (const id of reallocate) if (ids.has(id)) allocated.delete(id);
+
+    // A curated `slug` outranks any earlier allocation. It may land on a slug
+    // another id holds only to merge a provider row with the registry record
+    // for the same water; between two provider rows, or two registry records,
+    // it is a collision.
     for (const station of candidates) {
       if (!station.slug) continue;
       const owner = [...allocated].find(
         ([id, slug]) => slug === station.slug && id !== station.id,
       );
-      if (owner)
-        throw new Error(
-          `${station.id}: slug ${JSON.stringify(station.slug)} is allocated to ${owner[0]}`,
-        );
+      if (owner) {
+        const curatedOwners =
+          Number(registryIds.has(owner[0])) +
+          Number(registryIds.has(station.id));
+        if (curatedOwners === 0)
+          throw new Error(
+            `${station.id}: slug ${JSON.stringify(station.slug)} is allocated to ${owner[0]}`,
+          );
+        if (curatedOwners === 2)
+          throw new Error(
+            `${station.id}: slug ${JSON.stringify(station.slug)} would have two registry owners, ${owner[0]} and ${station.id}`,
+          );
+      }
       const buried = Object.entries(nextTombstones[kind]).find(
         ([, slug]) => slug === station.slug,
       );
@@ -101,12 +172,23 @@ export function buildSlugTable(
         throw new Error(
           `${station.id}: slug ${JSON.stringify(station.slug)} is tombstoned for ${buried[0]}`,
         );
+      const historical = Object.entries(nextFormer[kind]).find(
+        ([id, slugs]) => id !== station.id && slugs.includes(station.slug!),
+      );
+      if (historical)
+        throw new Error(
+          `${station.id}: slug ${JSON.stringify(station.slug)} was published for ${historical[0]} and cannot change hands`,
+        );
       allocated.set(station.id, station.slug);
     }
 
+    // Every slug that arrived is reserved for the whole pass, so an id that
+    // moves cannot vacate a slug into a later id's ladder — only its own.
     const used = new Set([
       ...allocated.values(),
+      ...arrived.values(),
       ...Object.values(nextTombstones[kind]),
+      ...Object.values(nextFormer[kind]).flat(),
       ...candidates.flatMap((station) => station.former_slugs ?? []),
     ]);
     for (const station of candidates
@@ -130,7 +212,10 @@ export function buildSlugTable(
             ...(region ? [`${base}-${region}`] : []),
             `${base}-${toSlug(station.id)}`,
           ];
-      const slug = ladder.find((candidate) => !used.has(candidate));
+      const own = arrived.get(station.id);
+      const slug = ladder.find(
+        (candidate) => candidate === own || !used.has(candidate),
+      );
       if (!slug)
         throw new Error(
           `${station.id}: slug ladder exhausted (${ladder.join(", ")})`,
@@ -138,12 +223,48 @@ export function buildSlugTable(
       allocated.set(station.id, slug);
       used.add(slug);
     }
+    for (const [id, was] of arrived) retire(id, was);
+
+    // A tombstone is an id that left holding its slug. The same slug live
+    // under another id means it changed hands, which is the one thing a
+    // tombstone exists to forbid — and the shape a stale entry takes when a
+    // merged record's retirement was recorded as a departure.
+    for (const [buriedId, slug] of Object.entries(nextTombstones[kind])) {
+      const holder = [...allocated].find(([, live]) => live === slug);
+      if (holder && holder[0] !== buriedId)
+        throw new Error(
+          `${kind}/${slug}: tombstoned for ${buriedId} but allocated to ${holder[0]}`,
+        );
+    }
+
+    const holders = new Map<string, string[]>();
+    for (const [id, slug] of allocated)
+      holders.set(slug, [...(holders.get(slug) ?? []), id]);
+    for (const [slug, owners] of holders) {
+      if (owners.length < 2) continue;
+      const curated = owners.filter((id) => registryIds.has(id));
+      if (curated.length !== 1)
+        throw new Error(
+          `${kind}/${slug}: shared by ${owners.join(", ")} with ${curated.length === 0 ? "no" : "two"} registry owners; a shared slug is one curated record plus the provider rows for the same water`,
+        );
+    }
+
     table[kind] = Object.fromEntries(
       [...allocated].sort(([a], [b]) => compare(a, b)),
     );
+    nextFormer[kind] = Object.fromEntries(
+      Object.entries(nextFormer[kind])
+        .filter(([, slugs]) => slugs.length)
+        .sort(([a], [b]) => compare(a, b)),
+    );
   }
 
-  return { table, tombstones: nextTombstones, gone: gone.sort(compare) };
+  return {
+    table,
+    tombstones: nextTombstones,
+    formerSlugs: nextFormer,
+    gone: gone.sort(compare),
+  };
 }
 
 export function checkSlugTable(
