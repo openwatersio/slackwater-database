@@ -1,6 +1,6 @@
-import { normalize } from "@neaps/stations";
-import type { StationData } from "@neaps/tide-database";
-import { constituents as catalogue } from "@neaps/tide-predictor";
+import { normalize } from "@slackwater/stations";
+import type { StationData } from "@slackwater/database";
+import { constituents as catalogue } from "@slackwater/engine";
 import { XMLParser, XMLValidator } from "fast-xml-parser";
 
 type Attributes = Record<string, string>;

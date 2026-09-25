@@ -2,7 +2,7 @@
 //
 // Emits under src/generated/ (git-ignored, regenerated on build/test):
 //   fbs/            flatc-generated TypeScript for schemas/database.fbs
-//   neaps.tcdb  the database file (shipped in dist and as a release asset)
+//   slackwater.tcdb  the database file (shipped in dist and as a release asset)
 //
 // Run with `node --experimental-transform-types` — the generated FlatBuffers
 // code uses TypeScript enums, which plain type stripping cannot erase.
@@ -11,7 +11,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadProductionCatalogue } from "@neaps/stations";
+import { loadProductionCatalogue } from "@slackwater/stations";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "src", "generated");
@@ -52,7 +52,7 @@ const database = buildDatabase(catalogue.stations, {
   routes: catalogue.routes,
 });
 
-writeFileSync(join(outDir, "neaps.tcdb"), database);
+writeFileSync(join(outDir, "slackwater.tcdb"), database);
 const stationCounts = (field: "country_code" | "region_code" | "locality") =>
   catalogue.stations.filter((station) => station[field]).length;
 const identityOnly = catalogue.stations.filter(
@@ -61,7 +61,7 @@ const identityOnly = catalogue.stations.filter(
 ).length;
 console.log(
   [
-    `generated neaps.tcdb: ${(database.length / 1048576).toFixed(1)} MB`,
+    `generated slackwater.tcdb: ${(database.length / 1048576).toFixed(1)} MB`,
     `${catalogue.stations.length} stations`,
     `${catalogue.stations.filter(({ kind }) => (kind ?? "tide") === "tide").length} tides`,
     `${catalogue.stations.filter(({ kind }) => kind === "current").length} currents`,

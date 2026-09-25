@@ -5,8 +5,8 @@ import {
   HeightOffsetType,
   Kind,
   StationType,
-} from "./generated/fbs/neaps.ts";
-import databaseBytes from "#neaps.tcdb";
+} from "./generated/fbs/slackwater.ts";
+import databaseBytes from "#slackwater.tcdb";
 import { PROJECT_CREDIT } from "./attribution.js";
 import { openDatabase } from "./database/reader.js";
 import type {

@@ -1,4 +1,4 @@
-// Cloudflare Workers source for the "#neaps.tcdb" subpath import, selected by
+// Cloudflare Workers source for the "#slackwater.tcdb" subpath import, selected by
 // aliasing it in the worker build (see tsdown.config.ts). Workers can't
 // construct file URLs from import.meta.url and disallow fetch during module
 // evaluation, so the database ships inside the bundle as a base64 literal —

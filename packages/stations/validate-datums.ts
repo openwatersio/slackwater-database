@@ -16,7 +16,7 @@
  *   dLo = MSL  − MLLW
  *
  * A drop in the |median| residual from harmonic → observed is the fix #40 asks
- * for. Run after the GESLA download (@neaps/datums). Reads GESLA directly, so it
+ * for. Run after the GESLA download (@slackwater/datums). Reads GESLA directly, so it
  * does not depend on the TICON import having been run.
  */
 
@@ -29,9 +29,9 @@ import {
   parseGeslaSamples,
   GESLA_DIR,
   type Datums,
-} from "@neaps/datums";
+} from "@slackwater/datums";
 import { DATA_DIR } from "./station.ts";
-import type { StationData } from "@neaps/tide-database";
+import type { StationData } from "@slackwater/database";
 
 const TICON_DIR = join(DATA_DIR, "ticon");
 const NOAA_DIR = join(DATA_DIR, "noaa");

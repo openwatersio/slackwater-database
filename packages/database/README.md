@@ -1,15 +1,15 @@
-# @neaps/tide-database
+# @slackwater/database
 
 > A public database of tide harmonics
 
-Harmonic constituents, tidal datums, and station metadata for thousands of tide stations around the world. Feed the constituents to a tide harmonic calculator like [Neaps](https://github.com/openwatersio/neaps) to produce astronomical tide predictions.
+Harmonic constituents, tidal datums, and station metadata for thousands of tide stations around the world. Feed the constituents to a tide harmonic calculator like [Slackwater](https://github.com/openwatersio/slackwater) to produce astronomical tide predictions.
 
-Station data is curated in the [tide-database repository](https://github.com/openwatersio/tide-database), which documents [where each station comes from](https://github.com/openwatersio/tide-database#sources) and how it is quality-checked.
+Station data is curated in the [slackwater-database repository](https://github.com/openwatersio/slackwater-database), which documents [where each station comes from](https://github.com/openwatersio/slackwater-database#sources) and how it is quality-checked.
 
 ## Install
 
 ```sh
-$ npm install @neaps/tide-database
+$ npm install @slackwater/database
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ $ npm install @neaps/tide-database
 The package exports every tide and current station that passes the database's quality gates:
 
 ```typescript
-import { stations, stationsById } from "@neaps/tide-database";
+import { stations, stationsById } from "@slackwater/database";
 
 console.log("Total stations:", stations.length);
 console.log(stationsById.get("noaa/9447130"));
@@ -25,14 +25,14 @@ console.log(stationsById.get("noaa/9447130"));
 
 `stations` leaves out records the quality evaluation rejected, such as duplicate gauges and implausible datums. `allStations` is the unfiltered catalog, `stationsById` maps an id to its station, and every search function below takes `includeAll: true` to search the full catalog instead of the accepted subset.
 
-Each station carries its identity and location eagerly. The heavy prediction fields — `harmonic_constituents`, `datums`, and `epoch` — are decoded from the database file on first access, so importing the module does not pull every station's prediction data onto the heap. [See the format documentation](https://github.com/openwatersio/tide-database/blob/main/docs/database-format.md) for how that works.
+Each station carries its identity and location eagerly. The heavy prediction fields — `harmonic_constituents`, `datums`, and `epoch` — are decoded from the database file on first access, so importing the module does not pull every station's prediction data onto the heap. [See the format documentation](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md) for how that works.
 
 Each station has separate `locality`, `region`, and `country` display fields. `country_code` is an ISO 3166-1 alpha-2 code; `region_code`, when available, is an ISO 3166-2 subdivision code. Consumers can therefore omit country or region text when the surrounding page already supplies it.
 
 ### Stable station routes
 
 ```typescript
-import { stationRouteBySlug, stationsById } from "@neaps/tide-database";
+import { stationRouteBySlug, stationsById } from "@slackwater/database";
 
 const route = stationRouteBySlug("tide", "victoria");
 const station = route && stationsById.get(route.stationIds[0]!);
@@ -48,7 +48,7 @@ console.log(station?.locality, station?.region, station?.country_code);
 `near` returns an array of `[station, distanceInKm]` tuples, closest first:
 
 ```typescript
-import { near, nearest } from "@neaps/tide-database";
+import { near, nearest } from "@slackwater/database";
 
 // Find stations within 10 km of a lat/lon
 const nearbyStations = near({
@@ -87,7 +87,7 @@ Both functions take the following parameters:
 `bbox` takes a `[minLon, minLat, maxLon, maxLat]` tuple and returns the stations inside it:
 
 ```typescript
-import { bbox } from "@neaps/tide-database";
+import { bbox } from "@slackwater/database";
 
 // Find stations in the Boston area
 const bostonStations = bbox([-71.5, 42, -70.5, 42.8]);
@@ -109,7 +109,7 @@ The bounds are `minLon` (west edge), `minLat` (south edge), `maxLon` (east edge)
 You can search for stations by name, region, country, or continent using the `search` function. It supports fuzzy matching and prefix search:
 
 ```typescript
-import { search } from "@neaps/tide-database";
+import { search } from "@slackwater/database";
 
 // Search for stations by name with fuzzy matching
 const results = search("Boston");
@@ -146,13 +146,13 @@ Stations are either _reference_ or _subordinate_, given by the station's `type` 
 
 Reference stations have their own `harmonic_constituents`, usually derived from a long record of real water level observations. Subordinate stations predict from a nearby reference station's harmonics, adjusted by four `offsets` — two correcting water level and two correcting the time of high and low tide. Reading a subordinate's `harmonic_constituents` or `datums` returns its reference station's values, so both types predict the same way.
 
-`astronomical_bounds` is how low and high a prediction for the station can go — `{ lat, hat }` in metres above its chart datum — with the height offsets applied for a subordinate. It sits outside `datums` because the reduced pair is the floor and ceiling of a prediction rather than a hydrographic datum; [see the datum documentation](https://github.com/openwatersio/tide-database/blob/main/docs/datums.md).
+`astronomical_bounds` is how low and high a prediction for the station can go — `{ lat, hat }` in metres above its chart datum — with the height offsets applied for a subordinate. It sits outside `datums` because the reduced pair is the floor and ceiling of a prediction rather than a hydrographic datum; [see the datum documentation](https://github.com/openwatersio/slackwater-database/blob/main/docs/datums.md).
 
-The full field-by-field description lives in [`schemas/station.schema.json`](https://github.com/openwatersio/tide-database/blob/main/schemas/station.schema.json).
+The full field-by-field description lives in [`schemas/station.schema.json`](https://github.com/openwatersio/slackwater-database/blob/main/schemas/station.schema.json).
 
 ## The database file
 
-The module reads a single [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](https://github.com/openwatersio/tide-database/blob/main/schemas/database.fbs). Every release of this package also attaches that file as `neaps-<date>.tcdb`, so native apps can bundle and memory-map it and generate a reader in their own language from the schema. [See the format documentation.](https://github.com/openwatersio/tide-database/blob/main/docs/database-format.md)
+The module reads a single [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](https://github.com/openwatersio/slackwater-database/blob/main/schemas/database.fbs). Every release of this package also attaches that file as `slackwater-<date>.tcdb`, so native apps can bundle and memory-map it and generate a reader in their own language from the schema. [See the format documentation.](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md)
 
 ## License
 
@@ -167,24 +167,24 @@ Most stations are CC BY, so displaying or redistributing them carries an obligat
 **Display the station's `attribution`.** That is the whole of the rule. Nothing here needs its own table of sources, or its own reading of what a licence requires.
 
 ```typescript
-import { stationsById } from "@neaps/tide-database";
+import { stationsById } from "@slackwater/database";
 
 console.log(stationsById.get("ticon/newlyn-new-gbr-bodc")?.attribution);
-// Neaps tide database (https://github.com/openwatersio/tide-database). Source:
+// Slackwater database (https://github.com/openwatersio/slackwater-database). Source:
 // Hart-Davis, M., Dettmering, D., Seitz, F. (2025), TICON-4: TIdal CONstants
 // based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129.
 // Licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified:
-// see https://github.com/openwatersio/tide-database#modifications-to-source-data
+// see https://github.com/openwatersio/slackwater-database#modifications-to-source-data
 ```
 
 What the string contains, and why that is sufficient:
 
 - **The creator credit.** For TICON-4 stations, the citation its authors ask for; for Kartverket, the publishing agency. A source that requires no credit, such as public-domain NOAA data, contributes nothing here.
 - **The licence and its URI**, taken from the station rather than its source. Licence varies within a single source — the TICON stations relayed from CMEMS are CC BY-NC while the rest are CC BY — so the notice names the one that actually applies to the station in hand.
-- **An indication that the material was modified**, pointing at [what this project changes](https://github.com/openwatersio/tide-database#modifications-to-source-data): derived datums, normalized names, geocoded location fields, and re-fit phases for two GESLA sources.
+- **An indication that the material was modified**, pointing at [what this project changes](https://github.com/openwatersio/slackwater-database#modifications-to-source-data): derived datums, normalized names, geocoded location fields, and re-fit phases for two GESLA sources.
 
 Those are the three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.org/licenses/by/4.0/) requires a redistributor to pass on. A station whose licence imposes no notice gets the project credit alone:
 
-> Neaps tide database (https://github.com/openwatersio/tide-database)
+> Slackwater database (https://github.com/openwatersio/slackwater-database)
 
 `attribution` is a display string. It is not a substitute for `license` when you need to make a decision in code — filter on `license.commercial_use` or `license.type` for that.

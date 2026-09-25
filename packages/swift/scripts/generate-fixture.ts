@@ -45,6 +45,7 @@ const stations: StationInput[] = [
       offsets: {
         reference: "test/reference",
         slack_before_flood: -30,
+        flood_time: 0,
         flood_speed_ratio: 0.8,
       },
     },
@@ -57,6 +58,10 @@ const stations: StationInput[] = [
     longitude: -122.3,
     region: "WA",
     region_code: "US-WA",
+    locality: "Seattle",
+    context: "Seattle, WA",
+    context_derived: false,
+    cities: ["Seattle"],
     type: "reference",
     chart_datum: "MLLW",
     datums_source: "observed",
@@ -121,12 +126,24 @@ const stations: StationInput[] = [
   },
 ];
 
-const bytes = buildDatabase(stations, { version: "0.0.0-fixture" });
+const bytes = buildDatabase(stations, {
+  version: "0.0.0-fixture",
+  routes: {
+    tide: [
+      {
+        slug: "reference",
+        station_ids: ["test/reference"],
+        former_paths: ["old-reference"],
+      },
+    ],
+    current: [{ slug: "a-current", station_ids: ["test/current"] }],
+  },
+});
 const out = join(
   dirname(fileURLToPath(import.meta.url)),
   "..",
   "Tests",
-  "NeapsTideDatabaseTests",
+  "SlackwaterDatabaseTests",
   "fixture.tcdb",
 );
 writeFileSync(out, bytes);

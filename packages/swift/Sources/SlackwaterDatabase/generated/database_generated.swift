@@ -8,43 +8,43 @@ import Common
 
 import FlatBuffers
 
-public enum Neaps_Kind: UInt8, Enum, Verifiable {
+public enum Slackwater_Kind: UInt8, Enum, Verifiable {
   public typealias T = UInt8
   public static var byteSize: Int { return MemoryLayout<UInt8>.size }
   public var value: UInt8 { return self.rawValue }
   case tide = 0
   case current = 1
 
-  public static var max: Neaps_Kind { return .current }
-  public static var min: Neaps_Kind { return .tide }
+  public static var max: Slackwater_Kind { return .current }
+  public static var min: Slackwater_Kind { return .tide }
 }
 
 
-public enum Neaps_StationType: UInt8, Enum, Verifiable {
+public enum Slackwater_StationType: UInt8, Enum, Verifiable {
   public typealias T = UInt8
   public static var byteSize: Int { return MemoryLayout<UInt8>.size }
   public var value: UInt8 { return self.rawValue }
   case reference = 0
   case subordinate = 1
 
-  public static var max: Neaps_StationType { return .subordinate }
-  public static var min: Neaps_StationType { return .reference }
+  public static var max: Slackwater_StationType { return .subordinate }
+  public static var min: Slackwater_StationType { return .reference }
 }
 
 
-public enum Neaps_HeightOffsetType: UInt8, Enum, Verifiable {
+public enum Slackwater_HeightOffsetType: UInt8, Enum, Verifiable {
   public typealias T = UInt8
   public static var byteSize: Int { return MemoryLayout<UInt8>.size }
   public var value: UInt8 { return self.rawValue }
   case ratio = 0
   case fixed = 1
 
-  public static var max: Neaps_HeightOffsetType { return .fixed }
-  public static var min: Neaps_HeightOffsetType { return .ratio }
+  public static var max: Slackwater_HeightOffsetType { return .fixed }
+  public static var min: Slackwater_HeightOffsetType { return .ratio }
 }
 
 
-public enum Neaps_DatumsSource: UInt8, Enum, Verifiable {
+public enum Slackwater_DatumsSource: UInt8, Enum, Verifiable {
   public typealias T = UInt8
   public static var byteSize: Int { return MemoryLayout<UInt8>.size }
   public var value: UInt8 { return self.rawValue }
@@ -52,15 +52,15 @@ public enum Neaps_DatumsSource: UInt8, Enum, Verifiable {
   case observed = 1
   case harmonic = 2
 
-  public static var max: Neaps_DatumsSource { return .harmonic }
-  public static var min: Neaps_DatumsSource { return .unknown }
+  public static var max: Slackwater_DatumsSource { return .harmonic }
+  public static var min: Slackwater_DatumsSource { return .unknown }
 }
 
 
 ///  12 bytes, contiguous per station. Amplitude in metres (tides) or knots
 ///  (currents); phase in degrees. float32 keeps 7 significant digits, more
 ///  than any publisher's millimetre / 0.1° precision.
-public struct Neaps_Constituent: NativeStruct, Verifiable, FlatbuffersInitializable {
+public struct Slackwater_Constituent: NativeStruct, Verifiable, FlatbuffersInitializable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
 
@@ -93,14 +93,14 @@ public struct Neaps_Constituent: NativeStruct, Verifiable, FlatbuffersInitializa
   public var phase: Float32 { _phase }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
-    try verifier.inBuffer(position: position, of: Neaps_Constituent.self)
+    try verifier.inBuffer(position: position, of: Slackwater_Constituent.self)
   }
 }
 
 ///  12 bytes, contiguous per station. Amplitude in metres (tides) or knots
 ///  (currents); phase in degrees. float32 keeps 7 significant digits, more
 ///  than any publisher's millimetre / 0.1° precision.
-public struct Neaps_Constituent_Mutable: FlatBufferObject {
+public struct Slackwater_Constituent_Mutable: FlatBufferObject {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
@@ -113,7 +113,7 @@ public struct Neaps_Constituent_Mutable: FlatBufferObject {
   public var phase: Float32 { return _accessor.readBuffer(of: Float32.self, at: 8) }
 }
 
-public struct Neaps_Datum: NativeStruct, Verifiable, FlatbuffersInitializable {
+public struct Slackwater_Datum: NativeStruct, Verifiable, FlatbuffersInitializable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
 
@@ -141,11 +141,11 @@ public struct Neaps_Datum: NativeStruct, Verifiable, FlatbuffersInitializable {
   public var value: Float32 { _value }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
-    try verifier.inBuffer(position: position, of: Neaps_Datum.self)
+    try verifier.inBuffer(position: position, of: Slackwater_Datum.self)
   }
 }
 
-public struct Neaps_Datum_Mutable: FlatBufferObject {
+public struct Slackwater_Datum_Mutable: FlatBufferObject {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
@@ -160,7 +160,7 @@ public struct Neaps_Datum_Mutable: FlatBufferObject {
 ///  Scoring factors, each 0–1. A struct rather than scalar fields so presence
 ///  is exact: scalars can't distinguish an omitted factor from a real 0, while
 ///  a struct field reads back null when it was never written.
-public struct Neaps_QualityFactors: NativeStruct, Verifiable, FlatbuffersInitializable {
+public struct Slackwater_QualityFactors: NativeStruct, Verifiable, FlatbuffersInitializable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
 
@@ -207,14 +207,14 @@ public struct Neaps_QualityFactors: NativeStruct, Verifiable, FlatbuffersInitial
   public var coverage: Float32 { _coverage }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
-    try verifier.inBuffer(position: position, of: Neaps_QualityFactors.self)
+    try verifier.inBuffer(position: position, of: Slackwater_QualityFactors.self)
   }
 }
 
 ///  Scoring factors, each 0–1. A struct rather than scalar fields so presence
 ///  is exact: scalars can't distinguish an omitted factor from a real 0, while
 ///  a struct field reads back null when it was never written.
-public struct Neaps_QualityFactors_Mutable: FlatBufferObject {
+public struct Slackwater_QualityFactors_Mutable: FlatBufferObject {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
@@ -230,14 +230,14 @@ public struct Neaps_QualityFactors_Mutable: FlatBufferObject {
   public var coverage: Float32 { return _accessor.readBuffer(of: Float32.self, at: 20) }
 }
 
-public struct Neaps_StationRoute: FlatBufferObject, Verifiable {
+public struct Slackwater_StationRoute: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   public static var id: String { "TCDB" } 
-  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Neaps_StationRoute.id, addPrefix: prefix) }
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_StationRoute.id, addPrefix: prefix) }
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
@@ -268,18 +268,18 @@ public struct Neaps_StationRoute: FlatBufferObject, Verifiable {
     stationIdsVectorOffset stationIds: Offset,
     formerPathsVectorOffset formerPaths: Offset = Offset()
   ) -> Offset {
-    let __start = Neaps_StationRoute.startStationRoute(&fbb)
-    Neaps_StationRoute.add(slug: slug, &fbb)
-    Neaps_StationRoute.addVectorOf(stationIds: stationIds, &fbb)
-    Neaps_StationRoute.addVectorOf(formerPaths: formerPaths, &fbb)
-    return Neaps_StationRoute.endStationRoute(&fbb, start: __start)
+    let __start = Slackwater_StationRoute.startStationRoute(&fbb)
+    Slackwater_StationRoute.add(slug: slug, &fbb)
+    Slackwater_StationRoute.addVectorOf(stationIds: stationIds, &fbb)
+    Slackwater_StationRoute.addVectorOf(formerPaths: formerPaths, &fbb)
+    return Slackwater_StationRoute.endStationRoute(&fbb, start: __start)
   }
   public static func sortVectorOfStationRoute(offsets:[Offset], _ fbb: inout FlatBufferBuilder) -> Offset {
     var off = offsets
     off.sort { Table.compare(Table.offset(Int32($1.o), vOffset: 4, fbb: &fbb), Table.offset(Int32($0.o), vOffset: 4, fbb: &fbb), fbb: &fbb) < 0 } 
     return fbb.createVector(ofOffsets: off)
   }
-  fileprivate static func lookupByKey(vector: Int32, key: String, fbb: ByteBuffer) -> Neaps_StationRoute? {
+  fileprivate static func lookupByKey(vector: Int32, key: String, fbb: ByteBuffer) -> Slackwater_StationRoute? {
     let key = key.utf8.map { $0 }
     var span = fbb.read(def: Int32.self, position: Int(vector - 4))
     var start: Int32 = 0
@@ -294,7 +294,7 @@ public struct Neaps_StationRoute: FlatBufferObject, Verifiable {
         start += middle
         span -= middle
       } else {
-        return Neaps_StationRoute(fbb, o: tableOffset)
+        return Slackwater_StationRoute(fbb, o: tableOffset)
       }
     }
     return nil
@@ -311,14 +311,14 @@ public struct Neaps_StationRoute: FlatBufferObject, Verifiable {
 
 ///  Datum names and constituent names live once, at the root; records refer to
 ///  them by index. Constituent records repeat ~23 names across ~110k entries.
-public struct Neaps_Root: FlatBufferObject, Verifiable {
+public struct Slackwater_Root: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   public static var id: String { "TCDB" } 
-  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Neaps_Root.id, addPrefix: prefix) }
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_Root.id, addPrefix: prefix) }
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
@@ -339,8 +339,8 @@ public struct Neaps_Root: FlatBufferObject, Verifiable {
   ///  Sorted by `id` (strcmp order) so `lookupByKey` binary-searches.
   public var hasStations: Bool { let o = _accessor.offset(VTOFFSET.stations.v); return o == 0 ? false : true }
   public var stationsCount: Int32 { let o = _accessor.offset(VTOFFSET.stations.v); return o == 0 ? 0 : _accessor.vector(count: o) }
-  public func stations(at index: Int32) -> Neaps_Station? { let o = _accessor.offset(VTOFFSET.stations.v); return o == 0 ? nil : Neaps_Station(_accessor.bb, o: _accessor.indirect(_accessor.vector(at: o) + index * 4)) }
-  public func stationsBy(key: String) -> Neaps_Station? { let o = _accessor.offset(VTOFFSET.stations.v); return o == 0 ? nil : Neaps_Station.lookupByKey(vector: _accessor.vector(at: o), key: key, fbb: _accessor.bb) }
+  public func stations(at index: Int32) -> Slackwater_Station? { let o = _accessor.offset(VTOFFSET.stations.v); return o == 0 ? nil : Slackwater_Station(_accessor.bb, o: _accessor.indirect(_accessor.vector(at: o) + index * 4)) }
+  public func stationsBy(key: String) -> Slackwater_Station? { let o = _accessor.offset(VTOFFSET.stations.v); return o == 0 ? nil : Slackwater_Station.lookupByKey(vector: _accessor.vector(at: o), key: key, fbb: _accessor.bb) }
   ///  Indexed by `Constituent.name`. Names as the predictor catalogue spells them ("M2", "K1").
   public var hasConstituentNames: Bool { let o = _accessor.offset(VTOFFSET.constituentNames.v); return o == 0 ? false : true }
   public var constituentNamesCount: Int32 { let o = _accessor.offset(VTOFFSET.constituentNames.v); return o == 0 ? 0 : _accessor.vector(count: o) }
@@ -351,12 +351,12 @@ public struct Neaps_Root: FlatBufferObject, Verifiable {
   public func datumNames(at index: Int32) -> String? { let o = _accessor.offset(VTOFFSET.datumNames.v); return o == 0 ? nil : _accessor.directString(at: _accessor.vector(at: o) + index * 4) }
   public var hasTideRoutes: Bool { let o = _accessor.offset(VTOFFSET.tideRoutes.v); return o == 0 ? false : true }
   public var tideRoutesCount: Int32 { let o = _accessor.offset(VTOFFSET.tideRoutes.v); return o == 0 ? 0 : _accessor.vector(count: o) }
-  public func tideRoutes(at index: Int32) -> Neaps_StationRoute? { let o = _accessor.offset(VTOFFSET.tideRoutes.v); return o == 0 ? nil : Neaps_StationRoute(_accessor.bb, o: _accessor.indirect(_accessor.vector(at: o) + index * 4)) }
-  public func tideRoutesBy(key: String) -> Neaps_StationRoute? { let o = _accessor.offset(VTOFFSET.tideRoutes.v); return o == 0 ? nil : Neaps_StationRoute.lookupByKey(vector: _accessor.vector(at: o), key: key, fbb: _accessor.bb) }
+  public func tideRoutes(at index: Int32) -> Slackwater_StationRoute? { let o = _accessor.offset(VTOFFSET.tideRoutes.v); return o == 0 ? nil : Slackwater_StationRoute(_accessor.bb, o: _accessor.indirect(_accessor.vector(at: o) + index * 4)) }
+  public func tideRoutesBy(key: String) -> Slackwater_StationRoute? { let o = _accessor.offset(VTOFFSET.tideRoutes.v); return o == 0 ? nil : Slackwater_StationRoute.lookupByKey(vector: _accessor.vector(at: o), key: key, fbb: _accessor.bb) }
   public var hasCurrentRoutes: Bool { let o = _accessor.offset(VTOFFSET.currentRoutes.v); return o == 0 ? false : true }
   public var currentRoutesCount: Int32 { let o = _accessor.offset(VTOFFSET.currentRoutes.v); return o == 0 ? 0 : _accessor.vector(count: o) }
-  public func currentRoutes(at index: Int32) -> Neaps_StationRoute? { let o = _accessor.offset(VTOFFSET.currentRoutes.v); return o == 0 ? nil : Neaps_StationRoute(_accessor.bb, o: _accessor.indirect(_accessor.vector(at: o) + index * 4)) }
-  public func currentRoutesBy(key: String) -> Neaps_StationRoute? { let o = _accessor.offset(VTOFFSET.currentRoutes.v); return o == 0 ? nil : Neaps_StationRoute.lookupByKey(vector: _accessor.vector(at: o), key: key, fbb: _accessor.bb) }
+  public func currentRoutes(at index: Int32) -> Slackwater_StationRoute? { let o = _accessor.offset(VTOFFSET.currentRoutes.v); return o == 0 ? nil : Slackwater_StationRoute(_accessor.bb, o: _accessor.indirect(_accessor.vector(at: o) + index * 4)) }
+  public func currentRoutesBy(key: String) -> Slackwater_StationRoute? { let o = _accessor.offset(VTOFFSET.currentRoutes.v); return o == 0 ? nil : Slackwater_StationRoute.lookupByKey(vector: _accessor.vector(at: o), key: key, fbb: _accessor.bb) }
   public static func startRoot(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 6) }
   public static func add(version: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: version, at: VTOFFSET.version.p) }
   public static func addVectorOf(stations: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: stations, at: VTOFFSET.stations.p) }
@@ -374,37 +374,37 @@ public struct Neaps_Root: FlatBufferObject, Verifiable {
     tideRoutesVectorOffset tideRoutes: Offset = Offset(),
     currentRoutesVectorOffset currentRoutes: Offset = Offset()
   ) -> Offset {
-    let __start = Neaps_Root.startRoot(&fbb)
-    Neaps_Root.add(version: version, &fbb)
-    Neaps_Root.addVectorOf(stations: stations, &fbb)
-    Neaps_Root.addVectorOf(constituentNames: constituentNames, &fbb)
-    Neaps_Root.addVectorOf(datumNames: datumNames, &fbb)
-    Neaps_Root.addVectorOf(tideRoutes: tideRoutes, &fbb)
-    Neaps_Root.addVectorOf(currentRoutes: currentRoutes, &fbb)
-    return Neaps_Root.endRoot(&fbb, start: __start)
+    let __start = Slackwater_Root.startRoot(&fbb)
+    Slackwater_Root.add(version: version, &fbb)
+    Slackwater_Root.addVectorOf(stations: stations, &fbb)
+    Slackwater_Root.addVectorOf(constituentNames: constituentNames, &fbb)
+    Slackwater_Root.addVectorOf(datumNames: datumNames, &fbb)
+    Slackwater_Root.addVectorOf(tideRoutes: tideRoutes, &fbb)
+    Slackwater_Root.addVectorOf(currentRoutes: currentRoutes, &fbb)
+    return Slackwater_Root.endRoot(&fbb, start: __start)
   }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
     try _v.visit(field: VTOFFSET.version.p, fieldName: "version", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.stations.p, fieldName: "stations", required: false, type: ForwardOffset<Vector<ForwardOffset<Neaps_Station>, Neaps_Station>>.self)
+    try _v.visit(field: VTOFFSET.stations.p, fieldName: "stations", required: false, type: ForwardOffset<Vector<ForwardOffset<Slackwater_Station>, Slackwater_Station>>.self)
     try _v.visit(field: VTOFFSET.constituentNames.p, fieldName: "constituentNames", required: false, type: ForwardOffset<Vector<ForwardOffset<String>, String>>.self)
     try _v.visit(field: VTOFFSET.datumNames.p, fieldName: "datumNames", required: false, type: ForwardOffset<Vector<ForwardOffset<String>, String>>.self)
-    try _v.visit(field: VTOFFSET.tideRoutes.p, fieldName: "tideRoutes", required: false, type: ForwardOffset<Vector<ForwardOffset<Neaps_StationRoute>, Neaps_StationRoute>>.self)
-    try _v.visit(field: VTOFFSET.currentRoutes.p, fieldName: "currentRoutes", required: false, type: ForwardOffset<Vector<ForwardOffset<Neaps_StationRoute>, Neaps_StationRoute>>.self)
+    try _v.visit(field: VTOFFSET.tideRoutes.p, fieldName: "tideRoutes", required: false, type: ForwardOffset<Vector<ForwardOffset<Slackwater_StationRoute>, Slackwater_StationRoute>>.self)
+    try _v.visit(field: VTOFFSET.currentRoutes.p, fieldName: "currentRoutes", required: false, type: ForwardOffset<Vector<ForwardOffset<Slackwater_StationRoute>, Slackwater_StationRoute>>.self)
     _v.finish()
   }
 }
 
 ///  Subordinate tide station: NOAA-style corrections against `reference`.
-public struct Neaps_TideOffsets: FlatBufferObject, Verifiable {
+public struct Slackwater_TideOffsets: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   public static var id: String { "TCDB" } 
-  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Neaps_TideOffsets.id, addPrefix: prefix) }
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_TideOffsets.id, addPrefix: prefix) }
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
@@ -423,14 +423,14 @@ public struct Neaps_TideOffsets: FlatBufferObject, Verifiable {
   public var referenceSegmentArray: [UInt8]! { return _accessor.getVector(at: VTOFFSET.reference.v) }
   public var timeHigh: Int32 { let o = _accessor.offset(VTOFFSET.timeHigh.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
   public var timeLow: Int32 { let o = _accessor.offset(VTOFFSET.timeLow.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
-  public var heightType: Neaps_HeightOffsetType { let o = _accessor.offset(VTOFFSET.heightType.v); return o == 0 ? .ratio : Neaps_HeightOffsetType(rawValue: _accessor.readBuffer(of: UInt8.self, at: o)) ?? .ratio }
+  public var heightType: Slackwater_HeightOffsetType { let o = _accessor.offset(VTOFFSET.heightType.v); return o == 0 ? .ratio : Slackwater_HeightOffsetType(rawValue: _accessor.readBuffer(of: UInt8.self, at: o)) ?? .ratio }
   public var heightHigh: Float32 { let o = _accessor.offset(VTOFFSET.heightHigh.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
   public var heightLow: Float32 { let o = _accessor.offset(VTOFFSET.heightLow.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
   public static func startTideOffsets(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 6) }
   public static func add(reference: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: reference, at: VTOFFSET.reference.p) }
   public static func add(timeHigh: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: timeHigh, def: 0, at: VTOFFSET.timeHigh.p) }
   public static func add(timeLow: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: timeLow, def: 0, at: VTOFFSET.timeLow.p) }
-  public static func add(heightType: Neaps_HeightOffsetType, _ fbb: inout FlatBufferBuilder) { fbb.add(element: heightType.rawValue, def: 0, at: VTOFFSET.heightType.p) }
+  public static func add(heightType: Slackwater_HeightOffsetType, _ fbb: inout FlatBufferBuilder) { fbb.add(element: heightType.rawValue, def: 0, at: VTOFFSET.heightType.p) }
   public static func add(heightHigh: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: heightHigh, def: 0.0, at: VTOFFSET.heightHigh.p) }
   public static func add(heightLow: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: heightLow, def: 0.0, at: VTOFFSET.heightLow.p) }
   public static func endTideOffsets(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4]); return end }
@@ -439,18 +439,18 @@ public struct Neaps_TideOffsets: FlatBufferObject, Verifiable {
     referenceOffset reference: Offset,
     timeHigh: Int32 = 0,
     timeLow: Int32 = 0,
-    heightType: Neaps_HeightOffsetType = .ratio,
+    heightType: Slackwater_HeightOffsetType = .ratio,
     heightHigh: Float32 = 0.0,
     heightLow: Float32 = 0.0
   ) -> Offset {
-    let __start = Neaps_TideOffsets.startTideOffsets(&fbb)
-    Neaps_TideOffsets.add(reference: reference, &fbb)
-    Neaps_TideOffsets.add(timeHigh: timeHigh, &fbb)
-    Neaps_TideOffsets.add(timeLow: timeLow, &fbb)
-    Neaps_TideOffsets.add(heightType: heightType, &fbb)
-    Neaps_TideOffsets.add(heightHigh: heightHigh, &fbb)
-    Neaps_TideOffsets.add(heightLow: heightLow, &fbb)
-    return Neaps_TideOffsets.endTideOffsets(&fbb, start: __start)
+    let __start = Slackwater_TideOffsets.startTideOffsets(&fbb)
+    Slackwater_TideOffsets.add(reference: reference, &fbb)
+    Slackwater_TideOffsets.add(timeHigh: timeHigh, &fbb)
+    Slackwater_TideOffsets.add(timeLow: timeLow, &fbb)
+    Slackwater_TideOffsets.add(heightType: heightType, &fbb)
+    Slackwater_TideOffsets.add(heightHigh: heightHigh, &fbb)
+    Slackwater_TideOffsets.add(heightLow: heightLow, &fbb)
+    return Slackwater_TideOffsets.endTideOffsets(&fbb, start: __start)
   }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
@@ -458,7 +458,7 @@ public struct Neaps_TideOffsets: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.reference.p, fieldName: "reference", required: true, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.timeHigh.p, fieldName: "timeHigh", required: false, type: Int32.self)
     try _v.visit(field: VTOFFSET.timeLow.p, fieldName: "timeLow", required: false, type: Int32.self)
-    try _v.visit(field: VTOFFSET.heightType.p, fieldName: "heightType", required: false, type: Neaps_HeightOffsetType.self)
+    try _v.visit(field: VTOFFSET.heightType.p, fieldName: "heightType", required: false, type: Slackwater_HeightOffsetType.self)
     try _v.visit(field: VTOFFSET.heightHigh.p, fieldName: "heightHigh", required: false, type: Float32.self)
     try _v.visit(field: VTOFFSET.heightLow.p, fieldName: "heightLow", required: false, type: Float32.self)
     _v.finish()
@@ -467,14 +467,14 @@ public struct Neaps_TideOffsets: FlatBufferObject, Verifiable {
 
 ///  Subordinate current station: NOAA-style corrections against `reference`.
 ///  Offsets in minutes, ratios dimensionless.
-public struct Neaps_CurrentOffsets: FlatBufferObject, Verifiable {
+public struct Slackwater_CurrentOffsets: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   public static var id: String { "TCDB" } 
-  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Neaps_CurrentOffsets.id, addPrefix: prefix) }
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_CurrentOffsets.id, addPrefix: prefix) }
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
@@ -547,21 +547,21 @@ public struct Neaps_CurrentOffsets: FlatBufferObject, Verifiable {
     floodSpeedRatioMissing: Bool = false,
     ebbSpeedRatioMissing: Bool = false
   ) -> Offset {
-    let __start = Neaps_CurrentOffsets.startCurrentOffsets(&fbb)
-    Neaps_CurrentOffsets.add(reference: reference, &fbb)
-    Neaps_CurrentOffsets.add(slackBeforeFlood: slackBeforeFlood, &fbb)
-    Neaps_CurrentOffsets.add(slackBeforeEbb: slackBeforeEbb, &fbb)
-    Neaps_CurrentOffsets.add(floodTime: floodTime, &fbb)
-    Neaps_CurrentOffsets.add(ebbTime: ebbTime, &fbb)
-    Neaps_CurrentOffsets.add(floodSpeedRatio: floodSpeedRatio, &fbb)
-    Neaps_CurrentOffsets.add(ebbSpeedRatio: ebbSpeedRatio, &fbb)
-    Neaps_CurrentOffsets.add(slackBeforeFloodMissing: slackBeforeFloodMissing, &fbb)
-    Neaps_CurrentOffsets.add(slackBeforeEbbMissing: slackBeforeEbbMissing, &fbb)
-    Neaps_CurrentOffsets.add(floodTimeMissing: floodTimeMissing, &fbb)
-    Neaps_CurrentOffsets.add(ebbTimeMissing: ebbTimeMissing, &fbb)
-    Neaps_CurrentOffsets.add(floodSpeedRatioMissing: floodSpeedRatioMissing, &fbb)
-    Neaps_CurrentOffsets.add(ebbSpeedRatioMissing: ebbSpeedRatioMissing, &fbb)
-    return Neaps_CurrentOffsets.endCurrentOffsets(&fbb, start: __start)
+    let __start = Slackwater_CurrentOffsets.startCurrentOffsets(&fbb)
+    Slackwater_CurrentOffsets.add(reference: reference, &fbb)
+    Slackwater_CurrentOffsets.add(slackBeforeFlood: slackBeforeFlood, &fbb)
+    Slackwater_CurrentOffsets.add(slackBeforeEbb: slackBeforeEbb, &fbb)
+    Slackwater_CurrentOffsets.add(floodTime: floodTime, &fbb)
+    Slackwater_CurrentOffsets.add(ebbTime: ebbTime, &fbb)
+    Slackwater_CurrentOffsets.add(floodSpeedRatio: floodSpeedRatio, &fbb)
+    Slackwater_CurrentOffsets.add(ebbSpeedRatio: ebbSpeedRatio, &fbb)
+    Slackwater_CurrentOffsets.add(slackBeforeFloodMissing: slackBeforeFloodMissing, &fbb)
+    Slackwater_CurrentOffsets.add(slackBeforeEbbMissing: slackBeforeEbbMissing, &fbb)
+    Slackwater_CurrentOffsets.add(floodTimeMissing: floodTimeMissing, &fbb)
+    Slackwater_CurrentOffsets.add(ebbTimeMissing: ebbTimeMissing, &fbb)
+    Slackwater_CurrentOffsets.add(floodSpeedRatioMissing: floodSpeedRatioMissing, &fbb)
+    Slackwater_CurrentOffsets.add(ebbSpeedRatioMissing: ebbSpeedRatioMissing, &fbb)
+    return Slackwater_CurrentOffsets.endCurrentOffsets(&fbb, start: __start)
   }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
@@ -584,14 +584,14 @@ public struct Neaps_CurrentOffsets: FlatBufferObject, Verifiable {
 }
 
 ///  Present only when Kind == Current.
-public struct Neaps_TideDerivedCurrent: FlatBufferObject, Verifiable {
+public struct Slackwater_TideDerivedCurrent: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   public static var id: String { "TCDB" } 
-  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Neaps_TideDerivedCurrent.id, addPrefix: prefix) }
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_TideDerivedCurrent.id, addPrefix: prefix) }
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
@@ -618,11 +618,11 @@ public struct Neaps_TideDerivedCurrent: FlatBufferObject, Verifiable {
     highWaterLagMinutes: Int32 = 0,
     lowWaterLagMinutes: Int32 = 0
   ) -> Offset {
-    let __start = Neaps_TideDerivedCurrent.startTideDerivedCurrent(&fbb)
-    Neaps_TideDerivedCurrent.add(reference: reference, &fbb)
-    Neaps_TideDerivedCurrent.add(highWaterLagMinutes: highWaterLagMinutes, &fbb)
-    Neaps_TideDerivedCurrent.add(lowWaterLagMinutes: lowWaterLagMinutes, &fbb)
-    return Neaps_TideDerivedCurrent.endTideDerivedCurrent(&fbb, start: __start)
+    let __start = Slackwater_TideDerivedCurrent.startTideDerivedCurrent(&fbb)
+    Slackwater_TideDerivedCurrent.add(reference: reference, &fbb)
+    Slackwater_TideDerivedCurrent.add(highWaterLagMinutes: highWaterLagMinutes, &fbb)
+    Slackwater_TideDerivedCurrent.add(lowWaterLagMinutes: lowWaterLagMinutes, &fbb)
+    return Slackwater_TideDerivedCurrent.endTideDerivedCurrent(&fbb, start: __start)
   }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
@@ -634,14 +634,14 @@ public struct Neaps_TideDerivedCurrent: FlatBufferObject, Verifiable {
   }
 }
 
-public struct Neaps_Current: FlatBufferObject, Verifiable {
+public struct Slackwater_Current: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   public static var id: String { "TCDB" } 
-  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Neaps_Current.id, addPrefix: prefix) }
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_Current.id, addPrefix: prefix) }
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
@@ -666,10 +666,10 @@ public struct Neaps_Current: FlatBufferObject, Verifiable {
   ///  Station.id of the tide station whose extremes pair with this current, if any.
   public var tideReference: String? { let o = _accessor.offset(VTOFFSET.tideReference.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var tideReferenceSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.tideReference.v) }
-  public var offsets: Neaps_CurrentOffsets? { let o = _accessor.offset(VTOFFSET.offsets.v); return o == 0 ? nil : Neaps_CurrentOffsets(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public var offsets: Slackwater_CurrentOffsets? { let o = _accessor.offset(VTOFFSET.offsets.v); return o == 0 ? nil : Slackwater_CurrentOffsets(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
   public var magnitudeNote: String? { let o = _accessor.offset(VTOFFSET.magnitudeNote.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var magnitudeNoteSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.magnitudeNote.v) }
-  public var derived: Neaps_TideDerivedCurrent? { let o = _accessor.offset(VTOFFSET.derived.v); return o == 0 ? nil : Neaps_TideDerivedCurrent(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public var derived: Slackwater_TideDerivedCurrent? { let o = _accessor.offset(VTOFFSET.derived.v); return o == 0 ? nil : Slackwater_TideDerivedCurrent(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
   public var floodDirectionMissing: Bool { let o = _accessor.offset(VTOFFSET.floodDirectionMissing.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
   public var ebbDirectionMissing: Bool { let o = _accessor.offset(VTOFFSET.ebbDirectionMissing.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
   public var meanFlowMissing: Bool { let o = _accessor.offset(VTOFFSET.meanFlowMissing.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
@@ -701,18 +701,18 @@ public struct Neaps_Current: FlatBufferObject, Verifiable {
     ebbDirectionMissing: Bool = false,
     meanFlowMissing: Bool = false
   ) -> Offset {
-    let __start = Neaps_Current.startCurrent(&fbb)
-    Neaps_Current.add(floodDirection: floodDirection, &fbb)
-    Neaps_Current.add(ebbDirection: ebbDirection, &fbb)
-    Neaps_Current.add(meanFlow: meanFlow, &fbb)
-    Neaps_Current.add(tideReference: tideReference, &fbb)
-    Neaps_Current.add(offsets: offsets, &fbb)
-    Neaps_Current.add(magnitudeNote: magnitudeNote, &fbb)
-    Neaps_Current.add(derived: derived, &fbb)
-    Neaps_Current.add(floodDirectionMissing: floodDirectionMissing, &fbb)
-    Neaps_Current.add(ebbDirectionMissing: ebbDirectionMissing, &fbb)
-    Neaps_Current.add(meanFlowMissing: meanFlowMissing, &fbb)
-    return Neaps_Current.endCurrent(&fbb, start: __start)
+    let __start = Slackwater_Current.startCurrent(&fbb)
+    Slackwater_Current.add(floodDirection: floodDirection, &fbb)
+    Slackwater_Current.add(ebbDirection: ebbDirection, &fbb)
+    Slackwater_Current.add(meanFlow: meanFlow, &fbb)
+    Slackwater_Current.add(tideReference: tideReference, &fbb)
+    Slackwater_Current.add(offsets: offsets, &fbb)
+    Slackwater_Current.add(magnitudeNote: magnitudeNote, &fbb)
+    Slackwater_Current.add(derived: derived, &fbb)
+    Slackwater_Current.add(floodDirectionMissing: floodDirectionMissing, &fbb)
+    Slackwater_Current.add(ebbDirectionMissing: ebbDirectionMissing, &fbb)
+    Slackwater_Current.add(meanFlowMissing: meanFlowMissing, &fbb)
+    return Slackwater_Current.endCurrent(&fbb, start: __start)
   }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
@@ -721,9 +721,9 @@ public struct Neaps_Current: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.ebbDirection.p, fieldName: "ebbDirection", required: false, type: Float32.self)
     try _v.visit(field: VTOFFSET.meanFlow.p, fieldName: "meanFlow", required: false, type: Float32.self)
     try _v.visit(field: VTOFFSET.tideReference.p, fieldName: "tideReference", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.offsets.p, fieldName: "offsets", required: false, type: ForwardOffset<Neaps_CurrentOffsets>.self)
+    try _v.visit(field: VTOFFSET.offsets.p, fieldName: "offsets", required: false, type: ForwardOffset<Slackwater_CurrentOffsets>.self)
     try _v.visit(field: VTOFFSET.magnitudeNote.p, fieldName: "magnitudeNote", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.derived.p, fieldName: "derived", required: false, type: ForwardOffset<Neaps_TideDerivedCurrent>.self)
+    try _v.visit(field: VTOFFSET.derived.p, fieldName: "derived", required: false, type: ForwardOffset<Slackwater_TideDerivedCurrent>.self)
     try _v.visit(field: VTOFFSET.floodDirectionMissing.p, fieldName: "floodDirectionMissing", required: false, type: Bool.self)
     try _v.visit(field: VTOFFSET.ebbDirectionMissing.p, fieldName: "ebbDirectionMissing", required: false, type: Bool.self)
     try _v.visit(field: VTOFFSET.meanFlowMissing.p, fieldName: "meanFlowMissing", required: false, type: Bool.self)
@@ -731,14 +731,14 @@ public struct Neaps_Current: FlatBufferObject, Verifiable {
   }
 }
 
-public struct Neaps_Source: FlatBufferObject, Verifiable {
+public struct Slackwater_Source: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   public static var id: String { "TCDB" } 
-  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Neaps_Source.id, addPrefix: prefix) }
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_Source.id, addPrefix: prefix) }
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
@@ -772,12 +772,12 @@ public struct Neaps_Source: FlatBufferObject, Verifiable {
     urlOffset url: Offset = Offset(),
     publishedHarmonics: Bool = false
   ) -> Offset {
-    let __start = Neaps_Source.startSource(&fbb)
-    Neaps_Source.add(name: name, &fbb)
-    Neaps_Source.add(id: id, &fbb)
-    Neaps_Source.add(url: url, &fbb)
-    Neaps_Source.add(publishedHarmonics: publishedHarmonics, &fbb)
-    return Neaps_Source.endSource(&fbb, start: __start)
+    let __start = Slackwater_Source.startSource(&fbb)
+    Slackwater_Source.add(name: name, &fbb)
+    Slackwater_Source.add(id: id, &fbb)
+    Slackwater_Source.add(url: url, &fbb)
+    Slackwater_Source.add(publishedHarmonics: publishedHarmonics, &fbb)
+    return Slackwater_Source.endSource(&fbb, start: __start)
   }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
@@ -790,14 +790,14 @@ public struct Neaps_Source: FlatBufferObject, Verifiable {
   }
 }
 
-public struct Neaps_License: FlatBufferObject, Verifiable {
+public struct Slackwater_License: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   public static var id: String { "TCDB" } 
-  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Neaps_License.id, addPrefix: prefix) }
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_License.id, addPrefix: prefix) }
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
@@ -831,12 +831,12 @@ public struct Neaps_License: FlatBufferObject, Verifiable {
     notesOffset notes: Offset = Offset(),
     commercialUse: Bool = false
   ) -> Offset {
-    let __start = Neaps_License.startLicense(&fbb)
-    Neaps_License.add(type: type, &fbb)
-    Neaps_License.add(url: url, &fbb)
-    Neaps_License.add(notes: notes, &fbb)
-    Neaps_License.add(commercialUse: commercialUse, &fbb)
-    return Neaps_License.endLicense(&fbb, start: __start)
+    let __start = Slackwater_License.startLicense(&fbb)
+    Slackwater_License.add(type: type, &fbb)
+    Slackwater_License.add(url: url, &fbb)
+    Slackwater_License.add(notes: notes, &fbb)
+    Slackwater_License.add(commercialUse: commercialUse, &fbb)
+    return Slackwater_License.endLicense(&fbb, start: __start)
   }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
@@ -849,14 +849,14 @@ public struct Neaps_License: FlatBufferObject, Verifiable {
   }
 }
 
-public struct Neaps_Epoch: FlatBufferObject, Verifiable {
+public struct Slackwater_Epoch: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   public static var id: String { "TCDB" } 
-  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Neaps_Epoch.id, addPrefix: prefix) }
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_Epoch.id, addPrefix: prefix) }
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
@@ -880,10 +880,10 @@ public struct Neaps_Epoch: FlatBufferObject, Verifiable {
     startOffset start: Offset = Offset(),
     endOffset end: Offset = Offset()
   ) -> Offset {
-    let __start = Neaps_Epoch.startEpoch(&fbb)
-    Neaps_Epoch.add(start: start, &fbb)
-    Neaps_Epoch.add(end: end, &fbb)
-    return Neaps_Epoch.endEpoch(&fbb, start: __start)
+    let __start = Slackwater_Epoch.startEpoch(&fbb)
+    Slackwater_Epoch.add(start: start, &fbb)
+    Slackwater_Epoch.add(end: end, &fbb)
+    return Slackwater_Epoch.endEpoch(&fbb, start: __start)
   }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
@@ -898,14 +898,14 @@ public struct Neaps_Epoch: FlatBufferObject, Verifiable {
 ///  `accepted` and `score` — lives inline on Station so an identity scan can
 ///  filter and rank without touching this table; the builder writes Quality
 ///  tables at the tail of the file with the other lookup data.
-public struct Neaps_Quality: FlatBufferObject, Verifiable {
+public struct Slackwater_Quality: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   public static var id: String { "TCDB" } 
-  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Neaps_Quality.id, addPrefix: prefix) }
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_Quality.id, addPrefix: prefix) }
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
@@ -918,8 +918,8 @@ public struct Neaps_Quality: FlatBufferObject, Verifiable {
     var p: VOffset { self.rawValue }
   }
 
-  public var factors: Neaps_QualityFactors? { let o = _accessor.offset(VTOFFSET.factors.v); return o == 0 ? nil : _accessor.readBuffer(of: Neaps_QualityFactors.self, at: o) }
-  public var mutableFactors: Neaps_QualityFactors_Mutable? { let o = _accessor.offset(VTOFFSET.factors.v); return o == 0 ? nil : Neaps_QualityFactors_Mutable(_accessor.bb, o: o + _accessor.position) }
+  public var factors: Slackwater_QualityFactors? { let o = _accessor.offset(VTOFFSET.factors.v); return o == 0 ? nil : _accessor.readBuffer(of: Slackwater_QualityFactors.self, at: o) }
+  public var mutableFactors: Slackwater_QualityFactors_Mutable? { let o = _accessor.offset(VTOFFSET.factors.v); return o == 0 ? nil : Slackwater_QualityFactors_Mutable(_accessor.bb, o: o + _accessor.position) }
   ///  Human-readable findings, e.g. "MLW (3.827) < LAT (3.831)".
   public var hasIssues: Bool { let o = _accessor.offset(VTOFFSET.issues.v); return o == 0 ? false : true }
   public var issuesCount: Int32 { let o = _accessor.offset(VTOFFSET.issues.v); return o == 0 ? 0 : _accessor.vector(count: o) }
@@ -931,29 +931,29 @@ public struct Neaps_Quality: FlatBufferObject, Verifiable {
   public var redundant: String? { let o = _accessor.offset(VTOFFSET.redundant.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var redundantSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.redundant.v) }
   public static func startQuality(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 4) }
-  public static func add(factors: Neaps_QualityFactors?, _ fbb: inout FlatBufferBuilder) { guard let factors = factors else { return }; fbb.create(struct: factors, position: VTOFFSET.factors.p) }
+  public static func add(factors: Slackwater_QualityFactors?, _ fbb: inout FlatBufferBuilder) { guard let factors = factors else { return }; fbb.create(struct: factors, position: VTOFFSET.factors.p) }
   public static func addVectorOf(issues: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: issues, at: VTOFFSET.issues.p) }
   public static func add(reason: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: reason, at: VTOFFSET.reason.p) }
   public static func add(redundant: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: redundant, at: VTOFFSET.redundant.p) }
   public static func endQuality(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createQuality(
     _ fbb: inout FlatBufferBuilder,
-    factors: Neaps_QualityFactors? = nil,
+    factors: Slackwater_QualityFactors? = nil,
     issuesVectorOffset issues: Offset = Offset(),
     reasonOffset reason: Offset = Offset(),
     redundantOffset redundant: Offset = Offset()
   ) -> Offset {
-    let __start = Neaps_Quality.startQuality(&fbb)
-    Neaps_Quality.add(factors: factors, &fbb)
-    Neaps_Quality.addVectorOf(issues: issues, &fbb)
-    Neaps_Quality.add(reason: reason, &fbb)
-    Neaps_Quality.add(redundant: redundant, &fbb)
-    return Neaps_Quality.endQuality(&fbb, start: __start)
+    let __start = Slackwater_Quality.startQuality(&fbb)
+    Slackwater_Quality.add(factors: factors, &fbb)
+    Slackwater_Quality.addVectorOf(issues: issues, &fbb)
+    Slackwater_Quality.add(reason: reason, &fbb)
+    Slackwater_Quality.add(redundant: redundant, &fbb)
+    return Slackwater_Quality.endQuality(&fbb, start: __start)
   }
 
   public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
-    try _v.visit(field: VTOFFSET.factors.p, fieldName: "factors", required: false, type: Neaps_QualityFactors.self)
+    try _v.visit(field: VTOFFSET.factors.p, fieldName: "factors", required: false, type: Slackwater_QualityFactors.self)
     try _v.visit(field: VTOFFSET.issues.p, fieldName: "issues", required: false, type: ForwardOffset<Vector<ForwardOffset<String>, String>>.self)
     try _v.visit(field: VTOFFSET.reason.p, fieldName: "reason", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.redundant.p, fieldName: "redundant", required: false, type: ForwardOffset<String>.self)
@@ -961,14 +961,14 @@ public struct Neaps_Quality: FlatBufferObject, Verifiable {
   }
 }
 
-public struct Neaps_Station: FlatBufferObject, Verifiable {
+public struct Slackwater_Station: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
   public var __buffer: ByteBuffer! { return _accessor.bb }
   private var _accessor: Table
 
   public static var id: String { "TCDB" } 
-  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Neaps_Station.id, addPrefix: prefix) }
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_Station.id, addPrefix: prefix) }
   private init(_ t: Table) { _accessor = t }
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
@@ -1012,8 +1012,8 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
   public var idSegmentArray: [UInt8]! { return _accessor.getVector(at: VTOFFSET.id.v) }
   public var name: String! { let o = _accessor.offset(VTOFFSET.name.v); return _accessor.string(at: o) }
   public var nameSegmentArray: [UInt8]! { return _accessor.getVector(at: VTOFFSET.name.v) }
-  public var kind: Neaps_Kind { let o = _accessor.offset(VTOFFSET.kind.v); return o == 0 ? .tide : Neaps_Kind(rawValue: _accessor.readBuffer(of: UInt8.self, at: o)) ?? .tide }
-  public var type: Neaps_StationType { let o = _accessor.offset(VTOFFSET.type.v); return o == 0 ? .reference : Neaps_StationType(rawValue: _accessor.readBuffer(of: UInt8.self, at: o)) ?? .reference }
+  public var kind: Slackwater_Kind { let o = _accessor.offset(VTOFFSET.kind.v); return o == 0 ? .tide : Slackwater_Kind(rawValue: _accessor.readBuffer(of: UInt8.self, at: o)) ?? .tide }
+  public var type: Slackwater_StationType { let o = _accessor.offset(VTOFFSET.type.v); return o == 0 ? .reference : Slackwater_StationType(rawValue: _accessor.readBuffer(of: UInt8.self, at: o)) ?? .reference }
   public var latitude: Double { let o = _accessor.offset(VTOFFSET.latitude.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Double.self, at: o) }
   public var longitude: Double { let o = _accessor.offset(VTOFFSET.longitude.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Double.self, at: o) }
   public var timezone: String? { let o = _accessor.offset(VTOFFSET.timezone.v); return o == 0 ? nil : _accessor.string(at: o) }
@@ -1038,25 +1038,25 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
   ///  Empty for subordinates; predict from `offsets.reference`.
   public var hasConstituents: Bool { let o = _accessor.offset(VTOFFSET.constituents.v); return o == 0 ? false : true }
   public var constituentsCount: Int32 { let o = _accessor.offset(VTOFFSET.constituents.v); return o == 0 ? 0 : _accessor.vector(count: o) }
-  public func constituents(at index: Int32) -> Neaps_Constituent? { let o = _accessor.offset(VTOFFSET.constituents.v); return o == 0 ? nil : _accessor.directRead(of: Neaps_Constituent.self, offset: _accessor.vector(at: o) + index * 12) }
-  public func mutableConstituents(at index: Int32) -> Neaps_Constituent_Mutable? { let o = _accessor.offset(VTOFFSET.constituents.v); return o == 0 ? nil : Neaps_Constituent_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 12) }
+  public func constituents(at index: Int32) -> Slackwater_Constituent? { let o = _accessor.offset(VTOFFSET.constituents.v); return o == 0 ? nil : _accessor.directRead(of: Slackwater_Constituent.self, offset: _accessor.vector(at: o) + index * 12) }
+  public func mutableConstituents(at index: Int32) -> Slackwater_Constituent_Mutable? { let o = _accessor.offset(VTOFFSET.constituents.v); return o == 0 ? nil : Slackwater_Constituent_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 12) }
   public func withUnsafePointerToConstituents<T>(_ body: (UnsafeRawBufferPointer) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VTOFFSET.constituents.v, body: body) }
   ///  Vertical datums relative to the station's zero. Chart-datum shift for
   ///  heights is `datums[MSL] - datums[chart_datum]`, computed by the reader.
   public var hasDatums: Bool { let o = _accessor.offset(VTOFFSET.datums.v); return o == 0 ? false : true }
   public var datumsCount: Int32 { let o = _accessor.offset(VTOFFSET.datums.v); return o == 0 ? 0 : _accessor.vector(count: o) }
-  public func datums(at index: Int32) -> Neaps_Datum? { let o = _accessor.offset(VTOFFSET.datums.v); return o == 0 ? nil : _accessor.directRead(of: Neaps_Datum.self, offset: _accessor.vector(at: o) + index * 8) }
-  public func mutableDatums(at index: Int32) -> Neaps_Datum_Mutable? { let o = _accessor.offset(VTOFFSET.datums.v); return o == 0 ? nil : Neaps_Datum_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 8) }
+  public func datums(at index: Int32) -> Slackwater_Datum? { let o = _accessor.offset(VTOFFSET.datums.v); return o == 0 ? nil : _accessor.directRead(of: Slackwater_Datum.self, offset: _accessor.vector(at: o) + index * 8) }
+  public func mutableDatums(at index: Int32) -> Slackwater_Datum_Mutable? { let o = _accessor.offset(VTOFFSET.datums.v); return o == 0 ? nil : Slackwater_Datum_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 8) }
   public func withUnsafePointerToDatums<T>(_ body: (UnsafeRawBufferPointer) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VTOFFSET.datums.v, body: body) }
-  public var datumsSource: Neaps_DatumsSource { let o = _accessor.offset(VTOFFSET.datumsSource.v); return o == 0 ? .unknown : Neaps_DatumsSource(rawValue: _accessor.readBuffer(of: UInt8.self, at: o)) ?? .unknown }
+  public var datumsSource: Slackwater_DatumsSource { let o = _accessor.offset(VTOFFSET.datumsSource.v); return o == 0 ? .unknown : Slackwater_DatumsSource(rawValue: _accessor.readBuffer(of: UInt8.self, at: o)) ?? .unknown }
   public var chartDatum: String? { let o = _accessor.offset(VTOFFSET.chartDatum.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var chartDatumSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.chartDatum.v) }
-  public var offsets: Neaps_TideOffsets? { let o = _accessor.offset(VTOFFSET.offsets.v); return o == 0 ? nil : Neaps_TideOffsets(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
-  public var current: Neaps_Current? { let o = _accessor.offset(VTOFFSET.current.v); return o == 0 ? nil : Neaps_Current(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
-  public var epoch: Neaps_Epoch? { let o = _accessor.offset(VTOFFSET.epoch.v); return o == 0 ? nil : Neaps_Epoch(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
-  public var quality: Neaps_Quality? { let o = _accessor.offset(VTOFFSET.quality.v); return o == 0 ? nil : Neaps_Quality(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
-  public var source: Neaps_Source? { let o = _accessor.offset(VTOFFSET.source.v); return o == 0 ? nil : Neaps_Source(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
-  public var license: Neaps_License? { let o = _accessor.offset(VTOFFSET.license.v); return o == 0 ? nil : Neaps_License(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public var offsets: Slackwater_TideOffsets? { let o = _accessor.offset(VTOFFSET.offsets.v); return o == 0 ? nil : Slackwater_TideOffsets(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public var current: Slackwater_Current? { let o = _accessor.offset(VTOFFSET.current.v); return o == 0 ? nil : Slackwater_Current(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public var epoch: Slackwater_Epoch? { let o = _accessor.offset(VTOFFSET.epoch.v); return o == 0 ? nil : Slackwater_Epoch(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public var quality: Slackwater_Quality? { let o = _accessor.offset(VTOFFSET.quality.v); return o == 0 ? nil : Slackwater_Quality(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public var source: Slackwater_Source? { let o = _accessor.offset(VTOFFSET.source.v); return o == 0 ? nil : Slackwater_Source(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public var license: Slackwater_License? { let o = _accessor.offset(VTOFFSET.license.v); return o == 0 ? nil : Slackwater_License(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
   public var disclaimers: String? { let o = _accessor.offset(VTOFFSET.disclaimers.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var disclaimersSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.disclaimers.v) }
   ///  The complete notice to display for this station, assembled by the builder
@@ -1083,8 +1083,8 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
   public static func startStation(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 31) }
   public static func add(id: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: id, at: VTOFFSET.id.p) }
   public static func add(name: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: name, at: VTOFFSET.name.p) }
-  public static func add(kind: Neaps_Kind, _ fbb: inout FlatBufferBuilder) { fbb.add(element: kind.rawValue, def: 0, at: VTOFFSET.kind.p) }
-  public static func add(type: Neaps_StationType, _ fbb: inout FlatBufferBuilder) { fbb.add(element: type.rawValue, def: 0, at: VTOFFSET.type.p) }
+  public static func add(kind: Slackwater_Kind, _ fbb: inout FlatBufferBuilder) { fbb.add(element: kind.rawValue, def: 0, at: VTOFFSET.kind.p) }
+  public static func add(type: Slackwater_StationType, _ fbb: inout FlatBufferBuilder) { fbb.add(element: type.rawValue, def: 0, at: VTOFFSET.type.p) }
   public static func add(latitude: Double, _ fbb: inout FlatBufferBuilder) { fbb.add(element: latitude, def: 0.0, at: VTOFFSET.latitude.p) }
   public static func add(longitude: Double, _ fbb: inout FlatBufferBuilder) { fbb.add(element: longitude, def: 0.0, at: VTOFFSET.longitude.p) }
   public static func add(timezone: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: timezone, at: VTOFFSET.timezone.p) }
@@ -1097,13 +1097,13 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
   public static func add(score: UInt8, _ fbb: inout FlatBufferBuilder) { fbb.add(element: score, def: 0, at: VTOFFSET.score.p) }
   public static func addVectorOf(constituents: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: constituents, at: VTOFFSET.constituents.p) }
   public static func startVectorOfConstituents(_ size: Int, in builder: inout FlatBufferBuilder) {
-    builder.startVector(size * MemoryLayout<Neaps_Constituent>.size, elementSize: MemoryLayout<Neaps_Constituent>.alignment)
+    builder.startVector(size * MemoryLayout<Slackwater_Constituent>.size, elementSize: MemoryLayout<Slackwater_Constituent>.alignment)
   }
   public static func addVectorOf(datums: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: datums, at: VTOFFSET.datums.p) }
   public static func startVectorOfDatums(_ size: Int, in builder: inout FlatBufferBuilder) {
-    builder.startVector(size * MemoryLayout<Neaps_Datum>.size, elementSize: MemoryLayout<Neaps_Datum>.alignment)
+    builder.startVector(size * MemoryLayout<Slackwater_Datum>.size, elementSize: MemoryLayout<Slackwater_Datum>.alignment)
   }
-  public static func add(datumsSource: Neaps_DatumsSource, _ fbb: inout FlatBufferBuilder) { fbb.add(element: datumsSource.rawValue, def: 0, at: VTOFFSET.datumsSource.p) }
+  public static func add(datumsSource: Slackwater_DatumsSource, _ fbb: inout FlatBufferBuilder) { fbb.add(element: datumsSource.rawValue, def: 0, at: VTOFFSET.datumsSource.p) }
   public static func add(chartDatum: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: chartDatum, at: VTOFFSET.chartDatum.p) }
   public static func add(offsets: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: offsets, at: VTOFFSET.offsets.p) }
   public static func add(current: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: current, at: VTOFFSET.current.p) }
@@ -1125,8 +1125,8 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
     _ fbb: inout FlatBufferBuilder,
     idOffset id: Offset,
     nameOffset name: Offset,
-    kind: Neaps_Kind = .tide,
-    type: Neaps_StationType = .reference,
+    kind: Slackwater_Kind = .tide,
+    type: Slackwater_StationType = .reference,
     latitude: Double = 0.0,
     longitude: Double = 0.0,
     timezoneOffset timezone: Offset = Offset(),
@@ -1138,7 +1138,7 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
     score: UInt8 = 0,
     constituentsVectorOffset constituents: Offset = Offset(),
     datumsVectorOffset datums: Offset = Offset(),
-    datumsSource: Neaps_DatumsSource = .unknown,
+    datumsSource: Slackwater_DatumsSource = .unknown,
     chartDatumOffset chartDatum: Offset = Offset(),
     offsetsOffset offsets: Offset = Offset(),
     currentOffset current: Offset = Offset(),
@@ -1155,46 +1155,46 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
     contextDerived: Bool = false,
     citiesVectorOffset cities: Offset = Offset()
   ) -> Offset {
-    let __start = Neaps_Station.startStation(&fbb)
-    Neaps_Station.add(id: id, &fbb)
-    Neaps_Station.add(name: name, &fbb)
-    Neaps_Station.add(kind: kind, &fbb)
-    Neaps_Station.add(type: type, &fbb)
-    Neaps_Station.add(latitude: latitude, &fbb)
-    Neaps_Station.add(longitude: longitude, &fbb)
-    Neaps_Station.add(timezone: timezone, &fbb)
-    Neaps_Station.add(region: region, &fbb)
-    Neaps_Station.add(country: country, &fbb)
-    Neaps_Station.add(continent: continent, &fbb)
-    Neaps_Station.addVectorOf(aliases: aliases, &fbb)
-    Neaps_Station.add(accepted: accepted, &fbb)
-    Neaps_Station.add(score: score, &fbb)
-    Neaps_Station.addVectorOf(constituents: constituents, &fbb)
-    Neaps_Station.addVectorOf(datums: datums, &fbb)
-    Neaps_Station.add(datumsSource: datumsSource, &fbb)
-    Neaps_Station.add(chartDatum: chartDatum, &fbb)
-    Neaps_Station.add(offsets: offsets, &fbb)
-    Neaps_Station.add(current: current, &fbb)
-    Neaps_Station.add(epoch: epoch, &fbb)
-    Neaps_Station.add(quality: quality, &fbb)
-    Neaps_Station.add(source: source, &fbb)
-    Neaps_Station.add(license: license, &fbb)
-    Neaps_Station.add(disclaimers: disclaimers, &fbb)
-    Neaps_Station.add(attribution: attribution, &fbb)
-    Neaps_Station.add(locality: locality, &fbb)
-    Neaps_Station.add(regionCode: regionCode, &fbb)
-    Neaps_Station.add(countryCode: countryCode, &fbb)
-    Neaps_Station.add(context: context, &fbb)
-    Neaps_Station.add(contextDerived: contextDerived, &fbb)
-    Neaps_Station.addVectorOf(cities: cities, &fbb)
-    return Neaps_Station.endStation(&fbb, start: __start)
+    let __start = Slackwater_Station.startStation(&fbb)
+    Slackwater_Station.add(id: id, &fbb)
+    Slackwater_Station.add(name: name, &fbb)
+    Slackwater_Station.add(kind: kind, &fbb)
+    Slackwater_Station.add(type: type, &fbb)
+    Slackwater_Station.add(latitude: latitude, &fbb)
+    Slackwater_Station.add(longitude: longitude, &fbb)
+    Slackwater_Station.add(timezone: timezone, &fbb)
+    Slackwater_Station.add(region: region, &fbb)
+    Slackwater_Station.add(country: country, &fbb)
+    Slackwater_Station.add(continent: continent, &fbb)
+    Slackwater_Station.addVectorOf(aliases: aliases, &fbb)
+    Slackwater_Station.add(accepted: accepted, &fbb)
+    Slackwater_Station.add(score: score, &fbb)
+    Slackwater_Station.addVectorOf(constituents: constituents, &fbb)
+    Slackwater_Station.addVectorOf(datums: datums, &fbb)
+    Slackwater_Station.add(datumsSource: datumsSource, &fbb)
+    Slackwater_Station.add(chartDatum: chartDatum, &fbb)
+    Slackwater_Station.add(offsets: offsets, &fbb)
+    Slackwater_Station.add(current: current, &fbb)
+    Slackwater_Station.add(epoch: epoch, &fbb)
+    Slackwater_Station.add(quality: quality, &fbb)
+    Slackwater_Station.add(source: source, &fbb)
+    Slackwater_Station.add(license: license, &fbb)
+    Slackwater_Station.add(disclaimers: disclaimers, &fbb)
+    Slackwater_Station.add(attribution: attribution, &fbb)
+    Slackwater_Station.add(locality: locality, &fbb)
+    Slackwater_Station.add(regionCode: regionCode, &fbb)
+    Slackwater_Station.add(countryCode: countryCode, &fbb)
+    Slackwater_Station.add(context: context, &fbb)
+    Slackwater_Station.add(contextDerived: contextDerived, &fbb)
+    Slackwater_Station.addVectorOf(cities: cities, &fbb)
+    return Slackwater_Station.endStation(&fbb, start: __start)
   }
   public static func sortVectorOfStation(offsets:[Offset], _ fbb: inout FlatBufferBuilder) -> Offset {
     var off = offsets
     off.sort { Table.compare(Table.offset(Int32($1.o), vOffset: 4, fbb: &fbb), Table.offset(Int32($0.o), vOffset: 4, fbb: &fbb), fbb: &fbb) < 0 } 
     return fbb.createVector(ofOffsets: off)
   }
-  fileprivate static func lookupByKey(vector: Int32, key: String, fbb: ByteBuffer) -> Neaps_Station? {
+  fileprivate static func lookupByKey(vector: Int32, key: String, fbb: ByteBuffer) -> Slackwater_Station? {
     let key = key.utf8.map { $0 }
     var span = fbb.read(def: Int32.self, position: Int(vector - 4))
     var start: Int32 = 0
@@ -1209,7 +1209,7 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
         start += middle
         span -= middle
       } else {
-        return Neaps_Station(fbb, o: tableOffset)
+        return Slackwater_Station(fbb, o: tableOffset)
       }
     }
     return nil
@@ -1219,8 +1219,8 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
     var _v = try verifier.visitTable(at: position)
     try _v.visit(field: VTOFFSET.id.p, fieldName: "id", required: true, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.name.p, fieldName: "name", required: true, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.kind.p, fieldName: "kind", required: false, type: Neaps_Kind.self)
-    try _v.visit(field: VTOFFSET.type.p, fieldName: "type", required: false, type: Neaps_StationType.self)
+    try _v.visit(field: VTOFFSET.kind.p, fieldName: "kind", required: false, type: Slackwater_Kind.self)
+    try _v.visit(field: VTOFFSET.type.p, fieldName: "type", required: false, type: Slackwater_StationType.self)
     try _v.visit(field: VTOFFSET.latitude.p, fieldName: "latitude", required: false, type: Double.self)
     try _v.visit(field: VTOFFSET.longitude.p, fieldName: "longitude", required: false, type: Double.self)
     try _v.visit(field: VTOFFSET.timezone.p, fieldName: "timezone", required: false, type: ForwardOffset<String>.self)
@@ -1230,16 +1230,16 @@ public struct Neaps_Station: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.aliases.p, fieldName: "aliases", required: false, type: ForwardOffset<Vector<ForwardOffset<String>, String>>.self)
     try _v.visit(field: VTOFFSET.accepted.p, fieldName: "accepted", required: false, type: Bool.self)
     try _v.visit(field: VTOFFSET.score.p, fieldName: "score", required: false, type: UInt8.self)
-    try _v.visit(field: VTOFFSET.constituents.p, fieldName: "constituents", required: false, type: ForwardOffset<Vector<Neaps_Constituent, Neaps_Constituent>>.self)
-    try _v.visit(field: VTOFFSET.datums.p, fieldName: "datums", required: false, type: ForwardOffset<Vector<Neaps_Datum, Neaps_Datum>>.self)
-    try _v.visit(field: VTOFFSET.datumsSource.p, fieldName: "datumsSource", required: false, type: Neaps_DatumsSource.self)
+    try _v.visit(field: VTOFFSET.constituents.p, fieldName: "constituents", required: false, type: ForwardOffset<Vector<Slackwater_Constituent, Slackwater_Constituent>>.self)
+    try _v.visit(field: VTOFFSET.datums.p, fieldName: "datums", required: false, type: ForwardOffset<Vector<Slackwater_Datum, Slackwater_Datum>>.self)
+    try _v.visit(field: VTOFFSET.datumsSource.p, fieldName: "datumsSource", required: false, type: Slackwater_DatumsSource.self)
     try _v.visit(field: VTOFFSET.chartDatum.p, fieldName: "chartDatum", required: false, type: ForwardOffset<String>.self)
-    try _v.visit(field: VTOFFSET.offsets.p, fieldName: "offsets", required: false, type: ForwardOffset<Neaps_TideOffsets>.self)
-    try _v.visit(field: VTOFFSET.current.p, fieldName: "current", required: false, type: ForwardOffset<Neaps_Current>.self)
-    try _v.visit(field: VTOFFSET.epoch.p, fieldName: "epoch", required: false, type: ForwardOffset<Neaps_Epoch>.self)
-    try _v.visit(field: VTOFFSET.quality.p, fieldName: "quality", required: false, type: ForwardOffset<Neaps_Quality>.self)
-    try _v.visit(field: VTOFFSET.source.p, fieldName: "source", required: false, type: ForwardOffset<Neaps_Source>.self)
-    try _v.visit(field: VTOFFSET.license.p, fieldName: "license", required: false, type: ForwardOffset<Neaps_License>.self)
+    try _v.visit(field: VTOFFSET.offsets.p, fieldName: "offsets", required: false, type: ForwardOffset<Slackwater_TideOffsets>.self)
+    try _v.visit(field: VTOFFSET.current.p, fieldName: "current", required: false, type: ForwardOffset<Slackwater_Current>.self)
+    try _v.visit(field: VTOFFSET.epoch.p, fieldName: "epoch", required: false, type: ForwardOffset<Slackwater_Epoch>.self)
+    try _v.visit(field: VTOFFSET.quality.p, fieldName: "quality", required: false, type: ForwardOffset<Slackwater_Quality>.self)
+    try _v.visit(field: VTOFFSET.source.p, fieldName: "source", required: false, type: ForwardOffset<Slackwater_Source>.self)
+    try _v.visit(field: VTOFFSET.license.p, fieldName: "license", required: false, type: ForwardOffset<Slackwater_License>.self)
     try _v.visit(field: VTOFFSET.disclaimers.p, fieldName: "disclaimers", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.attribution.p, fieldName: "attribution", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.locality.p, fieldName: "locality", required: false, type: ForwardOffset<String>.self)

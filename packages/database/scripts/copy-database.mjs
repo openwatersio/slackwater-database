@@ -1,5 +1,5 @@
 // Copies the generated database into dist, where the runtime
-// `new URL("../generated/neaps.tcdb", import.meta.url)` resolves for both
+// `new URL("../generated/slackwater.tcdb", import.meta.url)` resolves for both
 // the Node bundle (dist/node/) and the browser bundle (dist/browser/) — one
 // shared copy at dist/generated/.
 import { mkdirSync, copyFileSync } from "node:fs";
@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 mkdirSync(join(root, "dist", "generated"), { recursive: true });
 copyFileSync(
-  join(root, "src", "generated", "neaps.tcdb"),
-  join(root, "dist", "generated", "neaps.tcdb"),
+  join(root, "src", "generated", "slackwater.tcdb"),
+  join(root, "dist", "generated", "slackwater.tcdb"),
 );
-console.log("copied neaps.tcdb -> dist/generated/");
+console.log("copied slackwater.tcdb -> dist/generated/");

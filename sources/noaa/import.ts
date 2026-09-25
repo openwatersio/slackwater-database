@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import createFetch from "make-fetch-happen";
-import { normalize, save, DATA_DIR } from "@neaps/stations";
-import type { StationData } from "@neaps/tide-database";
-import { loadGeocoder } from "@neaps/stations";
+import { normalize, save, DATA_DIR } from "@slackwater/stations";
+import type { StationData } from "@slackwater/database";
+import { loadGeocoder } from "@slackwater/stations";
 import { readFile } from "fs/promises";
 import { join } from "path";
 

@@ -10,13 +10,13 @@
 import { describe, test, expect, beforeAll } from "vitest";
 import { existsSync, statSync, readFileSync } from "fs";
 import { join } from "path";
-import { stations } from "@neaps/tide-database";
+import { stations } from "@slackwater/database";
 import {
   getXTidePredictions,
   getXTideAbout,
   checkXTideAvailable,
 } from "./xtide.js";
-import { getPredictions, getCurrentPredictions } from "./neaps-predictions.js";
+import { getPredictions, getCurrentPredictions } from "./engine-predictions.js";
 import { comparePredictions, formatComparisonResult } from "./compare.js";
 
 // Test stations - selected to cover different regions, tide types, and station types

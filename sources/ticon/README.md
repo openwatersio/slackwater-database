@@ -29,7 +29,7 @@ UHSLC research-quality records (`uhslc_rq`) are reduced from the live [UHSLC hou
 
 Each station records its provenance in `datums_source`: `observed` when derived from GESLA water levels, or `harmonic` when the record was too short or sparse to reduce (< 1 year of data or < 4,000 hourly points), in which case all datums fall back to the synthetic harmonic prediction and the station's `disclaimers` note the higher uncertainty. For `observed` stations the `epoch` field is the reduced observation window; for `harmonic` fallbacks it is the TICON record period the constituents were fit from.
 
-Cross-checked against authoritative agency datums (NOAA CO-OPS, Canada CHS), the observed datums agree to within ~0.03 m in great diurnal range, versus ~0.2 m for purely synthetic datums — which is why observations are preferred whenever the record supports them. See [#40](https://github.com/openwatersio/tide-database/issues/40) and [`packages/stations/validate-datums.ts`](../../packages/stations/validate-datums.ts).
+Cross-checked against authoritative agency datums (NOAA CO-OPS, Canada CHS), the observed datums agree to within ~0.03 m in great diurnal range, versus ~0.2 m for purely synthetic datums — which is why observations are preferred whenever the record supports them. See [#40](https://github.com/openwatersio/slackwater-database/issues/40) and [`packages/stations/validate-datums.ts`](../../packages/stations/validate-datums.ts).
 
 ## Regenerating
 

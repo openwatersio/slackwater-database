@@ -1,11 +1,11 @@
 import Foundation
 import XCTest
 
-@testable import NeapsTideDatabase
+@testable import SlackwaterDatabase
 
 final class AttributionTests: XCTestCase {
   func testEveryStationCarriesACredit() throws {
-    let db = try TideDatabase(contentsOf: TideDatabaseTests.url)
+    let db = try StationDatabase(contentsOf: StationDatabaseTests.url)
     for station in db {
       XCTAssert(station.attribution.hasPrefix(Station.projectCredit))
     }
@@ -14,17 +14,17 @@ final class AttributionTests: XCTestCase {
   // The fixture's source requires no credit of its own, so the project line
   // stands alone.
   func testASourceRequiringNoCreditGetsTheProjectLineAlone() throws {
-    let db = try TideDatabase(contentsOf: TideDatabaseTests.url)
+    let db = try StationDatabase(contentsOf: StationDatabaseTests.url)
     XCTAssertEqual(db.station(id: "test/reference")?.attribution, Station.projectCredit)
   }
 
   // Opt-in like testOpensTheShippedDatabase: a CC BY station only exists in
   // the real database. Checks the whole notice a redistributor must pass on.
   func testACCBYStationGetsACompleteNotice() throws {
-    guard let path = ProcessInfo.processInfo.environment["NEAPS_TCDB"] else {
-      throw XCTSkip("Set NEAPS_TCDB to a database file to run")
+    guard let path = ProcessInfo.processInfo.environment["SLACKWATER_TCDB"] else {
+      throw XCTSkip("Set SLACKWATER_TCDB to a database file to run")
     }
-    let db = try TideDatabase(contentsOf: URL(fileURLWithPath: path))
+    let db = try StationDatabase(contentsOf: URL(fileURLWithPath: path))
     let notice = try XCTUnwrap(db.station(id: "ticon/newlyn-new-gbr-bodc")?.attribution)
     XCTAssert(notice.hasPrefix("\(Station.projectCredit). "))
     XCTAssert(notice.contains("Hart-Davis"))

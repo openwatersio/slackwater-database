@@ -1,6 +1,6 @@
 // Mirrors the examples in README.md. Typechecked with the rest of the package,
 // so the documented API can't drift away from the real signatures.
-import { stations, near, nearest, bbox, search } from "@neaps/tide-database";
+import { stations, near, nearest, bbox, search } from "@slackwater/database";
 
 console.log("Total stations:", stations.length);
 

@@ -1,10 +1,10 @@
-import type { StationData } from "@neaps/tide-database";
+import type { StationData } from "@slackwater/database";
 import { find as findTz } from "geo-tz/all";
 import countryLookup from "country-code-lookup";
 import { join, dirname } from "path";
 import { mkdir, writeFile, readFile } from "fs/promises";
 import sortObject from "sort-object-keys";
-import { isBaltic } from "@neaps/datums";
+import { isBaltic } from "@slackwater/datums";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 export const DATA_DIR = join(__dirname, "..", "..", "data");
