@@ -41,6 +41,14 @@ jobs:
           else
             RELEASE_VERSION="${CURRENT_VERSION%.*}.$(date +%Y%m%d)"
           fi
+          # A prerelease floor must derive a prerelease — the date replaces the
+          # floor's final `.0`, so a floor like 1.0.0-beta (no .0) would derive
+          # a stable version and publish it to `latest`. Refuse instead.
+          if [[ "$CURRENT_VERSION" == *-* && "$RELEASE_VERSION" != *-* ]]; then
+            echo "Refusing to publish: $CURRENT_VERSION derived non-prerelease $RELEASE_VERSION." >&2
+            echo "A prerelease floor needs a numeric final segment, e.g. 1.0.0-beta.0." >&2
+            exit 1
+          fi
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> "$GITHUB_ENV"
           echo "ASSET_DATE=$(date +%Y%m%d)" >> "$GITHUB_ENV"
           npm version "$RELEASE_VERSION" --no-git-tag-version --allow-same-version -w packages/database
