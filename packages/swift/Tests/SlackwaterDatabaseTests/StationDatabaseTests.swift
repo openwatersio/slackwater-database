@@ -7,7 +7,9 @@ import XCTest
 /// TypeScript buildDatabase — the same builder that produces the shipped
 /// file. Regenerate it with `npm run test -w swift` (pretest) if missing.
 final class StationDatabaseTests: XCTestCase {
-  static let url = Bundle.module.url(forResource: "fixture", withExtension: "tcdb")!
+  static let url = URL(fileURLWithPath: #filePath)
+    .deletingLastPathComponent()
+    .appendingPathComponent("fixture.tcdb")
 
   func open() throws -> StationDatabase {
     try StationDatabase(contentsOf: Self.url)
