@@ -126,7 +126,19 @@ const stations: StationInput[] = [
   },
 ];
 
-const bytes = buildDatabase(stations, { version: "0.0.0-fixture" });
+const bytes = buildDatabase(stations, {
+  version: "0.0.0-fixture",
+  routes: {
+    tide: [
+      {
+        slug: "reference",
+        station_ids: ["test/reference"],
+        former_paths: ["old-reference"],
+      },
+    ],
+    current: [{ slug: "a-current", station_ids: ["test/current"] }],
+  },
+});
 const out = join(
   dirname(fileURLToPath(import.meta.url)),
   "..",

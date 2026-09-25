@@ -159,6 +159,18 @@ final class StationDatabaseTests: XCTestCase {
     XCTAssertEqual(current.offsets?.floodTime, 0)
   }
 
+  func testLooksUpStableRoutesWithoutGeneratedTypes() throws {
+    let db = try open()
+    XCTAssertEqual(
+      db.stationRoute(kind: .tide, slug: "reference"),
+      StationRoute(
+        slug: "reference", stationIDs: ["test/reference"],
+        formerPaths: ["old-reference"]))
+    XCTAssertNil(db.stationRoute(kind: .current, slug: "missing"))
+    XCTAssertEqual(db.stationRoutes(kind: .current).map(\.slug), ["a-current"])
+    XCTAssertEqual(db.stationRoute(kind: .current, slug: "a-current")?.formerPaths, [])
+  }
+
   // Sanity check against the real database, not the fixture. Opt-in because
   // the file is generated: SLACKWATER_TCDB=../database/src/generated/slackwater.tcdb
   func testOpensTheShippedDatabase() throws {

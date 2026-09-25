@@ -31,6 +31,9 @@ let range = station?.astronomicalBounds // (lat: -0.619, hat: 3.681)
 let notice = station?.attribution
 let current = db.station(id: "noaa-current/PUG1515")?.current
 let commercialUse = station?.license?.commercialUse
+
+// Stable links: binary lookup by slug, including former paths in the result.
+let route = db.stationRoute(kind: .tide, slug: "friday-harbor")
 ```
 
 `StationDatabase` is a `RandomAccessCollection` of `Station`, in id order. `Station` exposes typed identity, quality, source, license, tide, and current values. Generated FlatBuffers accessors are not part of the public API.

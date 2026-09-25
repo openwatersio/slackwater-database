@@ -20,6 +20,30 @@ public enum HeightOffsetType: Hashable {
   case fixed
 }
 
+public enum StationRouteKind: Hashable {
+  case tide
+  case current
+}
+
+public struct StationRoute: Equatable {
+  public let slug: String
+  public let stationIDs: [String]
+  public let formerPaths: [String]
+
+  public init(slug: String, stationIDs: [String], formerPaths: [String]) {
+    self.slug = slug
+    self.stationIDs = stationIDs
+    self.formerPaths = formerPaths
+  }
+
+  init(raw: Slackwater_StationRoute) {
+    self.init(
+      slug: raw.slug,
+      stationIDs: (0..<raw.stationIdsCount).compactMap { raw.stationIds(at: $0) },
+      formerPaths: (0..<raw.formerPathsCount).compactMap { raw.formerPaths(at: $0) })
+  }
+}
+
 public struct StationSource: Equatable {
   public let name: String?
   public let id: String?
@@ -110,6 +134,29 @@ public struct StationDatabase: RandomAccessCollection {
   /// Binary search on the id-sorted stations vector; no scan, no decode.
   public func station(id: String) -> Station? {
     root.stationsBy(key: id).map { Station(raw: $0, root: root) }
+  }
+
+  /// Binary search on the slug-sorted route vector.
+  public func stationRoute(kind: StationRouteKind, slug: String) -> StationRoute? {
+    let raw: Slackwater_StationRoute?
+    switch kind {
+    case .tide: raw = root.tideRoutesBy(key: slug)
+    case .current: raw = root.currentRoutesBy(key: slug)
+    }
+    return raw.map(StationRoute.init)
+  }
+
+  public func stationRoutes(kind: StationRouteKind) -> [StationRoute] {
+    switch kind {
+    case .tide:
+      return (0..<root.tideRoutesCount).compactMap {
+        root.tideRoutes(at: $0).map(StationRoute.init)
+      }
+    case .current:
+      return (0..<root.currentRoutesCount).compactMap {
+        root.currentRoutes(at: $0).map(StationRoute.init)
+      }
+    }
   }
 
   // RandomAccessCollection: stations in id order.
