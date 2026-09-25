@@ -1,13 +1,13 @@
 import { describe, test, expect } from "vitest";
-import { computeDatums, isBaltic } from "@neaps/datums";
+import { computeDatums, isBaltic } from "@slackwater/datums";
 import {
   getChartDatum,
   pruneDatums,
   normalize,
   type PartialStationData,
 } from "../station.js";
-import { allStations } from "@neaps/tide-database";
-import type { Station } from "@neaps/tide-database";
+import { allStations } from "@slackwater/database";
+import type { Station } from "@slackwater/database";
 
 const tideStations = allStations.filter(
   (station) => station.kind === "tide" && station.quality,

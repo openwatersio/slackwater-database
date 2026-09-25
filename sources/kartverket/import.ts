@@ -5,7 +5,7 @@ import { existsSync } from "node:fs";
 import { cp, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
-import { save } from "@neaps/stations";
+import { save } from "@slackwater/stations";
 import {
   buildStation,
   parseConstituents,

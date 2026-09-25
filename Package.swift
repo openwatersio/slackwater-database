@@ -6,7 +6,7 @@ import PackageDescription
 // repository. `path:` on each target points back into packages/swift, so
 // consumers can depend on this repository by URL.
 let package = Package(
-  name: "NeapsTideDatabase",
+  name: "SlackwaterDatabase",
   platforms: [
     .iOS(.v14),
     .macOS(.v11),
@@ -14,7 +14,7 @@ let package = Package(
     .tvOS(.v14),
   ],
   products: [
-    .library(name: "NeapsTideDatabase", targets: ["NeapsTideDatabase"])
+    .library(name: "SlackwaterDatabase", targets: ["SlackwaterDatabase"])
   ],
   dependencies: [
     // Exact: the generated code calls FlatBuffersVersion_25_9_23(), which only
@@ -24,15 +24,15 @@ let package = Package(
   ],
   targets: [
     .target(
-      name: "NeapsTideDatabase",
+      name: "SlackwaterDatabase",
       dependencies: [.product(name: "FlatBuffers", package: "flatbuffers")],
-      path: "packages/swift/Sources/NeapsTideDatabase"
+      path: "packages/swift/Sources/SlackwaterDatabase"
     ),
     .testTarget(
-      name: "NeapsTideDatabaseTests",
-      dependencies: ["NeapsTideDatabase"],
-      path: "packages/swift/Tests/NeapsTideDatabaseTests",
-      resources: [.copy("fixture.tcdb")]
+      name: "SlackwaterDatabaseTests",
+      dependencies: ["SlackwaterDatabase"],
+      path: "packages/swift/Tests/SlackwaterDatabaseTests",
+      exclude: ["fixture.tcdb"]
     ),
   ]
 )

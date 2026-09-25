@@ -1,14 +1,14 @@
-# Neaps Tide Database - TCD (XTide Harmonics File)
+# Slackwater Database - TCD (XTide Harmonics File)
 
-This package generates a TCD (Tide Constituent Database) binary file of the Neaps Tide Database. The TCD file can be used with [XTide](https://flaterco.com/xtide/), [OpenCPN](https://opencpn.org), and any software that reads the [libtcd](https://flaterco.com/xtide/libtcd.html) format.
+This package generates a TCD (Tide Constituent Database) binary file of the Slackwater database. The TCD file can be used with [XTide](https://flaterco.com/xtide/), [OpenCPN](https://opencpn.org), and any software that reads the [libtcd](https://flaterco.com/xtide/libtcd.html) format.
 
-The TCD file includes all tide and current stations in the tide database, and all tidal constituents present in the station data, resolved through the constituent list from [@neaps/tide-predictor](https://github.com/openwatersio/neaps/tree/main/packages/tide-predictor#readme).
+The TCD file includes all tide and current stations in the tide database, and all tidal constituents present in the station data, resolved through the constituent list from [@slackwater/engine](https://www.npmjs.com/package/@slackwater/engine).
 
 Current stations are named `<Name>, <Region> Current`, with the NOAA station id appended where several stations share a name (for example, different depths at one location). Speeds are in knots. A few stations can't be represented in the format and are left out: reference currents without harmonic constants, and subordinate currents with a speed ratio of zero, which libtcd would read as "no ratio".
 
 ## Usage
 
-Download the latest `neaps-YYYYMMDD.tcd` from [releases](https://github.com/openwatersio/tide-database/releases).
+Download the latest `slackwater-YYYYMMDD.tcd` from [releases](https://github.com/openwatersio/slackwater-database/releases).
 
 Heights are in meters and current speeds in knots. XTide and OpenCPN convert for display, so use `tide -u ft` or the OpenCPN unit setting to see feet.
 
@@ -23,7 +23,7 @@ Open the OpenCPN options, navigate to the "Charts" tab, and add the TCD file as 
 To use the TCD file with XTide, set the `HFILE_PATH` environment variable to point to the downloaded TCD file:
 
 ```sh
-export HFILE_PATH=/path/to/neaps-*.tcd
+export HFILE_PATH=/path/to/slackwater-*.tcd
 ```
 
 Launch the XTide graphical interface:
@@ -74,4 +74,4 @@ tide -l "BOSTON, MA, United States" -b "2026-01-01 00:00" -e "2026-01-08 00:00" 
 - [XTide](https://flaterco.com/xtide/)
 - [libtcd documentation](https://flaterco.com/xtide/libtcd.html)
 - [TCD file format specification](https://flaterco.com/xtide/tcd.html)
-- [@neaps/tide-predictor](https://github.com/openwatersio/neaps/tree/main/packages/tide-predictor)
+- [@slackwater/engine](https://www.npmjs.com/package/@slackwater/engine)

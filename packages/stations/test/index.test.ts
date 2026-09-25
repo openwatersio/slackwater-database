@@ -3,7 +3,7 @@ import { readFile } from "fs/promises";
 import { join } from "path";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
-import { stations, allStations, near } from "@neaps/tide-database";
+import { stations, allStations, near } from "@slackwater/database";
 import {
   MIN_TIDAL_RANGE,
   MIN_DEDUP_DISTANCE,
@@ -201,7 +201,7 @@ describe("seasonal-contamination gate", () => {
 
   // A short/gappy/datum-shifted record whose harmonic fit dumps spurious energy
   // into the annual (SA) band inflates the predicted extreme range. Cape Dor is
-  // the canonical case (openwatersio/tide-database#93): SA 2.077m vs 0.090m at
+  // the canonical case (openwatersio/slackwater-database#93): SA 2.077m vs 0.090m at
   // Spencers Island 7km away in the same tidal regime.
   test("rejects known contaminated records", () => {
     const byId = new Map(quality.map((r) => [r.id, r]));
@@ -292,7 +292,7 @@ describe("gauge deduplication", () => {
   // station code but differ by segment letter or provider (fast-delivery vs
   // research-quality, or two data centres). Coordinate drift pushes them past
   // the spatial dedup radius, so they used to survive as duplicates
-  // (openwatersio/tide-database#112). No two published TICON stations should now
+  // (openwatersio/slackwater-database#112). No two published TICON stations should now
   // share a gauge key.
   test("no two published TICON stations share a gauge key", () => {
     const seen = new Map<string, string>();
@@ -367,7 +367,7 @@ describe("coordinate-precision tiebreak", () => {
 describe("coordinate gate", () => {
   // Records that fail to geolocate upstream default to (0, 0) — Null Island in
   // the Gulf of Guinea — where they cannot be deduplicated against the real
-  // gauge (openwatersio/tide-database#112, the Nonopapa case).
+  // gauge (openwatersio/slackwater-database#112, the Nonopapa case).
   test("no published station sits on Null Island", () => {
     for (const station of tideStations) {
       const onNullIsland =
@@ -389,7 +389,7 @@ describe("subordinate offset dedup", () => {
   // predict different tides through different offsets. Suwarrow Island is
   // mislocated on Hao Island's exact coordinates but carries a +64 min vs
   // −315 min offset, so proximity alone must not merge them
-  // (openwatersio/tide-database#112 follow-up).
+  // (openwatersio/slackwater-database#112 follow-up).
   test("keeps distinct subordinate stations that share coordinates", () => {
     for (const id of [
       "noaa/TPT2829", // Suwarrow vs Hao (TPT2837)

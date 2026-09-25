@@ -1,5 +1,5 @@
 {
-  "name": "@neaps/kartverket",
+  "name": "@slackwater/kartverket",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,12 +10,12 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@neaps/stations": "*",
-    "@neaps/tide-predictor": "^0.11.0",
+    "@slackwater/stations": "*",
+    "@slackwater/engine": "^1.0.0-beta.0",
     "fast-xml-parser": "^5.11.1"
   },
   "devDependencies": {
-    "@neaps/tide-database": "*",
+    "@slackwater/database": "*",
     "vitest": "^5.0.1"
   }
 }

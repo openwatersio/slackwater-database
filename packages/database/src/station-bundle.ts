@@ -12,6 +12,6 @@ import type { StationMeta } from "./types.js";
 /** Light metadata for every station, in database order. Used at build time. */
 export function loadStationMeta(): StationMeta[] {
   return readStationMeta(
-    readFileSync(new URL("./generated/neaps.tcdb", import.meta.url)),
+    readFileSync(new URL("./generated/slackwater.tcdb", import.meta.url)),
   );
 }

@@ -1,10 +1,10 @@
 /**
- * Generate tide predictions directly from station harmonics using @neaps/tide-predictor.
+ * Generate tide predictions directly from station harmonics using @slackwater/engine.
  * This serves as the baseline for validating XTide TCD predictions.
  */
 
-import createTidePredictor from "@neaps/tide-predictor";
-import type { Station } from "@neaps/tide-database";
+import { createTidePredictor } from "@slackwater/engine";
+import type { Station } from "@slackwater/database";
 import type { TideEvent } from "./xtide.js";
 
 /**
@@ -15,7 +15,7 @@ import type { TideEvent } from "./xtide.js";
  * @param endDate - End date for predictions
  * @returns Array of tide events (high/low)
  */
-export function getNeapsPredictions(
+export function getEnginePredictions(
   station: Station,
   startDate: Date,
   endDate: Date,
@@ -90,7 +90,7 @@ export function getSubordinatePredictions(
   }
 
   // Get reference station predictions
-  const refPredictions = getNeapsPredictions(
+  const refPredictions = getEnginePredictions(
     referenceStation,
     startDate,
     endDate,
@@ -147,7 +147,7 @@ export function getPredictions(
   endDate: Date,
 ): TideEvent[] {
   if (station.type === "reference") {
-    return getNeapsPredictions(station, startDate, endDate);
+    return getEnginePredictions(station, startDate, endDate);
   } else if (station.type === "subordinate" && station.offsets) {
     const refId = station.offsets.reference;
     const refStation = stations.find((s) => s.id === refId);

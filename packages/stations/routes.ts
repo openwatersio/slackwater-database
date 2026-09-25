@@ -1,4 +1,4 @@
-import type { DatabaseRoutes } from "@neaps/tide-database";
+import type { DatabaseRoutes } from "@slackwater/database";
 import type { ResolvedStation } from "./metadata.ts";
 
 export type StationKind = "tide" | "current";

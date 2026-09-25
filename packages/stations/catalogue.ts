@@ -1,4 +1,4 @@
-import type { DatabaseRoutes, StationInput } from "@neaps/tide-database";
+import type { DatabaseRoutes, StationInput } from "@slackwater/database";
 import type { Geocoder } from "./geocode.ts";
 import type { MaritimeZones } from "./maritime-zones.ts";
 import type { WaterBodies } from "./water-bodies.ts";

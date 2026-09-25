@@ -22,7 +22,7 @@ import { readdir, readFile, writeFile } from "fs/promises";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { DATA_DIR } from "./station.ts";
-import { NODAL_CYCLE_DAYS } from "@neaps/datums";
+import { NODAL_CYCLE_DAYS } from "@slackwater/datums";
 import {
   distance,
   authoritativeDuplicateWinner,
@@ -45,7 +45,7 @@ import {
   SEASONAL_OUTLIER_MIN_SA,
   SEASONAL_OUTLIER_RATIO,
 } from "./filtering.ts";
-import type { StationData } from "@neaps/tide-database";
+import type { StationData } from "@slackwater/database";
 
 // ── Types ───────────────────────────────────────────────────────────────
 
@@ -681,7 +681,7 @@ function pickWinner(
  *  differing only by record segment or provider). Coordinate drift — coarse
  *  rounding in older sources, or slightly different survey points between
  *  providers — pushes these same-gauge records beyond the spatial dedup radius,
- *  so proximity alone never catches them (openwatersio/tide-database#112). The
+ *  so proximity alone never catches them (openwatersio/slackwater-database#112). The
  *  shared code is a deterministic same-gauge signal, so we merge them regardless
  *  of distance and keep the single best record per gauge. */
 function deduplicateByGauge(

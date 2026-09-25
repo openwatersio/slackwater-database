@@ -19,7 +19,7 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { simplify } from "@neaps/datums";
+import { simplify } from "@slackwater/datums";
 import KDBush from "kdbush";
 import {
   areaKm2,
@@ -35,7 +35,7 @@ const OUT = join(root, "metadata", "water-bodies.geojson");
 const CACHE = join(root, "tmp", "water-bodies");
 const OVERPASS = "https://overpass-api.de/api/interpreter";
 const USER_AGENT =
-  "tide-database (https://github.com/openwatersio/tide-database)";
+  "slackwater-database (https://github.com/openwatersio/slackwater-database)";
 // Either name tag qualifies: waterBodyName prefers name:en, and a handful of
 // features carry that one alone.
 const FILTER = '[natural~"^(bay|strait)$"][~"^name(:en)?$"~"."]';

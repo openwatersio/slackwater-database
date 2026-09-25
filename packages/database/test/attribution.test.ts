@@ -9,7 +9,7 @@ import {
 } from "../src/attribution.ts";
 
 const shipped = openDatabase(
-  readFileSync(new URL("../src/generated/neaps.tcdb", import.meta.url)),
+  readFileSync(new URL("../src/generated/slackwater.tcdb", import.meta.url)),
 );
 
 const ccBy = {

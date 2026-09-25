@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { useStation, type Station } from "@neaps/tide-predictor";
+import { useStation, type Station } from "@slackwater/engine";
 import {
   FIXTURES_DIR,
   refreshSnapshot,
@@ -188,7 +188,7 @@ export function matchExtremes(
   }
   if (provider.length !== predicted.length)
     throw new Error(
-      `Extreme count mismatch: provider ${provider.length}, Neaps ${predicted.length}`,
+      `Extreme count mismatch: provider ${provider.length}, Slackwater ${predicted.length}`,
     );
   const ordered = [...predicted].sort((a, b) => +a.time - +b.time);
   return [...provider]

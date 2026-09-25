@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import currentBundle from "../../sources/noaa-current/currents.json" with { type: "json" };
 import countryLookup from "country-code-lookup";
-import type { StationInput, StationQuality } from "@neaps/tide-database";
+import type { StationInput, StationQuality } from "@slackwater/database";
 import { buildCatalogue } from "./catalogue.ts";
 import { currentInputs } from "./current-input.ts";
 import { loadGeocoder } from "./geocode.ts";

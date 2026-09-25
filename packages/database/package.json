@@ -1,6 +1,6 @@
 {
-  "name": "@neaps/tide-database",
-  "version": "0.10.0",
+  "name": "@slackwater/database",
+  "version": "1.0.0-beta.0",
   "description": "A public database of tide and current stations",
   "keywords": [
     "tides",
@@ -10,11 +10,11 @@
   ],
   "homepage": "https://openwaters.io/tides/database",
   "bugs": {
-    "url": "https://github.com/openwatersio/tide-database/issues"
+    "url": "https://github.com/openwatersio/slackwater-database/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openwatersio/tide-database.git",
+    "url": "git+https://github.com/openwatersio/slackwater-database.git",
     "directory": "packages/database"
   },
   "license": "MIT",
@@ -24,7 +24,7 @@
   "module": "./dist/node/index.js",
   "types": "./dist/node/index.d.ts",
   "imports": {
-    "#neaps.tcdb": {
+    "#slackwater.tcdb": {
       "browser": "./src/database/bytes.browser.ts",
       "default": "./src/database/bytes.node.ts"
     }
@@ -58,7 +58,7 @@
     "minisearch": "^7.2.0"
   },
   "devDependencies": {
-    "@neaps/stations": "*",
+    "@slackwater/stations": "*",
     "@types/geokdbush": "^1.1.5",
     "@types/node": "^26.0.0",
     "tsdown": "^0.23.0",

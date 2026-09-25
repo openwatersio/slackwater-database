@@ -17,7 +17,7 @@ import {
   StationType,
   TideDerivedCurrent,
   TideOffsets,
-} from "../generated/fbs/neaps.ts";
+} from "../generated/fbs/slackwater.ts";
 import * as flatbuffers from "flatbuffers";
 import countryLookup from "country-code-lookup";
 import { attributionFor } from "../attribution.ts";

@@ -3,19 +3,19 @@ import { readFileSync } from "node:fs";
 import * as flatbuffers from "flatbuffers";
 import { buildDatabase } from "../src/database/builder.ts";
 import { openDatabase } from "../src/database/reader.ts";
-import { Root, Kind } from "../src/generated/fbs/neaps.ts";
+import { Root, Kind } from "../src/generated/fbs/slackwater.ts";
 import type { Station, StationInput } from "../src/types.ts";
 
 expectTypeOf<Station["chart_datum"]>().toEqualTypeOf<string | undefined>();
 
 const shipped = openDatabase(
-  readFileSync(new URL("../src/generated/neaps.tcdb", import.meta.url)),
+  readFileSync(new URL("../src/generated/slackwater.tcdb", import.meta.url)),
 );
 
 describe("the shipped database file", () => {
   test("carries the TCDB file identifier", () => {
     const bytes = readFileSync(
-      new URL("../src/generated/neaps.tcdb", import.meta.url),
+      new URL("../src/generated/slackwater.tcdb", import.meta.url),
     );
     expect(Root.bufferHasIdentifier(new flatbuffers.ByteBuffer(bytes))).toBe(
       true,
@@ -405,10 +405,10 @@ describe("buildDatabase", () => {
 
   test("exposes kind eagerly and current data lazily", async () => {
     const bytes = buildDatabase(inputs, { version: "1.2.3" });
-    vi.doMock("#neaps.tcdb", () => ({ default: bytes }));
+    vi.doMock("#slackwater.tcdb", () => ({ default: bytes }));
     vi.resetModules();
     const { Station: FlatBufferStation } =
-      await import("../src/generated/fbs/neaps.ts");
+      await import("../src/generated/fbs/slackwater.ts");
     const currentAccessor = vi.spyOn(FlatBufferStation.prototype, "current");
 
     try {
@@ -437,7 +437,7 @@ describe("buildDatabase", () => {
       expect(currentAccessor).toHaveBeenCalledTimes(1);
     } finally {
       currentAccessor.mockRestore();
-      vi.doUnmock("#neaps.tcdb");
+      vi.doUnmock("#slackwater.tcdb");
       vi.resetModules();
     }
   });
@@ -449,7 +449,7 @@ describe("buildDatabase", () => {
       offsets: { reference: "test/2", flood_time: 0 },
     };
     const bytes = buildDatabase(sparse);
-    vi.doMock("#neaps.tcdb", () => ({ default: bytes }));
+    vi.doMock("#slackwater.tcdb", () => ({ default: bytes }));
     vi.resetModules();
 
     try {
@@ -459,7 +459,7 @@ describe("buildDatabase", () => {
         offsets: { reference: "test/2", flood_time: 0 },
       });
     } finally {
-      vi.doUnmock("#neaps.tcdb");
+      vi.doUnmock("#slackwater.tcdb");
       vi.resetModules();
     }
   });
