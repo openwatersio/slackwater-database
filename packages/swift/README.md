@@ -7,7 +7,7 @@ Swift reader for the tide database file (`.tcdb`, [FlatBuffers](https://flatbuff
 ```swift
 import SlackwaterDatabase
 
-let db = try TideDatabase(contentsOf: url) // memory-mapped
+let db = try StationDatabase(contentsOf: url) // memory-mapped
 
 // Identity scan: id, name, coordinates. Reads only the head pages of the
 // file because the builder groups station tables there.
@@ -31,7 +31,7 @@ let range = station?.astronomicalBounds // (lat: -0.619, hat: 3.681)
 let notice = station?.attribution
 ```
 
-`TideDatabase` is a `RandomAccessCollection` of `Station`, in id order. `Station` wraps identity, the quality gate (`accepted`, `score`), constituents, datums, and `attribution`; the rest of the schema — the structured `license` and `source` tables, quality detail, subordinate offsets, current data — is reachable through `station.raw`, the generated FlatBuffers accessor.
+`StationDatabase` is a `RandomAccessCollection` of `Station`, in id order. `Station` wraps identity, the quality gate (`accepted`, `score`), constituents, datums, and `attribution`; the rest of the schema — the structured `license` and `source` tables, quality detail, subordinate offsets, current data — is reachable through `station.raw`, the generated FlatBuffers accessor.
 
 A subordinate station's record holds no constituents or datums of its own, only the offsets that correct its reference's. Reading `constituents`, `datums`, `chartDatumShift`, or `astronomicalBounds` on one resolves the reference for you, so both station types answer the same questions. `station.raw` still shows the file as it is, if you need to tell them apart.
 

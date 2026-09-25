@@ -1,11 +1,11 @@
 import FlatBuffers
 import Foundation
 
-/// The file is not a tide database: too short, or the "TCDB" file identifier
+/// The file is not a station database: too short, or the "TCDB" file identifier
 /// is missing.
-public struct NotATideDatabase: Error {}
+public struct InvalidStationDatabase: Error {}
 
-/// A tide database file (`.tcdb`, schemas/database.fbs in
+/// A station database file (`.tcdb`, schemas/database.fbs in
 /// openwatersio/slackwater-database), read in place.
 ///
 /// The buffer is never decoded up front. Opening a memory-mapped file and
@@ -15,11 +15,11 @@ public struct NotATideDatabase: Error {}
 /// pages that hold them, so a widget extension touching one station stays
 /// cheap.
 ///
-///     let db = try TideDatabase(contentsOf: url)
+///     let db = try StationDatabase(contentsOf: url)
 ///     let nearest = db.min { distance(to: $0) < distance(to: $1) }
 ///     let station = db.station(id: "noaa/9447130")
 ///     let m2 = station?.constituents.first { $0.name == "M2" }
-public struct TideDatabase: RandomAccessCollection {
+public struct StationDatabase: RandomAccessCollection {
   let root: Slackwater_Root
 
   /// Read a database from bytes already in memory (e.g. downloaded).
@@ -28,7 +28,7 @@ public struct TideDatabase: RandomAccessCollection {
     // Checked directly instead of running the FlatBuffers verifier, which
     // would walk — and page in — the entire buffer.
     guard data.count >= 8, data.dropFirst(4).prefix(4).elementsEqual("TCDB".utf8)
-    else { throw NotATideDatabase() }
+    else { throw InvalidStationDatabase() }
     // ByteBuffer retains the Data without copying, so a mapped file stays
     // mapped for the life of the database.
     var buffer = ByteBuffer(data: data)
