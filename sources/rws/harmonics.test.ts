@@ -357,7 +357,7 @@ test("rejects corrupt or mismatched cache entries", async () => {
   await rm(directory, { recursive: true, force: true });
 });
 
-test("applies height and event gates independently", () => {
+test("publishes height-valid harmonics while retaining event diagnostics", () => {
   const gates = validationGates({ rms: 0.018, p95: 0.035, max: 0.09 }, 0.004, {
     provider: 100,
     predicted: 130,
@@ -368,7 +368,7 @@ test("applies height and event gates independently", () => {
   expect(gates).toEqual({
     height: true,
     events: false,
-    publishable: false,
+    publishable: true,
   });
 });
 

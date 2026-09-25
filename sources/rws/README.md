@@ -49,7 +49,9 @@ The live report is:
 
 ## Decision
 
-Harmonics pass the height representation gates for all three stations. Ameland
-also passes its individual event gate; Hoek van Holland and Den Helder do not.
-RWS stations remain unpublished until provider event semantics are resolved
-across the validation set.
+Harmonics pass the height representation gates for all three stations, so all
+three are eligible for harmonic import. Event comparison remains diagnostic:
+Ameland matches the RWS event feed, while Hoek van Holland and Den Helder retain
+double extrema that RWS reduces to one canonical event per tidal cycle. RWS
+does not document a provider-neutral rule that reproduces its shoulder and
+plateau timestamp choices, so those differences do not block publication.
