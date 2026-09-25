@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import * as neaps from "@neaps/tide-predictor";
+import * as engine from "@slackwater/engine";
 import {
   fitHarmonics,
   parseGeslaSamplesInZone,
@@ -10,7 +10,7 @@ function predictionRms(
   fit: ReturnType<typeof fitHarmonics>,
   samples: Sample[],
 ): number {
-  const predictor = neaps.createTidePredictor(fit, { offset: false });
+  const predictor = engine.createTidePredictor(fit, { offset: false });
   return Math.sqrt(
     samples.reduce((sum, sample) => {
       const error =
@@ -33,8 +33,8 @@ describe("fitHarmonics", () => {
   test("keeps database name filtering, ordering, and rounding", () => {
     const samples = Array.from({ length: 1200 }, (_, i) => {
       const t = Date.UTC(2020, 0, 1) + i * 3600000;
-      const state = neaps.astro(new Date(t));
-      const model = neaps.constituents["M2"]!;
+      const state = engine.astro(new Date(t));
+      const model = engine.constituents["M2"]!;
       const { f, u } = model.correction(state);
       return {
         t,
@@ -67,10 +67,10 @@ describe("fitHarmonics", () => {
     const t0 = Date.UTC(2010, 0, 1);
     for (let h = 0; h < 24 * 400; h++) {
       const t = t0 + h * 3600_000;
-      const a = neaps.astro(new Date(t));
+      const a = engine.astro(new Date(t));
       let level = Z0;
       for (const [name, { H, G }] of Object.entries(truth)) {
-        const con = neaps.constituents[name]!;
+        const con = engine.constituents[name]!;
         const { f, u } = con.correction(a);
         level += H * f * Math.cos((con.value(a) + u - G) * DEG);
       }
@@ -89,7 +89,7 @@ describe("fitHarmonics", () => {
     const excluded = new Set(["SA", "MKS2", "3N2", "3L2", "T3", "R3"]);
     const names = [
       ...new Map(
-        Object.values(neaps.constituents)
+        Object.values(engine.constituents)
           .filter(
             (model) =>
               model.speed > 0 && !excluded.has(model.name.toUpperCase()),
@@ -106,9 +106,9 @@ describe("fitHarmonics", () => {
     const duration = 6 * 365.25 * 86_400_000;
     const samples = Array.from({ length: 4_000 }, (_, index) => {
       const t = t0 + (duration * index) / 3_999;
-      const a = neaps.astro(new Date(t));
+      const a = engine.astro(new Date(t));
       const level = terms.reduce((sum, { name, amplitude, phase }) => {
-        const model = neaps.constituents[name]!;
+        const model = engine.constituents[name]!;
         const { f, u } = model.correction(a);
         return (
           sum +
@@ -135,8 +135,8 @@ describe("fitHarmonics", () => {
     const t0 = Date.UTC(2018, 0, 1);
     const m2Samples = Array.from({ length: 4_000 }, (_, index) => {
       const t = t0 + (6 * 365.25 * 86_400_000 * index) / 3_999;
-      const a = neaps.astro(new Date(t));
-      const model = neaps.constituents["M2"]!;
+      const a = engine.astro(new Date(t));
+      const model = engine.constituents["M2"]!;
       const { f, u } = model.correction(a);
       return {
         t,

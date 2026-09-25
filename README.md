@@ -68,7 +68,7 @@ This repo is an npm workspace. Station data lives in [`data/`](./data), and ever
 - [`packages/swift`](./packages/swift) — `NeapsTideDatabase`, the Swift reader for `.tcdb`, published from the [root `Package.swift`](./Package.swift)
 - [`packages/tcd`](./packages/tcd) — TCD harmonics files for XTide-compatible software
 - [`packages/datums`](./packages/datums) — tidal datum computation and sea-region classification
-- [`packages/harmonic-analysis`](./packages/harmonic-analysis) — GESLA parsing and database policies around `@neaps/harmonics` QR fitting; broad minimum-norm SVD fits remain local
+- [`packages/harmonic-analysis`](./packages/harmonic-analysis) — GESLA parsing and database policies around `@slackwater/engine` QR fitting; broad minimum-norm SVD fits remain local
 - [`packages/stations`](./packages/stations) — station file I/O, quality filtering, geocoding, the unified catalogue (curated inputs in [`metadata/`](./metadata)), and maintenance scripts (including `evaluate-quality`, which writes [`quality.json`](./quality.json))
 - [`sources/*`](./sources) — one package per data source (NOAA, TICON), each with an `npm run import`
 

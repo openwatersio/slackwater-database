@@ -1,6 +1,5 @@
-import * as neaps from "@neaps/tide-predictor";
+import * as engine from "@slackwater/engine";
 import { Matrix, SingularValueDecomposition } from "ml-matrix";
-import { fit } from "@neaps/harmonics";
 
 /**
  * Re-analyze tidal harmonics from raw water-level observations.
@@ -14,7 +13,7 @@ import { fit } from "@neaps/harmonics";
  * Constituent frequencies are known, so analysis is ordinary linear least
  * squares: fit Z0 + Σ f_k·[p_k·cos(V0_k+u_k) + q_k·sin(V0_k+u_k)] where V0 is
  * the Greenwich equilibrium argument and (f,u) the nodal factor/angle (both
- * from @neaps, applied per-timestamp). Phase G = atan2(q,p) then lands in the
+ * from @slackwater/engine, applied per-timestamp). Phase G = atan2(q,p) then lands in the
  * same Greenwich, nodal-corrected convention as the rest of the database.
  */
 
@@ -36,11 +35,11 @@ export interface FitOptions {
 const DEG = Math.PI / 180;
 const DAY_MS = 86_400_000;
 
-// Constituents whose @neaps definition has disagreed with TICON's (issue #76).
-// @neaps speeds are compared against these TICON-manual reference speeds at fit
+// Constituents whose engine definition has disagreed with TICON's (issue #76).
+// Engine speeds are compared against these TICON-manual reference speeds at fit
 // time; any constituent still mismatched is skipped rather than fit at the
-// wrong frequency (e.g. @neaps "3N2" is a sextidiurnal at 85°/hr). This
-// self-heals — once @neaps corrects a definition, it is included again.
+// wrong frequency (e.g. the engine's "3N2" is a sextidiurnal at 85°/hr). This
+// self-heals — once the engine corrects a definition, it is included again.
 const TICON_REFERENCE_SPEED: Record<string, number> = {
   SA: 0.0410686,
   MKS2: 28.4350877,
@@ -49,15 +48,15 @@ const TICON_REFERENCE_SPEED: Record<string, number> = {
   T3: 44.9589333,
   R3: 45.0410706,
 };
-function definitionMismatched(name: string, neapsSpeed: number): boolean {
+function definitionMismatched(name: string, engineSpeed: number): boolean {
   const ref = TICON_REFERENCE_SPEED[name.toUpperCase()];
-  return ref !== undefined && Math.abs(neapsSpeed - ref) > 1e-4;
+  return ref !== undefined && Math.abs(engineSpeed - ref) > 1e-4;
 }
 
-// Map DB/TICON constituent names (incl. aliases) to @neaps constituent keys.
+// Map DB/TICON constituent names (incl. aliases) to engine constituent keys.
 const constituentKey = (() => {
   const idx = new Map<string, string>();
-  for (const [key, c] of Object.entries(neaps.constituents)) {
+  for (const [key, c] of Object.entries(engine.constituents)) {
     idx.set(key.toUpperCase(), key);
     for (const alias of (c as { aliases?: string[] }).aliases ?? []) {
       idx.set(String(alias).toUpperCase(), key);
@@ -162,7 +161,7 @@ export function isAnalyzable(
 /**
  * Least-squares fit of the named constituents to the samples, returning
  * amplitude (m) and UTC/Greenwich phase (deg) for each. Names not known to
- * @neaps are dropped (callers should pass a covered set).
+ * the engine are dropped (callers should pass a covered set).
  */
 export function fitHarmonics(
   samples: Sample[],
@@ -172,10 +171,10 @@ export function fitHarmonics(
   const cons = names
     .map((name) => ({
       name,
-      c: neaps.constituents[constituentKey.get(name.toUpperCase())!],
+      c: engine.constituents[constituentKey.get(name.toUpperCase())!],
     }))
     .filter(
-      (x): x is { name: string; c: (typeof neaps.constituents)[string] } =>
+      (x): x is { name: string; c: (typeof engine.constituents)[string] } =>
         !!x.c && !definitionMismatched(x.name, x.c.speed),
     );
 
@@ -184,7 +183,7 @@ export function fitHarmonics(
     const rows = samples.map((sample) => {
       const row = new Array<number>(ncol).fill(0);
       row[0] = 1;
-      const a = neaps.astro(new Date(sample.t));
+      const a = engine.astro(new Date(sample.t));
       for (let k = 0; k < cons.length; k++) {
         const con = cons[k]!.c;
         const { f, u } = con.correction(a);
@@ -213,7 +212,7 @@ export function fitHarmonics(
       };
     });
   }
-  const result = fit(
+  const result = engine.fit(
     samples
       .toSorted((a, b) => a.t - b.t)
       .map(({ t, level }) => ({ time: new Date(t), value: level })),
