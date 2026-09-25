@@ -2,6 +2,11 @@ name: Build and Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      exact:
+        description: Publish the version in package.json verbatim (first stable release)
+        type: boolean
+        default: false
 
 jobs:
   publish:
@@ -23,12 +28,22 @@ jobs:
 
       - run: npm ci
 
+      # The last version segment is the data vintage: the committed version is a
+      # floor (1.0.0-beta.0 while in pre mode, X.Y.0 after), and each publish
+      # replaces that segment with today's date — 1.0.0-beta.20260925 from a
+      # prerelease, 1.0.20261115 from a stable. `exact` skips the date for the
+      # one release that must be verbatim, the first stable X.Y.0.
       - name: Set version
         run: |
           CURRENT_VERSION=$(node -p "require('./packages/database/package.json').version")
-          RELEASE_VERSION="${CURRENT_VERSION%.*}.$(date +%Y%m%d)"
-          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
-          npm version "$RELEASE_VERSION" --no-git-tag-version -w packages/database
+          if [ "${{ inputs.exact }}" = "true" ]; then
+            RELEASE_VERSION="$CURRENT_VERSION"
+          else
+            RELEASE_VERSION="${CURRENT_VERSION%.*}.$(date +%Y%m%d)"
+          fi
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> "$GITHUB_ENV"
+          echo "ASSET_DATE=$(date +%Y%m%d)" >> "$GITHUB_ENV"
+          npm version "$RELEASE_VERSION" --no-git-tag-version --allow-same-version -w packages/database
 
       - name: Validate station metadata
         run: npm run validate:database
@@ -41,19 +56,24 @@ jobs:
       - name: Build and test TCD harmonics files
         run: npm run test -w packages/tcd
 
+      # Prereleases go out under the beta dist-tag so `latest` only ever moves
+      # on a stable publish.
       - name: Publish to npm
-        run: npm publish --ignore-scripts -w packages/database
+        run: npm publish --ignore-scripts -w packages/database ${{ contains(env.RELEASE_VERSION, '-') && '--tag beta' || '' }}
 
+      # Assets are named by data vintage, not npm version, so the file names
+      # hold across prerelease, exact, and dated publishes.
       - name: Rename TCD files for release
         run: |
-          mv packages/tcd/dist/harmonics.tcd "packages/tcd/dist/slackwater-${RELEASE_VERSION##*.}.tcd"
+          mv packages/tcd/dist/harmonics.tcd "packages/tcd/dist/slackwater-${ASSET_DATE}.tcd"
 
       - name: Rename database file for release
-        run: cp packages/database/dist/generated/slackwater.tcdb "packages/database/dist/generated/slackwater-${RELEASE_VERSION##*.}.tcdb"
+        run: cp packages/database/dist/generated/slackwater.tcdb "packages/database/dist/generated/slackwater-${ASSET_DATE}.tcdb"
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ env.RELEASE_VERSION }}
           generateReleaseNotes: true
+          prerelease: ${{ contains(env.RELEASE_VERSION, '-') }}
           artifacts: "packages/tcd/dist/*.tcd,packages/database/dist/generated/slackwater-*.tcdb"
