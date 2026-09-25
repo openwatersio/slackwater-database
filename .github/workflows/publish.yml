@@ -2,11 +2,6 @@ name: Build and Publish
 
 on:
   workflow_dispatch:
-    inputs:
-      exact:
-        description: Publish the version in package.json verbatim (first stable release)
-        type: boolean
-        default: false
 
 jobs:
   publish:
@@ -31,16 +26,11 @@ jobs:
       # The last version segment is the data vintage: the committed version is a
       # floor (1.0.0-beta.0 while in pre mode, X.Y.0 after), and each publish
       # replaces that segment with today's date — 1.0.0-beta.20260925 from a
-      # prerelease, 1.0.20261115 from a stable. `exact` skips the date for the
-      # one release that must be verbatim, the first stable X.Y.0.
+      # prerelease, 1.0.20261115 from a stable.
       - name: Set version
         run: |
           CURRENT_VERSION=$(node -p "require('./packages/database/package.json').version")
-          if [ "${{ inputs.exact }}" = "true" ]; then
-            RELEASE_VERSION="$CURRENT_VERSION"
-          else
-            RELEASE_VERSION="${CURRENT_VERSION%.*}.$(date +%Y%m%d)"
-          fi
+          RELEASE_VERSION="${CURRENT_VERSION%.*}.$(date +%Y%m%d)"
           # A prerelease floor must derive a prerelease — the date replaces the
           # floor's final `.0`, so a floor like 1.0.0-beta (no .0) would derive
           # a stable version and publish it to `latest`. Refuse instead.
@@ -51,7 +41,7 @@ jobs:
           fi
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> "$GITHUB_ENV"
           echo "ASSET_DATE=$(date +%Y%m%d)" >> "$GITHUB_ENV"
-          npm version "$RELEASE_VERSION" --no-git-tag-version --allow-same-version -w packages/database
+          npm version "$RELEASE_VERSION" --no-git-tag-version -w packages/database
 
       - name: Validate station metadata
         run: npm run validate:database
