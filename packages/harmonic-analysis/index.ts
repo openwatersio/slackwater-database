@@ -29,17 +29,17 @@ export interface Sample {
 }
 
 export interface FitOptions {
-  solver?: "normal-equations" | "svd";
+  solver?: "qr" | "svd";
 }
 
 const DEG = Math.PI / 180;
 const DAY_MS = 86_400_000;
 
-// Constituents whose @slackwater/engine definition has disagreed with TICON's (issue #76).
-// @slackwater/engine speeds are compared against these TICON-manual reference speeds at fit
+// Constituents whose engine definition has disagreed with TICON's (issue #76).
+// Engine speeds are compared against these TICON-manual reference speeds at fit
 // time; any constituent still mismatched is skipped rather than fit at the
-// wrong frequency (e.g. @slackwater/engine "3N2" is a sextidiurnal at 85°/hr). This
-// self-heals — once @slackwater/engine corrects a definition, it is included again.
+// wrong frequency (e.g. the engine's "3N2" is a sextidiurnal at 85°/hr). This
+// self-heals — once the engine corrects a definition, it is included again.
 const TICON_REFERENCE_SPEED: Record<string, number> = {
   SA: 0.0410686,
   MKS2: 28.4350877,
@@ -53,7 +53,7 @@ function definitionMismatched(name: string, engineSpeed: number): boolean {
   return ref !== undefined && Math.abs(engineSpeed - ref) > 1e-4;
 }
 
-// Map DB/TICON constituent names (incl. aliases) to @slackwater/engine constituent keys.
+// Map DB/TICON constituent names (incl. aliases) to engine constituent keys.
 const constituentKey = (() => {
   const idx = new Map<string, string>();
   for (const [key, c] of Object.entries(engine.constituents)) {
@@ -161,7 +161,7 @@ export function isAnalyzable(
 /**
  * Least-squares fit of the named constituents to the samples, returning
  * amplitude (m) and UTC/Greenwich phase (deg) for each. Names not known to
- * @slackwater/engine are dropped (callers should pass a covered set).
+ * the engine are dropped (callers should pass a covered set).
  */
 export function fitHarmonics(
   samples: Sample[],
@@ -212,65 +212,16 @@ export function fitHarmonics(
       };
     });
   }
-  const ATA = Array.from({ length: ncol }, () => new Float64Array(ncol));
-  const ATy = new Float64Array(ncol);
-  const row = new Float64Array(ncol);
-  row[0] = 1; // Z0 (mean) column
-
-  for (const s of samples) {
-    const a = engine.astro(new Date(s.t));
-    for (let k = 0; k < cons.length; k++) {
-      const con = cons[k]!.c;
-      const { f, u } = con.correction(a);
-      const arg = (con.value(a) + u) * DEG;
-      row[1 + 2 * k] = f * Math.cos(arg);
-      row[2 + 2 * k] = f * Math.sin(arg);
-    }
-    for (let i = 0; i < ncol; i++) {
-      const ri = row[i]!;
-      ATy[i]! += ri * s.level;
-      const Ai = ATA[i]!;
-      for (let j = i; j < ncol; j++) Ai[j]! += ri * row[j]!;
-    }
-  }
-  for (let i = 0; i < ncol; i++) {
-    for (let j = 0; j < i; j++) ATA[i]![j] = ATA[j]![i]!;
-  }
-
-  const x = solveSymmetric(ATA, ATy);
-  return cons.map((co, k) => {
-    const p = x[1 + 2 * k]!;
-    const q = x[2 + 2 * k]!;
-    // Round to fit uncertainty: 1 mm amplitude, 0.01° phase (~1 s for M2).
-    return {
-      name: co.name,
-      amplitude: Math.round(Math.hypot(p, q) * 1000) / 1000,
-      phase:
-        Math.round(((((Math.atan2(q, p) / DEG) % 360) + 360) % 360) * 100) /
-        100,
-    };
-  });
-}
-
-/** Solve A·x = b for symmetric A via Gaussian elimination with partial pivoting. */
-function solveSymmetric(A: Float64Array[], b: Float64Array): Float64Array {
-  const n = b.length;
-  const M = A.map((r, i) => Float64Array.from([...r, b[i]!]));
-  for (let i = 0; i < n; i++) {
-    let pivot = i;
-    for (let r = i + 1; r < n; r++) {
-      if (Math.abs(M[r]![i]!) > Math.abs(M[pivot]![i]!)) pivot = r;
-    }
-    [M[i], M[pivot]] = [M[pivot]!, M[i]!];
-    const pv = M[i]![i]!;
-    if (pv === 0) throw new Error("singular harmonic design matrix");
-    for (let j = i; j <= n; j++) M[i]![j]! /= pv;
-    for (let r = 0; r < n; r++) {
-      if (r === i) continue;
-      const factor = M[r]![i]!;
-      if (factor === 0) continue;
-      for (let j = i; j <= n; j++) M[r]![j]! -= factor * M[i]![j]!;
-    }
-  }
-  return Float64Array.from(M, (r) => r[n]!);
+  const result = engine.fit(
+    samples
+      .toSorted((a, b) => a.t - b.t)
+      .map(({ t, level }) => ({ time: new Date(t), value: level })),
+    cons.map(({ c }) => c.name),
+  );
+  // Database precision is 1 mm amplitude and 0.01 degrees phase.
+  return result.constituents.map((c, i) => ({
+    name: cons[i]!.name,
+    amplitude: Math.round(c.amplitude * 1000) / 1000,
+    phase: Math.round(c.phase * 100) / 100,
+  }));
 }
