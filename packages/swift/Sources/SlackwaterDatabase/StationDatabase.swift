@@ -5,6 +5,70 @@ import Foundation
 /// is missing.
 public struct InvalidStationDatabase: Error {}
 
+public enum StationKind: Hashable {
+  case tide
+  case current
+}
+
+public enum StationType: Hashable {
+  case reference
+  case subordinate
+}
+
+public enum HeightOffsetType: Hashable {
+  case ratio
+  case fixed
+}
+
+public struct StationSource: Equatable {
+  public let name: String?
+  public let id: String?
+  public let url: String?
+  public let publishedHarmonics: Bool
+}
+
+public struct StationLicense: Equatable {
+  public let type: String?
+  public let url: String?
+  public let notes: String?
+  public let commercialUse: Bool
+}
+
+public struct TideOffsets: Equatable {
+  public let reference: String
+  public let timeHigh: Int
+  public let timeLow: Int
+  public let heightType: HeightOffsetType
+  public let heightHigh: Double
+  public let heightLow: Double
+}
+
+public struct CurrentOffsets: Equatable {
+  public let reference: String
+  public let slackBeforeFlood: Int?
+  public let slackBeforeEbb: Int?
+  public let floodTime: Int?
+  public let ebbTime: Int?
+  public let floodSpeedRatio: Double?
+  public let ebbSpeedRatio: Double?
+}
+
+public struct TideDerivedCurrent: Equatable {
+  public let reference: String
+  public let highWaterLagMinutes: Int
+  public let lowWaterLagMinutes: Int
+}
+
+public struct CurrentRecord: Equatable {
+  public let floodDirection: Double?
+  public let ebbDirection: Double?
+  public let meanFlow: Double?
+  public let tideReference: String?
+  public let offsets: CurrentOffsets?
+  public let magnitudeNote: String?
+  public let derived: TideDerivedCurrent?
+}
+
 /// A station database file (`.tcdb`, schemas/database.fbs in
 /// openwatersio/slackwater-database), read in place.
 ///
@@ -59,26 +123,23 @@ public struct StationDatabase: RandomAccessCollection {
 /// One station, read lazily from the buffer. Each property decodes on access
 /// and nothing is cached, so keep a value you use repeatedly in a local.
 ///
-/// Identity, the quality gate, constituents, and datums get typed accessors;
-/// everything else in the schema (provenance, quality detail, current data,
-/// subordinate offsets) is reachable through `raw`, the generated FlatBuffers
-/// accessor.
+/// Identity, quality, provenance, tide/current data, and subordinate offsets
+/// have typed accessors. Generated FlatBuffers accessors remain internal.
 public struct Station: Identifiable {
   /// The project half of every station credit, and the fallback for a file
   /// written before credits were stored in it.
   public static let projectCredit =
     "Slackwater database (https://github.com/openwatersio/slackwater-database)"
 
-  /// The generated accessor, for fields without a wrapper property.
-  public let raw: Slackwater_Station
+  let raw: Slackwater_Station
   let root: Slackwater_Root
 
   // MARK: Identity
 
   public var id: String { raw.id }
   public var name: String { raw.name }
-  public var kind: Slackwater_Kind { raw.kind }
-  public var type: Slackwater_StationType { raw.type }
+  public var kind: StationKind { raw.kind == .current ? .current : .tide }
+  public var type: StationType { raw.type == .subordinate ? .subordinate : .reference }
   public var latitude: Double { raw.latitude }
   public var longitude: Double { raw.longitude }
   /// IANA timezone identifier, e.g. "America/Los_Angeles".
@@ -87,6 +148,14 @@ public struct Station: Identifiable {
   public var region: String? { raw.region }
   public var country: String? { raw.country }
   public var continent: String? { raw.continent }
+  public var locality: String? { raw.locality }
+  public var regionCode: String? { raw.regionCode }
+  public var countryCode: String { raw.countryCode }
+  public var context: String? { raw.context }
+  public var contextDerived: Bool { raw.contextDerived }
+  public var cities: [String] {
+    (0..<raw.citiesCount).compactMap { raw.cities(at: $0) }
+  }
   /// Alternate names and slugs for search. Lower-cased, deduplicated.
   public var aliases: [String] {
     (0..<raw.aliasesCount).compactMap { raw.aliases(at: $0) }
@@ -96,8 +165,69 @@ public struct Station: Identifiable {
 
   /// Whether the station passes the database's default quality filter.
   public var accepted: Bool { raw.accepted }
-  /// Quality score, 0–100. Detail behind it is in `raw.quality`.
+  /// Quality score, 0–100.
   public var score: Int { Int(raw.score) }
+  public var qualityReason: String? { raw.quality?.reason }
+
+  // MARK: Typed metadata
+
+  public var source: StationSource? {
+    raw.source.map {
+      StationSource(
+        name: $0.name, id: $0.id, url: $0.url,
+        publishedHarmonics: $0.publishedHarmonics)
+    }
+  }
+
+  public var license: StationLicense? {
+    raw.license.map {
+      StationLicense(
+        type: $0.type, url: $0.url, notes: $0.notes,
+        commercialUse: $0.commercialUse)
+    }
+  }
+
+  public var tideOffsets: TideOffsets? {
+    raw.offsets.map {
+      TideOffsets(
+        reference: $0.reference,
+        timeHigh: Int($0.timeHigh),
+        timeLow: Int($0.timeLow),
+        heightType: $0.heightType == .fixed ? .fixed : .ratio,
+        heightHigh: Double($0.heightHigh),
+        heightLow: Double($0.heightLow))
+    }
+  }
+
+  public var current: CurrentRecord? {
+    raw.current.map { current in
+      CurrentRecord(
+        floodDirection: current.floodDirectionMissing ? nil : Double(current.floodDirection),
+        ebbDirection: current.ebbDirectionMissing ? nil : Double(current.ebbDirection),
+        meanFlow: current.meanFlowMissing ? nil : Double(current.meanFlow),
+        tideReference: current.tideReference,
+        offsets: current.offsets.map { offsets in
+          CurrentOffsets(
+            reference: offsets.reference,
+            slackBeforeFlood: offsets.slackBeforeFloodMissing
+              ? nil : Int(offsets.slackBeforeFlood),
+            slackBeforeEbb: offsets.slackBeforeEbbMissing ? nil : Int(offsets.slackBeforeEbb),
+            floodTime: offsets.floodTimeMissing ? nil : Int(offsets.floodTime),
+            ebbTime: offsets.ebbTimeMissing ? nil : Int(offsets.ebbTime),
+            floodSpeedRatio: offsets.floodSpeedRatioMissing
+              ? nil : Double(offsets.floodSpeedRatio),
+            ebbSpeedRatio: offsets.ebbSpeedRatioMissing
+              ? nil : Double(offsets.ebbSpeedRatio))
+        },
+        magnitudeNote: current.magnitudeNote,
+        derived: current.derived.map {
+          TideDerivedCurrent(
+            reference: $0.reference,
+            highWaterLagMinutes: Int($0.highWaterLagMinutes),
+            lowWaterLagMinutes: Int($0.lowWaterLagMinutes))
+        })
+    }
+  }
 
   // MARK: Prediction data
 

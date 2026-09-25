@@ -129,6 +129,36 @@ final class StationDatabaseTests: XCTestCase {
     XCTAssertEqual(rejected.raw.quality?.redundant, "test/reference")
   }
 
+  func testReadsTypedMetadataAndCurrent() throws {
+    let reference = try XCTUnwrap(open().station(id: "test/reference"))
+    XCTAssertEqual(reference.kind, .tide)
+    XCTAssertEqual(reference.type, .reference)
+    XCTAssertEqual(reference.locality, "Seattle")
+    XCTAssertEqual(reference.regionCode, "US-WA")
+    XCTAssertEqual(reference.countryCode, "US")
+    XCTAssertEqual(reference.context, "Seattle, WA")
+    XCTAssertFalse(reference.contextDerived)
+    XCTAssertEqual(reference.cities, ["Seattle"])
+    XCTAssertEqual(reference.source?.name, "Test Source")
+    XCTAssertEqual(reference.source?.publishedHarmonics, true)
+    XCTAssertEqual(reference.license?.commercialUse, true)
+
+    let tideOffsets = try XCTUnwrap(open().station(id: "test/subordinate")?.tideOffsets)
+    XCTAssertEqual(tideOffsets.reference, "test/reference")
+    XCTAssertEqual(tideOffsets.timeHigh, 12)
+    XCTAssertEqual(tideOffsets.heightType, .ratio)
+    XCTAssertEqual(try open().station(id: "test/subordinate")?.qualityReason, "duplicate")
+
+    let current = try XCTUnwrap(open().station(id: "test/current")?.current)
+    XCTAssertEqual(try XCTUnwrap(current.floodDirection), 90, accuracy: 1e-6)
+    XCTAssertEqual(try XCTUnwrap(current.ebbDirection), 270, accuracy: 1e-6)
+    XCTAssertEqual(try XCTUnwrap(current.meanFlow), 0.4, accuracy: 1e-6)
+    XCTAssertEqual(current.tideReference, "test/reference")
+    XCTAssertEqual(current.offsets?.slackBeforeFlood, -30)
+    XCTAssertNil(current.offsets?.slackBeforeEbb)
+    XCTAssertEqual(current.offsets?.floodTime, 0)
+  }
+
   // Sanity check against the real database, not the fixture. Opt-in because
   // the file is generated: SLACKWATER_TCDB=../database/src/generated/slackwater.tcdb
   func testOpensTheShippedDatabase() throws {
