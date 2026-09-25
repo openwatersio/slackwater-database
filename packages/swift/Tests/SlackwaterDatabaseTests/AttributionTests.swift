@@ -5,7 +5,7 @@ import XCTest
 
 final class AttributionTests: XCTestCase {
   func testEveryStationCarriesACredit() throws {
-    let db = try TideDatabase(contentsOf: TideDatabaseTests.url)
+    let db = try StationDatabase(contentsOf: StationDatabaseTests.url)
     for station in db {
       XCTAssert(station.attribution.hasPrefix(Station.projectCredit))
     }
@@ -14,7 +14,7 @@ final class AttributionTests: XCTestCase {
   // The fixture's source requires no credit of its own, so the project line
   // stands alone.
   func testASourceRequiringNoCreditGetsTheProjectLineAlone() throws {
-    let db = try TideDatabase(contentsOf: TideDatabaseTests.url)
+    let db = try StationDatabase(contentsOf: StationDatabaseTests.url)
     XCTAssertEqual(db.station(id: "test/reference")?.attribution, Station.projectCredit)
   }
 
@@ -24,7 +24,7 @@ final class AttributionTests: XCTestCase {
     guard let path = ProcessInfo.processInfo.environment["SLACKWATER_TCDB"] else {
       throw XCTSkip("Set SLACKWATER_TCDB to a database file to run")
     }
-    let db = try TideDatabase(contentsOf: URL(fileURLWithPath: path))
+    let db = try StationDatabase(contentsOf: URL(fileURLWithPath: path))
     let notice = try XCTUnwrap(db.station(id: "ticon/newlyn-new-gbr-bodc")?.attribution)
     XCTAssert(notice.hasPrefix("\(Station.projectCredit). "))
     XCTAssert(notice.contains("Hart-Davis"))

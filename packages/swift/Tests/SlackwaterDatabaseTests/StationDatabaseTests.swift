@@ -6,11 +6,11 @@ import XCTest
 /// Reads the fixture that scripts/generate-fixture.ts writes through the
 /// TypeScript buildDatabase — the same builder that produces the shipped
 /// file. Regenerate it with `npm run test -w swift` (pretest) if missing.
-final class TideDatabaseTests: XCTestCase {
+final class StationDatabaseTests: XCTestCase {
   static let url = Bundle.module.url(forResource: "fixture", withExtension: "tcdb")!
 
-  func open() throws -> TideDatabase {
-    try TideDatabase(contentsOf: Self.url)
+  func open() throws -> StationDatabase {
+    try StationDatabase(contentsOf: Self.url)
   }
 
   func testOpensAMappedFileAndReadsTheVersion() throws {
@@ -20,11 +20,11 @@ final class TideDatabaseTests: XCTestCase {
   }
 
   func testRejectsBytesWithoutTheFileIdentifier() throws {
-    XCTAssertThrowsError(try TideDatabase(data: Data("not a database".utf8))) {
-      XCTAssert($0 is NotATideDatabase)
+    XCTAssertThrowsError(try StationDatabase(data: Data("not a database".utf8))) {
+      XCTAssert($0 is InvalidStationDatabase)
     }
-    XCTAssertThrowsError(try TideDatabase(data: Data())) {
-      XCTAssert($0 is NotATideDatabase)
+    XCTAssertThrowsError(try StationDatabase(data: Data())) {
+      XCTAssert($0 is InvalidStationDatabase)
     }
   }
 
@@ -129,13 +129,55 @@ final class TideDatabaseTests: XCTestCase {
     XCTAssertEqual(rejected.raw.quality?.redundant, "test/reference")
   }
 
+  func testReadsTypedMetadataAndCurrent() throws {
+    let reference = try XCTUnwrap(open().station(id: "test/reference"))
+    XCTAssertEqual(reference.kind, .tide)
+    XCTAssertEqual(reference.type, .reference)
+    XCTAssertEqual(reference.locality, "Seattle")
+    XCTAssertEqual(reference.regionCode, "US-WA")
+    XCTAssertEqual(reference.countryCode, "US")
+    XCTAssertEqual(reference.context, "Seattle, WA")
+    XCTAssertFalse(reference.contextDerived)
+    XCTAssertEqual(reference.cities, ["Seattle"])
+    XCTAssertEqual(reference.source?.name, "Test Source")
+    XCTAssertEqual(reference.source?.publishedHarmonics, true)
+    XCTAssertEqual(reference.license?.commercialUse, true)
+
+    let tideOffsets = try XCTUnwrap(open().station(id: "test/subordinate")?.tideOffsets)
+    XCTAssertEqual(tideOffsets.reference, "test/reference")
+    XCTAssertEqual(tideOffsets.timeHigh, 12)
+    XCTAssertEqual(tideOffsets.heightType, .ratio)
+    XCTAssertEqual(try open().station(id: "test/subordinate")?.qualityReason, "duplicate")
+
+    let current = try XCTUnwrap(open().station(id: "test/current")?.current)
+    XCTAssertEqual(try XCTUnwrap(current.floodDirection), 90, accuracy: 1e-6)
+    XCTAssertEqual(try XCTUnwrap(current.ebbDirection), 270, accuracy: 1e-6)
+    XCTAssertEqual(try XCTUnwrap(current.meanFlow), 0.4, accuracy: 1e-6)
+    XCTAssertEqual(current.tideReference, "test/reference")
+    XCTAssertEqual(current.offsets?.slackBeforeFlood, -30)
+    XCTAssertNil(current.offsets?.slackBeforeEbb)
+    XCTAssertEqual(current.offsets?.floodTime, 0)
+  }
+
+  func testLooksUpStableRoutesWithoutGeneratedTypes() throws {
+    let db = try open()
+    XCTAssertEqual(
+      db.stationRoute(kind: .tide, slug: "reference"),
+      StationRoute(
+        slug: "reference", stationIDs: ["test/reference"],
+        formerPaths: ["old-reference"]))
+    XCTAssertNil(db.stationRoute(kind: .current, slug: "missing"))
+    XCTAssertEqual(db.stationRoutes(kind: .current).map(\.slug), ["a-current"])
+    XCTAssertEqual(db.stationRoute(kind: .current, slug: "a-current")?.formerPaths, [])
+  }
+
   // Sanity check against the real database, not the fixture. Opt-in because
   // the file is generated: SLACKWATER_TCDB=../database/src/generated/slackwater.tcdb
   func testOpensTheShippedDatabase() throws {
     guard let path = ProcessInfo.processInfo.environment["SLACKWATER_TCDB"] else {
       throw XCTSkip("Set SLACKWATER_TCDB to a database file to run")
     }
-    let db = try TideDatabase(contentsOf: URL(fileURLWithPath: path))
+    let db = try StationDatabase(contentsOf: URL(fileURLWithPath: path))
     XCTAssertNotNil(db.version)
     XCTAssertGreaterThan(db.count, 1000)
     let first = db[0]

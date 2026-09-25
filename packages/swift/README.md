@@ -1,13 +1,13 @@
 # SlackwaterDatabase
 
-Swift reader for the tide database file (`.tcdb`, [FlatBuffers](https://flatbuffers.dev), [`schemas/database.fbs`](../../schemas/database.fbs)). Open a memory-mapped file, iterate station identity, look up a station by id, and read its constituents — touching only the bytes each read needs, so a widget extension reading one station faults in a few pages instead of decoding a catalog.
+Swift reader for the station database file (`.tcdb`, [FlatBuffers](https://flatbuffers.dev), [`schemas/database.fbs`](../../schemas/database.fbs)). Open a memory-mapped file, iterate station identity, look up a station by id, and read tide or current data while touching only the bytes each read needs.
 
 ## Usage
 
 ```swift
 import SlackwaterDatabase
 
-let db = try TideDatabase(contentsOf: url) // memory-mapped
+let db = try StationDatabase(contentsOf: url) // memory-mapped
 
 // Identity scan: id, name, coordinates. Reads only the head pages of the
 // file because the builder groups station tables there.
@@ -29,11 +29,16 @@ let range = station?.astronomicalBounds // (lat: -0.619, hat: 3.681)
 
 // The notice to show wherever the station's data appears.
 let notice = station?.attribution
+let current = db.station(id: "noaa-current/PUG1515")?.current
+let commercialUse = station?.license?.commercialUse
+
+// Stable links: binary lookup by slug, including former paths in the result.
+let route = db.stationRoute(kind: .tide, slug: "friday-harbor")
 ```
 
-`TideDatabase` is a `RandomAccessCollection` of `Station`, in id order. `Station` wraps identity, the quality gate (`accepted`, `score`), constituents, datums, and `attribution`; the rest of the schema — the structured `license` and `source` tables, quality detail, subordinate offsets, current data — is reachable through `station.raw`, the generated FlatBuffers accessor.
+`StationDatabase` is a `RandomAccessCollection` of `Station`, in id order. `Station` exposes typed identity, quality, source, license, tide, and current values. Generated FlatBuffers accessors are not part of the public API.
 
-A subordinate station's record holds no constituents or datums of its own, only the offsets that correct its reference's. Reading `constituents`, `datums`, `chartDatumShift`, or `astronomicalBounds` on one resolves the reference for you, so both station types answer the same questions. `station.raw` still shows the file as it is, if you need to tell them apart.
+A subordinate station's record holds no constituents or datums of its own, only the offsets that correct its reference's. Reading `constituents`, `datums`, `chartDatumShift`, or `astronomicalBounds` on one resolves the reference for you, so both station types answer the same questions.
 
 Get the database file from the [latest release](https://github.com/openwatersio/slackwater-database/releases) and bundle it with your app, or fetch it at runtime.
 
@@ -53,14 +58,14 @@ see https://github.com/openwatersio/slackwater-database#modifications-to-source-
 
 Under a CC licence the string carries the creator credit, the licence and its URI, and an indication that the material was modified — the three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.org/licenses/by/4.0/) requires a redistributor to pass on. The licence follows the station, not its source, because it varies within one source: TICON stations relayed from CMEMS are CC BY-NC while the rest are CC BY. A station whose licence imposes no notice, such as a public-domain NOAA record, gets the project credit alone.
 
-To make a decision in code rather than show a string, read `station.raw.license` for `type`, `url`, and `commercialUse`.
+To make a decision in code rather than show a string, read `station.license` for `type`, `url`, and `commercialUse`.
 
 ## Adding the package
 
 Depend on the repository by URL. The manifest sits at the repository root and points back into this directory, so no checkout, submodule, or vendored copy is needed:
 
 ```swift
-.package(url: "https://github.com/openwatersio/slackwater-database.git", from: "1.0.0")
+.package(url: "https://github.com/openwatersio/slackwater-database.git", exact: "1.0.0-beta.0")
 ```
 
 The package version is the database release it ships with, so a pin names both the reader and the file format it reads.
