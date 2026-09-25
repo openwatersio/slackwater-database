@@ -60,7 +60,7 @@ jobs:
         run: npm publish --ignore-scripts -w packages/database ${{ contains(env.RELEASE_VERSION, '-') && '--tag beta' || '' }}
 
       # Assets are named by data vintage, not npm version, so the file names
-      # hold across prerelease, exact, and dated publishes.
+      # hold across prerelease and stable publishes.
       - name: Rename TCD files for release
         run: |
           mv packages/tcd/dist/harmonics.tcd "packages/tcd/dist/slackwater-${ASSET_DATE}.tcd"
