@@ -1,5 +1,6 @@
 import * as neaps from "@neaps/tide-predictor";
 import { Matrix, SingularValueDecomposition } from "ml-matrix";
+import { fit } from "@neaps/harmonics";
 
 /**
  * Re-analyze tidal harmonics from raw water-level observations.
@@ -29,7 +30,7 @@ export interface Sample {
 }
 
 export interface FitOptions {
-  solver?: "normal-equations" | "svd";
+  solver?: "qr" | "svd";
 }
 
 const DEG = Math.PI / 180;
@@ -212,65 +213,16 @@ export function fitHarmonics(
       };
     });
   }
-  const ATA = Array.from({ length: ncol }, () => new Float64Array(ncol));
-  const ATy = new Float64Array(ncol);
-  const row = new Float64Array(ncol);
-  row[0] = 1; // Z0 (mean) column
-
-  for (const s of samples) {
-    const a = neaps.astro(new Date(s.t));
-    for (let k = 0; k < cons.length; k++) {
-      const con = cons[k]!.c;
-      const { f, u } = con.correction(a);
-      const arg = (con.value(a) + u) * DEG;
-      row[1 + 2 * k] = f * Math.cos(arg);
-      row[2 + 2 * k] = f * Math.sin(arg);
-    }
-    for (let i = 0; i < ncol; i++) {
-      const ri = row[i]!;
-      ATy[i]! += ri * s.level;
-      const Ai = ATA[i]!;
-      for (let j = i; j < ncol; j++) Ai[j]! += ri * row[j]!;
-    }
-  }
-  for (let i = 0; i < ncol; i++) {
-    for (let j = 0; j < i; j++) ATA[i]![j] = ATA[j]![i]!;
-  }
-
-  const x = solveSymmetric(ATA, ATy);
-  return cons.map((co, k) => {
-    const p = x[1 + 2 * k]!;
-    const q = x[2 + 2 * k]!;
-    // Round to fit uncertainty: 1 mm amplitude, 0.01° phase (~1 s for M2).
-    return {
-      name: co.name,
-      amplitude: Math.round(Math.hypot(p, q) * 1000) / 1000,
-      phase:
-        Math.round(((((Math.atan2(q, p) / DEG) % 360) + 360) % 360) * 100) /
-        100,
-    };
-  });
-}
-
-/** Solve A·x = b for symmetric A via Gaussian elimination with partial pivoting. */
-function solveSymmetric(A: Float64Array[], b: Float64Array): Float64Array {
-  const n = b.length;
-  const M = A.map((r, i) => Float64Array.from([...r, b[i]!]));
-  for (let i = 0; i < n; i++) {
-    let pivot = i;
-    for (let r = i + 1; r < n; r++) {
-      if (Math.abs(M[r]![i]!) > Math.abs(M[pivot]![i]!)) pivot = r;
-    }
-    [M[i], M[pivot]] = [M[pivot]!, M[i]!];
-    const pv = M[i]![i]!;
-    if (pv === 0) throw new Error("singular harmonic design matrix");
-    for (let j = i; j <= n; j++) M[i]![j]! /= pv;
-    for (let r = 0; r < n; r++) {
-      if (r === i) continue;
-      const factor = M[r]![i]!;
-      if (factor === 0) continue;
-      for (let j = i; j <= n; j++) M[r]![j]! -= factor * M[i]![j]!;
-    }
-  }
-  return Float64Array.from(M, (r) => r[n]!);
+  const result = fit(
+    samples
+      .toSorted((a, b) => a.t - b.t)
+      .map(({ t, level }) => ({ time: new Date(t), value: level })),
+    cons.map(({ c }) => c.name),
+  );
+  // Database precision is 1 mm amplitude and 0.01 degrees phase.
+  return result.constituents.map((c, i) => ({
+    name: cons[i]!.name,
+    amplitude: Math.round(c.amplitude * 1000) / 1000,
+    phase: Math.round(c.phase * 100) / 100,
+  }));
 }

@@ -22,6 +22,36 @@ function predictionRms(
 }
 
 describe("fitHarmonics", () => {
+  test("rejects non-finite observations in ordinary fits", () => {
+    const samples = Array.from({ length: 20 }, (_, i) => ({
+      t: i * 3600000,
+      level: i === 3 ? NaN : 1,
+    }));
+    expect(() => fitHarmonics(samples, ["M2"])).toThrow("invalidSamples");
+  });
+
+  test("keeps database name filtering, ordering, and rounding", () => {
+    const samples = Array.from({ length: 1200 }, (_, i) => {
+      const t = Date.UTC(2020, 0, 1) + i * 3600000;
+      const state = neaps.astro(new Date(t));
+      const model = neaps.constituents["M2"]!;
+      const { f, u } = model.correction(state);
+      return {
+        t,
+        level:
+          2 +
+          1.234567 *
+            f *
+            Math.cos(((model.value(state) + u - 110.1234) * Math.PI) / 180),
+      };
+    }).reverse();
+    const originalStart = samples[0]!.t;
+    expect(fitHarmonics(samples, ["m2", "unknown", "MKS2"])).toEqual([
+      { name: "m2", amplitude: 1.235, phase: 110.12 },
+    ]);
+    expect(samples[0]!.t).toBe(originalStart);
+  });
+
   test("recovers known amplitude/phase from a synthetic tide", () => {
     // Synthesize 400 days of hourly heights from known constituents using the
     // same Greenwich/nodal convention the fit assumes, then check round-trip.
