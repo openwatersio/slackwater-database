@@ -1,0 +1,14 @@
+{
+  "name": "sqlite",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "./build",
+    "pretest": "npm run build",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@neaps/tide-database": "file:../..",
+    "@neaps/tide-predictor": "*"
+  }
+}

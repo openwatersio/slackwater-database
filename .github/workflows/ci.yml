@@ -111,6 +111,29 @@ jobs:
         env:
           SLACKWATER_TCDB: ${{ github.workspace }}/packages/database/src/generated/slackwater.tcdb
 
+  sqlite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Build SQLite database
+        run: npm run build -w sqlite
+
+      - name: Run SQLite validation tests
+        run: npm run test -w sqlite
+
   lint:
     runs-on: ubuntu-latest
     steps:
