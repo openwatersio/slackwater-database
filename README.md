@@ -101,7 +101,7 @@ Releases of this database use [Semantic Versioning](https://semver.org/), with t
 
 ## Releasing
 
-Releases are created by [running the Publish action](https://github.com/openwatersio/slackwater-database/actions/workflows/publish.yml) on GitHub Actions. The action takes the `version` in `packages/database/package.json` as a floor and replaces its last segment with the current date, so the version always names the data vintage: `1.0.0-beta.0` publishes as `1.0.0-beta.<date>` under the `beta` dist-tag (and a prerelease GitHub release), and `1.0.0` publishes as `1.0.<date>` to `latest`. The `exact` input publishes the package.json version verbatim, for the first stable release of a version line. Release assets are always named `slackwater-<date>.*` regardless of the npm version.
+Releases are created by [running the Publish action](https://github.com/openwatersio/slackwater-database/actions/workflows/publish.yml) on GitHub Actions. The action takes the `version` in `packages/database/package.json` as a floor and replaces its last segment with the current date, so the version always names the data vintage: `1.0.0-beta.0` publishes as `1.0.0-beta.<date>` under the `beta` dist-tag (and a prerelease GitHub release), and `1.0.0` publishes as `1.0.<date>` to `latest`. Release assets are named `slackwater-<date>.*` to match.
 
 ## License
 
