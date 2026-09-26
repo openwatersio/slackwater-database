@@ -171,6 +171,34 @@ noaa/jx0303:
   slug: mile-point-lb-22
   formerSlugs: [mile-point]
 
+# NOAA names these seven by distance from a landmark the name never states
+# ("8 Miles Above Mouth"), which reads only inside its own regional listing.
+# No mapped water body covers creeks this narrow, so the derived context falls
+# to the provider's state qualifier or the nearest town, and neither is what
+# the distance is measured along.
+noaa/8537535:
+  context: Mad Horse Creek
+
+noaa/8537731:
+  context: Alloway Creek
+
+noaa/8537753:
+  context: Alloway Creek
+
+noaa/8677566:
+  context: Little Satilla River
+
+noaa/8677833:
+  context: Little Satilla River
+
+noaa/8722481:
+  context: Loxahatchee River
+
+# Spring Bluff is a hamlet in Camden County on the Little Satilla River; the
+# published position is rounded to the minute and reads ~7 km north of it.
+noaa/TEC3531:
+  context: Little Satilla River
+
 # The generalized maritime boundary puts these border gauges in the neighboring country.
 noaa/9449828:
   location:
