@@ -2,6 +2,67 @@ import { describe, test, expect } from "vitest";
 import { cleanName } from "../name-cleanup.js";
 
 describe("cleanName", () => {
+  describe("abbreviations", () => {
+    test("spells out the ones NOAA writes into names", () => {
+      const us = (raw: string) => cleanName(raw, "United States").name;
+      expect(us("Minim Creek Ent.")).toBe("Minim Creek Entrance");
+      expect(us("Savage I.")).toBe("Savage Island");
+      expect(us("Mangrove Pt.")).toBe("Mangrove Point");
+      expect(us("Roosevelt Is.")).toBe("Roosevelt Islands");
+      expect(us("Deception Pass St. Park")).toBe("Deception Pass State Park");
+      expect(us("NAS Whidbey Island")).toBe("Naval Air Station Whidbey Island");
+    });
+
+    test("expands a trailing I. only, since one mid-name may be an initial", () => {
+      const us = (raw: string) => cleanName(raw, "United States").name;
+      expect(us("Spectacle I. and Long I.")).toBe(
+        "Spectacle I. and Long Island",
+      );
+      expect(us("Savage I., Somewhere")).toBe("Savage Island, Somewhere");
+    });
+
+    test("cases the expansion like any other word in a shouting name", () => {
+      expect(cleanName("MINIM CREEK ENT.", "United States").name).toBe(
+        "Minim Creek Entrance",
+      );
+    });
+  });
+
+  describe("distances", () => {
+    const us = (raw: string) => cleanName(raw, "United States").name;
+
+    test("states every distance in nautical miles", () => {
+      expect(us("8 Miles Above Mouth")).toBe("7.0 nm Above Mouth");
+      expect(us("Cape Utalug (4 Miles West of)")).toBe(
+        "Cape Utalug (3.5 nm West of)",
+      );
+      expect(us("Browns Point, 1.6 miles North of")).toBe(
+        "Browns Point, 1.6 miles North of".replace("1.6 miles", "1.4 nm"),
+      );
+    });
+
+    test("keeps a nautical distance's own number", () => {
+      expect(us("1 N.mi. Above Entrance")).toBe("1 nm Above Entrance");
+      expect(us("Pooles Island 2.0 N.mi. SSW of")).toBe(
+        "Pooles Island 2.0 nm SSW of",
+      );
+      expect(us("Cattle Point, 1.2 nm SE of")).toBe(
+        "Cattle Point, 1.2 nm SE of",
+      );
+    });
+
+    test("leaves a place named for a mile alone", () => {
+      expect(us("Six Mile Reef")).toBe("Six Mile Reef");
+      expect(us("Miles Point")).toBe("Miles Point");
+    });
+
+    test("writes nm lowercase however the provider cased it", () => {
+      expect(
+        cleanName("DISCOVERY ISLAND, 7.6 MI. SSE OF", "United States").name,
+      ).toBe("Discovery Island, 6.6 nm SSE of");
+    });
+  });
+
   describe("underscore replacement", () => {
     test("replaces underscores with spaces", () => {
       expect(cleanName("San_Francisco", "United States").name).toBe(
@@ -294,7 +355,7 @@ describe("cleanName", () => {
     test("keeps compass points and units in shouting qualifiers", () => {
       expect(
         cleanName("SMITH ISLAND, 3.4 NM SSE OF", "United States").name,
-      ).toBe("Smith Island, 3.4 NM SSE of");
+      ).toBe("Smith Island, 3.4 nm SSE of");
     });
   });
 

@@ -115,13 +115,57 @@ const SMALL_WORDS = new Set([
 
 // Acronyms in fully capitalized names need to opt out of recasing.
 const PRESERVED_CAPS = new Set(
-  "NNE NE ENE ESE SE SSE SSW SW WSW WNW NW NNW US BC USCG LB ICW ICWW RR NM MBTS CBBT AWG NERR HBR HVN LAWMA COX WCOCO".split(
+  "NNE NE ENE ESE SE SSE SSW SW WSW WNW NW NNW US BC USCG LB ICW ICWW RR MBTS CBBT AWG NERR HBR HVN LAWMA COX WCOCO".split(
     " ",
   ),
 );
 
 // Network prefixes to strip (the remainder is the actual place name)
 const NETWORK_PREFIXES = ["RMN_", "IOC_"];
+
+/**
+ * Abbreviations NOAA writes into station names, spelled out the way a chart
+ * says them. Deliberately short: only the noisy ones. A trailing "I." is an
+ * island ("Savage I.", "Long I., Rainsford I."); one mid-name may be an
+ * initial, so it is left alone.
+ */
+const EXPAND: [RegExp, string][] = [
+  [/\bNAS\b/g, "Naval Air Station"],
+  [/\bSt\. Park\b/gi, "State Park"],
+  [/\bent\./gi, "Entrance"],
+  [/\bI\.(?=$|,)/g, "Island"],
+  [/\bIs\./gi, "Islands"],
+  [/\bPt\./gi, "Point"],
+  [/\bCk\./gi, "Creek"],
+];
+
+/** 1 statute mile = 1.609344 km; 1 nautical mile = 1.852 km. */
+const NM_PER_MILE = 1.609344 / 1.852;
+
+/**
+ * A distance and its unit, in any of the spellings NOAA uses: "7.6 mi.",
+ * "0.8mile", "1.0 n.mi.", "0.4 nmi.", "0.3 nautical mile", "3nm.". The
+ * leading number is required; it is what separates a measurement from a
+ * place called Six Mile Reef or Miles Point.
+ */
+const DISTANCE =
+  /(\d+(?:\.\d+)?)\s*(n\.?\s?mi\.?|nautical\s+miles?|nm\.?|mi\.|miles?)(?![a-z])/gi;
+
+/**
+ * State a distance in nautical miles, however the provider wrote it. NOAA
+ * mixes units within one dataset ("Cattle Point, 1.2 nm SE of" beside
+ * "Browns Point, 1.6 miles North of"), and a consumer listing both wants them
+ * to agree. A converted distance gets one decimal, the precision NOAA itself
+ * writes; one already nautical keeps its number verbatim rather than being
+ * round-tripped.
+ */
+function toNauticalMiles(name: string): string {
+  return name.replace(DISTANCE, (_, value: string, unit: string) =>
+    unit[0]!.toLowerCase() === "n"
+      ? `${value} nm`
+      : `${(Number(value) * NM_PER_MILE).toFixed(1)} nm`,
+  );
+}
 
 /**
  * Countries whose place names hyphenate a linking preposition
@@ -212,6 +256,12 @@ export function cleanName(
   // Step 3: Replace underscores with spaces
   name = name.replace(/_/g, " ");
 
+  // Step 3b: Spell out abbreviations, before title case so the words this
+  // writes are cased like any other.
+  for (const [pattern, replacement] of EXPAND) {
+    name = name.replace(pattern, replacement);
+  }
+
   // Step 4: Split PascalCase
   // Insert space between lowercase→uppercase transitions, except inside a
   // Mc/Mac surname, which is one word however it is cased: "PortAngeles" is
@@ -232,6 +282,11 @@ export function cleanName(
 
   // Step 6: Title case
   name = toTitleCase(name, country, validRegions);
+
+  // Step 6b: State distances in nautical miles. After title case, so the
+  // lowercase "nm" it writes is the spelling NOAA's own qualifiers use
+  // ("3.0 nm NE of") rather than a word to be cased.
+  name = toNauticalMiles(name);
 
   // Step 7: Post-processing — French-style hyphenation for small prepositions
   // "Boulogne sur Mer" → "Boulogne-sur-Mer", "Aiguillon sur Mer" → "Aiguillon-sur-Mer"
