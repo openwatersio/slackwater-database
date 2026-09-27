@@ -322,6 +322,89 @@ describe("metadata resolution", () => {
     expect(result.context_derived).toBe(true);
   });
 
+  describe("a derived context names the place a reader knows", () => {
+    const at = (name: string, distance: number, population: number) => ({
+      ...everett,
+      place: { ...everett.place, name, population },
+      distance,
+    });
+    const resolveNear = (places: GeocodeResult[]) =>
+      resolveMetadata(
+        { ...baseStation, name: "Priest Point" },
+        {
+          geocoder: { nearest: () => places[0] ?? null, near: () => places },
+          waterBodies: { at: () => [] },
+        },
+      );
+
+    test("a city beats a neighbourhood a kilometre nearer", () => {
+      const result = resolveNear([
+        at("Riverside", 1, 0),
+        at("Everett", 2, 110629),
+      ]);
+      expect(result.context).toBe("Everett, WA");
+      expect(result.context_derived).toBe(true);
+    });
+
+    test("a genuinely nearest town keeps its label", () => {
+      const result = resolveNear([
+        at("Mukilteo", 1, 21000),
+        at("Seattle", 30, 750000),
+      ]);
+      expect(result.context).toBe("Mukilteo, WA");
+    });
+
+    test("locality stays the nearest place", () => {
+      const result = resolveNear([
+        at("Riverside", 1, 0),
+        at("Everett", 2, 110629),
+      ]);
+      expect(result.locality).toBe("Riverside");
+    });
+
+    test("a place past the derived range is never the label", () => {
+      const result = resolveNear([
+        at("Riverside", 1, 0),
+        at("Seattle", 45, 750000),
+      ]);
+      expect(result.context).toBe("Riverside, WA");
+    });
+
+    test("a US territory is named like a state, not by its municipality", () => {
+      const carolina: GeocodeResult = {
+        place: {
+          name: "Carolina",
+          admin1: "Carolina",
+          admin1Code: "31",
+          countryCode: "PR",
+          latitude: 18.38,
+          longitude: -65.96,
+          population: 170000,
+        },
+        distance: 3,
+        country: "Puerto Rico",
+        continent: "North America",
+        region: "Carolina",
+      };
+      const result = resolveMetadata(
+        {
+          ...baseStation,
+          id: "noaa/9754986",
+          name: "Punta Cangrejos",
+          latitude: 18.46,
+          longitude: -65.99,
+          country: "Puerto Rico",
+          country_code: "PR",
+        },
+        {
+          geocoder: { nearest: () => carolina, near: () => [carolina] },
+          waterBodies: { at: () => [] },
+        },
+      );
+      expect(result.context).toBe("Carolina, PR");
+    });
+  });
+
   test("a provider qualifier outranks the water body", () => {
     const result = resolveMetadata(
       { ...baseStation, name: "Friday Harbor, San Juan Island" },
