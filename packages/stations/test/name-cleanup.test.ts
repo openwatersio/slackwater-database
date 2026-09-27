@@ -63,6 +63,38 @@ describe("cleanName", () => {
     });
   });
 
+  describe("lowercase qualifiers", () => {
+    const us = (raw: string) => cleanName(raw, "United States").name;
+
+    test("keeps a bearing qualifier as NOAA wrote it", () => {
+      expect(us("Accaceek Point, 0.3 nm southwest of")).toBe(
+        "Accaceek Point, 0.3 nm southwest of",
+      );
+      expect(us("Agate Passage, north end")).toBe("Agate Passage, north end");
+      expect(us("Adak Strait, off Argonne Point")).toBe(
+        "Adak Strait, off Argonne Point",
+      );
+      expect(us("Almy Point Bridge, south of, Sakonnet River")).toBe(
+        "Almy Point Bridge, south of, Sakonnet River",
+      );
+    });
+
+    test("keeps a name that opens with a distance as written", () => {
+      expect(us("0.2 nm off Flat Point")).toBe("0.2 nm off Flat Point");
+      expect(us("0.7 nm SW of shipbuilding plant")).toBe(
+        "0.7 nm SW of shipbuilding plant",
+      );
+    });
+
+    test("still cases a part that shouts, and a name with no capital at all", () => {
+      expect(us("ACCACEEK POINT, 0.3 NM SOUTHWEST OF")).toBe(
+        "Accaceek Point, 0.3 nm Southwest of",
+      );
+      expect(us("eastport")).toBe("Eastport");
+      expect(us("port angeles, wa")).toBe("Port Angeles");
+    });
+  });
+
   describe("underscore replacement", () => {
     test("replaces underscores with spaces", () => {
       expect(cleanName("San_Francisco", "United States").name).toBe(

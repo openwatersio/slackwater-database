@@ -312,6 +312,14 @@ export function cleanName(
   return { name, region, isOpaque, original };
 }
 
+/**
+ * Title case. A comma-separated part the provider wrote in lowercase inside a
+ * name it otherwise cased is a convention, not an oversight: NOAA qualifies a
+ * station as "0.3 nm southwest of", "north end" or "off Argonne Point", and a
+ * consumer composing "0.3 nm southwest of Accaceek Point" needs those words as
+ * written. Such a part is kept; a name that shouts, or one with no capital
+ * anywhere, is cased throughout.
+ */
 function toTitleCase(
   str: string,
   country: string,
@@ -319,12 +327,22 @@ function toTitleCase(
 ): string {
   const words = str.split(/\s+/);
   const shouting = !/[a-z]/.test(str);
+  const kept = new Set<number>();
+  if (!shouting && /[A-Z]/.test(str)) {
+    let at = 0;
+    for (const part of str.split(/,\s*/)) {
+      const n = part ? part.split(/\s+/).length : 0;
+      if (/^[0-9a-z]/.test(part)) for (let k = at; k < at + n; k++) kept.add(k);
+      at += n;
+    }
+  }
   const allCaps = words.map(
     (word) => /^[A-Z]{2,}$/.test(word) && !validRegions?.has(word),
   );
 
   return words
     .map((word, i) => {
+      if (kept.has(i)) return word;
       const bare = word.replace(/[)\]},]+$/, "");
       if (i > 0 && word === word.toUpperCase() && validRegions?.has(bare)) {
         return word;
