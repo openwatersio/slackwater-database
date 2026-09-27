@@ -39,6 +39,8 @@ const station = route && stationsById.get(route.stationIds[0]!);
 console.log(station?.locality, station?.region, station?.country_code);
 ```
 
+Each route carries its canonical web `path` (`/tides/ca/bc/victoria/`: kind, lowercase ISO country code, subdivision code when the station has one, slug) and the `formerPaths` that should redirect to it.
+
 `stationRouteBySlug(kind, slug)` performs a binary lookup without decoding the full route index. `stationRoutes(kind)` decodes that kind's complete route list on demand. Prediction fields such as constituents and datums remain lazy.
 
 ### Searching for stations

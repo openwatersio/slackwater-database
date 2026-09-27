@@ -9,11 +9,11 @@ import {
   emptyFormerSlugs,
   departures,
   routeHistoryProblems,
-  routePath,
   type RouteLock,
   type RouteMember,
   type SlugTable,
 } from "../routes.ts";
+import { routePath } from "../../database/src/route-path.ts";
 import type { ResolvedStation } from "../metadata.ts";
 
 const routeMember = (
@@ -387,6 +387,16 @@ describe("geographic routes", () => {
     expect(
       routePath("tide", routeMember("tide", "koror", "uhslc/koror", "PW")),
     ).toBe("/tides/pw/koror/");
+  });
+
+  test("rejects slugs a path would read as a country code", () => {
+    for (const slug of ["ab", "a"])
+      expect(() =>
+        buildRoutes([routeMember("tide", slug, "station", "US", "US-WA")], {
+          routeLock: emptyRoutes(),
+          registryIds: new Set(),
+        }),
+      ).toThrow(/station: route slug .* is 2 characters or fewer/);
   });
 
   test("rejects shared slugs whose geography disagrees", () => {

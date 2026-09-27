@@ -20,6 +20,8 @@ export interface StationRouteInput {
 
 export interface StationRoute {
   slug: string;
+  /** Canonical web path, e.g. `/tides/ca/bc/victoria/`. */
+  path: string;
   stationIds: string[];
   formerPaths: string[];
 }
