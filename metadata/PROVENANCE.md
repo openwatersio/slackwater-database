@@ -41,13 +41,17 @@ Everything above is about _station_ identity. The database builder also uses
 **GeoNames cities500, CC BY 4.0** to derive locality, subdivision, country, and
 fallback context fields when curated and provider data do not supply them.
 
-`places.json` is a reviewed, filtered snapshot of the ten nearest GeoNames
-candidates within 100 km of every station in the 2026-09-11 catalogue. It was
-built from `cities500.zip` and `admin1CodesASCII.txt` downloaded on 2026-09-11
-(SHA-256 `060245a4f6914e253d87a09a1344ed274c659ba736f5d445ab0c7ca4effeee1e`
-and `590651498043f674accda2b7f46d21286cda0e290b02f8561c5005eee9a5448c`).
-The committed snapshot makes generation reproducible and reviewable; updating
-it is an explicit source-data change rather than a side effect of building.
+`places.json` is a reviewed, filtered snapshot: the ten nearest GeoNames
+places, and the ten nearest that are not a section of a city, within 100 km of
+every station in the catalogue. `packages/stations/fetch-places.ts` builds it
+(`npm run fetch-places -w packages/stations`). The committed snapshot was built
+from `cities500.zip` and `admin1CodesASCII.txt` downloaded on 2026-09-27
+(SHA-256 `a99f1423b13c52d51e281d27fa924c2b11f05a57a96467ff7b8ea437e0b21b38`
+and `1da92a6323a5fec3176f3f743bf4cf4040fd56a876da55e46fbca23c863aa60a`).
+Names are the ones GeoNames publishes, accents included. A section of a city
+(feature code PPLX) is flagged `section` and never labels a station. The
+committed snapshot makes generation reproducible and reviewable; updating it is
+an explicit source-data change rather than a side effect of building.
 
 The snapshot is not included in the published database or npm package. Only
 the derived station fields are written to TCDB. GeoNames contains no tide or

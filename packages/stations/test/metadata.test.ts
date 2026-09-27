@@ -354,6 +354,16 @@ describe("metadata resolution", () => {
       expect(result.context).toBe("Mukilteo, WA");
     });
 
+    test("a section of a city places the station but never labels it", () => {
+      const southBoston = {
+        ...at("South Boston", 1, 571281),
+        place: { ...at("South Boston", 1, 571281).place, section: true },
+      };
+      const result = resolveNear([southBoston, at("Everett", 6, 110629)]);
+      expect(result.context).toBe("Everett, WA");
+      expect(result.locality).toBe("South Boston");
+    });
+
     test("locality stays the nearest place", () => {
       const result = resolveNear([
         at("Riverside", 1, 0),

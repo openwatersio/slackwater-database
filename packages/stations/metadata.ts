@@ -497,7 +497,10 @@ export function resolveMetadata(
     ? undefined
     : geocoder
         .near(position[0], position[1], 100, DERIVED_MAX_KM)
-        .filter((r) => sameCountry(r) && r.distance <= DERIVED_MAX_KM)
+        .filter(
+          (r) =>
+            sameCountry(r) && r.distance <= DERIVED_MAX_KM && !r.place.section,
+        )
         .reduce<GeocodeResult | undefined>(
           (best, r) =>
             !best || recognitionScore(r) < recognitionScore(best) ? r : best,

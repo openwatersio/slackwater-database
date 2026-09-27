@@ -13,6 +13,8 @@ export interface Place {
   latitude: number;
   longitude: number;
   population: number;
+  /** A section of a city (GeoNames PPLX): it places a station but never labels one. */
+  section?: boolean;
 }
 
 export interface GeocodeResult {
