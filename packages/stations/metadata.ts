@@ -3,12 +3,21 @@ import { find as findTimezone } from "geo-tz/all";
 import { parse } from "yaml";
 import type { StationInput } from "@slackwater/database";
 import { cleanName } from "./name-cleanup.ts";
-import type { Geocoder } from "./geocode.ts";
+import type { GeocodeResult, Geocoder } from "./geocode.ts";
 import type { MaritimeZones } from "./maritime-zones.ts";
 import type { WaterBodies } from "./water-bodies.ts";
 
 export const MAX_CORRECTION_KM = 5;
 export const DERIVED_MAX_KM = 40;
+/** Km of credit per tenfold of population over 1,000, so a known town beats a nearer neighbourhood. */
+export const RECOGNITION_KM = 3;
+
+const recognitionScore = ({ distance, place }: GeocodeResult) =>
+  distance -
+  RECOGNITION_KM * Math.log10(Math.max(place.population, 1000) / 1000);
+
+/** GeoNames files these as countries whose regions are municipalities; a label names them like a state. */
+const US_TERRITORIES = new Set(["AS", "GU", "MP", "PR", "VI"]);
 
 export interface MetadataLocation {
   locality?: string;
@@ -483,13 +492,26 @@ export function resolveMetadata(
       contextDerived = true;
     }
   }
-  if (!context && place && place.distance <= DERIVED_MAX_KM) {
-    const shortRegion = normalizedRegion(
-      place.region ?? place.place.admin1Code,
-      country.iso2,
-    );
-    if (!namesOverlap(name, place.place.name))
-      context = [place.place.name, shortRegion].filter(Boolean).join(", ");
+  // The label, unlike locality, is the place a reader knows: a scored pick, not the nearest.
+  const town = context
+    ? undefined
+    : geocoder
+        .near(position[0], position[1], 100, DERIVED_MAX_KM)
+        .filter(
+          (r) =>
+            sameCountry(r) && r.distance <= DERIVED_MAX_KM && !r.place.section,
+        )
+        .reduce<GeocodeResult | undefined>(
+          (best, r) =>
+            !best || recognitionScore(r) < recognitionScore(best) ? r : best,
+          undefined,
+        );
+  if (!context && town) {
+    const shortRegion = US_TERRITORIES.has(country.iso2)
+      ? country.iso2
+      : normalizedRegion(town.region ?? town.place.admin1Code, country.iso2);
+    if (!namesOverlap(name, town.place.name))
+      context = [town.place.name, shortRegion].filter(Boolean).join(", ");
     else if (shortRegion && !namesOverlap(name, shortRegion))
       context = shortRegion;
     if (context) contextDerived = true;
@@ -620,8 +642,16 @@ function unique(values: string[]): string[] {
 }
 
 function namesOverlap(left: string, right: string): boolean {
-  const a = left.trim().replace(/\s+/g, " ").toLowerCase();
-  const b = right.trim().replace(/\s+/g, " ").toLowerCase();
+  // Accents folded first: a provider's "Limon" and GeoNames' "Limón" are one name.
+  const fold = (text: string) =>
+    text
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLowerCase();
+  const a = fold(left);
+  const b = fold(right);
   const words = (text: string) => text.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
   const contains = (whole: string[], part: string[]) =>
     whole.some((_, index) =>
