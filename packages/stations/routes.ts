@@ -1,4 +1,7 @@
 import type { DatabaseRoutes } from "@slackwater/database";
+// From source, not the package entry: the entry ships the database that
+// @slackwater/database generates by loading this package.
+import { routePath } from "../database/src/route-path.ts";
 import type { ResolvedStation } from "./metadata.ts";
 
 export type StationKind = "tide" | "current";
@@ -324,17 +327,6 @@ export function toSlug(value: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-export function routePath(kind: StationKind, station: RouteMember): string {
-  const prefix = kind === "tide" ? "tides" : "currents";
-  const country = station.country_code.toLowerCase();
-  const subdivision = station.region_code?.startsWith(
-    `${station.country_code}-`,
-  )
-    ? station.region_code.slice(3).toLowerCase()
-    : undefined;
-  return `/${[prefix, country, subdivision, station.slug].filter(Boolean).join("/")}/`;
-}
-
 export function buildRoutes(
   members: RouteMember[],
   {
@@ -347,6 +339,11 @@ export function buildRoutes(
     if (!/^[a-z0-9-]+$/.test(member.slug))
       throw new Error(
         `${member.id}: invalid route slug ${JSON.stringify(member.slug)}`,
+      );
+    // Consumers read a two-letter first path segment as a country code.
+    if (member.slug.length <= 2)
+      throw new Error(
+        `${member.id}: route slug ${JSON.stringify(member.slug)} is 2 characters or fewer`,
       );
     if (!/^[A-Z]{2}$/.test(member.country_code))
       throw new Error(
