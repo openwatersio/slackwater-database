@@ -642,8 +642,16 @@ function unique(values: string[]): string[] {
 }
 
 function namesOverlap(left: string, right: string): boolean {
-  const a = left.trim().replace(/\s+/g, " ").toLowerCase();
-  const b = right.trim().replace(/\s+/g, " ").toLowerCase();
+  // Accents folded first: a provider's "Limon" and GeoNames' "Limón" are one name.
+  const fold = (text: string) =>
+    text
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLowerCase();
+  const a = fold(left);
+  const b = fold(right);
   const words = (text: string) => text.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
   const contains = (whole: string[], part: string[]) =>
     whole.some((_, index) =>

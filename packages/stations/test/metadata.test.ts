@@ -380,6 +380,40 @@ describe("metadata resolution", () => {
       expect(result.context).toBe("Riverside, WA");
     });
 
+    test("a place that restates the name with accents is still a restatement", () => {
+      const mayaguez: GeocodeResult = {
+        place: {
+          name: "Mayagüez",
+          admin1: "Mayagüez",
+          admin1Code: "97",
+          countryCode: "PR",
+          latitude: 18.2,
+          longitude: -67.14,
+          population: 70000,
+        },
+        distance: 1,
+        country: "Puerto Rico",
+        continent: "North America",
+        region: "Mayagüez",
+      };
+      const result = resolveMetadata(
+        {
+          ...baseStation,
+          id: "noaa/9759394",
+          name: "Mayaguez",
+          latitude: 18.22,
+          longitude: -67.16,
+          country: "Puerto Rico",
+          country_code: "PR",
+        },
+        {
+          geocoder: { nearest: () => mayaguez, near: () => [mayaguez] },
+          waterBodies: { at: () => [] },
+        },
+      );
+      expect(result.context).toBe("PR");
+    });
+
     test("a US territory is named like a state, not by its municipality", () => {
       const carolina: GeocodeResult = {
         place: {
