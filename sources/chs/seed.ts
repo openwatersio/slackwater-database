@@ -26,6 +26,13 @@ const reserved = new Set(
   Object.keys(tombstones.tide).filter((id) => id.startsWith("chs-")),
 );
 
+// Once metadata:lock revives the reservations there are none left, and a
+// second seed would write an empty list over the real one.
+assert.ok(
+  reserved.size > 0,
+  "no CHS slugs are reserved: the seed has already run; refresh with import.ts",
+);
+
 const stations = seedStations(app, reserved);
 const seeded = new Set(stations.map(({ id }) => id));
 const missing = [...reserved].filter((id) => !seeded.has(id));

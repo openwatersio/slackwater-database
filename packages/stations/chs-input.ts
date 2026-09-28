@@ -26,8 +26,9 @@ export function chsInputs(records: ChsStationRecord[]): StationInput[] {
       latitude,
       longitude,
       timezone,
-      // Every IWLS station is Canadian, and an Arctic cove can sit beyond both
-      // a maritime zone and any place within 100 km. A zone still wins.
+      // IWLS is Canada's network, and an Arctic cove can sit beyond both a
+      // maritime zone and any place within 100 km. A zone or a correction still
+      // wins, as one does for Saint-Pierre.
       country: "Canada",
       type: "reference",
       harmonic_constituents: [],
