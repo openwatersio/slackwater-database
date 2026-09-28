@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadProductionCatalogue } from "./load-catalogue.ts";
+import { loadCorrections } from "./metadata.ts";
 import {
   auditProblems,
   classifyPosition,
@@ -27,6 +28,25 @@ assert.deepEqual(
   catalogue.formerSlugs,
   catalogue.previousFormerSlugs,
   "slug history changed; run npm run metadata:lock",
+);
+
+// The generalized maritime boundary can hand a Gulf Islands gauge to
+// Washington, and its route path would then read /us/wa/. A CHS station is in
+// Canada unless corrections.yaml pins it elsewhere, as it does Saint-Pierre;
+// pin a stray one there with `location.countryCode`.
+const corrections = loadCorrections(
+  readFileSync(join(root, "metadata", "corrections.yaml"), "utf8"),
+);
+assert.deepEqual(
+  catalogue.stations
+    .filter(
+      ({ id, country_code }) =>
+        id.startsWith("chs-") &&
+        country_code !== (corrections.get(id)?.location?.countryCode ?? "CA"),
+    )
+    .map(({ id, country_code }) => `${id} (${country_code})`),
+  [],
+  "CHS stations resolved outside the country corrections.yaml expects",
 );
 
 const routeIds = new Set(

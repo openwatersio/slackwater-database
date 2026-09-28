@@ -1,9 +1,11 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import currentBundle from "../../sources/noaa-current/currents.json" with { type: "json" };
+import chsStations from "../../sources/chs/stations.json" with { type: "json" };
 import countryLookup from "country-code-lookup";
 import type { StationInput, StationQuality } from "@slackwater/database";
 import { buildCatalogue } from "./catalogue.ts";
+import { chsInputs } from "./chs-input.ts";
 import { currentInputs } from "./current-input.ts";
 import { loadGeocoder } from "./geocode.ts";
 import { loadMaritimeZones } from "./maritime-zones.ts";
@@ -59,7 +61,8 @@ export async function loadProductionCatalogue(
     : emptyFormerSlugs();
   return {
     ...buildCatalogue({
-      tides,
+      // CHS stations stay out of providerTideIds below: they are identity-only.
+      tides: [...tides, ...chsInputs(chsStations)],
       currents,
       corrections: loadCorrections(
         readFileSync(join(metadataDir, "corrections.yaml"), "utf8"),
@@ -109,6 +112,10 @@ export function stationPositions(root: string): [number, number][] {
           : [[latitude, longitude]],
     ),
     ...records.flatMap(({ position }) => (position ? [position] : [])),
+    ...chsStations.map(({ latitude, longitude }): [number, number] => [
+      latitude,
+      longitude,
+    ]),
   ];
   const unique = new Map(
     positions.map(([lat, lon]) => {

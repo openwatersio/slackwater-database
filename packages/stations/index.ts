@@ -4,6 +4,7 @@ export * from "./geocode.ts";
 export * from "./name-cleanup.ts";
 export * from "./util.ts";
 export * from "./catalogue.ts";
+export * from "./chs-input.ts";
 export * from "./current-input.ts";
 export * from "./load-catalogue.ts";
 export * from "./metadata.ts";
