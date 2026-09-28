@@ -8,4 +8,6 @@ To refresh from IWLS (about 20 minutes, because every station is probed for pred
 
     npm run import -w sources/chs
 
-A station keeps its id while an IWLS station sits within 200 m of it or carries exactly its name. A new station gets `chs-` plus the slug of its name. A station IWLS drops leaves the list, and `npm run metadata:lock` tombstones its slug. A station within 200 m of a registry tide port is that port's water and is skipped.
+A station keeps its id while an IWLS station sits within 200 m of it, or within 10 km and carries exactly its name. A new station gets `chs-` plus the slug of its name. A station within 200 m of a registry tide port is that port's water and is skipped.
+
+A station IWLS stops listing or serving is kept and reported, because one empty probe must not cost a station its id. To remove the reported stations, rerun with `-- --prune`; `npm run metadata:lock` then tombstones their slugs, and their ids are never used again. Check every one first.

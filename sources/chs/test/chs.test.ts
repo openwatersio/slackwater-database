@@ -148,10 +148,35 @@ describe("reconcile", () => {
     expect(out.map((s) => s.id)).toEqual(["chs-gone-point-2"]);
   });
 
-  it("removes a record no station matches", () => {
-    expect(reconcile([], [record("chs-lost", "Lost", 50, -125)], none)).toEqual(
-      [],
+  it("keeps a record no station matches, so a gap in IWLS never costs a station its id", () => {
+    const lost = record("chs-lost", "Lost", 50, -125);
+    expect(reconcile([], [lost], none)).toEqual([lost]);
+  });
+
+  it("removes an unmatched record only when pruning", () => {
+    const lost = record("chs-lost", "Lost", 50, -125);
+    expect(reconcile([], [lost], { ...none, prune: true })).toEqual([]);
+  });
+
+  it("never falls back on a name more than 10 km away", () => {
+    const nova = record("chs-seal-cove", "Seal Cove", 44.6, -66.8);
+    const out = reconcile([iwls("1", "Seal Cove", 54.3, -58.4)], [nova], {
+      ...none,
+      prune: true,
+    });
+    expect(out.map((s) => s.id)).toEqual(["chs-seal-cove-2"]);
+  });
+
+  it("falls back on the nearest record of the same name", () => {
+    const out = reconcile(
+      [iwls("1", "Seal Cove", 49.91, -56.4)],
+      [
+        record("chs-seal-cove", "Seal Cove", 49.95, -56.4),
+        record("chs-seal-cove-2", "Seal Cove", 49.9, -56.4),
+      ],
+      { ...none, prune: true },
     );
+    expect(out.map((s) => s.id)).toEqual(["chs-seal-cove-2"]);
   });
 
   it("mints suffixes in IWLS code order, so a rerun is stable", () => {

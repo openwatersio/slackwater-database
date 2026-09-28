@@ -35,6 +35,13 @@ type Position = { latitude: number; longitude: number };
  */
 export const SAME_WATER_KM = 0.2;
 
+/**
+ * How far a gauge may move and still be recognised by its name. Six names
+ * repeat across Canada ("Seal Cove" is in Nova Scotia, Newfoundland and BC), so
+ * an unbounded name match would hand an id to water a thousand km away.
+ */
+export const SAME_NAME_KM = 10;
+
 export function distanceKm(a: Position, b: Position): number {
   const rad = (degrees: number) => (degrees * Math.PI) / 180;
   const dLat = rad(b.latitude - a.latitude);
@@ -97,11 +104,19 @@ const byId = (a: ChsStation, b: ChsStation) =>
  * Matching is by position first, for every station, so a name match cannot
  * take a record another station sits on. `taken` must include every id that
  * ever held a slug, so a removed record's id is never handed to new water.
+ *
+ * A record no station matches is kept unless `prune` is set: one empty probe
+ * or truncated response must not tombstone a station's slug and cost it its id
+ * when it comes back.
  */
 export function reconcile(
   iwls: IwlsStation[],
   previous: ChsStation[],
-  { ports, taken }: { ports: Position[]; taken: Iterable<string> },
+  {
+    ports,
+    taken,
+    prune = false,
+  }: { ports: Position[]; taken: Iterable<string>; prune?: boolean },
 ): ChsStation[] {
   const candidates = iwls
     .filter(
@@ -133,17 +148,22 @@ export function reconcile(
   for (const station of candidates) {
     if (matched.has(station)) continue;
     const { name } = identity(station);
-    const record = [...unclaimed.values()].find(
-      (candidate) => candidate.name === name,
-    );
+    const [record] = [...unclaimed.values()]
+      .filter(
+        (candidate) =>
+          candidate.name === name &&
+          distanceKm(candidate, station) <= SAME_NAME_KM,
+      )
+      .sort((a, b) => distanceKm(a, station) - distanceKm(b, station));
     if (!record) continue;
     matched.set(station, record.id);
     unclaimed.delete(record.id);
   }
 
   const used = new Set([...taken, ...previous.map(({ id }) => id)]);
+  const kept = prune ? [] : [...unclaimed.values()];
   return candidates
-    .map((station) => {
+    .map((station): ChsStation => {
       const { name, aliases } = identity(station);
       let id = matched.get(station);
       if (!id) {
@@ -160,6 +180,7 @@ export function reconcile(
         longitude: station.longitude,
       };
     })
+    .concat(kept)
     .sort(byId);
 }
 

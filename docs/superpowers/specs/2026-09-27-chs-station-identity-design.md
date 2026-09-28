@@ -28,9 +28,9 @@ A private workspace, `@slackwater/chs`, following `sources/kartverket`:
 1. Fetch `/stations` and keep stations advertising the `wlp` series.
 2. Probe each for one hour of predictions from yesterday and keep those that return any, with the same pacing and back-off as the app's generator. IWLS advertises `wlp` for stations it never serves.
 3. Drop any station within 200 m of a CHS tide port in `metadata/registry.yaml`. That water already has a curated record.
-4. Match each remaining station to an existing record: the nearest unclaimed record within 200 m, or else the unclaimed record whose name matches exactly. A matched record keeps its id; its name, aliases and position update from IWLS.
+4. Match each remaining station to an existing record: the nearest unclaimed record within 200 m, or else the nearest unclaimed record within 10 km whose name matches exactly. Six names repeat across Canada, so an unbounded name match could hand an id to distant water. A matched record keeps its id; its name, aliases and position update from IWLS.
 5. An unmatched station gets a new id: `chs-` plus the slug of its name, suffixed `-2`, `-3` and so on past every id already used by `stations.json`, the registry and the tombstones.
-6. A record no station matched is removed. The catalogue then tombstones its slug through the existing path, so the slug is never reused.
+6. A record no station matched is kept and reported, because one empty probe must not cost a station its id. With `--prune` it is removed, and the catalogue then tombstones its slug through the existing path, so the slug is never reused.
 
 The Sable Island name repair moves here from the app: IWLS's `officialName` for that station is bilingual, so the record's name is "Sable Island" with "sable, île de" as an alias. Its id, `chs-sable-island-sable-azle-de`, was minted from a since-repaired misspelling in the IWLS feed and stays as it is, because step 4 keeps a matched record's id whatever the name becomes.
 

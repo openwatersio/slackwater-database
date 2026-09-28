@@ -2,7 +2,10 @@
  * Refresh stations.json from IWLS. Run by hand and review the diff; the
  * prediction probe takes about 20 minutes.
  *
- *   npm run import -w sources/chs
+ *   npm run import -w sources/chs [-- --prune]
+ *
+ * A station IWLS no longer lists or serves is kept and reported. Removing one
+ * tombstones its slug and retires its id for good, so it takes --prune.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -78,13 +81,23 @@ const taken = [
 
 const file = join(here, "stations.json");
 const previous = JSON.parse(readFileSync(file, "utf8")) as ChsStation[];
-const next = reconcile(serving, previous, { ports, taken });
+const prune = process.argv.includes("--prune");
+const seen = new Set(
+  reconcile(serving, previous, { ports, taken, prune: true }).map(
+    ({ id }) => id,
+  ),
+);
+const next = reconcile(serving, previous, { ports, taken, prune });
 writeFileSync(file, JSON.stringify(next, null, 2) + "\n");
 
 const before = new Set(previous.map(({ id }) => id));
-const after = new Set(next.map(({ id }) => id));
+const unseen = previous.filter(({ id }) => !seen.has(id));
 console.log(
-  `${advertised.length} advertise wlp, ${serving.length} serve it; ${next.length} stations: ` +
-    `${[...after].filter((id) => !before.has(id)).length} added, ` +
-    `${[...before].filter((id) => !after.has(id)).length} removed`,
+  `${advertised.length} advertise wlp, ${serving.length} serve it; ${next.length} stations, ` +
+    `${next.filter(({ id }) => !before.has(id)).length} added`,
 );
+if (unseen.length)
+  console.log(
+    `${unseen.length} not seen this run, ${prune ? "removed" : "kept (rerun with --prune to remove)"}:\n` +
+      unseen.map(({ id, name }) => `  ${id} (${name})`).join("\n"),
+  );
