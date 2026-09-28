@@ -91,10 +91,10 @@ assert.ok(
 // free plans (never fit this database — the previous JSON-string bundle was
 // 4.7 MiB), 10 MiB on paid. Guard well under the paid limit so data growth
 // that would push consumer deployments over it fails here, not at their
-// deploy. ~4.5 MiB as of 8,339 stations.
+// deploy. ~6.1 MiB as of 12,015 stations, 1,082 of them identity-only.
 const compressed = gzipSync(workerSrc).length;
 assert.ok(
-  compressed < 6 * 1024 * 1024,
+  compressed < 6.5 * 1024 * 1024,
   `worker bundle is ${(compressed / 1048576).toFixed(1)} MiB gzipped; ` +
     "approaching Cloudflare's 10 MiB compressed script limit",
 );

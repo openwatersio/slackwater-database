@@ -29,6 +29,19 @@ assert.deepEqual(
   "slug history changed; run npm run metadata:lock",
 );
 
+// The generalized maritime boundary can hand a Gulf Islands gauge to
+// Washington, and its route path would then read /us/wa/. Every CHS station is
+// Canadian; pin a stray one with `location.countryCode` in corrections.yaml.
+assert.deepEqual(
+  catalogue.stations
+    .filter(
+      ({ id, country_code }) => id.startsWith("chs-") && country_code !== "CA",
+    )
+    .map(({ id, country_code }) => `${id} (${country_code})`),
+  [],
+  "CHS stations resolved outside Canada",
+);
+
 const routeIds = new Set(
   [...catalogue.routes.tide, ...catalogue.routes.current].flatMap(
     ({ station_ids }) => station_ids,

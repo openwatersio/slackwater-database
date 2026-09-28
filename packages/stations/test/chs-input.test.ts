@@ -19,6 +19,7 @@ describe("chsInputs", () => {
       latitude: 43.663818,
       longitude: -65.824022,
       timezone: "America/Halifax",
+      country: "Canada",
       type: "reference",
       harmonic_constituents: [],
       source: {

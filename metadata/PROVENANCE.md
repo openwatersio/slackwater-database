@@ -35,6 +35,12 @@ The honest summary: the _names, context, and positions_ are our work, and there 
 provider handle in the published data at all — the one field that would point _into_ a
 provider's system is the one field we chose not to ship.
 
+## CHS tide stations
+
+`sources/chs/stations.json` is an ingestion pipeline, not part of this registry. It lists every live CHS tide station the registry does not curate, with a name, aliases and position for each. A station's name and position are facts about it, and the database publishes them for every provider. The provider-minted identifier stays out, as above: the file carries no IWLS station code, and a consumer resolves one at runtime by position.
+
+Ids are the ones Slackwater iOS ships, because devices key fitted models by them. They were seeded once from the app's `chs-stations.json` and are kept stable on every IWLS refresh by position and then by name (`sources/chs/README.md`). The file carries no constituents, datums or predictions.
+
 ## Third-party place data
 
 Everything above is about _station_ identity. The database builder also uses
@@ -46,7 +52,7 @@ places, and the ten nearest that are not a section of a city, within 100 km of
 every station in the catalogue. `packages/stations/fetch-places.ts` builds it
 (`npm run fetch-places -w packages/stations`). The committed snapshot was built
 from `cities500.zip` and `admin1CodesASCII.txt` downloaded on 2026-09-27
-(SHA-256 `a99f1423b13c52d51e281d27fa924c2b11f05a57a96467ff7b8ea437e0b21b38`
+(SHA-256 `7a95c3f8f415ad2b31840625032f826a14bbf39ffbc22827a5004cb95c7ed093`
 and `1da92a6323a5fec3176f3f743bf4cf4040fd56a876da55e46fbca23c863aa60a`).
 Names are the ones GeoNames publishes, accents included. A section of a city
 (feature code PPLX) is flagged `section` and never labels a station. The
