@@ -1,0 +1,16 @@
+{
+  "name": "@slackwater/chs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed": "node seed.ts",
+    "import": "node import.ts",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@slackwater/stations": "*"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.1"
+  }
+}
