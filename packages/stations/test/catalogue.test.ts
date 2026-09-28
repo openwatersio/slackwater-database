@@ -154,4 +154,31 @@ describe("buildCatalogue", () => {
       expect.objectContaining({ slug: "malibu-rapids" }),
     ]);
   });
+
+  test("an identity-only CHS tide station revives the slug tombstoned for its id", () => {
+    const inputs = fixtures();
+    inputs.slugTombstones = {
+      tide: { "chs-abbotts-harbour": "abbotts-harbour" },
+      current: {},
+    };
+    inputs.tides.push({
+      id: "chs-abbotts-harbour",
+      kind: "tide",
+      name: "Abbotts Harbour",
+      latitude: 43.663818,
+      longitude: -65.824022,
+      timezone: "America/Halifax",
+      country: "Canada",
+      country_code: "CA",
+      type: "reference",
+      harmonic_constituents: [],
+    });
+
+    const catalogue = buildCatalogue(inputs);
+    expect(catalogue.slugTable.tide["chs-abbotts-harbour"]).toBe(
+      "abbotts-harbour",
+    );
+    expect(catalogue.slugTombstones.tide).toEqual({});
+    expect(catalogue.formerSlugs.tide["chs-abbotts-harbour"]).toBeUndefined();
+  });
 });
