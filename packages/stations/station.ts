@@ -100,8 +100,8 @@ export function getChartDatum(
   if (
     latitude !== undefined &&
     longitude !== undefined &&
-    isBaltic(latitude, longitude) &&
-    "MSL" in availableDatums
+    "MSL" in availableDatums &&
+    isBaltic(latitude, longitude)
   ) {
     return "MSL";
   }

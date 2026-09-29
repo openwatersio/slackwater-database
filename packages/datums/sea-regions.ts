@@ -54,6 +54,17 @@ const MSL_REGION_RINGS: Ring[] = [
   LIMFJORD_RING,
 ];
 
+/** Bounding boxes let most of the world skip the per-vertex tests. */
+const MSL_REGION_BOXES = MSL_REGION_RINGS.map((ring) => ({
+  ring,
+  box: [
+    Math.min(...ring.map(([lon]) => lon)),
+    Math.min(...ring.map(([, lat]) => lat)),
+    Math.max(...ring.map(([lon]) => lon)),
+    Math.max(...ring.map(([, lat]) => lat)),
+  ] as const,
+}));
+
 /** ~2 km at these latitudes. */
 const NEAR_DEG = 0.02;
 
@@ -95,10 +106,16 @@ export function distanceToRing(lon: number, lat: number, ring: Ring): number {
 
 /** True when the coordinate falls within (or hugs the shore of) the Baltic/Kattegat MSL region. */
 export function isBaltic(lat: number, lon: number): boolean {
-  return MSL_REGION_RINGS.some(
-    (ring) =>
-      pointInPolygon(lon, lat, ring) ||
-      distanceToRing(lon, lat, ring) < NEAR_DEG,
+  // distanceToRing scales longitude by cos(lat), so the east-west reach widens.
+  const padLon = NEAR_DEG / Math.cos((lat * Math.PI) / 180);
+  return MSL_REGION_BOXES.some(
+    ({ ring, box: [minLon, minLat, maxLon, maxLat] }) =>
+      lon >= minLon - padLon &&
+      lon <= maxLon + padLon &&
+      lat >= minLat - NEAR_DEG &&
+      lat <= maxLat + NEAR_DEG &&
+      (pointInPolygon(lon, lat, ring) ||
+        distanceToRing(lon, lat, ring) < NEAR_DEG),
   );
 }
 
