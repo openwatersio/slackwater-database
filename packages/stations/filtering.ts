@@ -250,3 +250,72 @@ export const SEASONAL_OUTLIER_MIN_SA = 0.5;
 /** A station's SA must exceed the median SA of its same-regime neighbours by at
  *  least this factor to be gated as contaminated. */
 export const SEASONAL_OUTLIER_RATIO = 5;
+
+// ── Seasonal dominance label ─────────────────────────────────────────────
+// A different question from the gate above, and the two are easy to confuse.
+// That gate asks whether a station's SA is anomalous *against its neighbours*,
+// which catches a bad harmonic fit. This asks whether SA is large against the
+// station's *own* tidal terms, which catches water that has no meaningful tide
+// to begin with: a Great Lakes gauge, a river reach, a Baltic bodden. The
+// contamination gate deliberately excludes these by comparing only within a
+// tidal regime, so nothing else in the pass sees them.
+//
+// It labels rather than rejects. The predictions are correct — the annual
+// cycle is really the dominant signal — so the record is not faulty and a
+// consumer that knows what the water is can say so. Cobourg on Lake Ontario
+// carries SA 0.289 m against a largest tidal constituent of 0.002 m and
+// passes every other gate, including the 2 cm range floor, by 6 mm.
+
+/** The constituents that are the tide itself: diurnal and semidiurnal. The
+ *  long-period terms (MM, MSF, MF) are excluded on both sides — they are
+ *  neither the daily tide nor the seasonal signal being measured. */
+export const TIDAL_CONSTITUENTS = [
+  "M2",
+  "S2",
+  "N2",
+  "K2",
+  "L2",
+  "T2",
+  "NU2",
+  "MU2",
+  "2N2",
+  "LDA2",
+  "K1",
+  "O1",
+  "P1",
+  "Q1",
+  "J1",
+  "M1",
+  "OO1",
+  "RHO1",
+  "2Q1",
+  "SIGMA1",
+  "CHI1",
+  "PI1",
+  "PHI1",
+  "THETA1",
+  "S1",
+];
+
+/** The seasonal band: the annual and semi-annual terms. */
+export const SEASONAL_CONSTITUENTS = ["SA", "SSA"];
+
+/** How far the seasonal band must exceed the largest tidal constituent before a
+ *  station is labelled seasonal.
+ *
+ *  1 is the physical line rather than a tuned one: above it the water's yearly
+ *  swing is larger than its largest daily one, which is the statement the label
+ *  makes and the reason a tide table is the wrong frame for the station. There
+ *  is no gap in the distribution to discover — across the accepted corpus the
+ *  count runs 603 at 1x, 423 at 1.5x, 321 at 2x, 230 at 3x, and 177 stations
+ *  sit between 0.8x and 1x — so a higher figure would be an editorial choice
+ *  about how loud to be, which belongs in the consumer.
+ *
+ *  A consumer that wants a stricter presentation threshold computes the ratio
+ *  from the constituents it already ships. It is deliberately not a field here:
+ *  the point of putting the verdict in the database is that two consumers
+ *  describe the same water the same way, and a numeric ratio on the record is an
+ *  invitation to pick a second threshold per consumer. `issues` states the
+ *  numbers to one decimal for a human reading the record, which is not a machine
+ *  interface — 1.02x prints as 1.0x. */
+export const SEASONAL_DOMINANCE_RATIO = 1;

@@ -126,6 +126,13 @@ function readQuality(
       configurable: true,
       get: () => detail()?.redundant() ?? undefined,
     },
+    seasonal_dominant: {
+      enumerable: true,
+      configurable: true,
+      // Absent in a file written before the field existed, which reads back
+      // false — the same answer as a station that simply is not seasonal.
+      get: () => detail()?.seasonalDominant() || undefined,
+    },
   });
   return quality;
 }
