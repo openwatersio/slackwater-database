@@ -406,7 +406,11 @@ export function resolveMetadata(
   const regionCode =
     authoritativeRegionCode ??
     (cleaned.region ? `${country.iso2}-${cleaned.region}` : undefined);
-  const split = splitQualifier(cleaned.name);
+  // NOAA current qualifiers locate the gauge; they do not consistently name its water.
+  const split =
+    station.kind === "current" && station.id.startsWith("noaa/")
+      ? { name: cleaned.name }
+      : splitQualifier(cleaned.name);
   const name = registry?.name ?? correction?.name ?? split.name;
   if (!nonEmpty(name)) throw new Error(`${station.id}: no name`);
 

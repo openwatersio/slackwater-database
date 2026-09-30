@@ -126,6 +126,74 @@ describe("metadata resolution", () => {
     expect(result.context_derived).toBe(false);
   });
 
+  test.each([
+    "Deer Island, 0.7 nm ESE of",
+    "Cape Cod Canal, east end",
+    "Goose Cove, south of Chops Passage, Kennebec River",
+  ])("keeps the NOAA current qualifier in its name: %s", (name) => {
+    const result = resolveMetadata(
+      { ...baseStation, id: "noaa/BOS1110", kind: "current", name },
+      { geocoder: { nearest: () => null, near: () => [] } },
+    );
+
+    expect(result.name).toBe(name);
+    expect(result).not.toHaveProperty("context");
+    expect(result).not.toHaveProperty("context_derived");
+  });
+
+  test("a NOAA current's context comes from its water, not its bearing", () => {
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        id: "noaa/BOS1110",
+        kind: "current",
+        name: "Deer Island, 0.7 nm ESE of",
+      },
+      {
+        geocoder,
+        waterBodies: { at: () => [{ name: "Boston Harbor", distance: 0 }] },
+      },
+    );
+
+    expect(result.context).toBe("Boston Harbor");
+    expect(result.context_derived).toBe(true);
+  });
+
+  test("a NOAA current keeps its curated name and water", () => {
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        id: "noaa/BOS1110",
+        kind: "current",
+        name: "Deer Island, 0.7 nm ESE of",
+      },
+      {
+        geocoder,
+        correction: { name: "Deer Island", context: "Boston Harbor" },
+      },
+    );
+
+    expect(result.name).toBe("Deer Island");
+    expect(result.context).toBe("Boston Harbor");
+    expect(result.context_derived).toBe(false);
+  });
+
+  test("other current providers still split their water qualifier", () => {
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        id: "other/1",
+        kind: "current",
+        name: "Friday Harbor, San Juan Channel",
+      },
+      { geocoder },
+    );
+
+    expect(result.name).toBe("Friday Harbor");
+    expect(result.context).toBe("San Juan Channel");
+    expect(result.context_derived).toBe(false);
+  });
+
   test("a code-only country correction outranks zone and provider country", () => {
     const canada = {
       ...everett,
