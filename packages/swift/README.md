@@ -65,7 +65,7 @@ To make a decision in code rather than show a string, read `station.license` for
 Depend on the repository by URL. The manifest sits at the repository root and points back into this directory, so no checkout, submodule, or vendored copy is needed:
 
 ```swift
-.package(url: "https://github.com/openwatersio/slackwater-database.git", exact: "1.0.0-beta.0")
+.package(url: "https://github.com/openwatersio/slackwater-database.git", exact: "1.0.0-beta.20260929")
 ```
 
 The package version is the database release it ships with, so a pin names both the reader and the file format it reads.

@@ -37,7 +37,7 @@ The module exports every tide and current station in the database, along with st
 ### Swift
 
 ```swift
-.package(url: "https://github.com/openwatersio/slackwater-database.git", from: "1.0.0")
+.package(url: "https://github.com/openwatersio/slackwater-database.git", exact: "1.0.0-beta.20260929")
 ```
 
 `SlackwaterDatabase` reads a memory-mapped `.tcdb` in place: scan station identity, look up a station by id, read its constituents, without decoding the rest of the file. [See the package README for the full API.](./packages/swift/README.md)
