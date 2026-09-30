@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { chsInputs } from "../chs-input.ts";
+import { loadGeocoder } from "../geocode.ts";
+import { loadWaterBodies } from "../water-bodies.ts";
 import { resolveMetadata } from "../metadata.ts";
 
 describe("chsInputs", () => {
@@ -51,7 +53,7 @@ describe("chsInputs", () => {
     expect(input?.aliases).toEqual(["ex"]);
   });
 
-  it("publishes curated names and qualifiers as written", () => {
+  it("publishes curated names, qualifiers, and coast fallbacks", () => {
     const ids = new Set([
       "chs-cap-aux-meules",
       "chs-charlottetown-nl",
@@ -75,7 +77,7 @@ describe("chsInputs", () => {
       {
         id: "chs-cap-aux-meules",
         name: "Cap-aux-Meules",
-        context: undefined,
+        context: "St. Lawrence",
       },
       {
         id: "chs-charlottetown-nl",
@@ -85,13 +87,36 @@ describe("chsInputs", () => {
       {
         id: "chs-come-by-chance",
         name: "Come by Chance",
-        context: undefined,
+        context: "Atlantic Coast",
       },
       {
         id: "chs-prince-rupert-roro",
         name: "Prince Rupert RoRo",
-        context: undefined,
+        context: "Pacific Coast",
       },
     ]);
+  });
+
+  it("derives a context for every live CHS tide station", async () => {
+    const records = JSON.parse(
+      readFileSync(
+        new URL("../../../sources/chs/stations.json", import.meta.url),
+        "utf8",
+      ),
+    );
+    const geocoder = await loadGeocoder();
+    const waterBodies = await loadWaterBodies();
+
+    expect(
+      chsInputs(records)
+        .map((station) =>
+          resolveMetadata(station, {
+            geocoder,
+            waterBodies,
+          }),
+        )
+        .filter((station) => !station.context)
+        .map((station) => station.id),
+    ).toEqual([]);
   });
 });

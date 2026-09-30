@@ -487,7 +487,7 @@ export function resolveMetadata(
   if (!context) {
     const water = waterBodies
       ?.at(position[0], position[1])
-      .find((body) => !namesOverlap(name, body.name));
+      .find((body) => foldName(name) !== foldName(body.name));
     if (water) {
       context = water.name;
       contextDerived = true;
@@ -516,6 +516,10 @@ export function resolveMetadata(
     else if (shortRegion && !namesOverlap(name, shortRegion))
       context = shortRegion;
     if (context) contextDerived = true;
+  }
+  if (!context && station.source?.name === "Canadian Hydrographic Service") {
+    context = regionCode?.split("-").at(-1) ?? canadianCoast(...position);
+    contextDerived = true;
   }
   setOptional(result, "context", context);
   if (context) result.context_derived = contextDerived ?? false;
@@ -642,23 +646,44 @@ function unique(values: string[]): string[] {
   return [...new Set(values)];
 }
 
+function foldName(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+}
+
 function namesOverlap(left: string, right: string): boolean {
   // Accents folded first: a provider's "Limon" and GeoNames' "Limón" are one name.
-  const fold = (text: string) =>
-    text
-      .normalize("NFD")
-      .replace(/\p{M}/gu, "")
-      .trim()
-      .replace(/\s+/g, " ")
-      .toLowerCase();
-  const a = fold(left);
-  const b = fold(right);
+  const a = foldName(left);
+  const b = foldName(right);
   const words = (text: string) => text.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
   const contains = (whole: string[], part: string[]) =>
     whole.some((_, index) =>
       part.every((word, offset) => whole[index + offset] === word),
     );
   return contains(words(a), words(b)) || contains(words(b), words(a));
+}
+
+function canadianCoast(latitude: number, longitude: number): string {
+  // ponytail: coarse fallback; delete when place/water snapshots cover every CHS station.
+  if (latitude <= 45.5 && longitude >= -84 && longitude <= -74)
+    return "Great Lakes & St. Lawrence";
+  if (longitude <= -110 && latitude >= 66) return "Arctic Coast";
+  if (longitude <= -110) return "Pacific Coast";
+  if (latitude >= 51 && latitude <= 65 && longitude >= -96 && longitude <= -76)
+    return "Hudson Bay";
+  if (latitude >= 60) return "Arctic Coast";
+  if (
+    latitude >= 45.5 &&
+    latitude <= 51 &&
+    longitude >= -73 &&
+    longitude <= -58
+  )
+    return "St. Lawrence";
+  return "Atlantic Coast";
 }
 
 const NAME_STOP_WORDS = new Set([
