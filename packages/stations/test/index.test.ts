@@ -267,6 +267,28 @@ describe("seasonal-contamination gate", () => {
 });
 
 describe("gauge deduplication", () => {
+  test("keeps NOAA-derived lake gauges without a direct replacement", () => {
+    for (const id of [
+      "ticon/alpena_mi-9075065-usa-noaa",
+      "ticon/calumet_harbor_il-9087044-usa-noaa",
+    ]) {
+      const station = allTideStations.find((s) => s.id === id);
+      expect(station?.quality?.accepted, id).toBe(true);
+      expect(station?.quality?.seasonal_dominant, id).toBe(true);
+    }
+  });
+
+  test("only supersedes NOAA-derived rows with a direct harmonic replacement", () => {
+    for (const q of quality.filter((q) => q.reason === "superseded")) {
+      if (!q.id.endsWith("-noaa")) continue;
+      const code = q.id.split("-").at(-3);
+      const replacement = allTideStations.find((s) => s.id === `noaa/${code}`);
+      expect(replacement?.harmonic_constituents?.length, q.id).toBeGreaterThan(
+        0,
+      );
+    }
+  });
+
   test("prefers a direct authoritative gauge over a duplicate TICON record", () => {
     expect(
       authoritativeDuplicateWinner(
@@ -442,16 +464,9 @@ describe("seasonal dominance", () => {
     expect(labelled.length).toBe(1213);
   });
 
-  test("labels rather than rejects, so the corpus does not move", () => {
-    // The predictions are right — the annual cycle really is the dominant
-    // signal — so a labelled station keeps its page and its prediction, and
-    // only the framing is a consumer's problem. A label that started gating
-    // would delete 603 accepted stations without anything saying so.
-    expect(labelled.filter((q) => q.accepted).length).toBe(605);
-    // The other 608 were already rejected by a gate or by deduplication, which
-    // the label neither causes nor prevents — it is a statement about the water,
-    // not a verdict on the record.
-    expect(labelled.filter((q) => !q.accepted).length).toBe(608);
+  test("labels independently of the rejection verdict", () => {
+    expect(labelled.filter((q) => q.accepted).length).toBe(652);
+    expect(labelled.filter((q) => !q.accepted).length).toBe(561);
   });
 
   test("is a different question from the contamination gate", () => {
