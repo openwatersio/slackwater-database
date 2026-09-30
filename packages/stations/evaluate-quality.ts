@@ -230,9 +230,18 @@ function checkCoordinates(station: Station): string | null {
 }
 
 /** Check if source is superseded. */
-function checkSuperseded(station: Station): string | null {
+function checkSuperseded(
+  station: Station,
+  stationMap: Map<string, Station>,
+): string | null {
   if (!station.id.startsWith("ticon/")) return null;
   const suffix = getSourceSuffix(station.source.id);
+  if (suffix === "noaa") {
+    // TICON's NOAA source code identifies the direct gauge, if it ships harmonics.
+    const code = station.source.id.split("-").at(-3);
+    const replacement = stationMap.get(`noaa/${code}`);
+    if (!replacement?.harmonic_constituents?.length) return null;
+  }
   if (SUPERSEDED_SOURCES.includes(suffix)) {
     return `Superseded source: ${suffix}`;
   }
@@ -830,7 +839,7 @@ async function main() {
     const coordinateIssue = checkCoordinates(station);
     const datumIssues = checkDatumOrdering(station, stationMap);
     const rangeIssue = checkTidalRange(station, stationMap);
-    const supersededIssue = checkSuperseded(station);
+    const supersededIssue = checkSuperseded(station, stationMap);
     const constituentIssue = checkConstituents(station);
     const seasonalIssue = checkSeasonalContamination(station, stations);
 

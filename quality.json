@@ -51272,8 +51272,8 @@
   },
   {
     "id": "ticon/alpena_mi-9075065-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 99,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -51285,10 +51285,8 @@
     "issues": [
       "MLWS (176.434) > MLW (176.415)",
       "MHWS (176.44) < MHW (176.46)",
-      "Superseded source: noaa",
       "Seasonal band (0.162m) is 49.0x the largest tidal constituent K1 (0.003m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -51573,8 +51571,8 @@
   },
   {
     "id": "ticon/american_falls_ny-9063009-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 85,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -51585,15 +51583,13 @@
     },
     "issues": [
       "MLWS (170.409) > MLW (170.384)",
-      "MHWS (170.435) < MHW (170.439)",
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+      "MHWS (170.435) < MHW (170.439)"
+    ]
   },
   {
     "id": "ticon/american_falls_ny-9063010-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 73,
     "factors": {
       "epoch": 0.878,
       "recency": 0.5,
@@ -51605,11 +51601,9 @@
     "issues": [
       "MLWS (169.472) > MLW (169.455)",
       "MHWS (169.486) < MHW (169.491)",
-      "Superseded source: noaa",
       "Seasonal band (0.075m) is 2.8x the largest tidal constituent S1 (0.027m): the yearly swing exceeds the daily one",
       "Q1 amplitude (0.0009) exceeds O1 (0.0007)"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -52139,7 +52133,7 @@
   {
     "id": "ticon/apalachicola_river-8728711-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 62,
     "factors": {
       "epoch": 0.055,
       "recency": 0.56,
@@ -52149,10 +52143,10 @@
       "coverage": 0
     },
     "issues": [
-      "MHWS (0.83) < MHW (0.853)",
-      "Superseded source: noaa"
+      "MHWS (0.83) < MHW (0.853)"
     ],
-    "reason": "superseded"
+    "reason": "duplicate",
+    "redundant": "noaa/8728711"
   },
   {
     "id": "ticon/apalachicola-8728690-usa-noaa",
@@ -52719,7 +52713,7 @@
   {
     "id": "ticon/artificial_is-8537614-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 71,
     "factors": {
       "epoch": 0.481,
       "recency": 0.61,
@@ -52728,10 +52722,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8537614"
   },
   {
     "id": "ticon/arun_platform-arn-gbr-cco",
@@ -52841,8 +52834,8 @@
   },
   {
     "id": "ticon/ashland_ave_ny-9063007-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 86,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -52852,10 +52845,8 @@
       "coverage": 0.04
     },
     "issues": [
-      "MHWS (98.744) < MHW (99.028)",
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+      "MHWS (98.744) < MHW (99.028)"
+    ]
   },
   {
     "id": "ticon/ashley_river_at_cooke_crossroads_sc-2172081-usa-usgs",
@@ -54098,8 +54089,8 @@
   },
   {
     "id": "ticon/barcelona_ny-9063032-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 98,
     "factors": {
       "epoch": 1,
       "recency": 0.93,
@@ -54111,10 +54102,8 @@
     "issues": [
       "MLW (-0.012) < MLLW (-0.01)",
       "MLWS (-0.011) > MLW (-0.012)",
-      "Superseded source: noaa",
       "Seasonal band (0.155m) is 17.9x the largest tidal constituent M2 (0.009m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -54343,7 +54332,7 @@
   {
     "id": "ticon/barnegat_pier-8533141-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 62,
     "factors": {
       "epoch": 0.084,
       "recency": 0.51,
@@ -54353,11 +54342,11 @@
       "coverage": 0
     },
     "issues": [
-      "Superseded source: noaa",
       "Seasonal band (0.149m) is 3.3x the largest tidal constituent M2 (0.045m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
-    "seasonal_dominant": true
+    "seasonal_dominant": true,
+    "reason": "duplicate",
+    "redundant": "noaa/8533141"
   },
   {
     "id": "ticon/barron_river_at_everglades_city_fl-2290928-usa-usgs",
@@ -54923,7 +54912,7 @@
   {
     "id": "ticon/beaver_dam_creek-8532715-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 57,
     "factors": {
       "epoch": 0.076,
       "recency": 0.51,
@@ -54934,12 +54923,12 @@
     },
     "issues": [
       "MHWS (2.854) < MHW (2.862)",
-      "Superseded source: noaa",
       "Seasonal band (0.128m) is 5.9x the largest tidal constituent M2 (0.022m): the yearly swing exceeds the daily one",
       "K2 amplitude (0.0021) exceeds S2 (0.0017)"
     ],
-    "reason": "superseded",
-    "seasonal_dominant": true
+    "seasonal_dominant": true,
+    "reason": "duplicate",
+    "redundant": "noaa/8532715"
   },
   {
     "id": "ticon/beaverdam_creek_near_cheverly_md-1651730-usa-usgs",
@@ -55597,7 +55586,7 @@
   {
     "id": "ticon/biloxi_cadet_point-8743735-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 72,
     "factors": {
       "epoch": 0.548,
       "recency": 0.63,
@@ -55608,10 +55597,10 @@
     },
     "issues": [
       "MLWS (1.029) > MLW (0.953)",
-      "MHWS (1.147) < MHW (1.242)",
-      "Superseded source: noaa"
+      "MHWS (1.147) < MHW (1.242)"
     ],
-    "reason": "superseded"
+    "reason": "duplicate",
+    "redundant": "noaa/8743735"
   },
   {
     "id": "ticon/biloxi_river_nr_lyman_ms-2481130-usa-usgs",
@@ -55961,8 +55950,8 @@
   },
   {
     "id": "ticon/black_rock_canal_ny-9063017-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 67,
     "factors": {
       "epoch": 0.314,
       "recency": 0.49,
@@ -55974,10 +55963,8 @@
     "issues": [
       "MLWS (172.711) > MLW (172.67)",
       "MHWS (172.727) < MHW (172.728)",
-      "Superseded source: noaa",
       "Seasonal band (0.092m) is 3.7x the largest tidal constituent S1 (0.025m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -56739,7 +56726,7 @@
   {
     "id": "ticon/boynton_beach-8722706-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 64,
     "factors": {
       "epoch": 0.191,
       "recency": 0.47,
@@ -56748,10 +56735,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8722706"
   },
   {
     "id": "ticon/bozyazi-boz-tur-cmems",
@@ -57795,8 +57781,8 @@
   },
   {
     "id": "ticon/buffalo_ny-9063020-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 86,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -57808,10 +57794,8 @@
     "issues": [
       "MLWS (174.363) > MLW (174.338)",
       "MHWS (174.399) < MHW (174.418)",
-      "Superseded source: noaa",
       "Seasonal band (0.139m) is 10.7x the largest tidal constituent M2 (0.013m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -58083,7 +58067,7 @@
   {
     "id": "ticon/burwell_bay-8638421-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 61,
     "factors": {
       "epoch": 0.057,
       "recency": 0.46,
@@ -58092,10 +58076,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8638421"
   },
   {
     "id": "ticon/busselton_port_geographe-bsgeo01-aus-bom",
@@ -58741,8 +58724,8 @@
   },
   {
     "id": "ticon/calumet_harbor_il-9087044-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 100,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -58754,10 +58737,8 @@
     "issues": [
       "MLWS (176.486) > MLW (176.48)",
       "MHWS (176.538) < MHW (176.543)",
-      "Superseded source: noaa",
       "Seasonal band (0.150m) is 8.3x the largest tidal constituent M2 (0.018m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -59224,8 +59205,8 @@
   },
   {
     "id": "ticon/cape_vincent_ny-9052000-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 90,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -59236,10 +59217,8 @@
     },
     "issues": [
       "MHWS (74.829) < MHW (74.837)",
-      "Superseded source: noaa",
       "Seasonal band (0.296m) is 43.2x the largest tidal constituent M2 (0.007m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -61320,8 +61299,8 @@
   },
   {
     "id": "ticon/cleveland_oh-9063063-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 96,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -61333,10 +61312,8 @@
     "issues": [
       "MLWS (174.368) > MLW (174.359)",
       "MHWS (174.384) < MHW (174.398)",
-      "Superseded source: noaa",
       "Seasonal band (0.191m) is 34.5x the largest tidal constituent M2 (0.006m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -61437,7 +61414,7 @@
   {
     "id": "ticon/coates_point-8533055-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 62,
     "factors": {
       "epoch": 0.085,
       "recency": 0.51,
@@ -61447,11 +61424,11 @@
       "coverage": 0
     },
     "issues": [
-      "Superseded source: noaa",
       "Seasonal band (0.118m) is 2.6x the largest tidal constituent M2 (0.045m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
-    "seasonal_dominant": true
+    "seasonal_dominant": true,
+    "reason": "duplicate",
+    "redundant": "noaa/8533055"
   },
   {
     "id": "ticon/coatzacoalcos-405-mex-unam_hist",
@@ -61506,7 +61483,7 @@
   },
   {
     "id": "ticon/cochino_pequeno-269a-hnd-uhslc_rq",
-    "accepted": true,
+    "accepted": false,
     "score": 47,
     "factors": {
       "epoch": 0.063,
@@ -61516,12 +61493,14 @@
       "amplitude": 1,
       "coverage": 0.001
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ticon/cochino_pequeno-9653601-usa-noaa"
   },
   {
     "id": "ticon/cochino_pequeno-9653601-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 63,
     "factors": {
       "epoch": 0.063,
       "recency": 0.7,
@@ -61530,10 +61509,7 @@
       "amplitude": 1,
       "coverage": 0.001
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": []
   },
   {
     "id": "ticon/cocoa_beach_fl-754a-usa-uhslc_rq",
@@ -70075,7 +70051,7 @@
   {
     "id": "ticon/dakar-7691360-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 70,
     "factors": {
       "epoch": 0.397,
       "recency": 0.73,
@@ -70084,10 +70060,9 @@
       "amplitude": 1,
       "coverage": 0.001
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ticon/dakar-223-sen-uhslc_fd"
   },
   {
     "id": "ticon/dalhousie-2165-can-meds",
@@ -70394,7 +70369,7 @@
   {
     "id": "ticon/daytona_beach_shores-8721120-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 65,
     "factors": {
       "epoch": 0.218,
       "recency": 0.58,
@@ -70403,15 +70378,14 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8721120"
   },
   {
     "id": "ticon/de_tour_village_mi-9075099-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 86,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -70422,10 +70396,8 @@
     },
     "issues": [
       "MHWS (176.432) < MHW (176.442)",
-      "Superseded source: noaa",
       "Seasonal band (0.144m) is 12.0x the largest tidal constituent M2 (0.012m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -70896,8 +70868,8 @@
   },
   {
     "id": "ticon/detour_on_lake_huron_mi-9075098-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 68,
     "factors": {
       "epoch": 0.376,
       "recency": 0.5,
@@ -70908,10 +70880,8 @@
     },
     "issues": [
       "MHWS (176.971) < MHW (176.979)",
-      "Superseded source: noaa",
       "Seasonal band (0.174m) is 12.8x the largest tidal constituent M2 (0.014m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -71025,8 +70995,8 @@
   },
   {
     "id": "ticon/diego_ramirez_island-9952000-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 63,
     "factors": {
       "epoch": 0.082,
       "recency": 0.68,
@@ -71035,14 +71005,11 @@
       "amplitude": 1,
       "coverage": 0.001
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": []
   },
   {
     "id": "ticon/diego_ramirez-599a-chl-uhslc_rq",
-    "accepted": true,
+    "accepted": false,
     "score": 53,
     "factors": {
       "epoch": 0.354,
@@ -71052,7 +71019,9 @@
       "amplitude": 1,
       "coverage": 0.001
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ticon/diego_ramirez_island-9952000-usa-noaa"
   },
   {
     "id": "ticon/dielette-628-fra-refmar",
@@ -71552,10 +71521,10 @@
     "issues": [
       "MLWS (176.108) > MLW (176.102)",
       "MHWS (176.126) < MHW (176.138)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0020) exceeds K1 (0.0016): physically impossible",
       "Seasonal band (0.120m) is 22.1x the largest tidal constituent M2 (0.005m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
@@ -71653,8 +71622,8 @@
   },
   {
     "id": "ticon/duluth_mn-9099064-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 100,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -71665,10 +71634,8 @@
     },
     "issues": [
       "MHWS (183.483) < MHW (183.491)",
-      "Superseded source: noaa",
       "Seasonal band (0.146m) is 7.4x the largest tidal constituent M2 (0.020m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -71690,8 +71657,8 @@
   },
   {
     "id": "ticon/dumbarton_railroad_bridge-9414510-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 63,
     "factors": {
       "epoch": 0.107,
       "recency": 0.59,
@@ -71700,10 +71667,7 @@
       "amplitude": 1,
       "coverage": 0.03
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": []
   },
   {
     "id": "ticon/dumont_d_urville-108-fra-refmar",
@@ -71909,10 +71873,10 @@
     "issues": [
       "MLWS (176.254) > MLW (176.245)",
       "MHWS (176.274) < MHW (176.288)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0025) exceeds K1 (0.0023): physically impossible",
       "Seasonal band (0.131m) is 20.5x the largest tidal constituent M2 (0.006m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
@@ -72449,7 +72413,7 @@
   {
     "id": "ticon/easter_island-9962420-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 64,
     "factors": {
       "epoch": 0.094,
       "recency": 0.7,
@@ -72458,10 +72422,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ticon/easter-022-chl-uhslc_fd"
   },
   {
     "id": "ticon/easter-022-chl-uhslc_fd",
@@ -73196,8 +73159,8 @@
   },
   {
     "id": "ticon/erie_lake_erie_pa-9063038-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 98,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -73209,10 +73172,8 @@
     "issues": [
       "MLWS (174.372) > MLW (174.363)",
       "MHWS (174.404) < MHW (174.409)",
-      "Superseded source: noaa",
       "Seasonal band (0.160m) is 12.8x the largest tidal constituent M2 (0.013m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -73414,7 +73375,7 @@
   {
     "id": "ticon/esperanza-1495000-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 65,
     "factors": {
       "epoch": 0.125,
       "recency": 0.72,
@@ -73423,10 +73384,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ticon/esperanza-601-arg-uhslc_fd"
   },
   {
     "id": "ticon/esperanza-601-arg-uhslc_fd",
@@ -73529,8 +73489,8 @@
   },
   {
     "id": "ticon/essexville_mi-9075034-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 78,
     "factors": {
       "epoch": 0.909,
       "recency": 0.52,
@@ -73542,16 +73502,14 @@
     "issues": [
       "MLWS (176.486) > MLW (176.485)",
       "MHWS (176.518) < MHW (176.535)",
-      "Superseded source: noaa",
       "Seasonal band (0.129m) is 12.2x the largest tidal constituent M2 (0.011m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
     "id": "ticon/essexville_mi-9075035-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 85,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -73562,10 +73520,8 @@
     },
     "issues": [
       "MHWS (176.511) < MHW (176.526)",
-      "Superseded source: noaa",
       "Seasonal band (0.154m) is 12.7x the largest tidal constituent M2 (0.012m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -73821,8 +73777,8 @@
   },
   {
     "id": "ticon/fairport_oh-9063053-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 96,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -73834,10 +73790,8 @@
     "issues": [
       "MLWS (174.374) > MLW (174.36)",
       "MHWS (174.384) < MHW (174.393)",
-      "Superseded source: noaa",
       "Seasonal band (0.181m) is 57.0x the largest tidal constituent M2 (0.003m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -74259,8 +74213,8 @@
   },
   {
     "id": "ticon/fermi_power_plant_mi-9063090-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 88,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -74272,10 +74226,8 @@
     "issues": [
       "MLWS (174.336) > MLW (174.326)",
       "MHWS (174.394) < MHW (174.427)",
-      "Superseded source: noaa",
       "Seasonal band (0.215m) is 8.7x the largest tidal constituent M2 (0.025m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -74867,10 +74819,10 @@
     "issues": [
       "MLWS (176.407) > MLW (176.398)",
       "MHWS (176.429) < MHW (176.45)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0025) exceeds K1 (0.0022): physically impossible",
       "Seasonal band (0.150m) is 21.6x the largest tidal constituent M2 (0.007m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
@@ -75023,8 +74975,8 @@
   },
   {
     "id": "ticon/fort_wayne_mi-9044036-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 87,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -75036,10 +74988,8 @@
     "issues": [
       "MLWS (174.926) > MLW (174.922)",
       "MHWS (174.94) < MHW (174.949)",
-      "Superseded source: noaa",
       "Seasonal band (0.166m) is 26.2x the largest tidal constituent M2 (0.006m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -75998,8 +75948,8 @@
   },
   {
     "id": "ticon/galveston_offshore-8771904-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 74,
     "factors": {
       "epoch": 0.14,
       "recency": 0.72,
@@ -76008,10 +75958,7 @@
       "amplitude": 1,
       "coverage": 0.578
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": []
   },
   {
     "id": "ticon/galveston_pier_21-775-usa-uhslc_fd",
@@ -76639,8 +76586,8 @@
   },
   {
     "id": "ticon/gibraltar_mi-9044020-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 87,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -76652,10 +76599,8 @@
     "issues": [
       "MLWS (174.443) > MLW (174.435)",
       "MHWS (174.497) < MHW (174.518)",
-      "Superseded source: noaa",
       "Seasonal band (0.217m) is 9.6x the largest tidal constituent M2 (0.023m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -76749,7 +76694,7 @@
   {
     "id": "ticon/gingerville_creek-8575550-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 63,
     "factors": {
       "epoch": 0.131,
       "recency": 0.53,
@@ -76758,10 +76703,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8575550"
   },
   {
     "id": "ticon/ginostra-gin-ita-ispra",
@@ -77716,8 +77660,8 @@
   },
   {
     "id": "ticon/grand_marais_lake_superior_mn-9099090-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 100,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -77728,10 +77672,8 @@
     },
     "issues": [
       "MHWS (183.427) < MHW (183.436)",
-      "Superseded source: noaa",
       "Seasonal band (0.142m) is 12.5x the largest tidal constituent M2 (0.011m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -77919,7 +77861,7 @@
   {
     "id": "ticon/great_egg_harbor_bay-8534975-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 62,
     "factors": {
       "epoch": 0.081,
       "recency": 0.52,
@@ -77929,10 +77871,10 @@
       "coverage": 0
     },
     "issues": [
-      "MLWS (0.485) > MLW (0.452)",
-      "Superseded source: noaa"
+      "MLWS (0.485) > MLW (0.452)"
     ],
-    "reason": "superseded"
+    "reason": "duplicate",
+    "redundant": "noaa/8534975"
   },
   {
     "id": "ticon/great_kills_harbor_at_great_kills_ny-1376562-usa-usgs",
@@ -77993,7 +77935,7 @@
   {
     "id": "ticon/green_bank-8534117-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 63,
     "factors": {
       "epoch": 0.147,
       "recency": 0.55,
@@ -78003,15 +77945,15 @@
       "coverage": 0
     },
     "issues": [
-      "MLWS (1.32) > MLW (1.283)",
-      "Superseded source: noaa"
+      "MLWS (1.32) > MLW (1.283)"
     ],
-    "reason": "superseded"
+    "reason": "duplicate",
+    "redundant": "noaa/8534117"
   },
   {
     "id": "ticon/green_bay_east_wi-9087077-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 82,
     "factors": {
       "epoch": 0.864,
       "recency": 0.99,
@@ -78022,16 +77964,14 @@
     },
     "issues": [
       "MHWS (176.756) < MHW (176.772)",
-      "Superseded source: noaa",
       "Seasonal band (0.173m) is 4.1x the largest tidal constituent M2 (0.042m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
     "id": "ticon/green_bay_wi-9087078-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 73,
     "factors": {
       "epoch": 0.634,
       "recency": 0.55,
@@ -78042,16 +77982,16 @@
     },
     "issues": [
       "MHWS (176.874) < MHW (176.884)",
-      "Superseded source: noaa",
       "Seasonal band (0.181m) is 4.7x the largest tidal constituent M2 (0.038m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
-    "seasonal_dominant": true
+    "seasonal_dominant": true,
+    "reason": "duplicate",
+    "redundant": "ticon/green_bay_wi-9087079-usa-noaa"
   },
   {
     "id": "ticon/green_bay_wi-9087079-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 84,
     "factors": {
       "epoch": 1,
       "recency": 0.94,
@@ -78062,10 +78002,8 @@
     },
     "issues": [
       "MHWS (176.407) < MHW (176.432)",
-      "Superseded source: noaa",
       "Seasonal band (0.162m) is 3.8x the largest tidal constituent M2 (0.043m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -78439,7 +78377,7 @@
   },
   {
     "id": "ticon/guantanamo_bay-251a-cub-uhslc_rq",
-    "accepted": true,
+    "accepted": false,
     "score": 53,
     "factors": {
       "epoch": 0.622,
@@ -78449,7 +78387,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ticon/guantanamo_bay-9731158-usa-noaa"
   },
   {
     "id": "ticon/guantanamo_bay-251b-cub-uhslc_rq",
@@ -78469,8 +78409,8 @@
   },
   {
     "id": "ticon/guantanamo_bay-9731158-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 64,
     "factors": {
       "epoch": 0.087,
       "recency": 0.71,
@@ -78479,10 +78419,7 @@
       "amplitude": 1,
       "coverage": 0.001
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": []
   },
   {
     "id": "ticon/guaymas-397-mex-unam_hist",
@@ -79348,8 +79285,8 @@
   },
   {
     "id": "ticon/harbor_beach_mi-9075014-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 100,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -79361,10 +79298,8 @@
     "issues": [
       "MLWS (176.464) > MLW (176.455)",
       "MHWS (176.476) < MHW (176.482)",
-      "Superseded source: noaa",
       "Seasonal band (0.145m) is 38.5x the largest tidal constituent M2 (0.004m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -79493,8 +79428,8 @@
   },
   {
     "id": "ticon/harrisville_mi-9075059-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 97,
     "factors": {
       "epoch": 1,
       "recency": 0.82,
@@ -79506,10 +79441,8 @@
     "issues": [
       "MLWS (176.321) > MLW (176.317)",
       "MHWS (176.325) < MHW (176.342)",
-      "Superseded source: noaa",
       "Seasonal band (0.129m) is 45.4x the largest tidal constituent K1 (0.003m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -80961,8 +80894,8 @@
   },
   {
     "id": "ticon/holland_mi-9087031-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 100,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -80973,10 +80906,8 @@
     },
     "issues": [
       "MHWS (176.519) < MHW (176.528)",
-      "Superseded source: noaa",
       "Seasonal band (0.151m) is 15.1x the largest tidal constituent M2 (0.010m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -81016,7 +80947,7 @@
   {
     "id": "ticon/hollingsworth_point-8743081-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 62,
     "factors": {
       "epoch": 0.07,
       "recency": 0.54,
@@ -81027,10 +80958,10 @@
     },
     "issues": [
       "MLWS (0.865) > MLW (0.806)",
-      "MHWS (0.969) < MHW (1.034)",
-      "Superseded source: noaa"
+      "MHWS (0.969) < MHW (1.034)"
     ],
-    "reason": "superseded"
+    "reason": "duplicate",
+    "redundant": "noaa/8743081"
   },
   {
     "id": "ticon/holmsund_sjov-35124-swe-smhi",
@@ -82377,8 +82308,8 @@
   },
   {
     "id": "ticon/i_10_bonnet_carre_floodway-8762483-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 70,
     "factors": {
       "epoch": 0.278,
       "recency": 0.94,
@@ -82390,10 +82321,8 @@
     "issues": [
       "MLWS (0.211) > MLW (0.196)",
       "MHWS (0.225) < MHW (0.245)",
-      "Superseded source: noaa",
       "Seasonal band (0.107m) is 2.4x the largest tidal constituent K1 (0.045m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -85513,7 +85442,7 @@
   {
     "id": "ticon/kaumalapau_harbor-1614465-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 66,
     "factors": {
       "epoch": 0.107,
       "recency": 0.86,
@@ -85522,10 +85451,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/1614465"
   },
   {
     "id": "ticon/kaumalapau_hi-548-usa-uhslc_fd",
@@ -86131,11 +86059,11 @@
     "issues": [
       "MLWS (176.487) > MLW (176.466)",
       "MHWS (176.493) < MHW (176.508)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0005) exceeds K1 (0.0003): physically impossible",
       "Seasonal band (0.160m) is 74.8x the largest tidal constituent M2 (0.002m): the yearly swing exceeds the daily one",
       "Q1 amplitude (0.0004) exceeds O1 (0.0003)"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
@@ -86900,7 +86828,7 @@
   {
     "id": "ticon/kodiak-9457283-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 64,
     "factors": {
       "epoch": 0.149,
       "recency": 0.58,
@@ -86909,10 +86837,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/9457283"
   },
   {
     "id": "ticon/koege-koe-dnk-cmems",
@@ -88516,8 +88443,8 @@
   },
   {
     "id": "ticon/lagos-7641400-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 64,
     "factors": {
       "epoch": 0.089,
       "recency": 0.69,
@@ -88526,10 +88453,7 @@
       "amplitude": 1,
       "coverage": 0.001
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": []
   },
   {
     "id": "ticon/laguna_bahia_mosquito_no1_vieques_pr-50231500-usa-usgs",
@@ -88629,8 +88553,8 @@
   },
   {
     "id": "ticon/lakeport_mi-9075002-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 90,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -88642,10 +88566,8 @@
     "issues": [
       "MLWS (176.464) > MLW (176.46)",
       "MHWS (176.486) < MHW (176.506)",
-      "Superseded source: noaa",
       "Seasonal band (0.149m) is 21.1x the largest tidal constituent M2 (0.007m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -90695,8 +90617,8 @@
   },
   {
     "id": "ticon/little_rapids_mi-9076032-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 71,
     "factors": {
       "epoch": 0.356,
       "recency": 0.85,
@@ -90707,10 +90629,8 @@
     },
     "issues": [
       "MHWS (176.323) < MHW (176.33)",
-      "Superseded source: noaa",
       "Seasonal band (0.093m) is 2.8x the largest tidal constituent S1 (0.033m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -90727,10 +90647,10 @@
     },
     "issues": [
       "MHWS (176.766) < MHW (176.777)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0028) exceeds K1 (0.0023): physically impossible",
       "Seasonal band (0.120m) is 11.5x the largest tidal constituent S1 (0.010m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
@@ -91089,7 +91009,7 @@
   {
     "id": "ticon/long_branch-8531991-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 70,
     "factors": {
       "epoch": 0.452,
       "recency": 0.61,
@@ -91098,10 +91018,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8531991"
   },
   {
     "id": "ticon/long_island_sound_at_rye_ny-1297000-usa-usgs",
@@ -91228,10 +91147,10 @@
     },
     "issues": [
       "MHWS (176.12) < MHW (176.128)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0023) exceeds K1 (0.0005): physically impossible",
       "Seasonal band (0.122m) is 9.9x the largest tidal constituent M2 (0.012m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
@@ -91853,8 +91772,8 @@
   },
   {
     "id": "ticon/ludington_mi-9087023-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 100,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -91866,10 +91785,8 @@
     "issues": [
       "MLWS (176.496) > MLW (176.488)",
       "MHWS (176.5) < MHW (176.525)",
-      "Superseded source: noaa",
       "Seasonal band (0.146m) is 80.4x the largest tidal constituent K1 (0.002m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -92213,8 +92130,8 @@
   },
   {
     "id": "ticon/mackinaw_city_mi-9075080-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 100,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -92225,10 +92142,8 @@
     },
     "issues": [
       "MHWS (176.442) < MHW (176.457)",
-      "Superseded source: noaa",
       "Seasonal band (0.148m) is 13.4x the largest tidal constituent M2 (0.011m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -92993,7 +92908,7 @@
   {
     "id": "ticon/manasquan_inlet-8532591-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 63,
     "factors": {
       "epoch": 0.125,
       "recency": 0.58,
@@ -93002,10 +92917,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8532591"
   },
   {
     "id": "ticon/manasquan_river_at_point_pleasant_nj-1408050-usa-usgs",
@@ -93263,7 +93177,7 @@
   {
     "id": "ticon/mantoloking-8532786-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 57,
     "factors": {
       "epoch": 0.07,
       "recency": 0.51,
@@ -93274,12 +93188,12 @@
     },
     "issues": [
       "MLWS (1.879) > MLW (1.866)",
-      "Superseded source: noaa",
       "Seasonal band (0.133m) is 4.0x the largest tidal constituent M2 (0.034m): the yearly swing exceeds the daily one",
       "K2 amplitude (0.0037) exceeds S2 (0.0032)"
     ],
-    "reason": "superseded",
-    "seasonal_dominant": true
+    "seasonal_dominant": true,
+    "reason": "duplicate",
+    "redundant": "noaa/8532786"
   },
   {
     "id": "ticon/manukau-mnkt-nzl-ttw",
@@ -93484,8 +93398,8 @@
   },
   {
     "id": "ticon/marblehead_oh-9063079-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 99,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -93497,10 +93411,8 @@
     "issues": [
       "MLWS (174.35) > MLW (174.345)",
       "MHWS (174.384) < MHW (174.401)",
-      "Superseded source: noaa",
       "Seasonal band (0.217m) is 15.3x the largest tidal constituent M2 (0.014m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -93524,7 +93436,7 @@
   {
     "id": "ticon/mare_island_strait-9415165-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 62,
     "factors": {
       "epoch": 0.082,
       "recency": 0.52,
@@ -93533,10 +93445,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/9415165"
   },
   {
     "id": "ticon/mare_island-9415218-usa-noaa",
@@ -93708,10 +93619,10 @@
     "issues": [
       "MLWS (183.409) > MLW (183.4)",
       "MHWS (183.421) < MHW (183.432)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0011) exceeds K1 (0.0009): physically impossible",
       "Seasonal band (0.138m) is 35.5x the largest tidal constituent M2 (0.004m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
@@ -93912,8 +93823,8 @@
   },
   {
     "id": "ticon/marysville_mi-9014084-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 84,
     "factors": {
       "epoch": 1,
       "recency": 0.74,
@@ -93925,16 +93836,14 @@
     "issues": [
       "MLWS (176.326) > MLW (176.319)",
       "MHWS (176.34) < MHW (176.348)",
-      "Superseded source: noaa",
       "Seasonal band (0.082m) is 18.6x the largest tidal constituent M2 (0.004m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
     "id": "ticon/marysville-9447729-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 65,
     "factors": {
       "epoch": 0.076,
       "recency": 0.76,
@@ -93943,10 +93852,7 @@
       "amplitude": 1,
       "coverage": 0.066
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": []
   },
   {
     "id": "ticon/masirah-113-omn-uhslc_fd",
@@ -94752,10 +94658,10 @@
     },
     "issues": [
       "MHWS (176.52) < MHW (176.521)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0011) exceeds K1 (0.0006): physically impossible",
       "Seasonal band (0.171m) is 6.0x the largest tidal constituent M2 (0.028m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
@@ -95615,8 +95521,8 @@
   },
   {
     "id": "ticon/milwaukee_wi-9087057-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 100,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -95628,10 +95534,8 @@
     "issues": [
       "MLWS (176.489) > MLW (176.488)",
       "MHWS (176.519) < MHW (176.529)",
-      "Superseded source: noaa",
       "Seasonal band (0.150m) is 14.4x the largest tidal constituent M2 (0.010m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -96550,8 +96454,8 @@
   },
   {
     "id": "ticon/monroe_mi-9063087-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 83,
     "factors": {
       "epoch": 0.943,
       "recency": 0.62,
@@ -96563,10 +96467,8 @@
     "issues": [
       "MLWS (174.481) > MLW (174.47)",
       "MHWS (174.541) < MHW (174.564)",
-      "Superseded source: noaa",
       "Seasonal band (0.232m) is 9.1x the largest tidal constituent M2 (0.025m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -97072,16 +96974,16 @@
     "issues": [
       "MLWS (176.208) > MLW (176.2)",
       "MHWS (176.226) < MHW (176.239)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0020) exceeds K1 (0.0018): physically impossible",
       "Seasonal band (0.133m) is 22.8x the largest tidal constituent M2 (0.006m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
     "id": "ticon/mouth_of_the_black_river_mi-9014091-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 60,
     "factors": {
       "epoch": 0.062,
       "recency": 0.83,
@@ -97093,11 +96995,9 @@
     "issues": [
       "MLWS (175.975) > MLW (175.97)",
       "MHWS (175.995) < MHW (176.009)",
-      "Superseded source: noaa",
       "Seasonal band (0.158m) is 24.0x the largest tidal constituent M2 (0.007m): the yearly swing exceeds the daily one",
       "Q1 amplitude (0.0013) exceeds O1 (0.0005)"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -97207,8 +97107,8 @@
   },
   {
     "id": "ticon/munden_point-8639908-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 60,
     "factors": {
       "epoch": 0.06,
       "recency": 0.7,
@@ -97220,11 +97120,9 @@
     "issues": [
       "MLWS (4.418) > MLW (4.413)",
       "MHWS (4.428) < MHW (4.439)",
-      "Superseded source: noaa",
       "Seasonal band (0.093m) is 17.0x the largest tidal constituent S1 (0.005m): the yearly swing exceeds the daily one",
       "Q1 amplitude (0.0019) exceeds O1 (0.0008)"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -97262,7 +97160,7 @@
   {
     "id": "ticon/murderkill_river_entrance-8555388-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 63,
     "factors": {
       "epoch": 0.115,
       "recency": 0.59,
@@ -97271,10 +97169,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8555388"
   },
   {
     "id": "ticon/muroran-hd03-jpn-jodc_jcg",
@@ -97433,8 +97330,8 @@
   },
   {
     "id": "ticon/myrtle_beach-8661000-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 63,
     "factors": {
       "epoch": 0.123,
       "recency": 0.42,
@@ -97443,10 +97340,7 @@
       "amplitude": 1,
       "coverage": 0.088
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": []
   },
   {
     "id": "ticon/myrtle_grove_nc-myr-usa-ncdem",
@@ -98836,7 +98730,7 @@
   {
     "id": "ticon/new_rochelle-8518490-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 82,
     "factors": {
       "epoch": 1,
       "recency": 0.68,
@@ -98845,10 +98739,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8518490"
   },
   {
     "id": "ticon/new_westminster_bc-7654-can-meds",
@@ -100050,7 +99943,7 @@
   {
     "id": "ticon/north_secaucus-8530531-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 62,
     "factors": {
       "epoch": 0.078,
       "recency": 0.55,
@@ -100059,10 +99952,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8530531"
   },
   {
     "id": "ticon/north_shields-nsh-gbr-bodc",
@@ -100794,7 +100686,7 @@
   {
     "id": "ticon/ocean_beach-8532885-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 62,
     "factors": {
       "epoch": 0.07,
       "recency": 0.51,
@@ -100805,11 +100697,11 @@
     },
     "issues": [
       "MLWS (2.788) > MLW (2.785)",
-      "Superseded source: noaa",
       "Seasonal band (0.134m) is 3.2x the largest tidal constituent M2 (0.042m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
-    "seasonal_dominant": true
+    "seasonal_dominant": true,
+    "reason": "duplicate",
+    "redundant": "noaa/8532885"
   },
   {
     "id": "ticon/ocean_city_inlet-8570283-usa-noaa",
@@ -100848,7 +100740,7 @@
   {
     "id": "ticon/ocean_springs-8743495-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 62,
     "factors": {
       "epoch": 0.068,
       "recency": 0.54,
@@ -100859,10 +100751,10 @@
     },
     "issues": [
       "MLWS (0.635) > MLW (0.58)",
-      "MHWS (0.767) < MHW (0.835)",
-      "Superseded source: noaa"
+      "MHWS (0.767) < MHW (0.835)"
     ],
-    "reason": "superseded"
+    "reason": "duplicate",
+    "redundant": "ticon/old_fort_bayou_at_ocean_springs_ms-2481299-usa-usgs"
   },
   {
     "id": "ticon/ochlockonee_river_sr319-10164-usa-nwfwmd",
@@ -101019,8 +100911,8 @@
   },
   {
     "id": "ticon/ogdensburg_ny-8311030-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 85,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -101032,10 +100924,8 @@
     "issues": [
       "MLWS (74.471) > MLW (74.469)",
       "MHWS (74.491) < MHW (74.498)",
-      "Superseded source: noaa",
       "Seasonal band (0.281m) is 33.9x the largest tidal constituent M2 (0.008m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -101849,8 +101739,8 @@
   },
   {
     "id": "ticon/ontonagon_mi-9099044-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 100,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -101861,10 +101751,8 @@
     },
     "issues": [
       "MHWS (183.444) < MHW (183.456)",
-      "Superseded source: noaa",
       "Seasonal band (0.140m) is 20.2x the largest tidal constituent M2 (0.007m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -102295,8 +102183,8 @@
   },
   {
     "id": "ticon/oswego_ny-9052030-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 93,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -102308,10 +102196,8 @@
     "issues": [
       "MLWS (74.835) > MLW (74.832)",
       "MHWS (74.849) < MHW (74.857)",
-      "Superseded source: noaa",
       "Seasonal band (0.279m) is 54.1x the largest tidal constituent M2 (0.005m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -103603,7 +103489,7 @@
   {
     "id": "ticon/pass_christian_yacht_club-8746819-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 62,
     "factors": {
       "epoch": 0.079,
       "recency": 0.54,
@@ -103614,10 +103500,10 @@
     },
     "issues": [
       "MLWS (0.765) > MLW (0.718)",
-      "MHWS (0.881) < MHW (0.968)",
-      "Superseded source: noaa"
+      "MHWS (0.881) < MHW (0.968)"
     ],
-    "reason": "superseded"
+    "reason": "duplicate",
+    "redundant": "noaa/8746819"
   },
   {
     "id": "ticon/patchogue-8514322-usa-noaa",
@@ -104298,7 +104184,7 @@
   {
     "id": "ticon/petaluma_river_entrance-9415252-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 84,
     "factors": {
       "epoch": 1,
       "recency": 0.88,
@@ -104307,10 +104193,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/9415252"
   },
   {
     "id": "ticon/peter_and_paul_rocks-201a-bra-uhslc_rq",
@@ -104943,8 +104828,8 @@
   },
   {
     "id": "ticon/point_iroquois_mi-9099004-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 87,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -104956,10 +104841,8 @@
     "issues": [
       "MLWS (183.364) > MLW (183.36)",
       "MHWS (183.404) < MHW (183.414)",
-      "Superseded source: noaa",
       "Seasonal band (0.142m) is 9.8x the largest tidal constituent M2 (0.014m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -105533,7 +105416,7 @@
   {
     "id": "ticon/popps_ferry-8744671-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 65,
     "factors": {
       "epoch": 0.189,
       "recency": 0.57,
@@ -105544,10 +105427,10 @@
     },
     "issues": [
       "MLWS (0.79) > MLW (0.699)",
-      "MHWS (0.948) < MHW (1.041)",
-      "Superseded source: noaa"
+      "MHWS (0.948) < MHW (1.041)"
     ],
-    "reason": "superseded"
+    "reason": "duplicate",
+    "redundant": "ticon/back_bay_of_biloxi_near_biloxi_miss-2481270-usa-usgs"
   },
   {
     "id": "ticon/pori_mantyluoto_kallo-134266-fin-fmi",
@@ -106236,8 +106119,8 @@
   },
   {
     "id": "ticon/port_inland_mi-9087096-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 100,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -106248,10 +106131,8 @@
     },
     "issues": [
       "MHWS (176.471) < MHW (176.477)",
-      "Superseded source: noaa",
       "Seasonal band (0.152m) is 10.1x the largest tidal constituent M2 (0.015m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -110240,8 +110121,8 @@
   },
   {
     "id": "ticon/rincon_del_san_jose-8777812-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 88,
     "factors": {
       "epoch": 0.685,
       "recency": 0.99,
@@ -110253,10 +110134,8 @@
     "issues": [
       "MLWS (1.284) > MLW (1.274)",
       "MHWS (1.298) < MHW (1.314)",
-      "Superseded source: noaa",
       "Seasonal band (0.110m) is 4.7x the largest tidal constituent S1 (0.023m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -111128,16 +111007,16 @@
     "issues": [
       "MLWS (74.84) > MLW (74.83)",
       "MHWS (74.844) < MHW (74.854)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0007) exceeds K1 (0.0004): physically impossible",
       "Seasonal band (0.286m) is 273.1x the largest tidal constituent S1 (0.001m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
     "id": "ticon/rock_cut_mi-9076024-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 86,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -111149,10 +111028,8 @@
     "issues": [
       "MLWS (176.424) > MLW (176.422)",
       "MHWS (176.472) < MHW (176.474)",
-      "Superseded source: noaa",
       "Seasonal band (0.144m) is 7.6x the largest tidal constituent M2 (0.019m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -112351,8 +112228,8 @@
   },
   {
     "id": "ticon/sabine_offshore-8771081-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 69,
     "factors": {
       "epoch": 0.284,
       "recency": 0.75,
@@ -112361,10 +112238,7 @@
       "amplitude": 1,
       "coverage": 0.043
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": []
   },
   {
     "id": "ticon/sabine_pass_n_tx-766a-usa-uhslc_rq",
@@ -115328,7 +115202,7 @@
   },
   {
     "id": "ticon/sausalito-9414806-usa-da_sat",
-    "accepted": true,
+    "accepted": false,
     "score": 55,
     "factors": {
       "epoch": 1,
@@ -115338,12 +115212,14 @@
       "amplitude": 1,
       "coverage": 0.008
     },
-    "issues": []
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "ticon/sausalito-9414806-usa-noaa"
   },
   {
     "id": "ticon/sausalito-9414806-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 63,
     "factors": {
       "epoch": 0.144,
       "recency": 0.53,
@@ -115352,10 +115228,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/9414806"
   },
   {
     "id": "ticon/savage_cove-2633-can-meds",
@@ -118517,10 +118392,10 @@
     "issues": [
       "MLWS (175.787) > MLW (175.782)",
       "MHWS (175.799) < MHW (175.811)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0011) exceeds K1 (0.0005): physically impossible",
       "Seasonal band (0.103m) is 27.7x the largest tidal constituent M2 (0.004m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
@@ -119850,16 +119725,16 @@
     },
     "issues": [
       "MHWS (176.498) < MHW (176.509)",
-      "Superseded source: noaa",
+      "P1 amplitude (0.0010) exceeds K1 (0.0005): physically impossible",
       "Seasonal band (0.152m) is 19.4x the largest tidal constituent M2 (0.008m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
+    "reason": "constituents",
     "seasonal_dominant": true
   },
   {
     "id": "ticon/sturgeon_point_ny-9063028-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 92,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -119871,10 +119746,8 @@
     "issues": [
       "MLWS (174.357) > MLW (174.338)",
       "MHWS (174.393) < MHW (174.416)",
-      "Superseded source: noaa",
       "Seasonal band (0.145m) is 10.7x the largest tidal constituent M2 (0.014m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -120395,8 +120268,8 @@
   },
   {
     "id": "ticon/sw_pier_st_marys_river_mi-9076070-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 85,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -120408,10 +120281,8 @@
     "issues": [
       "MLWS (183.209) > MLW (183.184)",
       "MHWS (183.253) < MHW (183.287)",
-      "Superseded source: noaa",
       "Seasonal band (0.159m) is 9.7x the largest tidal constituent M2 (0.016m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -120750,7 +120621,7 @@
   {
     "id": "ticon/tall_pines_camp-8532721-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 56,
     "factors": {
       "epoch": 0.063,
       "recency": 0.51,
@@ -120761,12 +120632,12 @@
     },
     "issues": [
       "MHWS (0.688) < MHW (0.692)",
-      "Superseded source: noaa",
       "Seasonal band (0.115m) is 4.9x the largest tidal constituent M2 (0.023m): the yearly swing exceeds the daily one",
       "K2 amplitude (0.0029) exceeds S2 (0.0020)"
     ],
-    "reason": "superseded",
-    "seasonal_dominant": true
+    "seasonal_dominant": true,
+    "reason": "duplicate",
+    "redundant": "noaa/8532721"
   },
   {
     "id": "ticon/tallinn-tal-est-cmems",
@@ -122035,7 +121906,7 @@
   {
     "id": "ticon/threemile_harbor_entrance-8511171-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 64,
     "factors": {
       "epoch": 0.12,
       "recency": 0.64,
@@ -122044,10 +121915,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8511171"
   },
   {
     "id": "ticon/threemile_slough_at_san_joaquin_river-tsl-usa-cdwr",
@@ -122520,8 +122390,8 @@
   },
   {
     "id": "ticon/toledo_oh-9063085-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 92,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -122533,10 +122403,8 @@
     "issues": [
       "MLWS (174.344) > MLW (174.332)",
       "MHWS (174.408) < MHW (174.443)",
-      "Superseded source: noaa",
       "Seasonal band (0.224m) is 8.4x the largest tidal constituent M2 (0.027m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -124653,8 +124521,8 @@
   },
   {
     "id": "ticon/valparaiso-9963950-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 65,
     "factors": {
       "epoch": 0.148,
       "recency": 0.72,
@@ -124663,10 +124531,7 @@
       "amplitude": 1,
       "coverage": 0.004
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": []
   },
   {
     "id": "ticon/vancouver_bc-7735-can-meds",
@@ -126447,7 +126312,7 @@
   {
     "id": "ticon/wallabout_bay-8517732-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 62,
     "factors": {
       "epoch": 0.099,
       "recency": 0.55,
@@ -126456,10 +126321,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8517732"
   },
   {
     "id": "ticon/wallaroo-61780-aus-bom",
@@ -126677,7 +126541,7 @@
   {
     "id": "ticon/waretown_barnegat_bay-8533541-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 64,
     "factors": {
       "epoch": 0.195,
       "recency": 0.54,
@@ -126688,11 +126552,11 @@
     },
     "issues": [
       "MLWS (3.242) > MLW (3.24)",
-      "Superseded source: noaa",
       "Seasonal band (0.064m) is 1.6x the largest tidal constituent M2 (0.040m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
-    "seasonal_dominant": true
+    "seasonal_dominant": true,
+    "reason": "duplicate",
+    "redundant": "noaa/8533541"
   },
   {
     "id": "ticon/warnemnde-9640015-deu-wsv",
@@ -127330,8 +127194,8 @@
   },
   {
     "id": "ticon/west_neebish_island_mi-9076027-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 85,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -127342,10 +127206,8 @@
     },
     "issues": [
       "MHWS (176.546) < MHW (176.547)",
-      "Superseded source: noaa",
       "Seasonal band (0.137m) is 10.6x the largest tidal constituent M2 (0.013m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -128268,7 +128130,7 @@
   {
     "id": "ticon/winyah_bay-8662746-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 73,
     "factors": {
       "epoch": 0.537,
       "recency": 0.69,
@@ -128277,10 +128139,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8662746"
   },
   {
     "id": "ticon/wismartg-wis-deu-cmems",
@@ -128498,7 +128359,7 @@
   {
     "id": "ticon/woodbridge_creek_1-8531156-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 46,
     "factors": {
       "epoch": 0.059,
       "recency": 0.51,
@@ -128507,10 +128368,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/8531156"
   },
   {
     "id": "ticon/woodlawn_beach-8729736-usa-noaa",
@@ -128628,8 +128488,8 @@
   },
   {
     "id": "ticon/wyandotte_mi-9044030-usa-noaa",
-    "accepted": false,
-    "score": 0,
+    "accepted": true,
+    "score": 86,
     "factors": {
       "epoch": 1,
       "recency": 0.99,
@@ -128641,10 +128501,8 @@
     "issues": [
       "MLWS (174.807) > MLW (174.805)",
       "MHWS (174.831) < MHW (174.848)",
-      "Superseded source: noaa",
       "Seasonal band (0.180m) is 18.2x the largest tidal constituent M2 (0.010m): the yearly swing exceeds the daily one"
     ],
-    "reason": "superseded",
     "seasonal_dominant": true
   },
   {
@@ -128947,7 +128805,7 @@
   {
     "id": "ticon/yokeko_point-9448601-usa-noaa",
     "accepted": false,
-    "score": 0,
+    "score": 61,
     "factors": {
       "epoch": 0.064,
       "recency": 0.49,
@@ -128956,10 +128814,9 @@
       "amplitude": 1,
       "coverage": 0
     },
-    "issues": [
-      "Superseded source: noaa"
-    ],
-    "reason": "superseded"
+    "issues": [],
+    "reason": "duplicate",
+    "redundant": "noaa/9448601"
   },
   {
     "id": "ticon/yokohama-ma16-jpn-jodc_jma",
