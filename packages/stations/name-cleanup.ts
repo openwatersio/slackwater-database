@@ -267,15 +267,17 @@ export function cleanName(
   // Insert space between lowercase→uppercase transitions, except inside a
   // Mc/Mac surname, which is one word however it is cased: "PortAngeles" is
   // PascalCase to split, "McAllister" and "MacLeod" are not.
-  name = name.replace(
-    /([a-z])([A-Z])/g,
-    (match, lower, upper, offset: number, whole: string) =>
-      /(?:^|[^A-Za-z])(?:Mc|Mac)$/.test(whole.slice(0, offset + 1))
-        ? match
-        : `${lower} ${upper}`,
-  );
-  // Insert space between uppercase run and uppercase+lowercase (e.g., "ABCDef" → "ABC Def")
-  name = name.replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
+  if (!preserveCase) {
+    name = name.replace(
+      /([a-z])([A-Z])/g,
+      (match, lower, upper, offset: number, whole: string) =>
+        /(?:^|[^A-Za-z])(?:Mc|Mac)$/.test(whole.slice(0, offset + 1))
+          ? match
+          : `${lower} ${upper}`,
+    );
+    // Insert space between uppercase run and uppercase+lowercase (e.g., "ABCDef" → "ABC Def")
+    name = name.replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
+  }
 
   // Step 5: Strip trailing version-like single digits (Alicante2 → Alicante)
   // Only strip from the final word when it's a real place name (has vowels, 4+ alpha chars)

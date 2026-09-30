@@ -56,6 +56,7 @@ describe("chsInputs", () => {
       "chs-cap-aux-meules",
       "chs-charlottetown-nl",
       "chs-come-by-chance",
+      "chs-prince-rupert-roro",
     ]);
     const records = JSON.parse(
       readFileSync(
@@ -84,6 +85,11 @@ describe("chsInputs", () => {
       {
         id: "chs-come-by-chance",
         name: "Come by Chance",
+        context: undefined,
+      },
+      {
+        id: "chs-prince-rupert-roro",
+        name: "Prince Rupert RoRo",
         context: undefined,
       },
     ]);
