@@ -309,6 +309,13 @@ export const SEASONAL_CONSTITUENTS = ["SA", "SSA"];
  *  is no gap in the distribution to discover — across the accepted corpus the
  *  count runs 603 at 1x, 423 at 1.5x, 321 at 2x, 230 at 3x, and 177 stations
  *  sit between 0.8x and 1x — so a higher figure would be an editorial choice
- *  about how loud to be, which belongs in the consumer. The ratio itself is in
- *  the station's `issues` for a consumer that wants to be more conservative. */
+ *  about how loud to be, which belongs in the consumer.
+ *
+ *  A consumer that wants a stricter presentation threshold computes the ratio
+ *  from the constituents it already ships. It is deliberately not a field here:
+ *  the point of putting the verdict in the database is that two consumers
+ *  describe the same water the same way, and a numeric ratio on the record is an
+ *  invitation to pick a second threshold per consumer. `issues` states the
+ *  numbers to one decimal for a human reading the record, which is not a machine
+ *  interface — 1.02x prints as 1.0x. */
 export const SEASONAL_DOMINANCE_RATIO = 1;

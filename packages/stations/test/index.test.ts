@@ -439,7 +439,7 @@ describe("seasonal dominance", () => {
     // than a floor so that a release which quietly moves the rule has to say so:
     // the whole point of the label is that two consumers describe the same water
     // the same way, which a drifting population defeats.
-    expect(labelled.length).toBe(1211);
+    expect(labelled.length).toBe(1213);
   });
 
   test("labels rather than rejects, so the corpus does not move", () => {
@@ -447,7 +447,7 @@ describe("seasonal dominance", () => {
     // signal — so a labelled station keeps its page and its prediction, and
     // only the framing is a consumer's problem. A label that started gating
     // would delete 603 accepted stations without anything saying so.
-    expect(labelled.filter((q) => q.accepted).length).toBe(603);
+    expect(labelled.filter((q) => q.accepted).length).toBe(605);
     // The other 608 were already rejected by a gate or by deduplication, which
     // the label neither causes nor prevents — it is a statement about the water,
     // not a verdict on the record.
@@ -473,6 +473,34 @@ describe("seasonal dominance", () => {
         (q) => (q as { seasonal_dominant?: boolean }).seasonal_dominant,
       ).length,
     ).toBe(1);
+  });
+
+  test("measures a subordinate on the model it predicts from", () => {
+    // A subordinate's own record carries no constituents; the reader fills them
+    // from its reference. Evaluating the raw record would label the reference
+    // and leave its subordinates reading as ordinary tides on the same water,
+    // which is where these two were.
+    for (const id of ["noaa/9468123", "noaa/9468216"]) {
+      const station = allTideStations.find((s) => s.id === id);
+      expect(station?.type, id).toBe("subordinate");
+      expect(station?.offsets?.reference, id).toBe("noaa/9468756");
+      expect(station?.quality?.seasonal_dominant, id).toBe(true);
+      // Named, so a reader of a subordinate's issues can find numbers that are
+      // not in its own record.
+      expect(station?.quality?.issues?.join(" "), id).toContain(
+        "from reference noaa/9468756",
+      );
+    }
+    // And no accepted subordinate is left behind by its reference.
+    const labelledIds = new Set(labelled.map((q) => q.id));
+    const orphans = allTideStations.filter(
+      (s) =>
+        s.type === "subordinate" &&
+        s.offsets?.reference &&
+        labelledIds.has(s.offsets.reference) &&
+        !s.quality?.seasonal_dominant,
+    );
+    expect(orphans.map((s) => s.id)).toEqual([]);
   });
 
   test("agrees with the constituents it is derived from", () => {

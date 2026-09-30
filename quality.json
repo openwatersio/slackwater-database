@@ -42743,7 +42743,10 @@
       "amplitude": 1,
       "coverage": 0.699
     },
-    "issues": []
+    "issues": [
+      "Seasonal band (0.118m) is 1.1x the largest tidal constituent M2 (0.111m) (from reference noaa/9468756): the yearly swing exceeds the daily one"
+    ],
+    "seasonal_dominant": true
   },
   {
     "id": "noaa/9468132",
@@ -42785,7 +42788,10 @@
       "amplitude": 1,
       "coverage": 0.845
     },
-    "issues": []
+    "issues": [
+      "Seasonal band (0.118m) is 1.1x the largest tidal constituent M2 (0.111m) (from reference noaa/9468756): the yearly swing exceeds the daily one"
+    ],
+    "seasonal_dominant": true
   },
   {
     "id": "noaa/9468226",

@@ -372,41 +372,60 @@ function checkSeasonalContamination(
  *
  * Every consumer inherits this, so the verdict belongs here rather than in each
  * one: two consumers picking their own ratio is how the same water gets
- * described two ways. The ratio goes into `issues` so a consumer can be more
- * conservative in presentation without re-deriving it.
+ * described two ways. `issues` carries the numbers for a human reading the
+ * record; a consumer that wants its own, stricter presentation threshold
+ * computes the ratio from the constituents it already ships rather than parsing
+ * them back out of prose.
+ *
+ * A subordinate is measured on its reference's model, because that is the model
+ * it predicts from: the reader fills a subordinate's `harmonic_constituents`
+ * from its reference, so evaluating the raw record — which carries none — would
+ * label the reference and leave its subordinates reading as ordinary tides on
+ * the same water. Two accepted subordinates of `noaa/9468756` were in exactly
+ * that state. The height offsets do not enter it: a ratio scales SA and the
+ * tidal terms together and a fixed offset moves the datum, so neither changes
+ * which band dominates.
  */
-function checkSeasonalDominance(station: Station): string | null {
-  // Nothing to measure without constituents, which is every subordinate and
-  // every current station: a subordinate predicts from its reference, and this
-  // asks about a constituent sum.
-  if (!station.harmonic_constituents?.length) return null;
+function checkSeasonalDominance(
+  station: Station,
+  stationMap: Map<string, Station>,
+): string | null {
+  const model = station.harmonic_constituents?.length
+    ? station
+    : stationMap.get(station.offsets?.reference ?? "");
+  // Nothing to measure: a current station, or a subordinate whose reference is
+  // missing — which `checkConstituents` and the route builder already reject.
+  if (!model?.harmonic_constituents?.length) return null;
 
   let seasonal = 0;
   for (const name of SEASONAL_CONSTITUENTS) {
-    seasonal = Math.max(seasonal, Math.abs(getAmplitude(station, name)));
+    seasonal = Math.max(seasonal, Math.abs(getAmplitude(model, name)));
   }
   if (seasonal === 0) return null;
 
   let tidal = 0;
   let largest = "";
   for (const name of TIDAL_CONSTITUENTS) {
-    const amplitude = Math.abs(getAmplitude(station, name));
+    const amplitude = Math.abs(getAmplitude(model, name));
     if (amplitude > tidal) {
       tidal = amplitude;
       largest = name;
     }
   }
   // No tidal term at all is `checkConstituents`' business, not this one: it
-  // rejects a reference station missing M2, S2, K1 or O1 outright, and a
-  // subordinate predicts from its reference rather than from constituents.
+  // rejects a reference station missing M2, S2, K1 or O1 outright.
   if (tidal === 0) return null;
 
   const ratio = seasonal / tidal;
   if (ratio < SEASONAL_DOMINANCE_RATIO) return null;
 
+  // Named when the numbers are not in this station's own record, so a reader
+  // of a subordinate's issues can find them.
+  const measured = model === station ? "" : ` (from reference ${model.id})`;
   return (
     `Seasonal band (${seasonal.toFixed(3)}m) is ${ratio.toFixed(1)}x the largest ` +
-    `tidal constituent ${largest} (${tidal.toFixed(3)}m): the yearly swing exceeds the daily one`
+    `tidal constituent ${largest} (${tidal.toFixed(3)}m)${measured}: ` +
+    `the yearly swing exceeds the daily one`
   );
 }
 
@@ -847,7 +866,7 @@ async function main() {
     // a statement about the water rather than permission to publish, so it does
     // not depend on the verdict — and it could not cleanly anyway, since
     // deduplication rejects stations after this loop has run.
-    const dominanceIssue = checkSeasonalDominance(station);
+    const dominanceIssue = checkSeasonalDominance(station, stationMap);
     if (dominanceIssue) issues.push(dominanceIssue);
 
     // Scored factors
