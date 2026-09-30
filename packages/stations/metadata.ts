@@ -401,6 +401,7 @@ export function resolveMetadata(
     station.name ?? registry?.name ?? "",
     country.country,
     authoritativeRegionCode ?? station.region,
+    station.source?.name === "Canadian Hydrographic Service",
   );
   const regionCode =
     authoritativeRegionCode ??

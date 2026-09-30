@@ -209,6 +209,7 @@ export function cleanName(
   raw: string,
   country: string,
   existingRegionCode?: string,
+  preserveCase = false,
 ): CleanNameResult {
   const original = raw;
   let name = raw;
@@ -281,7 +282,7 @@ export function cleanName(
   name = name.replace(/(?<=\s|^)([a-zA-Z]{4,})\d$/, "$1");
 
   // Step 6: Title case
-  name = toTitleCase(name, country, validRegions);
+  if (!preserveCase) name = toTitleCase(name, country, validRegions);
 
   // Step 6b: State distances in nautical miles. After title case, so the
   // lowercase "nm" it writes is the spelling NOAA's own qualifiers use
