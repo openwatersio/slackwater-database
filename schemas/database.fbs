@@ -147,6 +147,13 @@ table Quality {
   reason: string;
   /// Station.id of the station that makes this one redundant, if any.
   redundant: string;
+  /// The seasonal band (SA, SSA) is larger than this station's largest tidal
+  /// constituent, so its yearly swing exceeds its daily one — a Great Lakes
+  /// gauge, a river reach, a Baltic bodden. Accepted, not rejected: the
+  /// predictions are right and only the framing is wrong, so a consumer quoting
+  /// a high and a low reads this first and says what the water is. The ratio is
+  /// in `issues`.
+  seasonal_dominant: bool;
 }
 
 table Station {

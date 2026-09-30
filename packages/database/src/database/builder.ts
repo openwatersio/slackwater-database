@@ -132,6 +132,8 @@ export function buildDatabase(
       Quality.addIssues(builder, issues);
       Quality.addReason(builder, reason);
       Quality.addRedundant(builder, redundant);
+      // Written only when true, so the false case costs nothing in the file.
+      if (q.seasonal_dominant) Quality.addSeasonalDominant(builder, true);
       quality = Quality.endQuality(builder);
     }
 

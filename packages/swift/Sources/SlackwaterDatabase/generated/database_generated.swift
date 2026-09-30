@@ -914,6 +914,7 @@ public struct Slackwater_Quality: FlatBufferObject, Verifiable {
     case issues = 6
     case reason = 8
     case redundant = 10
+    case seasonalDominant = 12
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -930,24 +931,35 @@ public struct Slackwater_Quality: FlatBufferObject, Verifiable {
   ///  Station.id of the station that makes this one redundant, if any.
   public var redundant: String? { let o = _accessor.offset(VTOFFSET.redundant.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var redundantSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.redundant.v) }
-  public static func startQuality(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 4) }
+  ///  The seasonal band (SA, SSA) is larger than this station's largest tidal
+  ///  constituent, so its yearly swing exceeds its daily one — a Great Lakes
+  ///  gauge, a river reach, a Baltic bodden. Accepted, not rejected: the
+  ///  predictions are right and only the framing is wrong, so a consumer quoting
+  ///  a high and a low reads this first and says what the water is. The ratio is
+  ///  in `issues`.
+  public var seasonalDominant: Bool { let o = _accessor.offset(VTOFFSET.seasonalDominant.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
+  public static func startQuality(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 5) }
   public static func add(factors: Slackwater_QualityFactors?, _ fbb: inout FlatBufferBuilder) { guard let factors = factors else { return }; fbb.create(struct: factors, position: VTOFFSET.factors.p) }
   public static func addVectorOf(issues: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: issues, at: VTOFFSET.issues.p) }
   public static func add(reason: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: reason, at: VTOFFSET.reason.p) }
   public static func add(redundant: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: redundant, at: VTOFFSET.redundant.p) }
+  public static func add(seasonalDominant: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: seasonalDominant, def: false,
+   at: VTOFFSET.seasonalDominant.p) }
   public static func endQuality(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createQuality(
     _ fbb: inout FlatBufferBuilder,
     factors: Slackwater_QualityFactors? = nil,
     issuesVectorOffset issues: Offset = Offset(),
     reasonOffset reason: Offset = Offset(),
-    redundantOffset redundant: Offset = Offset()
+    redundantOffset redundant: Offset = Offset(),
+    seasonalDominant: Bool = false
   ) -> Offset {
     let __start = Slackwater_Quality.startQuality(&fbb)
     Slackwater_Quality.add(factors: factors, &fbb)
     Slackwater_Quality.addVectorOf(issues: issues, &fbb)
     Slackwater_Quality.add(reason: reason, &fbb)
     Slackwater_Quality.add(redundant: redundant, &fbb)
+    Slackwater_Quality.add(seasonalDominant: seasonalDominant, &fbb)
     return Slackwater_Quality.endQuality(&fbb, start: __start)
   }
 
@@ -957,6 +969,7 @@ public struct Slackwater_Quality: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.issues.p, fieldName: "issues", required: false, type: ForwardOffset<Vector<ForwardOffset<String>, String>>.self)
     try _v.visit(field: VTOFFSET.reason.p, fieldName: "reason", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.redundant.p, fieldName: "redundant", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VTOFFSET.seasonalDominant.p, fieldName: "seasonalDominant", required: false, type: Bool.self)
     _v.finish()
   }
 }

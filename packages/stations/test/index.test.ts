@@ -16,6 +16,9 @@ import {
   coordinatePrecision,
   distance,
   authoritativeDuplicateWinner,
+  SEASONAL_DOMINANCE_RATIO,
+  SEASONAL_CONSTITUENTS,
+  TIDAL_CONSTITUENTS,
 } from "../filtering.js";
 import quality from "../../../quality.json" with { type: "json" };
 
@@ -423,5 +426,91 @@ test("Does not have duplicate source IDs", () => {
       );
     }
     seen.set(station.source.id, station);
+  });
+});
+
+describe("seasonal dominance", () => {
+  const labelled = quality.filter(
+    (q) => (q as { seasonal_dominant?: boolean }).seasonal_dominant,
+  );
+
+  test("labels the stations whose yearly swing exceeds their daily one", () => {
+    // Every one is a lake, a river reach or a lagoon. The count is here rather
+    // than a floor so that a release which quietly moves the rule has to say so:
+    // the whole point of the label is that two consumers describe the same water
+    // the same way, which a drifting population defeats.
+    expect(labelled.length).toBe(1211);
+  });
+
+  test("labels rather than rejects, so the corpus does not move", () => {
+    // The predictions are right — the annual cycle really is the dominant
+    // signal — so a labelled station keeps its page and its prediction, and
+    // only the framing is a consumer's problem. A label that started gating
+    // would delete 603 accepted stations without anything saying so.
+    expect(labelled.filter((q) => q.accepted).length).toBe(603);
+    // The other 608 were already rejected by a gate or by deduplication, which
+    // the label neither causes nor prevents — it is a statement about the water,
+    // not a verdict on the record.
+    expect(labelled.filter((q) => !q.accepted).length).toBe(608);
+  });
+
+  test("is a different question from the contamination gate", () => {
+    // `reason: "seasonal"` and `seasonal_dominant` share a word and mean
+    // opposite things. The gate asks whether a station's SA is anomalous
+    // against its NEIGHBOURS, which catches a bad harmonic fit and rejects it.
+    // The label asks whether SA dominates the station's OWN tidal terms, which
+    // catches water that has no real tide and keeps it.
+    //
+    // The two overlap without either implying the other, and this pins that:
+    // the gate rejects 2 stations, exactly 1 of which is also labelled. A
+    // change that collapsed the two concepts would move both numbers.
+    const contaminated = quality.filter(
+      (q) => (q as { reason?: string }).reason === "seasonal",
+    );
+    expect(contaminated.length).toBe(2);
+    expect(
+      contaminated.filter(
+        (q) => (q as { seasonal_dominant?: boolean }).seasonal_dominant,
+      ).length,
+    ).toBe(1);
+  });
+
+  test("agrees with the constituents it is derived from", () => {
+    // Recomputed from the data rather than trusted, because the label is the
+    // only thing standing between a consumer and a tide table drawn over
+    // Lake Ontario.
+    const byId = new Map(allTideStations.map((s) => [s.id, s]));
+    for (const q of labelled) {
+      const station = byId.get(q.id);
+      if (!station?.harmonic_constituents?.length) continue;
+      const amp = (name: string) =>
+        Math.abs(
+          station.harmonic_constituents!.find((c) => c.name === name)
+            ?.amplitude ?? 0,
+        );
+      const seasonal = Math.max(...SEASONAL_CONSTITUENTS.map(amp));
+      const tidal = Math.max(...TIDAL_CONSTITUENTS.map(amp));
+      expect(
+        seasonal / tidal,
+        `${q.id} carries the label but its seasonal band does not dominate`,
+      ).toBeGreaterThanOrEqual(SEASONAL_DOMINANCE_RATIO);
+    }
+  });
+
+  test("reaches the reader through the database, not just quality.json", () => {
+    // Cobourg on Lake Ontario: SA 0.289 m against a largest tidal constituent
+    // of 0.002 m, and it passes the 2 cm range floor by 6 mm, so nothing else
+    // in the pass catches it.
+    const cobourg = allTideStations.find(
+      (s) => s.id === "ticon/cobourg_ontario-13590-can-meds",
+    );
+    expect(cobourg?.quality?.seasonal_dominant).toBe(true);
+    expect(cobourg?.quality?.accepted).toBe(true);
+    expect(cobourg?.quality?.issues?.join(" ")).toContain("yearly swing");
+
+    // Seattle is the control: a real tide, no label, and the field reads back
+    // undefined rather than false so it behaves like every other optional.
+    const seattle = allTideStations.find((s) => s.id === "noaa/9447130");
+    expect(seattle?.quality?.seasonal_dominant).toBeUndefined();
   });
 });

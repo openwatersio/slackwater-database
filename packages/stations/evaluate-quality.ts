@@ -44,6 +44,9 @@ import {
   SEASONAL_OUTLIER_RADIUS,
   SEASONAL_OUTLIER_MIN_SA,
   SEASONAL_OUTLIER_RATIO,
+  SEASONAL_DOMINANCE_RATIO,
+  SEASONAL_CONSTITUENTS,
+  TIDAL_CONSTITUENTS,
 } from "./filtering.ts";
 import type { StationData } from "@slackwater/database";
 
@@ -70,6 +73,8 @@ interface QualityResult {
   issues: string[];
   reason?: string;
   redundant?: string;
+  /** Seasonal band larger than the largest tidal term — see checkSeasonalDominance. */
+  seasonal_dominant?: boolean;
 }
 
 // Sources superseded by better datasets in this database
@@ -342,6 +347,66 @@ function checkSeasonalContamination(
     `SA amplitude (${sa.toFixed(3)}m) is ${ratio.toFixed(1)}x the median SA ` +
     `of ${neighbourSA.length} same-regime neighbour(s) within ` +
     `${SEASONAL_OUTLIER_RADIUS}km (${med.toFixed(3)}m): seasonal contamination`
+  );
+}
+
+/**
+ * Seasonal-dominance label.
+ *
+ * NOT the gate above it, and the difference is the whole point.
+ * `checkSeasonalContamination` asks whether a station's SA is anomalous against
+ * its *neighbours*, which catches a harmonic fit that absorbed spurious energy
+ * into the seasonal band. This asks whether SA is large against the station's
+ * *own* tidal terms, which catches water with no meaningful tide at all: a
+ * Great Lakes gauge, a river reach, a Baltic bodden. The contamination gate
+ * compares only within a tidal regime precisely so it does not fire on these,
+ * so nothing else in the pass sees them.
+ *
+ * It labels and does not reject, which is why it sits outside the gate chain.
+ * The predictions are right — the annual cycle really is the dominant signal —
+ * so the record is not faulty. What it cannot survive is being presented as a
+ * tide table: a consumer quoting a high and a low from the constituent sum is
+ * reporting this year's river or lake level in the vocabulary of a tide, and an
+ * entire 24-hour window can sit below the annual mean, which is where a
+ * negative high above chart datum comes from.
+ *
+ * Every consumer inherits this, so the verdict belongs here rather than in each
+ * one: two consumers picking their own ratio is how the same water gets
+ * described two ways. The ratio goes into `issues` so a consumer can be more
+ * conservative in presentation without re-deriving it.
+ */
+function checkSeasonalDominance(station: Station): string | null {
+  // Nothing to measure without constituents, which is every subordinate and
+  // every current station: a subordinate predicts from its reference, and this
+  // asks about a constituent sum.
+  if (!station.harmonic_constituents?.length) return null;
+
+  let seasonal = 0;
+  for (const name of SEASONAL_CONSTITUENTS) {
+    seasonal = Math.max(seasonal, Math.abs(getAmplitude(station, name)));
+  }
+  if (seasonal === 0) return null;
+
+  let tidal = 0;
+  let largest = "";
+  for (const name of TIDAL_CONSTITUENTS) {
+    const amplitude = Math.abs(getAmplitude(station, name));
+    if (amplitude > tidal) {
+      tidal = amplitude;
+      largest = name;
+    }
+  }
+  // No tidal term at all is `checkConstituents`' business, not this one: it
+  // rejects a reference station missing M2, S2, K1 or O1 outright, and a
+  // subordinate predicts from its reference rather than from constituents.
+  if (tidal === 0) return null;
+
+  const ratio = seasonal / tidal;
+  if (ratio < SEASONAL_DOMINANCE_RATIO) return null;
+
+  return (
+    `Seasonal band (${seasonal.toFixed(3)}m) is ${ratio.toFixed(1)}x the largest ` +
+    `tidal constituent ${largest} (${tidal.toFixed(3)}m): the yearly swing exceeds the daily one`
   );
 }
 
@@ -774,6 +839,17 @@ async function main() {
       gateReason = "seasonal";
     }
 
+    // A label, deliberately outside the gate chain above: a seasonal-dominated
+    // station is accepted, and its consumers decide how to present water whose
+    // yearly swing exceeds its daily one.
+    //
+    // Set whenever it is true, including on a station some gate rejected. It is
+    // a statement about the water rather than permission to publish, so it does
+    // not depend on the verdict — and it could not cleanly anyway, since
+    // deduplication rejects stations after this loop has run.
+    const dominanceIssue = checkSeasonalDominance(station);
+    if (dominanceIssue) issues.push(dominanceIssue);
+
     // Scored factors
     const amplitudeResult = scoreAmplitude(station);
     issues.push(...amplitudeResult.issues);
@@ -794,6 +870,7 @@ async function main() {
       factors,
       issues,
       ...(gateReason ? { reason: gateReason } : {}),
+      ...(dominanceIssue ? { seasonal_dominant: true } : {}),
     };
 
     resultsMap.set(station.id, result);

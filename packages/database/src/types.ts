@@ -161,6 +161,18 @@ export interface StationQuality {
   reason?: string;
   /** Id of the station that makes this one redundant, if any. */
   redundant?: string;
+  /**
+   * The seasonal band (SA, SSA) is larger than this station's largest tidal
+   * constituent, so its yearly swing exceeds its daily one.
+   *
+   * Accepted rather than rejected: the predictions are correct and only the
+   * frame is wrong. A consumer quoting a high and a low should read this and
+   * say what the water is — a Great Lakes gauge, a river reach, a Baltic
+   * bodden — because an entire 24-hour window can sit below the annual mean,
+   * which is a true statement about the water and reads as a broken tide
+   * table. `issues` carries the ratio.
+   */
+  seasonal_dominant?: boolean;
 }
 
 /** The floor and ceiling of a station's predictions, in metres above its chart datum. */
