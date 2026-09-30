@@ -297,7 +297,7 @@ describe("metadata resolution", () => {
 
   test("skips a water body that repeats the name", () => {
     const result = resolveMetadata(
-      { ...baseStation, name: "NEAH BAY" },
+      { ...baseStation, name: "NEAH-BAY" },
       {
         geocoder,
         waterBodies: {
