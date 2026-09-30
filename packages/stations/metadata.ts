@@ -650,8 +650,8 @@ function foldName(text: string): string {
   return text
     .normalize("NFD")
     .replace(/\p{M}/gu, "")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
     .trim()
-    .replace(/\s+/g, " ")
     .toLowerCase();
 }
 
