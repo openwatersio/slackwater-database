@@ -65,9 +65,11 @@ export interface SlugTableOptions {
   /**
    * Curated identity records. Two ids may share a curated slug only when
    * exactly one of them is here — a provider row joining the registry record
-   * for the same water. Two provider rows on one slug is a collision.
+   * for the same water. Provider-only sharing requires a reviewed sameGauge link.
    */
   registryIds?: Set<string>;
+  /** Reviewed provider record -> canonical provider record, never inferred from proximity. */
+  sameGauge?: Map<string, string>;
 }
 
 export function buildSlugTable(
@@ -75,7 +77,11 @@ export function buildSlugTable(
   previous: SlugTable,
   tombstones: SlugTombstones = { tide: {}, current: {} },
   formerSlugs: FormerSlugs = emptyFormerSlugs(),
-  { reallocate = new Set(), registryIds = new Set() }: SlugTableOptions = {},
+  {
+    reallocate = new Set(),
+    registryIds = new Set(),
+    sameGauge = new Map(),
+  }: SlugTableOptions = {},
 ): {
   table: SlugTable;
   tombstones: SlugTombstones;
@@ -103,6 +109,30 @@ export function buildSlugTable(
     ),
   };
   const gone: string[] = [];
+  const byId = new Map(stations.map((station) => [station.id, station]));
+  const gaugeOwner = (id: string) => sameGauge.get(id) ?? id;
+  for (const [id, targetId] of sameGauge) {
+    const station = byId.get(id);
+    const target = byId.get(targetId);
+    if (
+      !station ||
+      !target ||
+      station.routed === false ||
+      target.routed === false ||
+      id === targetId ||
+      sameGauge.has(targetId) ||
+      !id.includes("/") ||
+      !targetId.includes("/") ||
+      registryIds.has(id) ||
+      registryIds.has(targetId) ||
+      (station.kind ?? "tide") !== (target.kind ?? "tide") ||
+      station.country_code !== target.country_code ||
+      station.region_code !== target.region_code
+    )
+      throw new Error(
+        `${id}: invalid sameGauge target ${targetId}; use a routable provider of the same kind and geography with no sameGauge link`,
+      );
+  }
 
   for (const kind of ["tide", "current"] as const) {
     const candidates = stations.filter(
@@ -147,9 +177,7 @@ export function buildSlugTable(
     for (const id of reallocate) if (ids.has(id)) allocated.delete(id);
 
     // A curated `slug` outranks any earlier allocation. It may land on a slug
-    // another id holds only to merge a provider row with the registry record
-    // for the same water; between two provider rows, or two registry records,
-    // it is a collision.
+    // another id holds only for a registry/provider join or reviewed sameGauge link.
     for (const station of candidates) {
       if (!station.slug) continue;
       const owner = [...allocated].find(
@@ -159,7 +187,10 @@ export function buildSlugTable(
         const curatedOwners =
           Number(registryIds.has(owner[0])) +
           Number(registryIds.has(station.id));
-        if (curatedOwners === 0)
+        if (
+          curatedOwners === 0 &&
+          gaugeOwner(owner[0]) !== gaugeOwner(station.id)
+        )
           throw new Error(
             `${station.id}: slug ${JSON.stringify(station.slug)} is allocated to ${owner[0]}`,
           );
@@ -176,7 +207,10 @@ export function buildSlugTable(
           `${station.id}: slug ${JSON.stringify(station.slug)} is tombstoned for ${buried[0]}`,
         );
       const historical = Object.entries(nextFormer[kind]).find(
-        ([id, slugs]) => id !== station.id && slugs.includes(station.slug!),
+        ([id, slugs]) =>
+          id !== station.id &&
+          gaugeOwner(id) !== gaugeOwner(station.id) &&
+          slugs.includes(station.slug!),
       );
       if (historical)
         throw new Error(
@@ -237,6 +271,15 @@ export function buildSlugTable(
       allocated.set(station.id, slug);
       used.add(slug);
     }
+    for (const [id, targetId] of sameGauge) {
+      if (!ids.has(id)) continue;
+      const slug = allocated.get(targetId)!;
+      if (byId.get(id)!.slug && byId.get(id)!.slug !== slug)
+        throw new Error(
+          `${id}: curated slug disagrees with sameGauge target ${targetId}`,
+        );
+      allocated.set(id, slug);
+    }
     for (const [id, was] of arrived) retire(id, was);
 
     // A tombstone is an id that left holding its slug. The same slug live
@@ -257,9 +300,12 @@ export function buildSlugTable(
     for (const [slug, owners] of holders) {
       if (owners.length < 2) continue;
       const curated = owners.filter((id) => registryIds.has(id));
-      if (curated.length !== 1)
+      const linked =
+        curated.length === 0 &&
+        owners.every((id) => gaugeOwner(id) === gaugeOwner(owners[0]!));
+      if (curated.length !== 1 && !linked)
         throw new Error(
-          `${kind}/${slug}: shared by ${owners.join(", ")} with ${curated.length === 0 ? "no" : "two"} registry owners; a shared slug is one curated record plus the provider rows for the same water`,
+          `${kind}/${slug}: shared by ${owners.join(", ")} with ${curated.length === 0 ? "no" : "two"} registry owners; provider-only sharing requires sameGauge links`,
         );
     }
 

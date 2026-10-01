@@ -25,7 +25,28 @@
 # Two ids for one station share a slug: a curated record beside the provider's
 # own row for the same water. Point the provider row at the curated slug with
 # `slug:` in corrections.yaml; the lock allows the pair and refuses a second
-# registry owner or a share between two provider rows.
+# registry owner. Provider relays share their owner's route only through an
+# explicit `sameGauge: provider/id` link backed by station documentation.
+
+ticon/kahului-059-usa-uhslc_fd:
+  sameGauge: noaa/1615680
+  reason: UHSLC station 059 identifies NOAA 1615680 as its originator (https://uhslc.soest.hawaii.edu/rqds/metadata_yaml/059Ameta.yaml).
+
+ticon/santa_barbara_ca-577a-usa-uhslc_rq:
+  sameGauge: noaa/9411340
+  reason: UHSLC 577A identifies NOAA 9411340 as its originator (https://uhslc.soest.hawaii.edu/rqds/metadata_yaml/577Ameta.yaml).
+
+ticon/port_allen-553a-usa-uhslc_rq:
+  sameGauge: noaa/1611347
+  reason: UHSLC 553A identifies NOAA 1611347 as its originator (https://uhslc.soest.hawaii.edu/rqds/metadata_yaml/553Ameta.yaml).
+
+ticon/duck_pier_nc-260-usa-uhslc_fd:
+  sameGauge: noaa/8651370
+  reason: UHSLC station 260 identifies NOAA 8651370 as its originator (https://uhslc.soest.hawaii.edu/rqds/metadata_yaml/260Ameta.yaml).
+
+ticon/massacre_bay_ak-550a-usa-uhslc_rq:
+  sameGauge: noaa/9460150
+  reason: PSMSL 491 identifies the 1943-1966 Massacre Bay record as NOAA/NOS data from UHSLC 550 (https://psmsl.org/data/obtaining/stations/491.php). UHSLC 550A describes the historic NOAA-operated Attu gauge (https://uhslc.soest.hawaii.edu/rqds/metadata_yaml/550Ameta.yaml); NOAA 9460150 identifies Massacre Bay at Attu, established in 1943 (https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/9460150.json?expand=details).
 
 noaa/9447659:
   name: Everett

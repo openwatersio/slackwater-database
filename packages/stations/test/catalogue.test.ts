@@ -93,6 +93,76 @@ function fixtures(): CatalogueInputs {
 }
 
 describe("buildCatalogue", () => {
+  test("a reviewed same-gauge link shares a route and redirects the relay's old URL", () => {
+    const input = fixtures();
+    input.tides[0]!.harmonic_constituents = [
+      { name: "M2", amplitude: 1, phase: 10 },
+    ];
+    input.tides.push({
+      ...input.tides[0]!,
+      id: "ticon/seattle",
+      harmonic_constituents: [{ name: "M2", amplitude: 2, phase: 20 }],
+    });
+    input.slugTable.tide["ticon/seattle"] = "seattle-relay";
+    input.routeLock.tide["seattle-relay"] = {
+      path: "/tides/us/seattle-relay/",
+      former_paths: ["/tides/us/old-seattle-relay/"],
+    };
+    input.corrections.set("ticon/seattle", { sameGauge: "noaa/9447130" });
+
+    const catalogue = buildCatalogue(input);
+    expect(catalogue.routes.tide.find((r) => r.slug === "seattle")).toEqual({
+      slug: "seattle",
+      station_ids: ["noaa/9447130", "ticon/seattle"],
+      former_paths: [
+        "/tides/us/old-seattle-relay/",
+        "/tides/us/seattle-relay/",
+      ],
+    });
+    expect(catalogue.routes.tide.some((r) => r.slug === "seattle-relay")).toBe(
+      false,
+    );
+    expect(catalogue.stations.map((s) => s.id)).toContain("ticon/seattle");
+    expect(catalogue.stations.map((s) => s.id)).toContain("noaa/9447130");
+    for (const station of input.tides)
+      expect(
+        catalogue.stations.find((s) => s.id === station.id)
+          ?.harmonic_constituents,
+      ).toEqual(station.harmonic_constituents);
+    expect(catalogue.formerSlugs.tide["ticon/seattle"]).toEqual([
+      "seattle-relay",
+    ]);
+
+    const rebuilt = buildCatalogue({
+      ...input,
+      slugTable: catalogue.slugTable,
+      formerSlugs: catalogue.formerSlugs,
+    });
+    expect(rebuilt.routes).toEqual(catalogue.routes);
+  });
+
+  test.each([
+    ["missing", "noaa/missing"],
+    ["wrong kind", "noaa/PUG1701"],
+    ["self", "ticon/seattle"],
+  ])("rejects a %s same-gauge target", (_label, sameGauge) => {
+    const input = fixtures();
+    input.tides.push({ ...input.tides[0]!, id: "ticon/seattle" });
+    input.corrections.set("ticon/seattle", { sameGauge });
+    expect(() => buildCatalogue(input)).toThrow(/sameGauge/);
+  });
+
+  test("same-gauge links point directly to the owner, not through another relay", () => {
+    const input = fixtures();
+    input.tides.push(
+      { ...input.tides[0]!, id: "ticon/relay" },
+      { ...input.tides[0]!, id: "ticon/seattle" },
+    );
+    input.corrections.set("ticon/relay", { sameGauge: "noaa/9447130" });
+    input.corrections.set("ticon/seattle", { sameGauge: "ticon/relay" });
+    expect(() => buildCatalogue(input)).toThrow(/sameGauge/);
+  });
+
   test("combines provider and registry stations with stable routes", () => {
     const catalogue = buildCatalogue(fixtures());
 

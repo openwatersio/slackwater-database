@@ -32,6 +32,7 @@ export interface Correction {
   name?: string;
   context?: string;
   slug?: string;
+  sameGauge?: string;
   aliases?: string[];
   cities?: string[];
   formerSlugs?: string[];
@@ -207,6 +208,7 @@ function validateCommon(
     "name",
     "context",
     "slug",
+    "sameGauge",
     "reason",
     "positionVerified",
   ] as const) {
