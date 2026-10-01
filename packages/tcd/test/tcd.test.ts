@@ -46,7 +46,7 @@ const CURRENT_REFERENCE = {
 };
 const CURRENT_SUBORDINATE = {
   id: "noaa/ACT1626",
-  name: "Monomoy Point, Massachusetts Current",
+  name: "Monomoy Point, channel 0.2 nm west of, Massachusetts Current",
 };
 
 // Test date range - one week for validation
