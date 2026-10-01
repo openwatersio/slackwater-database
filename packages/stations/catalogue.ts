@@ -92,6 +92,11 @@ export function buildCatalogue(inputs: CatalogueInputs): {
     {
       ...(inputs.reallocate ? { reallocate: inputs.reallocate } : {}),
       registryIds: new Set(inputs.registry.keys()),
+      sameGauge: new Map(
+        [...inputs.corrections].flatMap(([id, correction]) =>
+          correction.sameGauge ? [[id, correction.sameGauge]] : [],
+        ),
+      ),
     },
   );
   const members: RouteMember[] = routedStations.map((station) => {

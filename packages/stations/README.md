@@ -21,7 +21,9 @@ npm run metadata:lock
 npm run validate:database
 ```
 
-A published slug belongs to its station for good. The updater keeps every allocation it already has, and when a slug does move it writes the old one to `metadata/former-slugs.json`, which is what reaches consumers as a route's `formerPaths` and what stops the allocator ever minting that slug for other water. It refuses a route whose published path would vanish without a redirect, a tombstone for a slug that is still allocated, and a shared slug with no registry owner or two.
+A published slug belongs to its station for good. The updater keeps every allocation it already has, and when a slug does move it writes the old one to `metadata/former-slugs.json`, which is what reaches consumers as a route's `formerPaths` and what stops the allocator ever minting that slug for other water. It refuses a route whose published path would vanish without a redirect, a tombstone for a slug that is still allocated, and an undeclared shared slug.
+
+Provider relays for a documented gauge use `sameGauge: provider/id` in corrections, with the evidence in `reason`. Both records retain their own harmonics and share the target's route; retired relay URLs redirect there. The target must be a routable provider record of the same kind, country, and region, without its own `sameGauge` link. Matching names or nearby coordinates alone do not establish gauge identity. Registry/provider joins use a curated slug with exactly one registry owner.
 
 To move slugs on purpose — a ladder change that should reach stations already published, say — list the ids and re-ladder just those, so each keeps its old address as a redirect:
 

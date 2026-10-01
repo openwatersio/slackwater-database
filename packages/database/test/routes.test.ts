@@ -3,6 +3,22 @@ import { describe, expect, test } from "vitest";
 import { stationRouteBySlug, stationRoutes } from "../src/index.js";
 
 describe("station routes", () => {
+  test.each([
+    ["kahului", "1615680", "kahului-059-usa-uhslc_fd"],
+    ["santa-barbara", "9411340", "santa_barbara_ca-577a-usa-uhslc_rq"],
+    ["port-allen", "1611347", "port_allen-553a-usa-uhslc_rq"],
+    ["duck-pier", "8651370", "duck_pier_nc-260-usa-uhslc_fd"],
+    ["massacre-bay", "9460150", "massacre_bay_ak-550a-usa-uhslc_rq"],
+  ])("%s keeps both gauge records on the NOAA route", (slug, noaa, relay) => {
+    const route = stationRouteBySlug("tide", slug)!;
+    expect(route.stationIds).toEqual([`noaa/${noaa}`, `ticon/${relay}`]);
+    const retiredSlug = `${slug}-ticon-${relay.replaceAll("_", "-")}`;
+    expect(stationRouteBySlug("tide", retiredSlug)).toBeUndefined();
+    expect(route.formerPaths).toContain(
+      route.path.replace(`${slug}/`, `${retiredSlug}/`),
+    );
+  });
+
   test("reads the shipped route index on demand", () => {
     expect(stationRoutes("tide").length).toBeGreaterThan(0);
     expect(stationRoutes("current").length).toBeGreaterThan(0);

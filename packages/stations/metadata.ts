@@ -32,6 +32,7 @@ export interface Correction {
   name?: string;
   context?: string;
   slug?: string;
+  sameGauge?: string;
   aliases?: string[];
   cities?: string[];
   formerSlugs?: string[];
@@ -100,6 +101,8 @@ export function validateMetadata(
 
   for (const [id, correction] of corrections) {
     validateCommon(id, correction, problems);
+    if (correction.sameGauge !== undefined && !nonEmpty(correction.reason))
+      problems.push(`${id}: sameGauge requires a non-empty reason`);
     const station = published.get(id);
     if (
       nonEmpty(correction.name) &&
@@ -207,6 +210,7 @@ function validateCommon(
     "name",
     "context",
     "slug",
+    "sameGauge",
     "reason",
     "positionVerified",
   ] as const) {
