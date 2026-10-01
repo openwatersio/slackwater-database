@@ -93,6 +93,19 @@ function fixtures(): CatalogueInputs {
 }
 
 describe("buildCatalogue", () => {
+  test.each([undefined, "", "   "])(
+    "rejects a same-gauge merge with reason %j",
+    (reason) => {
+      const input = fixtures();
+      input.tides.push({ ...input.tides[0]!, id: "ticon/seattle" });
+      input.corrections.set("ticon/seattle", {
+        sameGauge: "noaa/9447130",
+        ...(reason !== undefined ? { reason } : {}),
+      });
+      expect(() => buildCatalogue(input)).toThrow(/reason/);
+    },
+  );
+
   test("a reviewed same-gauge link shares a route and redirects the relay's old URL", () => {
     const input = fixtures();
     input.tides[0]!.harmonic_constituents = [
@@ -108,7 +121,10 @@ describe("buildCatalogue", () => {
       path: "/tides/us/seattle-relay/",
       former_paths: ["/tides/us/old-seattle-relay/"],
     };
-    input.corrections.set("ticon/seattle", { sameGauge: "noaa/9447130" });
+    input.corrections.set("ticon/seattle", {
+      sameGauge: "noaa/9447130",
+      reason: "The relay documents NOAA 9447130 as its originator.",
+    });
 
     const catalogue = buildCatalogue(input);
     expect(catalogue.routes.tide.find((r) => r.slug === "seattle")).toEqual({
@@ -148,7 +164,10 @@ describe("buildCatalogue", () => {
   ])("rejects a %s same-gauge target", (_label, sameGauge) => {
     const input = fixtures();
     input.tides.push({ ...input.tides[0]!, id: "ticon/seattle" });
-    input.corrections.set("ticon/seattle", { sameGauge });
+    input.corrections.set("ticon/seattle", {
+      sameGauge,
+      reason: "Reviewed identity.",
+    });
     expect(() => buildCatalogue(input)).toThrow(/sameGauge/);
   });
 
@@ -158,8 +177,14 @@ describe("buildCatalogue", () => {
       { ...input.tides[0]!, id: "ticon/relay" },
       { ...input.tides[0]!, id: "ticon/seattle" },
     );
-    input.corrections.set("ticon/relay", { sameGauge: "noaa/9447130" });
-    input.corrections.set("ticon/seattle", { sameGauge: "ticon/relay" });
+    input.corrections.set("ticon/relay", {
+      sameGauge: "noaa/9447130",
+      reason: "Reviewed identity.",
+    });
+    input.corrections.set("ticon/seattle", {
+      sameGauge: "ticon/relay",
+      reason: "Reviewed identity.",
+    });
     expect(() => buildCatalogue(input)).toThrow(/sameGauge/);
   });
 
