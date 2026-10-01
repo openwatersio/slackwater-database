@@ -116,8 +116,8 @@ function toFixed(n: number, precision = 3): number {
 /** Detect placeholder epoch dates like 0000-01-01. */
 function hasValidEpoch(epoch?: { start: string; end: string }): boolean {
   if (!epoch) return false;
-  const startYear = new Date(epoch.start).getFullYear();
-  const endYear = new Date(epoch.end).getFullYear();
+  const startYear = new Date(epoch.start).getUTCFullYear();
+  const endYear = new Date(epoch.end).getUTCFullYear();
   // Year 0 or negative years are placeholder/invalid data
   return startYear > 0 && endYear > 0;
 }
@@ -467,8 +467,11 @@ function scoreRecency(
   if (!epoch?.end) return 0;
   if (!hasValidEpoch(epoch)) return 1;
 
-  const endYear = new Date(epoch.end).getFullYear();
-  const currentYear = new Date().getFullYear();
+  // UTC, because epoch dates are bare dates parsed as UTC midnight. A local
+  // getFullYear() reads "2025-01-01" as 2024 west of Greenwich, so the score
+  // would differ between a laptop and CI.
+  const endYear = new Date(epoch.end).getUTCFullYear();
+  const currentYear = new Date().getUTCFullYear();
   const age = currentYear - endYear;
 
   // Linear decay: 0 years old = 1.0, 100+ years old = 0.0
