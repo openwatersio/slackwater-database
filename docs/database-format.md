@@ -36,6 +36,12 @@ The schema can't express this; the builder has to produce it deliberately. FlatB
 
 The quality gate comes from the same file: `station.quality` carries `accepted` and `score` eagerly (read inline during the identity scan) with lazy getters for the detail, `qualityMap` indexes those objects by id, and the `stations` export filters `allStations` on `accepted`. The module does not bundle `quality.json`; it stays in the repo as the artifact `packages/stations/evaluate-quality.ts` writes and the build embeds.
 
+`quality.seasonal_dominant` is a label, not a rejection: water with no real tide — the Great Lakes, river reaches, Baltic bodden — stays accepted and carries the flag. It is the stable detector, and a consumer must read it rather than count the symptom. Counting days whose high sits at or below datum does not work: across six 2026 dates the count ran 58, 96, 6, 8, 10, 27, and of the 161 stations that showed it on any date, none showed it on all six.
+
+The threshold is 1, the physical line where the yearly swing exceeds the largest daily one. There is no gap in the distribution to find a better one in (603 stations at 1×, 423 at 1.5×, 321 at 2×, 230 at 3×, 177 between 0.8× and 1×), so any higher figure is editorial and belongs in the consumer, not here. Both existing consumers present two bands split at 3× on the ratio: above it the note leads, below it joins the datum note. A third consumer should read the flag and split at the same 3× rather than invent a threshold. The ratio itself is derived per consumer from constituents each already ships, deliberately not a database field.
+
+Annapolis is why the line is not drawn higher — it carries the flag at 1.008 with a real Chesapeake tide.
+
 The bytes come from a per-build source behind the `#slackwater.tcdb` subpath import — each default-exports the bytes:
 
 - **Node** (`src/database/bytes.node.ts`): `readFileSync` into an off-heap `Buffer`.
