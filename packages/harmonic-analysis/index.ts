@@ -36,19 +36,23 @@ const DEG = Math.PI / 180;
 const DAY_MS = 86_400_000;
 
 // Constituents whose engine definition has disagreed with TICON's (issue #76).
-// Engine speeds are compared against these TICON-manual reference speeds at fit
-// time; any constituent still mismatched is skipped rather than fit at the
-// wrong frequency (e.g. the engine's "3N2" is a sextidiurnal at 85°/hr). This
-// self-heals — once the engine corrects a definition, it is included again.
+// Engine speeds are compared against these TICON reference speeds at fit time;
+// any constituent still mismatched is skipped rather than fit at the wrong
+// frequency. This self-heals — once the engine corrects a definition, it is
+// included again.
 const TICON_REFERENCE_SPEED: Record<string, number> = {
   SA: 0.0410686,
-  MKS2: 28.4350877,
-  "3N2": 29.0662415,
+  // The TICON-4 manual swaps these two rows; TICON's published phases fit MKS2 at 257.555 and 3N2 at 245.555 (openwatersio/slackwater#359).
+  MKS2: 29.0662415,
+  "3N2": 28.4350877,
   "3L2": 29.5331208,
   T3: 44.9589333,
   R3: 45.0410706,
 };
-function definitionMismatched(name: string, engineSpeed: number): boolean {
+export function definitionMismatched(
+  name: string,
+  engineSpeed: number,
+): boolean {
   const ref = TICON_REFERENCE_SPEED[name.toUpperCase()];
   return ref !== undefined && Math.abs(engineSpeed - ref) > 1e-4;
 }
