@@ -50,6 +50,8 @@ The station files keep TICON's constituent names as published, and `@slackwater/
 
 Table 1 of the TICON-4 manual swaps these two rows. Scored against the raw GESLA-4 records, TICON's published phases match the lines above, so `TICON_REFERENCE_SPEED` in [`packages/harmonic-analysis/index.ts`](../../packages/harmonic-analysis/index.ts) uses these speeds rather than Table 1's.
 
+Table 1 also lists Sa as 056.554, with a solar perigee term, where the engine uses 056.555. Scored the same way, TICON's published Sa matches 056.555 at 17 of the 18 gauges tried (0.98 to 1.05, against −0.49 to −0.64 for 056.554), so it needs no conversion. The engine doc has the gauges and the commands.
+
 The importer re-fits the `wsv` and `rws` stations, whose GESLA-4 files label local time as UTC (see `LOCAL_TIME_SOURCES` in [`import.ts`](import.ts)). `fitHarmonics` skips any constituent whose engine speed differs from its reference speed, so a re-fit never stores a name on a line TICON doesn't mean by it. These stations store MKS2 on 257.555, the same values a re-fit with the current reference speeds produces. While the engine resolves 3N2 to MKS2, re-fits skip 3N2. Once the engine defines 3N2 on its own line, re-run the fits to add it:
 
 ```sh
