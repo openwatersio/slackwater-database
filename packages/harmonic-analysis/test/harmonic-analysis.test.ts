@@ -1,6 +1,8 @@
 import { describe, test, expect } from "vitest";
+import { readdirSync, readFileSync } from "node:fs";
 import * as engine from "@slackwater/engine";
 import {
+  definitionMismatched,
   fitHarmonics,
   parseGeslaSamplesInZone,
   type Sample,
@@ -46,7 +48,7 @@ describe("fitHarmonics", () => {
       };
     }).reverse();
     const originalStart = samples[0]!.t;
-    expect(fitHarmonics(samples, ["m2", "unknown", "MKS2"])).toEqual([
+    expect(fitHarmonics(samples, ["m2", "unknown"])).toEqual([
       { name: "m2", amplitude: 1.235, phase: 110.12 },
     ]);
     expect(samples[0]!.t).toBe(originalStart);
@@ -83,6 +85,33 @@ describe("fitHarmonics", () => {
       expect(got.amplitude).toBeCloseTo(H, 3);
       expect(got.phase).toBeCloseTo(G, 2);
     }
+  });
+
+  test("fits MKS2 on its own line and never reports it as 3N2", () => {
+    const DEG = Math.PI / 180;
+    const t0 = Date.UTC(2010, 0, 1);
+    const samples: Sample[] = Array.from({ length: 24 * 400 }, (_, h) => {
+      const t = t0 + h * 3600_000;
+      const a = engine.astro(new Date(t));
+      let level = 0;
+      for (const [name, H, G] of [
+        ["M2", 1, 110],
+        ["MKS2", 0.05, 200],
+      ] as const) {
+        const con = engine.constituents[name]!;
+        const { f, u } = con.correction(a);
+        level += H * f * Math.cos((con.value(a) + u - G) * DEG);
+      }
+      return { t, level };
+    });
+
+    const fit = fitHarmonics(samples, ["M2", "MKS2", "3N2"]);
+    const mks2 = fit.find((c) => c.name === "MKS2");
+    expect(mks2?.amplitude).toBeCloseTo(0.05, 3);
+    expect(mks2?.phase).toBeCloseTo(200, 1);
+    expect(fit.find((c) => c.name === "3N2")?.amplitude ?? 0).toBeLessThan(
+      0.002,
+    );
   });
 
   test("SVD reconstructs a broad synthetic constituent set", () => {
@@ -172,6 +201,24 @@ describe("fitHarmonics", () => {
           Number.isFinite(amplitude) && Number.isFinite(phase),
       ),
     ).toBe(true);
+  });
+});
+
+describe("re-analyzed TICON stations", () => {
+  test("store each constituent under the line it was fit at", () => {
+    const dir = new URL("../../../data/ticon/", import.meta.url);
+    // The sources sources/ticon/import.ts re-fits; it reuses cached fits until FORCE_HARMONICS=1.
+    const refit = readdirSync(dir).filter((f) => /-(wsv|rws)\.json$/.test(f));
+    const mismatched = refit.flatMap((file) => {
+      const station = JSON.parse(readFileSync(new URL(file, dir), "utf8"));
+      return (station.harmonic_constituents as { name: string }[])
+        .filter(({ name }) =>
+          definitionMismatched(name, engine.constituents[name]!.speed),
+        )
+        .map(({ name }) => `${file}: ${name}`);
+    });
+    expect(refit.length).toBeGreaterThan(0);
+    expect(mismatched).toEqual([]);
   });
 });
 
