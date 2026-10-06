@@ -41,6 +41,31 @@ FORCE_DATUMS=1 npm run import -w sources/ticon
 
 Without `FORCE_DATUMS`, the importer reuses each station's cached datums and only recomputes the derived metadata (`chart_datum`, pruning, disclaimers). `FORCE_DATUMS` also accepts a comma-separated list of source suffixes to recompute only those sources, for example `FORCE_DATUMS=uhslc_rq`.
 
+## Constituent names
+
+The station files keep TICON's constituent names as published, and `@slackwater/engine` resolves each name to a definition. Most TICON names are IHO names on the IHO line. The engine's [constituent names](https://github.com/openwatersio/slackwater/blob/main/packages/engine/docs/constituent-names.md) doc covers the ones that are not, with the evidence for each. Two of them matter for the importer:
+
+- MKS2 is the IHO MKS2 at Doodson 257.555 (29.0662415°/h).
+- 3N2 is a degree-3 line at Doodson 245.555 (28.4350877°/h) with a +90° phase constant.
+
+Table 1 of the TICON-4 manual swaps these two rows. Scored against the raw GESLA-4 records, TICON's published phases match the lines above, so `TICON_REFERENCE_SPEED` in [`packages/harmonic-analysis/index.ts`](../../packages/harmonic-analysis/index.ts) uses these speeds rather than Table 1's.
+
+The importer re-fits the `wsv` and `rws` stations, whose GESLA-4 files label local time as UTC (see `LOCAL_TIME_SOURCES` in [`import.ts`](import.ts)). `fitHarmonics` skips any constituent whose engine speed differs from its reference speed, so a re-fit never stores a name on a line TICON doesn't mean by it. These stations store MKS2 on 257.555, the same values a re-fit with the current reference speeds produces. While the engine resolves 3N2 to MKS2, re-fits skip 3N2. Once the engine defines 3N2 on its own line, re-run the fits to add it:
+
+```sh
+FORCE_HARMONICS=1 npm run import -w sources/ticon
+```
+
+A re-fit reads each station's whole GESLA-4 record, so it takes a while.
+
+To check which line a published constituent describes, score it against the raw record with [`score-line.ts`](../../packages/harmonic-analysis/score-line.ts). It reads the GESLA-4 archive the importer downloads:
+
+```sh
+npm run score-line -w packages/harmonic-analysis -- cardwell-h035012a-aus-bom 3N2 245.555 --sweep --nodal=N2
+```
+
+The engine doc explains the method and how to read the scores. Open differences between TICON's phases and the engine's are tracked in [#239](https://github.com/openwatersio/slackwater-database/issues/239). [#76](https://github.com/openwatersio/slackwater-database/issues/76) collects the discrepancies between the manual's constituent definitions and the engine's.
+
 ## References
 
 - Hart-Davis, Michael; Dettmering, Denise; Seitz, Florian (2025). _TICON-4: TIdal CONstants based on GESLA-4 sea-level records._ SEANOE. https://doi.org/10.17882/109129
