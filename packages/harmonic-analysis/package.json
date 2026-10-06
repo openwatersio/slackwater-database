@@ -6,9 +6,11 @@
     ".": "./index.ts"
   },
   "scripts": {
+    "score-line": "node score-line.ts",
     "test": "vitest"
   },
   "dependencies": {
+    "@slackwater/datums": "*",
     "@slackwater/engine": "1.0.0-beta.2",
     "ml-matrix": "^6.15.0"
   },
