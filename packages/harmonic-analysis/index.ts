@@ -167,11 +167,29 @@ export function isAnalyzable(
  * amplitude (m) and UTC/Greenwich phase (deg) for each. Names not known to
  * the engine are dropped (callers should pass a covered set).
  */
+// 3N2 and N2 are one lunar perigee cycle apart (8.85 years). A shorter record
+// can't separate them, and fitting both splits N2 between the two lines, so
+// N2 keeps the signal on its own.
+// ponytail: 3N2 only; a general Rayleigh check would also cover 3L2 against L2.
+function unresolvedFromN2(
+  name: string,
+  speed: number,
+  spanHours: number,
+): boolean {
+  return (
+    name.toUpperCase() === "3N2" &&
+    360 / Math.abs(speed - engine.constituents["N2"]!.speed) > spanHours
+  );
+}
+
 export function fitHarmonics(
   samples: Sample[],
   names: string[],
   options: FitOptions = {},
 ): HarmonicConstituent[] {
+  const spanHours = samples.length
+    ? (samples.at(-1)!.t - samples[0]!.t) / 3_600_000
+    : 0;
   const cons = names
     .map((name) => ({
       name,
@@ -179,7 +197,9 @@ export function fitHarmonics(
     }))
     .filter(
       (x): x is { name: string; c: (typeof engine.constituents)[string] } =>
-        !!x.c && !definitionMismatched(x.name, x.c.speed),
+        !!x.c &&
+        !definitionMismatched(x.name, x.c.speed) &&
+        !unresolvedFromN2(x.name, x.c.speed, spanHours),
     );
 
   const ncol = 1 + 2 * cons.length;
