@@ -38,6 +38,12 @@ export interface Geocoder {
 /** Load the reviewed GeoNames snapshot and build its spatial index. */
 export async function loadGeocoder(): Promise<Geocoder> {
   const places = JSON.parse(await readFile(PLACES_URL, "utf8")) as Place[];
+  // GeoNames writes some apostrophes as U+2019 or U+02BC ("Saint Georgeʼs");
+  // station names and regions use the ASCII one.
+  for (const place of places) {
+    place.name = place.name.replace(/[’ʼ]/g, "'");
+    place.admin1 = place.admin1.replace(/[’ʼ]/g, "'");
+  }
   const index = new KDBush(places.length);
   for (const place of places) index.add(place.longitude, place.latitude);
   index.finish();

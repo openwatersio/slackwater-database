@@ -400,6 +400,10 @@ export function resolveMetadata(
           place.place.admin1,
           place.place.admin1Code,
         )
+      : undefined) ??
+    // A Canadian province the provider named, where no place is within reach.
+    (country.iso2 === "CA" && CANADIAN_SUBDIVISIONS[station.region ?? ""]
+      ? `CA-${CANADIAN_SUBDIVISIONS[station.region ?? ""]}`
       : undefined);
   const cleaned = cleanName(
     station.name ?? registry?.name ?? "",
@@ -720,7 +724,7 @@ const NAME_STOP_WORDS = new Set([
   "pt",
 ]);
 
-const CANADIAN_SUBDIVISIONS: Record<string, string> = {
+export const CANADIAN_SUBDIVISIONS: Record<string, string> = {
   Alberta: "AB",
   "British Columbia": "BC",
   Manitoba: "MB",
@@ -754,7 +758,7 @@ function normalizedRegion(
   return /^\d+$/.test(region) ? normalizedFallback : region;
 }
 
-function isoSubdivisionCode(
+export function isoSubdivisionCode(
   countryCode: string,
   admin1: string,
   admin1Code: string,

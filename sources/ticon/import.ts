@@ -13,6 +13,8 @@ import {
   getSourceSuffix,
   NON_COMMERCIAL_SOURCES,
   cleanName,
+  CANADIAN_SUBDIVISIONS,
+  isoSubdivisionCode,
   loadGeocoder,
   type PartialStationData,
 } from "@slackwater/stations";
@@ -119,14 +121,31 @@ async function main() {
 
     const gesla = metadata[rows[0].tide_gauge_name];
 
-    const cleaned = cleanName(gesla["SITE NAME"], rows[0].country);
     const lat = parseFloat(rows[0].lat);
     const lon = parseFloat(rows[0].lon);
-
-    // Geocode: resolve opaque names and fill region
-    let name = cleaned.name;
-    let region = cleaned.region;
     const geo = geocoder.nearest(lat, lon, 50);
+    const cleaned = cleanName(
+      gesla["SITE NAME"],
+      rows[0].country,
+      geo
+        ? isoSubdivisionCode(
+            geo.place.countryCode,
+            geo.place.admin1,
+            geo.place.admin1Code,
+          )
+        : undefined,
+    );
+
+    // Geocode: resolve opaque names and fill region. A region code in the
+    // name beats the nearest place, which can sit across a border; a Canadian
+    // one is spelled out like the geocoder's ("BC" → "British Columbia").
+    let name = cleaned.name;
+    let region =
+      Object.keys(CANADIAN_SUBDIVISIONS).find(
+        (province) =>
+          rows[0]!.country === "CAN" &&
+          CANADIAN_SUBDIVISIONS[province] === cleaned.region,
+      ) ?? cleaned.region;
     if (cleaned.isOpaque && geo) {
       name = geo.place.name;
     }

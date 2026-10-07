@@ -51,6 +51,12 @@ describe("cleanName", () => {
       );
     });
 
+    test("reads a leading zero as a dropped decimal point", () => {
+      expect(us("Merrimack_R_03_Miles_USRt_125_At_HaverhillMa")).toBe(
+        "Merrimack R 0.3 nm US Rt 125 at Haverhill Ma",
+      );
+    });
+
     test("leaves a place named for a mile alone", () => {
       expect(us("Six Mile Reef")).toBe("Six Mile Reef");
       expect(us("Miles Point")).toBe("Miles Point");
@@ -354,6 +360,7 @@ describe("cleanName", () => {
       ["COX WC-53 Platform", "COX WC-53 Platform"],
       ["Renaissance SA-13 Platform", "Renaissance SA-13 Platform"],
       ["WCOCO", "WCOCO"],
+      ["UNC_CenterMarineScience_Dock", "UNC Center Marine Science Dock"],
     ])("keeps abbreviations in %s", (raw, expected) => {
       expect(cleanName(raw, "United States").name).toBe(expected);
     });
@@ -455,6 +462,37 @@ describe("cleanName", () => {
       ).toBe("Port-de-Crozet");
       expect(cleanName("Baie_De_Marigot", "Saint Barthélemy").name).toBe(
         "Baie-de-Marigot",
+      );
+    });
+
+    test("accepts an ISO country code", () => {
+      expect(cleanName("Fort_de_France", "FRA").name).toBe("Fort-de-France");
+      expect(cleanName("St_Louis_du_Sud", "HTI").name).toBe("St Louis-du-Sud");
+    });
+
+    test("hyphenates Québec names given the region", () => {
+      expect(cleanName("Coteau_Du_Lac", "Canada", "CA-QC").name).toBe(
+        "Coteau-du-Lac",
+      );
+      expect(cleanName("Coteau_Du_Lac", "Canada", "CA-ON").name).toBe(
+        "Coteau du Lac",
+      );
+    });
+
+    test("keeps a Québec source's own spacing", () => {
+      expect(cleanName("Pont de Québec", "Canada", "CA-QC").name).toBe(
+        "Pont de Québec",
+      );
+    });
+  });
+
+  describe("Dutch names", () => {
+    test("restores the 's- prefix", () => {
+      expect(cleanName("s_Gravendeel", "Netherlands").name).toBe(
+        "'s-Gravendeel",
+      );
+      expect(cleanName("s_Gravendeel_haven", "Netherlands").name).toBe(
+        "'s-Gravendeel Haven",
       );
     });
   });

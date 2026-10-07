@@ -1,3 +1,5 @@
+import countryLookup from "country-code-lookup";
+
 export interface CleanNameResult {
   name: string;
   region?: string | undefined;
@@ -115,7 +117,7 @@ const SMALL_WORDS = new Set([
 
 // Acronyms in fully capitalized names need to opt out of recasing.
 const PRESERVED_CAPS = new Set(
-  "NNE NE ENE ESE SE SSE SSW SW WSW WNW NW NNW US BC USCG LB ICW ICWW RR MBTS CBBT AWG NERR HBR HVN LAWMA COX WCOCO".split(
+  "NNE NE ENE ESE SE SSE SSW SW WSW WNW NW NNW US BC USCG LB ICW ICWW RR MBTS CBBT AWG NERR HBR HVN LAWMA COX WCOCO UNC".split(
     " ",
   ),
 );
@@ -160,11 +162,14 @@ const DISTANCE =
  * round-tripped.
  */
 function toNauticalMiles(name: string): string {
-  return name.replace(DISTANCE, (_, value: string, unit: string) =>
-    unit[0]!.toLowerCase() === "n"
+  return name.replace(DISTANCE, (_, digits: string, unit: string) => {
+    // USGS drops the decimal point from a distance under a mile: "03 Miles"
+    // is 0.3, not 3.
+    const value = /^0\d+$/.test(digits) ? `0.${digits.slice(1)}` : digits;
+    return unit[0]!.toLowerCase() === "n"
       ? `${value} nm`
-      : `${(Number(value) * NM_PER_MILE).toFixed(1)} nm`,
-  );
+      : `${(Number(value) * NM_PER_MILE).toFixed(1)} nm`;
+  });
 }
 
 /**
@@ -172,9 +177,10 @@ function toNauticalMiles(name: string): string {
  * ("Boulogne-sur-Mer"). Metropolitan France and the overseas départements and
  * collectivités, where the toponymy is French and the convention holds.
  *
- * Canada is deliberately absent: Québec hyphenates, but the rest does not, and
- * a Québec name arrives hyphenated from its source rather than needing one
- * inferred. Belgium, Switzerland and Luxembourg are absent for the same
+ * Canada is absent because only Québec hyphenates. A Québec name keeps the
+ * hyphens its source wrote; `cleanName` restores them only where the source
+ * joined every word with underscores ("Coteau_Du_Lac"), losing hyphens and
+ * spaces alike. Belgium, Switzerland and Luxembourg are absent for the same
  * reason — partly French-speaking, so the country cannot stand in for the
  * language of any one name.
  */
@@ -184,6 +190,7 @@ const FRENCH_HYPHENATING_COUNTRIES = new Set([
   "French Polynesia",
   "French Southern and Antarctic Lands",
   "Guadeloupe",
+  "Haiti",
   "Martinique",
   "Mayotte",
   "Monaco",
@@ -202,7 +209,8 @@ const FRENCH_HYPHENATING_COUNTRIES = new Set([
  * Every station goes through this, whichever publisher it came from, so a rule
  * that suits one publisher's spelling has to be harmless to the rest.
  * `country` is what keeps that tractable: it decides which region codes are
- * valid and which naming conventions apply.
+ * valid and which naming conventions apply. It is a country name, or an ISO
+ * code that resolves to one.
  * `existingRegionCode` guards removal of a space-separated trailing code.
  */
 export function cleanName(
@@ -212,6 +220,8 @@ export function cleanName(
   preserveCase = false,
 ): CleanNameResult {
   const original = raw;
+  if (/^[A-Z]{2,3}$/.test(country))
+    country = countryLookup.byIso(country)?.country ?? country;
   let name = raw;
   let region: string | undefined;
 
@@ -253,6 +263,10 @@ export function cleanName(
     region = regionMatch[2].toUpperCase();
     name = name.slice(0, -3).replace(/[,\s]+$/, "");
   }
+
+  // Step 2b: Dutch "'s-" ("des"), which sources write "s_Gravendeel"
+  if (country === "Netherlands")
+    name = name.replace(/^'?s[_ -](?=[A-Z])/, "'s-");
 
   // Step 3: Replace underscores with spaces
   name = name.replace(/_/g, " ");
@@ -297,7 +311,10 @@ export function cleanName(
   // French place names hyphenate; Spanish and English ones sharing the same
   // prepositions do not. Applied by country, because the prepositions alone
   // cannot tell them apart.
-  if (FRENCH_HYPHENATING_COUNTRIES.has(country)) {
+  if (
+    FRENCH_HYPHENATING_COUNTRIES.has(country) ||
+    (country === "Canada" && expectedRegion === "QC" && !/\s/.test(original))
+  ) {
     name = frenchHyphenation(name);
   }
 
