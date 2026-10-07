@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { access, mkdir } from "fs/promises";
+import { access, mkdir, rename, rm } from "fs/promises";
 import { execFileSync } from "child_process";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -41,12 +41,14 @@ async function fileExists(path: string): Promise<boolean> {
  *
  * Resolves in order: extracted dir → local zip (GESLA_ZIP) → download from R2
  * (GESLA_URL). Used by import-ticon.ts and validate-datums.ts.
+ *
+ * Safe across processes: the TICON import runs one per core, and each may need
+ * GESLA. The download and the extract go to per-process paths and are renamed
+ * into place, so GESLA_DIR never exists half-extracted.
  */
 export async function ensureGeslaData(): Promise<string> {
   if (await fileExists(GESLA_DIR)) return GESLA_DIR;
 
-  // Ensure tmp/ exists for the downloaded zip; `unzip -d` creates GESLA_DIR
-  // itself (only after a successful extract, so an empty dir never looks done).
   await mkdir(dirname(GESLA_DIR), { recursive: true });
 
   let zip = GESLA_ZIP;
@@ -61,14 +63,23 @@ export async function ensureGeslaData(): Promise<string> {
       );
     }
     zip = join(GESLA_DIR, "..", "GESLA4_ALL.zip");
-    await pipeline(res.body, createWriteStream(zip));
+    await pipeline(res.body, createWriteStream(`${zip}.${process.pid}`));
+    await rename(`${zip}.${process.pid}`, zip);
   }
 
+  const extracting = `${GESLA_DIR}.${process.pid}`;
   console.log(`Extracting ${zip} → ${GESLA_DIR} ...`);
-  // Flat zip (no internal directory), so files land directly in GESLA_DIR.
-  execFileSync("unzip", ["-o", "-q", zip, "-d", GESLA_DIR], {
+  // Flat zip (no internal directory), so files land directly in the directory.
+  execFileSync("unzip", ["-o", "-q", zip, "-d", extracting], {
     stdio: "inherit",
   });
+  try {
+    await rename(extracting, GESLA_DIR);
+  } catch (err) {
+    // Another process finished first; its copy is the same archive.
+    if (!(await fileExists(GESLA_DIR))) throw err;
+    await rm(extracting, { recursive: true, force: true });
+  }
 
   return GESLA_DIR;
 }
