@@ -163,12 +163,11 @@ const DISTANCE =
  */
 function toNauticalMiles(name: string): string {
   return name.replace(DISTANCE, (_, digits: string, unit: string) => {
+    if (unit[0]!.toLowerCase() === "n") return `${digits} nm`;
     // USGS drops the decimal point from a distance under a mile: "03 Miles"
     // is 0.3, not 3.
     const value = /^0\d+$/.test(digits) ? `0.${digits.slice(1)}` : digits;
-    return unit[0]!.toLowerCase() === "n"
-      ? `${value} nm`
-      : `${(Number(value) * NM_PER_MILE).toFixed(1)} nm`;
+    return `${(Number(value) * NM_PER_MILE).toFixed(1)} nm`;
   });
 }
 

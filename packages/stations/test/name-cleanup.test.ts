@@ -55,6 +55,7 @@ describe("cleanName", () => {
       expect(us("Merrimack_R_03_Miles_USRt_125_At_HaverhillMa")).toBe(
         "Merrimack R 0.3 nm US Rt 125 at Haverhill Ma",
       );
+      expect(us("Foo Point, 03 nm SE of")).toBe("Foo Point, 03 nm SE of");
     });
 
     test("leaves a place named for a mile alone", () => {

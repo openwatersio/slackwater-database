@@ -51,6 +51,15 @@ describe("geocoder", () => {
     }
   });
 
+  test("writes GeoNames apostrophes as ASCII", () => {
+    // St. George's, Bermuda: GeoNames spells the parish "Saint Georgeʼs" (U+02BC)
+    expect(geocoder.nearest(32.3725, -64.6976)!.place.admin1).toBe(
+      "Saint George's",
+    );
+    // Cox's Bazar: GeoNames spells it "Cox’s Bāzār" (U+2019)
+    expect(geocoder.nearest(21.4397, 92.0096)!.place.name).toBe("Cox's Bāzār");
+  });
+
   test("admin1 resolves to human-readable name", () => {
     const result = geocoder.nearest(37.8, -122.47);
     expect(result).not.toBeNull();

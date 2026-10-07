@@ -353,6 +353,22 @@ describe("metadata resolution", () => {
     expect(result.region_code).toBe("CA-BC");
   });
 
+  test("takes a Canadian province from the provider region when no place is in reach", () => {
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        name: "Carpenter Bay",
+        country: "Canada",
+        country_code: "CA",
+        region: "British Columbia",
+      },
+      { geocoder: { nearest: () => null, near: () => [] } },
+    );
+
+    expect(result.region).toBe("British Columbia");
+    expect(result.region_code).toBe("CA-BC");
+  });
+
   test("names the water body the station sits in", () => {
     const result = resolveMetadata(baseStation, {
       geocoder,
