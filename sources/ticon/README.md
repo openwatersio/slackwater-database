@@ -41,6 +41,8 @@ FORCE_DATUMS=1 npm run import -w sources/ticon
 
 Without `FORCE_DATUMS`, the importer reuses each station's cached datums and only recomputes the derived metadata (`chart_datum`, pruning, disclaimers). `FORCE_DATUMS` also accepts a comma-separated list of source suffixes to recompute only those sources, for example `FORCE_DATUMS=uhslc_rq`.
 
+The importer runs one process per core, each taking every nth station. Set `SHARDS` to change the count; `SHARDS=1` runs a single process.
+
 ## Constituent names
 
 The station files keep TICON's constituent names as published, and `@slackwater/engine` resolves each name to a definition. Most TICON names are IHO names on the IHO line. The engine's [constituent names](https://github.com/openwatersio/slackwater/blob/main/packages/engine/docs/constituent-names.md) doc covers the ones that are not, with the evidence for each. Two of them matter for the importer:

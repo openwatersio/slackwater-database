@@ -11,4 +11,16 @@ mkdir -p tmp
   unzip -d tmp tmp/TICON-4.zip
 }
 
-node sources/ticon/import.ts
+# A forced station costs about a second of datum synthesis, so run one shard per
+# core. Fetch GESLA first so the shards don't race to extract it.
+[[ -z "${FORCE_DATUMS:-}${FORCE_HARMONICS:-}" ]] || node packages/datums/download-gesla.ts
+
+shards=${SHARDS:-$(node -p 'os.availableParallelism()')}
+pids=()
+for ((i = 0; i < shards; i++)); do
+  SHARD=$i/$shards node sources/ticon/import.ts &
+  pids+=($!)
+done
+status=0
+for pid in "${pids[@]}"; do wait "$pid" || status=1; done
+exit $status

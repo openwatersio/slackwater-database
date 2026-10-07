@@ -47,6 +47,10 @@ const FORCE_DATUMS = process.env["FORCE_DATUMS"] ?? "";
 const forceDatums = (id: string) =>
   FORCE_DATUMS === "1" || FORCE_DATUMS.split(",").includes(getSourceSuffix(id));
 const forceHarmonics = process.env["FORCE_HARMONICS"] === "1";
+// SHARD=i/n imports every nth station, so `./import` can run one process per core.
+const [shard = 0, shards = 1] = (process.env["SHARD"] ?? "0/1")
+  .split("/")
+  .map(Number);
 
 type TiconMetaRow = {
   "FILE NAME": string;
@@ -97,13 +101,14 @@ const ensureGesla = () => (geslaReady ??= ensureGeslaData());
  * stations. Quality evaluation happens separately via evaluate-quality.ts.
  */
 async function main() {
-  console.log(
-    `=== Importing TICON stations ===${FORCE_DATUMS ? ` (forcing datum recalculation: ${FORCE_DATUMS})` : ""}${forceHarmonics ? " (forcing harmonic re-analysis)" : ""}\n`,
-  );
+  if (shard === 0)
+    console.log(
+      `=== Importing TICON stations ===${FORCE_DATUMS ? ` (forcing datum recalculation: ${FORCE_DATUMS})` : ""}${forceHarmonics ? " (forcing harmonic re-analysis)" : ""}\n`,
+    );
 
   const groups = Object.values(
     groupBy(parseCSV<TiconRow>(data), (r) => r.tide_gauge_name),
-  );
+  ).filter((_, i) => i % shards === shard);
 
   let saved = 0;
   let reused = 0;
@@ -205,7 +210,8 @@ async function main() {
     }
   }
 
-  console.log(`\n\nDone. Saved ${saved}/${groups.length} stations.`);
+  const label = shards > 1 ? ` (shard ${shard + 1}/${shards})` : "";
+  console.log(`\n\nDone${label}. Saved ${saved}/${groups.length} stations.`);
   if (reused > 0) console.log(`Reused existing datums: ${reused}.`);
   if (errors > 0) console.log(`Errors: ${errors}.`);
 }
