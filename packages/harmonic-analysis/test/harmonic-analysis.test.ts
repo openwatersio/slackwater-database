@@ -152,6 +152,15 @@ describe("fitHarmonics", () => {
       expect(byName["3N2"]?.amplitude).toBeCloseTo(0.02, 3);
       expect(byName["3N2"]?.phase).toBeCloseTo(300, 0);
     });
+
+    test("measures the record's span the same way when samples arrive newest first", () => {
+      const fit = fitHarmonics(synthetic(9 * 8766, tide).reverse(), [
+        "M2",
+        "N2",
+        "3N2",
+      ]);
+      expect(fit.map((c) => c.name)).toEqual(["M2", "N2", "3N2"]);
+    });
   });
 
   test("SVD reconstructs a broad synthetic constituent set", () => {

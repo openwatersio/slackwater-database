@@ -153,20 +153,20 @@ export function isAnalyzable(
   nConstituents: number,
 ): boolean {
   if (samples.length < 4 * (1 + 2 * nConstituents)) return false;
+  return spanMs(samples) >= 365 * DAY_MS;
+}
+
+/** Time from the earliest sample to the latest, in any sample order. */
+function spanMs(samples: Sample[]): number {
   let lo = Infinity;
   let hi = -Infinity;
   for (const s of samples) {
     if (s.t < lo) lo = s.t;
     if (s.t > hi) hi = s.t;
   }
-  return hi - lo >= 365 * DAY_MS;
+  return samples.length ? hi - lo : 0;
 }
 
-/**
- * Least-squares fit of the named constituents to the samples, returning
- * amplitude (m) and UTC/Greenwich phase (deg) for each. Names not known to
- * the engine are dropped (callers should pass a covered set).
- */
 // 3N2 and N2 are one lunar perigee cycle apart (8.85 years). A shorter record
 // can't separate them, and fitting both splits N2 between the two lines, so
 // N2 keeps the signal on its own.
@@ -182,14 +182,17 @@ function unresolvedFromN2(
   );
 }
 
+/**
+ * Least-squares fit of the named constituents to the samples, returning
+ * amplitude (m) and UTC/Greenwich phase (deg) for each. Names not known to
+ * the engine are dropped (callers should pass a covered set).
+ */
 export function fitHarmonics(
   samples: Sample[],
   names: string[],
   options: FitOptions = {},
 ): HarmonicConstituent[] {
-  const spanHours = samples.length
-    ? (samples.at(-1)!.t - samples[0]!.t) / 3_600_000
-    : 0;
+  const spanHours = spanMs(samples) / 3_600_000;
   const cons = names
     .map((name) => ({
       name,
