@@ -114,6 +114,55 @@ describe("fitHarmonics", () => {
     );
   });
 
+  describe("3N2 next to N2", () => {
+    const DEG = Math.PI / 180;
+    // Two-hourly samples keep a nine-year record quick without aliasing semidiurnal lines.
+    const synthetic = (
+      hours: number,
+      tide: [string, number, number][],
+    ): Sample[] => {
+      const t0 = Date.UTC(2010, 0, 1);
+      return Array.from({ length: Math.floor(hours / 2) }, (_, i) => {
+        const t = t0 + i * 2 * 3600_000;
+        const a = engine.astro(new Date(t));
+        let level = 0;
+        for (const [name, H, G] of tide) {
+          const con = engine.constituents[name]!;
+          const { f, u } = con.correction(a);
+          level += H * f * Math.cos((con.value(a) + u - G) * DEG);
+        }
+        return { t, level };
+      });
+    };
+    const tide: [string, number, number][] = [
+      ["M2", 1, 110],
+      ["N2", 0.3, 80],
+      ["3N2", 0.02, 300],
+    ];
+
+    test("leaves 3N2 to N2 when the record is shorter than a perigee cycle", () => {
+      const fit = fitHarmonics(synthetic(3 * 8766, tide), ["M2", "N2", "3N2"]);
+      expect(fit.map((c) => c.name)).toEqual(["M2", "N2"]);
+    });
+
+    test("fits 3N2 on its own line when the record spans a perigee cycle", () => {
+      const fit = fitHarmonics(synthetic(9 * 8766, tide), ["M2", "N2", "3N2"]);
+      const byName = Object.fromEntries(fit.map((c) => [c.name, c]));
+      expect(byName["N2"]?.amplitude).toBeCloseTo(0.3, 3);
+      expect(byName["3N2"]?.amplitude).toBeCloseTo(0.02, 3);
+      expect(byName["3N2"]?.phase).toBeCloseTo(300, 0);
+    });
+
+    test("measures the record's span the same way when samples arrive newest first", () => {
+      const fit = fitHarmonics(synthetic(9 * 8766, tide).reverse(), [
+        "M2",
+        "N2",
+        "3N2",
+      ]);
+      expect(fit.map((c) => c.name)).toEqual(["M2", "N2", "3N2"]);
+    });
+  });
+
   test("SVD reconstructs a broad synthetic constituent set", () => {
     const excluded = new Set(["SA", "MKS2", "3N2", "3L2", "T3", "R3"]);
     const names = [

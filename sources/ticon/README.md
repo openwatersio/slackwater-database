@@ -54,13 +54,13 @@ Table 1 of the TICON-4 manual swaps these two rows. Scored against the raw GESLA
 
 Table 1 also lists Sa as 056.554, with a solar perigee term, where the engine uses 056.555. Scored the same way, TICON's published Sa matches 056.555 at 17 of the 18 gauges tried (0.98 to 1.05, against −0.49 to −0.64 for 056.554), so it needs no conversion. The engine doc has the gauges and the commands.
 
-The importer re-fits the `wsv` and `rws` stations, whose GESLA-4 files label local time as UTC (see `LOCAL_TIME_SOURCES` in [`import.ts`](import.ts)). `fitHarmonics` skips any constituent whose engine speed differs from its reference speed, so a re-fit never stores a name on a line TICON doesn't mean by it. These stations store MKS2 on 257.555, the same values a re-fit with the current reference speeds produces. While the engine resolves 3N2 to MKS2, re-fits skip 3N2. Once the engine defines 3N2 on its own line, re-run the fits to add it:
+The importer re-fits the `wsv` and `rws` stations, whose GESLA-4 files label local time as UTC (see `LOCAL_TIME_SOURCES` in [`import.ts`](import.ts)). `fitHarmonics` skips any constituent whose engine speed differs from its reference speed, so a re-fit never stores a name on a line TICON doesn't mean by it. It also skips 3N2 when the record is shorter than one lunar perigee cycle (8.85 years), the time it takes to separate 3N2 from N2; on those records N2 keeps the signal. To re-fit these stations:
 
 ```sh
 FORCE_HARMONICS=1 npm run import -w sources/ticon
 ```
 
-A re-fit reads each station's whole GESLA-4 record, so it takes a while.
+A re-fit reads each station's whole GESLA-4 record, so it takes a while: about 90 minutes for all of them.
 
 To check which line a published constituent describes, score it against the raw record with [`score-line.ts`](../../packages/harmonic-analysis/score-line.ts). It reads the GESLA-4 archive the importer downloads:
 
