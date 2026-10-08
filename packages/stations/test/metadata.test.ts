@@ -159,6 +159,29 @@ describe("metadata resolution", () => {
     expect(result.context_derived).toBe(true);
   });
 
+  test("a NOAA current skips a water its own name already gives", () => {
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        id: "noaa/PUG1513",
+        kind: "current",
+        name: "Rich Passage, East End",
+      },
+      {
+        geocoder,
+        waterBodies: {
+          at: () => [
+            { name: "Rich Passage", distance: 0 },
+            { name: "Puget Sound", distance: 0 },
+          ],
+        },
+      },
+    );
+
+    expect(result.name).toBe("Rich Passage, East End");
+    expect(result.context).toBe("Puget Sound");
+  });
+
   test("a NOAA current keeps its curated name and water", () => {
     const result = resolveMetadata(
       {
