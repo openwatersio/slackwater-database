@@ -65,6 +65,8 @@ Three things that look like failures and are not:
 
 Verify a release against the registry rather than the run log, since the publish step passes before npm has propagated. Install `@slackwater/database@beta` into a scratch directory and read the affected stations back.
 
+A release is not finished until both consumers pin it. Bump [slackwater-ios](https://github.com/openwatersio/slackwater-ios) and [slackwater.xyz](https://github.com/openwatersio/slackwater.xyz) to the same version in the same pass, so the app and the site name, place, and credit every station alike. slackwater-ios pins it twice, in `tools/package.json` and as the `SlackwaterDatabase` `exactVersion` in `project.yml`, and regenerates its bundle with `cd tools && npm run build:data`.
+
 ## Gotchas
 
 **The repo was renamed.** `openwatersio/tide-database` redirects to `openwatersio/slackwater-database`, so an old clone's `origin` keeps working and `gh` resolves through the redirect without saying so. A local checkout directory named `tide-database` is the same repo.
