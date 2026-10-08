@@ -123,7 +123,7 @@ describe("Kartverket source parser", () => {
       license: {
         type: "cc-by-4.0",
         commercial_use: true,
-        url: "https://www.kartverket.no/en/api-and-data/terms-of-use",
+        url: "https://creativecommons.org/licenses/by/4.0/",
       },
     });
     expect(station).not.toHaveProperty("code");
