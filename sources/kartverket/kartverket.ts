@@ -301,7 +301,9 @@ export function buildStation(input: {
     license: {
       type: "cc-by-4.0",
       commercial_use: true,
-      url: KARTVERKET_TERMS,
+      // The licence's own URI, which CC BY 4.0 §3(a)(1)(C) has a notice carry.
+      url: "https://creativecommons.org/licenses/by/4.0/",
+      notes: `Kartverket's terms ask for the credit "©Kartverket" with a link to kartverket.no: ${KARTVERKET_TERMS}`,
     },
     disclaimers: KARTVERKET_CREDIT,
     harmonic_constituents: input.constituents.constituents,

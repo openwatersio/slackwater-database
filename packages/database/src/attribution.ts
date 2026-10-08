@@ -17,8 +17,9 @@ export const MODIFICATIONS_URL =
  * two must not drift.
  */
 const SOURCE_CREDITS: Record<string, string | null> = {
+  // Kartverket's terms ask for "©Kartverket" with a link to kartverket.no.
   "Kartverket / Norwegian Mapping Authority, Hydrographic Service":
-    "Source: Kartverket / Norwegian Mapping Authority, Hydrographic Service",
+    "Source: © Kartverket / Norwegian Mapping Authority, Hydrographic Service, https://www.kartverket.no",
   "TICON-4":
     "Source: Hart-Davis, M., Dettmering, D., Seitz, F. (2025), TICON-4: TIdal CONstants based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129",
   // Public domain: credit is welcome, so not imposed on consumers.

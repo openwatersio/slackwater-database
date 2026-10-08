@@ -38,6 +38,25 @@ describe("attribution", () => {
     expect([...unknown]).toEqual([]);
   });
 
+  // A notice repeats the station's licence URL, and CC BY 4.0 §3(a)(1)(C)
+  // needs that to be the licence itself, not a publisher's terms page.
+  test("every Creative Commons station links its licence", () => {
+    const wrong = new Set<string>();
+    for (let i = 0; i < shipped.stationsLength(); i++) {
+      const license = shipped.stations(i)?.license();
+      // "cc-by-nc-4.0" -> https://creativecommons.org/licenses/by-nc/4.0/
+      const [, kind, version] =
+        license?.type()?.match(/^cc-(.+)-([\d.]+)$/) ?? [];
+      const uri = `https://creativecommons.org/licenses/${kind}/${version}/`;
+      if (kind && license?.url() !== uri) {
+        wrong.add(
+          `${shipped.stations(i)?.source()?.name()}: ${license?.url()}`,
+        );
+      }
+    }
+    expect([...wrong]).toEqual([]);
+  });
+
   // The builder bakes the notice into the file, so a reader in any language
   // gets it without a table of its own.
   test("every station in the shipped database carries its notice", () => {
