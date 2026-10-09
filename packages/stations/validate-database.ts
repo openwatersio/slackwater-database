@@ -4,7 +4,8 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadProductionCatalogue } from "./load-catalogue.ts";
-import { loadCorrections } from "./metadata.ts";
+import { loadCorrections, loadRegistry } from "./metadata.ts";
+import { cleanName } from "./name-cleanup.ts";
 import {
   auditProblems,
   classifyPosition,
@@ -49,6 +50,34 @@ assert.deepEqual(
   "CHS stations resolved outside the country corrections.yaml expects",
 );
 
+// A published name is a fixed point of the cleanup, or a regeneration rewrites
+// names on its own (#244). A curated name is exempt: it is what the cleanup
+// could not produce.
+const registry = loadRegistry(
+  readFileSync(join(root, "metadata", "registry.yaml"), "utf8"),
+);
+assert.deepEqual(
+  catalogue.stations.flatMap((station) => {
+    if (
+      !station.name ||
+      corrections.get(station.id)?.name ||
+      registry.get(station.id)?.name
+    )
+      return [];
+    const again = cleanName(
+      station.name,
+      station.country,
+      station.region_code,
+      station.source?.name === "Canadian Hydrographic Service",
+    ).name;
+    return again === station.name
+      ? []
+      : [`${station.id}: ${station.name} → ${again}`];
+  }),
+  [],
+  "cleanName rewrites a published name",
+);
+
 const routeIds = new Set(
   [...catalogue.routes.tide, ...catalogue.routes.current].flatMap(
     ({ station_ids }) => station_ids,
@@ -91,3 +120,7 @@ const uncovered = audited.filter(
 console.log(
   `validated ${catalogue.stations.length} stations and ${routeIds.size} routed records; warnings: ${missingLocality} without locality, ${missingRegion} without region code, ${ashore} pinned ashore, ${uncovered} outside coastline coverage`,
 );
+if (catalogue.redundantNames.length)
+  console.log(
+    `${catalogue.redundantNames.length} name corrections match what the cleanup already produces:\n  ${catalogue.redundantNames.join("\n  ")}`,
+  );

@@ -45,6 +45,7 @@ export function buildCatalogue(inputs: CatalogueInputs): {
   slugTombstones: SlugTombstones;
   formerSlugs: FormerSlugs;
   gone: string[];
+  redundantNames: string[];
 } {
   const sourceStations = [...inputs.tides, ...inputs.currents];
   const errors = validateMetadata(
@@ -76,6 +77,16 @@ export function buildCatalogue(inputs: CatalogueInputs): {
       ({ id }) => !providerIds.has(id),
     ),
   ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+
+  // A `name:` correction the cleanup already produces is one to prune, or a
+  // pin waiting for a regeneration to need it. Reported, not refused.
+  const redundantNames = sourceStations.flatMap((station) => {
+    const correction = inputs.corrections.get(station.id);
+    if (!correction?.name || inputs.registry.has(station.id)) return [];
+    const { name, ...rest } = correction;
+    const without = resolveMetadata(station, { correction: rest, ...places });
+    return without.name === name ? [`${station.id}: ${name}`] : [];
+  });
 
   validateStationReferences(stations);
   const routedStations = stations.filter(({ routed }) => routed !== false);
@@ -132,6 +143,7 @@ export function buildCatalogue(inputs: CatalogueInputs): {
     slugTombstones,
     formerSlugs,
     gone,
+    redundantNames,
   };
 }
 
