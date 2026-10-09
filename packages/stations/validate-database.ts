@@ -4,7 +4,8 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadProductionCatalogue } from "./load-catalogue.ts";
-import { loadCorrections } from "./metadata.ts";
+import { loadCorrections, loadRegistry } from "./metadata.ts";
+import { cleanName } from "./name-cleanup.ts";
 import {
   auditProblems,
   classifyPosition,
@@ -47,6 +48,34 @@ assert.deepEqual(
     .map(({ id, country_code }) => `${id} (${country_code})`),
   [],
   "CHS stations resolved outside the country corrections.yaml expects",
+);
+
+// A published name is a fixed point of the cleanup, or a regeneration rewrites
+// names on its own (#244). A curated name is exempt: it is what the cleanup
+// could not produce.
+const registry = loadRegistry(
+  readFileSync(join(root, "metadata", "registry.yaml"), "utf8"),
+);
+assert.deepEqual(
+  catalogue.stations.flatMap((station) => {
+    if (
+      !station.name ||
+      corrections.get(station.id)?.name ||
+      registry.get(station.id)?.name
+    )
+      return [];
+    const again = cleanName(
+      station.name,
+      station.country,
+      station.region_code,
+      station.source?.name === "Canadian Hydrographic Service",
+    ).name;
+    return again === station.name
+      ? []
+      : [`${station.id}: ${station.name} → ${again}`];
+  }),
+  [],
+  "cleanName rewrites a published name",
 );
 
 const routeIds = new Set(

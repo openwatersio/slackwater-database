@@ -1,4 +1,3 @@
-import { readdirSync, readFileSync } from "node:fs";
 import { describe, test, expect } from "vitest";
 import { cleanName } from "../name-cleanup.js";
 
@@ -562,26 +561,8 @@ describe("cleanName", () => {
   });
 
   describe("idempotency", () => {
-    // A name the catalogue already holds must come back unchanged, or every
-    // regeneration rewrites names on its own (#244).
-    test("every committed station name is a fixed point", () => {
-      const root = new URL("../../../data/", import.meta.url);
-      const drift: string[] = [];
-      for (const source of ["noaa", "ticon", "kartverket"]) {
-        const dir = new URL(`${source}/`, root);
-        for (const file of readdirSync(dir)) {
-          const station = JSON.parse(
-            readFileSync(new URL(file, dir), "utf8"),
-          ) as { name: string; country: string; region?: string };
-          const once = cleanName(station.name, station.country, station.region);
-          const twice = cleanName(once.name, station.country, station.region);
-          if (twice.name !== once.name)
-            drift.push(`${source}/${file}: ${once.name} → ${twice.name}`);
-        }
-      }
-      expect(drift).toEqual([]);
-    });
-
+    // The catalogue-wide check is in validate-database.ts: every published
+    // name is a fixed point of cleanName.
     test("already-clean names are unchanged", () => {
       expect(cleanName("San Francisco", "United States").name).toBe(
         "San Francisco",
