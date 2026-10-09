@@ -115,9 +115,11 @@ const SMALL_WORDS = new Set([
   "het",
 ]);
 
-// Acronyms in fully capitalized names need to opt out of recasing.
+// Vocabulary that stays in capitals when a shouting name is recased: compass
+// points, and abbreviations any provider writes. A station's own acronym
+// ("CBBT", "LAWMA") is a `name:` correction, not an entry here.
 const PRESERVED_CAPS = new Set(
-  "NNE NE ENE ESE SE SSE SSW SW WSW WNW NW NNW US BC USCG LB ICW ICWW RR MBTS CBBT AWG NERR HBR HVN LAWMA COX WCOCO UNC".split(
+  "NNE NE ENE ESE SE SSE SSW SW WSW WNW NW NNW US USCG RR ICW ICWW NERR".split(
     " ",
   ),
 );
@@ -127,9 +129,10 @@ const NETWORK_PREFIXES = ["RMN_", "IOC_"];
 
 /**
  * Abbreviations NOAA writes into station names, spelled out the way a chart
- * says them. Deliberately short: only the noisy ones. A trailing "I." is an
- * island ("Savage I.", "Long I., Rainsford I."); one mid-name may be an
- * initial, so it is left alone.
+ * says them, in the case the provider wrote ("above ent." stays lowercase).
+ * Deliberately short: only the noisy ones. A trailing "I." is an island
+ * ("Savage I.", "Long I., Rainsford I."); one mid-name may be an initial, so
+ * it is left alone.
  */
 const EXPAND: [RegExp, string][] = [
   [/\bNAS\b/g, "Naval Air Station"],
@@ -140,6 +143,14 @@ const EXPAND: [RegExp, string][] = [
   [/\bPt\./gi, "Point"],
   [/\bCk\./gi, "Creek"],
 ];
+
+function expandAbbreviations(name: string): string {
+  for (const [pattern, replacement] of EXPAND)
+    name = name.replace(pattern, (match) =>
+      /^[a-z]/.test(match) ? replacement.toLowerCase() : replacement,
+    );
+  return name;
+}
 
 /** 1 statute mile = 1.609344 km; 1 nautical mile = 1.852 km. */
 const NM_PER_MILE = 1.609344 / 1.852;
@@ -172,45 +183,18 @@ function toNauticalMiles(name: string): string {
 }
 
 /**
- * Countries whose place names hyphenate a linking preposition
- * ("Boulogne-sur-Mer"). Metropolitan France and the overseas départements and
- * collectivités, where the toponymy is French and the convention holds.
- *
- * Canada is absent because only Québec hyphenates. A Québec name keeps the
- * hyphens its source wrote; `cleanName` restores them only where the source
- * joined every word with underscores ("Coteau_Du_Lac"), losing hyphens and
- * spaces alike. Belgium, Switzerland and Luxembourg are absent for the same
- * reason — partly French-speaking, so the country cannot stand in for the
- * language of any one name.
- */
-const FRENCH_HYPHENATING_COUNTRIES = new Set([
-  "France",
-  "French Guiana",
-  "French Polynesia",
-  "French Southern and Antarctic Lands",
-  "Guadeloupe",
-  "Haiti",
-  "Martinique",
-  "Mayotte",
-  "Monaco",
-  "New Caledonia",
-  "Reunion",
-  "Saint Barthélemy",
-  "Saint Martin",
-  "Saint Pierre and Miquelon",
-  "Wallis and Futuna",
-]);
-
-/**
  * A source's raw station name reduced to a display name, with any trailing US
  * or Canadian region code lifted out into `region`.
  *
- * Every station goes through this, whichever publisher it came from, so a rule
- * that suits one publisher's spelling has to be harmless to the rest.
- * `country` is what keeps that tractable: it decides which region codes are
- * valid and which naming conventions apply. It is a country name, or an ISO
- * code that resolves to one.
- * `existingRegionCode` guards removal of a space-separated trailing code.
+ * Only a source's formatting is undone here: gauge suffixes, underscores for
+ * spaces, a name written in capitals, a region code joined onto the end. A
+ * spelling that needs knowing the place — a hyphen in a French name, an
+ * abbreviation, a unit — is a `name:` correction in `metadata/corrections.yaml`,
+ * where one station's fix cannot change another station's name.
+ *
+ * `country` decides which region codes are valid. It is a country name, or an
+ * ISO code that resolves to one. `existingRegionCode` guards removal of a
+ * space-separated trailing code.
  */
 export function cleanName(
   raw: string,
@@ -263,18 +247,12 @@ export function cleanName(
     name = name.slice(0, -3).replace(/[,\s]+$/, "");
   }
 
-  // Step 2b: Dutch "'s-" ("des"), which sources write "s_Gravendeel"
-  if (country === "Netherlands")
-    name = name.replace(/^'?s[_ -](?=[A-Z])/, "'s-");
-
   // Step 3: Replace underscores with spaces
   name = name.replace(/_/g, " ");
 
   // Step 3b: Spell out abbreviations, before title case so the words this
   // writes are cased like any other.
-  for (const [pattern, replacement] of EXPAND) {
-    name = name.replace(pattern, replacement);
-  }
+  name = expandAbbreviations(name);
 
   // Step 4: Split PascalCase
   // Insert space between lowercase→uppercase transitions, except inside a
@@ -297,31 +275,12 @@ export function cleanName(
   name = name.replace(/(?<=\s|^)([a-zA-Z]{4,})\d$/, "$1");
 
   // Step 6: Title case
-  if (!preserveCase) name = toTitleCase(name, country, validRegions);
+  if (!preserveCase) name = toTitleCase(name, validRegions);
 
-  // Step 6b: State distances in nautical miles. After title case, so the
+  // Step 7: State distances in nautical miles. After title case, so the
   // lowercase "nm" it writes is the spelling NOAA's own qualifiers use
   // ("3.0 nm NE of") rather than a word to be cased.
   name = toNauticalMiles(name);
-
-  // Step 7: Post-processing — French-style hyphenation for small prepositions
-  // "Boulogne sur Mer" → "Boulogne-sur-Mer", "Aiguillon sur Mer" → "Aiguillon-sur-Mer"
-  //
-  // French place names hyphenate; Spanish and English ones sharing the same
-  // prepositions do not. Applied by country, because the prepositions alone
-  // cannot tell them apart.
-  if (
-    FRENCH_HYPHENATING_COUNTRIES.has(country) ||
-    (country === "Canada" && expectedRegion === "QC" && !/\s/.test(original))
-  ) {
-    name = frenchHyphenation(name);
-  }
-
-  // Handle D' apostrophe: "Dumont d Urville" → "Dumont d'Urville"
-  name = name.replace(
-    /\bd ([AEIOUY])/gi,
-    (_, vowel) => `d'${vowel.toUpperCase()}`,
-  );
 
   // Trim extra whitespace
   name = name.replace(/\s+/g, " ").trim();
@@ -339,11 +298,7 @@ export function cleanName(
  * written. Such a part is kept; a name that shouts, or one with no capital
  * anywhere, is cased throughout.
  */
-function toTitleCase(
-  str: string,
-  country: string,
-  validRegions?: Set<string>,
-): string {
+function toTitleCase(str: string, validRegions?: Set<string>): string {
   const words = str.split(/\s+/);
   const shouting = !/[a-z]/.test(str);
   const kept = new Set<number>();
@@ -366,23 +321,15 @@ function toTitleCase(
       if (i > 0 && word === word.toUpperCase() && validRegions?.has(bare)) {
         return word;
       }
-      if (
-        i > 0 &&
-        SMALL_WORDS.has(bare.toLowerCase()) &&
-        !(shouting && i === words.length - 1 && bare === "IN") &&
-        !(
-          country === "United States" &&
-          bare.toLowerCase() === "la" &&
-          words[i - 1]?.toLowerCase() !== "a"
-        )
-      ) {
+      if (i > 0 && SMALL_WORDS.has(bare.toLowerCase())) {
         return word.toLowerCase();
       }
+      // A first word in capitals ("APIA (Observatory)") or two in a row
+      // ("New YORK") are shouting; one alone is an acronym ("Grand Bay NERR").
       return capitalize(
         word,
         shouting ||
-          i === 0 ||
-          (allCaps[i] && (allCaps[i - 1] || allCaps[i + 1])),
+          (allCaps[i] && (i === 0 || allCaps[i - 1] || allCaps[i + 1])),
       );
     })
     .join(" ");
@@ -422,13 +369,9 @@ function capitalize(word: string, recaseAllCaps = false): string {
   if (/^(?:[A-Z]\.)+$/.test(word)) {
     return word;
   }
-  if (recaseAllCaps && /^MC[A-Z]+$/.test(word)) {
-    return `Mc${word.charAt(2)}${word.slice(3).toLowerCase()}`;
-  }
-  // Preserve the interior capital of a Mc/Mac surname. The PascalCase split
-  // above already leaves "McHenry" whole; without this it arrives here and
-  // comes back "Mchenry".
-  if (/^(?:Mc|Mac)[A-Z][a-z]/.test(word)) {
+  // A word the provider cased itself is kept as written: "McHenry",
+  // "d'Urville", "'s-Gravendeel". Only a word in one case is recased.
+  if (!recaseAllCaps && /[a-z]/.test(word) && /[A-Z]/.test(word)) {
     return word;
   }
   // Preserve code-like words (uppercase letters + digits: CRMS0572, WC-53)
@@ -458,54 +401,6 @@ function capitalize(word: string, recaseAllCaps = false): string {
       .join("");
   }
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-}
-
-/**
- * For French/Spanish/Italian place names, connect small prepositions with hyphens.
- * "Boulogne sur Mer" → "Boulogne-sur-Mer"
- */
-function frenchHyphenation(name: string): string {
-  const frenchPreps = new Set([
-    "sur",
-    "sous",
-    "les",
-    "le",
-    "la",
-    "de",
-    "du",
-    "des",
-    "en",
-  ]);
-  const words = name.split(" ");
-  if (words.length < 3) return name;
-
-  const result: string[] = [];
-  let i = 0;
-  while (i < words.length) {
-    const word = words[i]!;
-    const prev = words[i - 1];
-    const next = words[i + 1];
-    if (
-      i > 0 &&
-      prev &&
-      next &&
-      frenchPreps.has(word.toLowerCase()) &&
-      // Check that surrounding words are capitalized place name parts (not abbreviations)
-      prev.length >= 3 &&
-      next.length >= 3 &&
-      prev[0] === prev[0]?.toUpperCase() &&
-      next[0] === next[0]?.toUpperCase()
-    ) {
-      // Connect: previous-prep-next
-      const prevResult = result.pop()!;
-      result.push(`${prevResult}-${word.toLowerCase()}-${next}`);
-      i += 2;
-    } else {
-      result.push(word);
-      i++;
-    }
-  }
-  return result.join(" ");
 }
 
 /**

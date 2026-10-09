@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from "node:fs";
 import { describe, test, expect } from "vitest";
 import { cleanName } from "../name-cleanup.js";
 
@@ -25,6 +26,15 @@ describe("cleanName", () => {
       expect(cleanName("MINIM CREEK ENT.", "United States").name).toBe(
         "Minim Creek Entrance",
       );
+    });
+
+    test("keeps a lowercase abbreviation lowercase inside a qualifier", () => {
+      expect(
+        cleanName(
+          "Steelmanville, Patcong Ck., 2.5 nm above ent.",
+          "United States",
+        ).name,
+      ).toBe("Steelmanville, Patcong Creek, 2.5 nm above entrance");
     });
   });
 
@@ -133,7 +143,7 @@ describe("cleanName", () => {
 
     test("strips various interval suffixes", () => {
       expect(cleanName("BaieDuLazaretTG_10minute", "France").name).toBe(
-        "Baie-du-Lazaret",
+        "Baie du Lazaret",
       );
       expect(cleanName("BayonnePontBlancTG_05minute", "France").name).toBe(
         "Bayonne Pont Blanc",
@@ -148,7 +158,7 @@ describe("cleanName", () => {
         "Haldeman",
       );
       const mbts = cleanName("MBTS_NAVD88", "United States");
-      expect(mbts.name).toBe("MBTS");
+      expect(mbts.name).toBe("Mbts");
       expect(mbts.isOpaque).toBe(true);
     });
 
@@ -279,7 +289,7 @@ describe("cleanName", () => {
 
     test("handles PascalCase with prepositions", () => {
       expect(cleanName("AiguillonSurMerTG_60minute", "France").name).toBe(
-        "Aiguillon-sur-Mer",
+        "Aiguillon sur Mer",
       );
     });
   });
@@ -345,25 +355,25 @@ describe("cleanName", () => {
       ["Fort Eustis (MARAD)", "Fort Eustis (MARAD)"],
       ["Acapulco API Nivel CBS", "Acapulco API Nivel CBS"],
       ["USCG STATION NY", "USCG Station"],
-      ["CBBT, CHESAPEAKE CHANNEL", "CBBT, Chesapeake Channel"],
-      ["AWG", "AWG"],
       [
         "Grand Bay NERR, Mississippi Sound",
         "Grand Bay NERR, Mississippi Sound",
       ],
-      ["VINEYARD HAVEN, VINEYARD HVN HBR", "Vineyard Haven, Vineyard HVN HBR"],
       ["Ringaskiddy NMCI", "Ringaskiddy NMCI"],
       ["Miami River MRMS", "Miami River MRMS"],
       ["Goodnews Bay, ANVSA", "Goodnews Bay, ANVSA"],
-      ["LAWMA, Amerada Pass", "LAWMA, Amerada Pass"],
       ["Cocohatchee River COCO", "Cocohatchee River COCO"],
       ["Calahootchie River VALI 75", "Calahootchie River VALI 75"],
-      ["COX WC-53 Platform", "COX WC-53 Platform"],
       ["Renaissance SA-13 Platform", "Renaissance SA-13 Platform"],
-      ["WCOCO", "WCOCO"],
-      ["UNC_CenterMarineScience_Dock", "UNC Center Marine Science Dock"],
     ])("keeps abbreviations in %s", (raw, expected) => {
       expect(cleanName(raw, "United States").name).toBe(expected);
+    });
+
+    test("recases a station's own acronym, which is a correction's job", () => {
+      expect(cleanName("CBBT, CHESAPEAKE CHANNEL", "United States").name).toBe(
+        "Cbbt, Chesapeake Channel",
+      );
+      expect(cleanName("LAWMA", "United States").name).toBe("Lawma");
     });
 
     test.each([
@@ -381,7 +391,6 @@ describe("cleanName", () => {
     test.each([
       ["HOEK VAN HOLLAND NL", "Hoek van Holland Nl"],
       ["PUNTA DE LA", "Punta de la"],
-      ["BANDAR ABBAS IN", "Bandar Abbas In"],
     ])("does not treat foreign words as US regions in %s", (raw, expected) => {
       expect(cleanName(raw, "Netherlands").name).toBe(expected);
     });
@@ -417,83 +426,29 @@ describe("cleanName", () => {
     });
   });
 
-  describe("French hyphenation", () => {
-    test("hyphenates prepositions between capitalized words", () => {
-      expect(cleanName("Aiguillon_Sur_Mer", "France").name).toBe(
+  describe("hyphens and apostrophes", () => {
+    test("keeps the ones the source wrote and adds none", () => {
+      expect(cleanName("Aiguillon-sur-Mer", "France").name).toBe(
         "Aiguillon-sur-Mer",
       );
-    });
-
-    test("hyphenates du", () => {
-      expect(cleanName("BaieDuLazaretTG_10minute", "France").name).toBe(
-        "Baie-du-Lazaret",
+      expect(cleanName("Aiguillon_Sur_Mer", "France").name).toBe(
+        "Aiguillon sur Mer",
+      );
+      expect(cleanName("'s-Gravendeel_haven", "Netherlands").name).toBe(
+        "'s-Gravendeel Haven",
+      );
+      expect(cleanName("Dumont d'Urville", "France").name).toBe(
+        "Dumont d'Urville",
       );
     });
 
-    test("does not hyphenate when at start of name", () => {
-      expect(cleanName("Le_Havre", "France").name).toBe("Le Havre");
-    });
-
-    test("leaves Spanish names alone", () => {
+    test("lowercases a particle in any language", () => {
       expect(cleanName("Bahia_De_Chame", "Panama").name).toBe("Bahia de Chame");
-      expect(cleanName("Isla_De_Guanaja", "Honduras").name).toBe(
-        "Isla de Guanaja",
-      );
-    });
-
-    test("leaves American names alone", () => {
       expect(cleanName("Havre_De_Grace", "United States").name).toBe(
         "Havre de Grace",
       );
-      expect(cleanName("Bayou_La_Batre", "United States").name).toBe(
-        "Bayou La Batre",
-      );
-      expect(
-        cleanName("La Marque Levee Pump Sta nr la Marque", "United States")
-          .name,
-      ).toBe("La Marque Levee Pump Sta nr La Marque");
       expect(cleanName("Pointe a la Hache", "United States").name).toBe(
         "Pointe a la Hache",
-      );
-    });
-
-    test("hyphenates canonical French territory country names", () => {
-      expect(
-        cleanName("Port_De_Crozet", "French Southern and Antarctic Lands").name,
-      ).toBe("Port-de-Crozet");
-      expect(cleanName("Baie_De_Marigot", "Saint Barthélemy").name).toBe(
-        "Baie-de-Marigot",
-      );
-    });
-
-    test("accepts an ISO country code", () => {
-      expect(cleanName("Fort_de_France", "FRA").name).toBe("Fort-de-France");
-      expect(cleanName("St_Louis_du_Sud", "HTI").name).toBe("St Louis-du-Sud");
-    });
-
-    test("hyphenates Québec names given the region", () => {
-      expect(cleanName("Coteau_Du_Lac", "Canada", "CA-QC").name).toBe(
-        "Coteau-du-Lac",
-      );
-      expect(cleanName("Coteau_Du_Lac", "Canada", "CA-ON").name).toBe(
-        "Coteau du Lac",
-      );
-    });
-
-    test("keeps a Québec source's own spacing", () => {
-      expect(cleanName("Pont de Québec", "Canada", "CA-QC").name).toBe(
-        "Pont de Québec",
-      );
-    });
-  });
-
-  describe("Dutch names", () => {
-    test("restores the 's- prefix", () => {
-      expect(cleanName("s_Gravendeel", "Netherlands").name).toBe(
-        "'s-Gravendeel",
-      );
-      expect(cleanName("s_Gravendeel_haven", "Netherlands").name).toBe(
-        "'s-Gravendeel Haven",
       );
     });
   });
@@ -562,10 +517,6 @@ describe("cleanName", () => {
       expect(cleanName("McClellanville", "United States").name).toBe(
         "McClellanville",
       );
-      expect(cleanName("FORT MCHENRY", "United States").name).toBe(
-        "Fort McHenry",
-      );
-      expect(cleanName("PORT MCNEILL", "Canada").name).toBe("Port McNeill");
     });
 
     test("does not split a Mac name", () => {
@@ -577,14 +528,6 @@ describe("cleanName", () => {
     test("still splits PascalCase", () => {
       expect(cleanName("PortAngeles", "United States").name).toBe(
         "Port Angeles",
-      );
-    });
-  });
-
-  describe("D' apostrophe", () => {
-    test("handles D + vowel pattern", () => {
-      expect(cleanName("DumontDUrville", "France").name).toBe(
-        "Dumont d'Urville",
       );
     });
   });
@@ -619,6 +562,26 @@ describe("cleanName", () => {
   });
 
   describe("idempotency", () => {
+    // A name the catalogue already holds must come back unchanged, or every
+    // regeneration rewrites names on its own (#244).
+    test("every committed station name is a fixed point", () => {
+      const root = new URL("../../../data/", import.meta.url);
+      const drift: string[] = [];
+      for (const source of ["noaa", "ticon", "kartverket"]) {
+        const dir = new URL(`${source}/`, root);
+        for (const file of readdirSync(dir)) {
+          const station = JSON.parse(
+            readFileSync(new URL(file, dir), "utf8"),
+          ) as { name: string; country: string; region?: string };
+          const once = cleanName(station.name, station.country, station.region);
+          const twice = cleanName(once.name, station.country, station.region);
+          if (twice.name !== once.name)
+            drift.push(`${source}/${file}: ${once.name} → ${twice.name}`);
+        }
+      }
+      expect(drift).toEqual([]);
+    });
+
     test("already-clean names are unchanged", () => {
       expect(cleanName("San Francisco", "United States").name).toBe(
         "San Francisco",

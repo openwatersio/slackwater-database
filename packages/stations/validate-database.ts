@@ -91,3 +91,7 @@ const uncovered = audited.filter(
 console.log(
   `validated ${catalogue.stations.length} stations and ${routeIds.size} routed records; warnings: ${missingLocality} without locality, ${missingRegion} without region code, ${ashore} pinned ashore, ${uncovered} outside coastline coverage`,
 );
+if (catalogue.redundantNames.length)
+  console.log(
+    `${catalogue.redundantNames.length} name corrections match what the cleanup already produces:\n  ${catalogue.redundantNames.join("\n  ")}`,
+  );

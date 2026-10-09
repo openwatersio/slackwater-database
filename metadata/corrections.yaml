@@ -302,3 +302,189 @@ ticon/vancouver_bc-7735-can-meds:
 
 ticon/victoria_bc-543a-can-uhslc_rq:
   slug: victoria
+
+# --- Spellings the name cleanup cannot know ---
+# `cleanName` undoes a provider's formatting and nothing more. Anything that
+# takes knowing the place is written here, so that one station's spelling can
+# never change another's. `npm run validate:database` reports the entries the
+# cleanup already matches, which is the list to prune when a provider catches up.
+
+# A station's own acronym, which a shouting name would recase.
+
+noaa/8638901:
+  name: CBBT
+
+noaa/8764227:
+  name: LAWMA
+
+noaa/8770752:
+  name: COX WC-53 Platform
+
+ticon/awgtg-awg-nld-cmems:
+  name: AWG
+
+ticon/unc_centermarinescience_dock-unc-usa-ncdem:
+  name: UNC Center Marine Science Dock
+
+ticon/wcoco_t_navd88-wcoco-usa-sfwmd:
+  name: WCOCO
+
+noaa/8722548:
+  name: PGA Boulevard Bridge
+
+noaa/cc0302:
+  name: UTSMI Research Pier (Midchannel)
+
+# "La" in an American name is a capital, not the French article.
+
+noaa/8739051:
+  name: Bayou La Batre
+
+noaa/8739803:
+  name: Bayou La Batre Bridge
+
+ticon/bayou_la_batre_bridge-8739803-usa-noaa:
+  name: Bayou La Batre Bridge
+
+noaa/PCT0051:
+  name: Quarantine Station, La Playa
+
+ticon/la_marque_levee_pump_sta_nr_la_marque_tx-8077740-usa-usgs:
+  name: La Marque Levee Pump Sta nr La Marque
+
+# French and Dutch names GESLA writes without their hyphens and apostrophes.
+
+ticon/aiguillon_sur_mer-6257-fra-refmar:
+  name: Aiguillon-sur-Mer
+
+ticon/aiguillonsurmertg_60minute-aig-fra-cmems:
+  name: Aiguillon-sur-Mer
+
+ticon/baiedulazarettg_10minute-bai-fra-cmems:
+  name: Baie-du-Lazaret
+
+ticon/banc_du_cap_brule-3075-can-meds:
+  name: Banc-du-Cap Brule
+
+ticon/boulogne_sur_mer-111-fra-refmar:
+  name: Boulogne-sur-Mer
+
+ticon/boulognesurmertg_60minute-bou-fra-cmems:
+  name: Boulogne-sur-Mer
+
+ticon/bourcefranc_le_chapus-155-fra-refmar:
+  name: Bourcefranc-le-Chapus
+
+ticon/coteau_du_lac-15140-can-meds:
+  name: Coteau-du-Lac
+
+ticon/degrad_des_cannes-241-fra-refmar:
+  name: Degrad-des-Cannes
+
+ticon/degraddescannestg_60minute-deg-fra-cmems:
+  name: Degrad-des-Cannes
+
+ticon/dumont_d_urville-108-fra-refmar:
+  name: "Dumont d'Urville"
+
+ticon/dumont_durville-189-ata-uhslc_fd:
+  name: "Dumont d'Urville"
+
+ticon/dumont_durville-189a-ata-uhslc_rq:
+  name: "Dumont d'Urville"
+
+ticon/dumontdurvilletg_60minute-dum-fra-cmems:
+  name: "Dumont d'Urville"
+
+ticon/fort_de_france-126-fra-refmar:
+  name: Fort-de-France
+
+ticon/fort_de_france-271-fra-uhslc_fd:
+  name: Fort-de-France
+
+ticon/fort_de_france-271a-fra-uhslc_rq:
+  name: Fort-de-France
+
+ticon/fortdefrancetg_60minute-for-fra-cmems:
+  name: Fort-de-France
+
+ticon/fos_sur_mer-719-fra-refmar:
+  name: Fos-sur-Mer
+
+ticon/fossurmertg_60minute-fos-fra-cmems:
+  name: Fos-sur-Mer
+
+ticon/gienslamadraguetg_10minute-gie-fra-cmems:
+  name: Giens-la-Madrague
+
+ticon/ile_d_aix-189-fra-refmar:
+  name: "Ile d'Aix"
+
+ticon/iledaixtg_60minute-ile-fra-cmems:
+  name: "Ile d'Aix"
+
+ticon/ilesdusaluttg_60minute-ile-fra-cmems:
+  name: Iles-du-Salut
+
+ticon/ilet_la_mere-535-fra-refmar:
+  name: Ilet-la-Mere
+
+ticon/iletlameretg_60minute-ile-fra-cmems:
+  name: Ilet-la-Mere
+
+ticon/la_rochelle_la_pallice-34-fra-refmar:
+  name: La Rochelle-la-Pallice
+
+ticon/les_sables_d_olonne-62-fra-refmar:
+  name: "Les Sables d'Olonne"
+
+ticon/lessablesdolonnetg_60minute-les-fra-cmems:
+  name: "Les Sables d'Olonne"
+
+ticon/montoir_de_bretagne-6106-fra-refmar:
+  name: Montoir-de-Bretagne
+
+ticon/montoirdebretagnetg_60minute-mon-fra-cmems:
+  name: Montoir-de-Bretagne
+
+ticon/pointe_des_cascades-15220-can-meds:
+  name: Pointe-des-Cascades
+
+ticon/pointe_des_galets-110-fra-refmar:
+  name: Pointe-des-Galets
+
+ticon/pointedesrochestg_10minute-poi-fra-cmems:
+  name: Pointe-des-Roches
+
+ticon/pont_du_brault-6269-fra-refmar:
+  name: Pont-du-Brault
+
+ticon/pontdubraulttg_60minute-pon-fra-cmems:
+  name: Pont-du-Brault
+
+ticon/port_la_nouvelle-803-fra-refmar:
+  name: Port-la-Nouvelle
+
+ticon/portlanouvelletg_60minute-por-fra-cmems:
+  name: Port-la-Nouvelle
+
+ticon/rivi_a475re_du_loup-3130-can-meds:
+  name: Rivière-du-Loup
+
+ticon/s_gravendeel_haven-gravdhvn-nld-rws_hist:
+  name: "'s-Gravendeel Haven"
+
+ticon/s_gravendeel-gravdl-nld-rws_hist:
+  name: "'s-Gravendeel"
+
+ticon/saint_jean_de_luz_socoa-95-fra-refmar:
+  name: Saint-Jean-de-Luz (Socoa)
+
+ticon/sainte_anne_de_bellevue-16005-can-meds:
+  name: Sainte-Anne-de-Bellevue
+
+ticon/sainte_anne_des_monts-2935-can-meds:
+  name: Sainte-Anne-des-Monts
+
+ticon/st_louis_du_sud-406-hti-uhslc_fd:
+  name: Saint-Louis-du-Sud
