@@ -499,7 +499,14 @@ export function resolveMetadata(
   if (!context) {
     const water = waterBodies
       ?.at(position[0], position[1])
-      .find((body) => foldName(name) !== foldName(body.name));
+      // A NOAA current keeps its qualifier on the name ("Rich Passage, East
+      // End"), so a water matching any part of it would restate the name.
+      .find(
+        (body) =>
+          !name
+            .split(",")
+            .some((part) => foldName(part) === foldName(body.name)),
+      );
     if (water) {
       context = water.name;
       contextDerived = true;
