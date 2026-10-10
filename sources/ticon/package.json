@@ -3,11 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "import": "./import"
+    "import": "./import",
+    "test": "vitest"
   },
   "dependencies": {
     "@slackwater/datums": "*",
     "@slackwater/harmonic-analysis": "*",
     "@slackwater/stations": "*"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.2"
   }
 }
