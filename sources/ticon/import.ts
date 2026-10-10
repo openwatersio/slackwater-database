@@ -5,7 +5,6 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import {
   parseCSV,
-  indexBy,
   groupBy,
   normalize,
   save,
@@ -34,15 +33,26 @@ import {
   fitHarmonics,
   isAnalyzable,
 } from "@slackwater/harmonic-analysis";
+import { matchMetadata, type TiconMetaRow } from "./meta.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const metaPath = join(__dirname, "..", "..", "tmp", "TICON-4", "meta.csv");
 const dataPath = join(__dirname, "..", "..", "tmp", "TICON-4", "data.csv");
-const metadata = indexBy(
-  parseCSV<TiconMetaRow>(await readFile(metaPath, "utf-8")),
-  "FILE NAME",
+const gauges = groupBy(
+  parseCSV<TiconRow>(await readFile(dataPath, "utf-8")),
+  (r) => r.tide_gauge_name,
 );
-const data = await readFile(dataPath, "utf-8");
+// Match against every gauge, not just this shard's: a misfiled row's rightful
+// gauge can sit in another shard.
+const metadata = matchMetadata(
+  parseCSV<TiconMetaRow>(await readFile(metaPath, "utf-8")),
+  new Map(
+    Object.entries(gauges).map(([id, [row]]) => [
+      id,
+      { lat: parseFloat(row!.lat), lon: parseFloat(row!.lon) },
+    ]),
+  ),
+);
 // FORCE_DATUMS=1 recomputes every station's datums; a comma-separated list of
 // source suffixes (e.g. FORCE_DATUMS=uhslc_rq) recomputes only those sources.
 const FORCE_DATUMS = process.env["FORCE_DATUMS"] ?? "";
@@ -53,11 +63,6 @@ const forceHarmonics = process.env["FORCE_HARMONICS"] === "1";
 const [shard = 0, shards = 1] = (process.env["SHARD"] ?? "0/1")
   .split("/")
   .map(Number);
-
-type TiconMetaRow = {
-  "FILE NAME": string;
-  "SITE NAME": string;
-};
 
 interface TiconRow {
   lat: string;
@@ -108,9 +113,7 @@ async function main() {
       `=== Importing TICON stations ===${FORCE_DATUMS ? ` (forcing datum recalculation: ${FORCE_DATUMS})` : ""}${forceHarmonics ? " (forcing harmonic re-analysis)" : ""}\n`,
     );
 
-  const groups = Object.values(
-    groupBy(parseCSV<TiconRow>(data), (r) => r.tide_gauge_name),
-  ).filter((_, i) => i % shards === shard);
+  const groups = Object.values(gauges).filter((_, i) => i % shards === shard);
 
   let saved = 0;
   let reused = 0;
@@ -120,6 +123,7 @@ async function main() {
     if (!rows[0]) continue;
 
     const gesla = metadata[rows[0].tide_gauge_name];
+    if (!gesla) throw new Error(`${rows[0].tide_gauge_name}: no meta.csv row`);
 
     const lat = parseFloat(rows[0].lat);
     const lon = parseFloat(rows[0].lon);
