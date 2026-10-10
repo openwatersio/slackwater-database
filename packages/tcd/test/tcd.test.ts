@@ -189,17 +189,17 @@ describe("XTide TCD", () => {
         "cc-by-4.0": "CC BY 4.0",
         "cc-by-nc-4.0": "CC BY-NC 4.0",
       };
-      const records = [
-        // Reference records: `# key: value` hot comments
-        ...restored.harmonics
-          .split("# BEGIN HOT COMMENTS")
+      // Each record as a field lookup. Reference records use `# key: value`
+      // hot comments; subordinates use `key="value"` attributes.
+      const fields = (harmonics: string, start: string, offsets: string) => [
+        ...harmonics
+          .split(start)
           .slice(1)
           .map(
             (r) => (k: string) =>
               r.match(new RegExp(`^# ${k}: ?(.*)$`, "m"))?.[1],
           ),
-        // Subordinate records: `key="value"` attributes
-        ...restored.offsets
+        ...offsets
           .split("<subordinatestation ")
           .slice(1)
           .map(
@@ -207,11 +207,28 @@ describe("XTide TCD", () => {
               r.match(new RegExp(`^\\s*${k}="(.*)"`, "m"))?.[1],
           ),
       ];
+      const idOf = (field: (k: string) => string | undefined) =>
+        `${field("station_id_context")}/${field("station_id")}`;
 
-      expect(records.length).toBeGreaterThan(stations.length / 2);
+      const dist = (file: string) =>
+        readFileSync(join(process.cwd(), "dist", file), "utf-8");
+      const written = fields(
+        dist("harmonics.txt"),
+        "\n# source: ",
+        dist("offsets.xml"),
+      ).map(idOf);
+      const records = fields(
+        restored.harmonics,
+        "# BEGIN HOT COMMENTS",
+        restored.offsets,
+      );
+
+      // build_tide_db dropped nothing, so every record below is checked
+      expect(records.map(idOf).sort()).toEqual(written.sort());
       for (const field of records) {
-        const id = `${field("station_id_context")}/${field("station_id")}`;
-        expect(field("restriction"), id).toBe(restrictions[expected.get(id)!]);
+        expect(field("restriction"), idOf(field)).toBe(
+          restrictions[expected.get(idOf(field))!],
+        );
       }
     });
 

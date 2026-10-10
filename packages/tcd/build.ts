@@ -179,6 +179,28 @@ function restriction(station: Station): string {
   return name;
 }
 
+// build_tide_db: reads each line with a 256-byte fgets, counting the UTF-8 bytes and newline
+const LINE_MAX_BYTES = 254;
+
+/** Word-wrap text into `# note: ` lines, the only lines build_tide_db stores as notes. */
+function noteLines(text: string): string[] {
+  const lines: string[] = [];
+  let line = "";
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    const next = line ? `${line} ${word}` : `# note: ${word}`;
+    if (line && Buffer.byteLength(next) > LINE_MAX_BYTES) {
+      lines.push(line);
+      line = `# note: ${word}`;
+    } else {
+      line = next;
+    }
+  }
+  if (line) lines.push(line);
+  const long = lines.find((l) => Buffer.byteLength(l) > LINE_MAX_BYTES);
+  if (long) throw new Error(`Note word too long for build_tide_db: ${long}`);
+  return lines;
+}
+
 /**
  * Name parts from most to least specific. Currents follow XTide's
  * "Name, Region Current" convention.
@@ -395,11 +417,8 @@ ${NUM_YEARS}`);
       station.disclaimers,
       station.license.type === "public domain" ? "" : station.attribution,
     ];
-    // build_tide_db: only `# note: ` lines become notes, and each is read with a 256-byte fgets
-    for (const chunk of notes.flatMap(
-      (n) => n?.match(/\S.{0,245}(?=\s|$)|\S{246}/g) ?? [],
-    )) {
-      lines.push(`# note: ${chunk.trimEnd()}`);
+    for (const note of notes) {
+      if (note) lines.push(...noteLines(note));
     }
     // Currents are in knots and their datum offset is the mean flow; tides are in meters
     const current = station.kind === "current" ? station.current : undefined;
