@@ -14,6 +14,7 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { astro, constituents } from "@slackwater/engine";
 import {
+  LICENSE_NAMES,
   stations,
   type CurrentData,
   type Station,
@@ -168,6 +169,14 @@ function tcdTimezone(tz: string): string {
     `Warning: timezone "${tz}" exceeds ${TZ_MAX_LEN} chars, using :UTC`,
   );
   return ":UTC";
+}
+
+/** The station's licence as a TCD restriction name; build_tide_db adds names it hasn't seen. */
+function restriction(station: Station): string {
+  const type = station.license.type;
+  const name = type === "public domain" ? "Public Domain" : LICENSE_NAMES[type];
+  if (!name) throw new Error(`No TCD restriction for license "${type}"`);
+  return name;
 }
 
 /**
@@ -381,30 +390,16 @@ ${NUM_YEARS}`);
     if (station.country) {
       lines.push(`# country: ${station.country}`);
     }
-    if (station.disclaimers) {
-      const notePrefix = "# note: ";
-      const contPrefix = "# ";
-      const maxLen = 254; // build_tide_db: reads lines with a 256-byte fgets, so longer lines split mid-record
-
-      const words = station.disclaimers.split(/\s+/);
-      let currentLine = notePrefix;
-      for (const word of words) {
-        const candidate =
-          currentLine + (currentLine.endsWith(" ") ? "" : " ") + word;
-        if (
-          candidate.length > maxLen &&
-          currentLine !== notePrefix &&
-          currentLine !== contPrefix
-        ) {
-          lines.push(currentLine);
-          currentLine = contPrefix + word;
-        } else {
-          currentLine = candidate;
-        }
-      }
-      if (currentLine.length > 0) {
-        lines.push(currentLine);
-      }
+    // Licensed stations carry their attribution, since the TCD has no field for it
+    const notes = [
+      station.disclaimers,
+      station.license.type === "public domain" ? "" : station.attribution,
+    ];
+    // build_tide_db: only `# note: ` lines become notes, and each is read with a 256-byte fgets
+    for (const chunk of notes.flatMap(
+      (n) => n?.match(/\S.{0,245}(?=\s|$)|\S{246}/g) ?? [],
+    )) {
+      lines.push(`# note: ${chunk.trimEnd()}`);
     }
     // Currents are in knots and their datum offset is the mean flow; tides are in meters
     const current = station.kind === "current" ? station.current : undefined;
@@ -424,7 +419,9 @@ ${NUM_YEARS}`);
     } else {
       lines.push(`# datum: ${chartDatum}`);
     }
-    lines.push(`# restriction: Public Domain`);
+    // build_tide_db: a record with no plain comment line zeroes its restriction (writes comments[-1]), so add an empty one
+    lines.push("#");
+    lines.push(`# restriction: ${restriction(station)}`);
     lines.push(`# confidence: 10`);
     lines.push(`# !units: ${levelUnits}`);
     lines.push(`# !longitude: ${station.longitude.toFixed(4)}`);
@@ -647,6 +644,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
   );
 
   for (const station of subordinateStations) {
+    // ponytail: subordinate records carry no attribution note; add one when a licensed source has subordinates
+    if (station.license.type !== "public domain") {
+      throw new Error(`Subordinate ${station.id} needs an attribution note`);
+    }
     const current = currentOffsetsOf(station);
     const reference = current?.reference ?? station.offsets!.reference;
     const refName = referenceIds.has(reference)
@@ -666,7 +667,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
       ["timezone", tcdTimezone(station.timezone)],
       ["country", station.country ?? ""],
       ["source", station.source.name],
-      ["restriction", "Public Domain"],
+      ["restriction", restriction(station)],
       ["station_id_context", station.id.split("/")[0]!],
       ["station_id", station.source.id],
       ["reference", refName],

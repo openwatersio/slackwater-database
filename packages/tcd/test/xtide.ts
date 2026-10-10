@@ -3,6 +3,8 @@
  */
 
 import { execFileSync } from "child_process";
+import { readFileSync, rmSync } from "fs";
+import { join } from "path";
 
 export interface TideEvent {
   time: Date;
@@ -177,4 +179,33 @@ export function checkXTideAvailable(): boolean {
   } catch {
     return false;
   }
+}
+
+/**
+ * Dump the built TCD with restore_tide_db, so tests see what build_tide_db
+ * stored rather than what it was given. The dump is deleted after reading so
+ * it stays out of the dist artifact.
+ */
+export function restoreTcd(): { harmonics: string; offsets: string } {
+  execFileSync(
+    "docker",
+    [
+      "compose",
+      "run",
+      "--rm",
+      "--entrypoint",
+      "restore_tide_db",
+      "build-tcd",
+      "/dist/harmonics.tcd",
+      "/dist/restored",
+    ],
+    { cwd: process.cwd() },
+  );
+  const read = (ext: string) => {
+    const path = join(process.cwd(), "dist", `restored.${ext}`);
+    const text = readFileSync(path, "latin1");
+    rmSync(path);
+    return text;
+  };
+  return { harmonics: read("txt"), offsets: read("xml") };
 }

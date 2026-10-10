@@ -15,6 +15,7 @@ import {
   getXTidePredictions,
   getXTideAbout,
   checkXTideAvailable,
+  restoreTcd,
 } from "./xtide.js";
 import { getPredictions, getCurrentPredictions } from "./engine-predictions.js";
 import { comparePredictions, formatComparisonResult } from "./compare.js";
@@ -167,6 +168,67 @@ describe("XTide TCD", () => {
       expect(about.get("Reference")).toBe(
         "Nawiliwili, HI, United States (1611400)",
       );
+    });
+  });
+
+  describe("Licenses", () => {
+    let restored: ReturnType<typeof restoreTcd>;
+    beforeAll(() => {
+      restored = restoreTcd();
+    });
+
+    test("every record keeps its station's license", () => {
+      const expected = new Map(
+        stations.map((s) => [
+          `${s.id.split("/")[0]}/${s.source.id}`,
+          s.license.type,
+        ]),
+      );
+      const restrictions: Record<string, string> = {
+        "public domain": "Public Domain",
+        "cc-by-4.0": "CC BY 4.0",
+        "cc-by-nc-4.0": "CC BY-NC 4.0",
+      };
+      const records = [
+        // Reference records: `# key: value` hot comments
+        ...restored.harmonics
+          .split("# BEGIN HOT COMMENTS")
+          .slice(1)
+          .map(
+            (r) => (k: string) =>
+              r.match(new RegExp(`^# ${k}: ?(.*)$`, "m"))?.[1],
+          ),
+        // Subordinate records: `key="value"` attributes
+        ...restored.offsets
+          .split("<subordinatestation ")
+          .slice(1)
+          .map(
+            (r) => (k: string) =>
+              r.match(new RegExp(`^\\s*${k}="(.*)"`, "m"))?.[1],
+          ),
+      ];
+
+      expect(records.length).toBeGreaterThan(stations.length / 2);
+      for (const field of records) {
+        const id = `${field("station_id_context")}/${field("station_id")}`;
+        expect(field("restriction"), id).toBe(restrictions[expected.get(id)!]);
+      }
+    });
+
+    test("licensed stations carry their attribution", () => {
+      const station = stations.find(
+        (s) => s.id === "ticon/alcudiatg-alc-esp-cmems",
+      )!;
+      const about = getXTideAbout("Alcudia, Balearic Islands, Spain");
+      expect(about.get("Restriction")).toBe("CC BY-NC 4.0");
+
+      const record = restored.harmonics
+        .split("# BEGIN HOT COMMENTS")
+        .find((r) => r.includes("# station_id: alcudiatg-alc-esp-cmems"))!;
+      const notes = [...record.matchAll(/^# note: (.*)$/gm)]
+        .map((m) => m[1])
+        .join(" ");
+      expect(notes).toContain(station.attribution);
     });
   });
 
