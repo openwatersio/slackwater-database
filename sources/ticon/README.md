@@ -54,6 +54,21 @@ Table 1 of the TICON-4 manual swaps these two rows. Scored against the raw GESLA
 
 Table 1 also lists Sa as 056.554, with a solar perigee term, where the engine uses 056.555. Scored the same way, TICON's published Sa matches 056.555 at 17 of the 18 gauges tried (0.98 to 1.05, against −0.49 to −0.64 for 056.554), so it needs no conversion. The engine doc has the gauges and the commands.
 
+Eight constituents sit on the engine's line but are phased against a different equilibrium argument: TICON's argument is the engine's plus a constant. The importer subtracts it (`TICON_ARGUMENT_OFFSET` in [`import.ts`](import.ts)), so the station files hold phases against the engine's argument. Each offset was found by scoring TICON's constituent against the raw record at its largest gauges, with the published phase shifted by 0°, +90°, −90° and 180°:
+
+| Constituent  | TICON argument − engine argument | Gauges agreeing                                         |
+| ------------ | -------------------------------- | ------------------------------------------------------- |
+| M3           | 180°                             | 8 of 8 (Thevenard, Cananéia, Millport, Bristol Channel) |
+| SGM (sigma1) | 180°                             | 8 of 8 (Anchorage, Keling, Port Pirie, Wyndham)         |
+| T3           | 180°                             | 7 of 8                                                  |
+| S3           | 180°                             | 17 of 20                                                |
+| R3           | −90°                             | 7 of 8                                                  |
+| 3L2          | −90°                             | 20 of 20 (Bay of Fundy, Puerto Montt, Mackay)           |
+| 2MK5         | −90°                             | 8 of 8 (Anchorage, Puerto Madryn)                       |
+| 2MO5         | +90°                             | 8 of 8 (Puerto Madryn, Anchorage)                       |
+
+At its offset each scores close to +1, and at the engine's own argument close to −1 (unrelated) or −3 (anti-phase). 3L2 scores lower and more widely, −0.6 to 2.0, because it is one lunar perigee cycle (8.85 years) from L2 and hard to separate from it. Most of the gauges that disagree are river gauges such as Hedel and Gorinchem, where the constituent scores near −1 at every offset. The exception is S3 at L'Isle-aux-Grues in the St. Lawrence estuary, which scores 0.66 at 0°. S1, P1, T2, R2, S4, RHO1, 2SM2, 2MS6, 3N2 and MKS2 score best at 0° and need no conversion. The re-fit `wsv` and `rws` stations are fit against the engine's arguments, so the conversion applies only to TICON's published phases.
+
 The importer re-fits the `wsv` and `rws` stations, whose GESLA-4 files label local time as UTC (see `LOCAL_TIME_SOURCES` in [`import.ts`](import.ts)). `fitHarmonics` skips any constituent whose engine speed differs from its reference speed, so a re-fit never stores a name on a line TICON doesn't mean by it. It also skips 3N2 when the record is shorter than one lunar perigee cycle (8.85 years), the time it takes to separate 3N2 from N2; on those records N2 keeps the signal. To re-fit these stations:
 
 ```sh
@@ -68,7 +83,7 @@ To check which line a published constituent describes, score it against the raw 
 npm run score-line -w packages/harmonic-analysis -- cardwell-h035012a-aus-bom 3N2 245.555 --sweep --nodal=N2
 ```
 
-The engine doc explains the method and how to read the scores. Open differences between TICON's phases and the engine's are tracked in [#239](https://github.com/openwatersio/slackwater-database/issues/239). [#76](https://github.com/openwatersio/slackwater-database/issues/76) collects the discrepancies between the manual's constituent definitions and the engine's.
+The engine doc explains the method and how to read the scores. [#76](https://github.com/openwatersio/slackwater-database/issues/76) collects the discrepancies between the manual's constituent definitions and the engine's.
 
 ## References
 

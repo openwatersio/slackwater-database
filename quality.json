@@ -51434,7 +51434,7 @@
       "coverage": 0
     },
     "issues": [
-      "MHWS (0.082) < MHW (0.101)"
+      "MHWS (0.082) < MHW (0.098)"
     ]
   },
   {
@@ -53574,8 +53574,8 @@
       "MHWS (5.12) < MHW (6.396)",
       "MLW (3.601) < LAT (4.556)",
       "HAT (5.606) < MHHW (6.495)",
-      "Seasonal band (0.253m) is 6.8x the largest tidal constituent K2 (0.037m): the yearly swing exceeds the daily one",
-      "K2 amplitude (0.0370) exceeds S2 (0.0300)"
+      "Seasonal band (0.253m) is 7.0x the largest tidal constituent K2 (0.036m): the yearly swing exceeds the daily one",
+      "K2 amplitude (0.0360) exceeds S2 (0.0300)"
     ],
     "reason": "datum",
     "seasonal_dominant": true
@@ -54100,8 +54100,7 @@
       "coverage": 0.898
     },
     "issues": [
-      "MLW (-0.012) < MLLW (-0.01)",
-      "MLWS (-0.011) > MLW (-0.012)",
+      "MLWS (-0.011) > MLW (-0.016)",
       "Seasonal band (0.155m) is 17.9x the largest tidal constituent M2 (0.009m): the yearly swing exceeds the daily one"
     ],
     "seasonal_dominant": true
@@ -56817,8 +56816,8 @@
       "MLW (11.816) < MLLW (11.818)",
       "MLWS (11.906) > MLW (11.816)",
       "MHW (11.861) <= MSL (11.908)",
-      "MLW (11.816) < LAT (11.834)",
-      "HAT (12.019) < MHHW (12.024)",
+      "MLW (11.816) < LAT (11.836)",
+      "HAT (12.02) < MHHW (12.024)",
       "N2 amplitude (0.0011) exceeds M2 (0.0003)"
     ],
     "reason": "datum"
@@ -56838,7 +56837,8 @@
     "issues": [
       "MLWS (5.223) > MLW (5.126)",
       "MHW (5.205) <= MSL (5.228)",
-      "HAT (5.359) < MHHW (5.399)",
+      "MLW (5.126) < LAT (5.134)",
+      "HAT (5.367) < MHHW (5.399)",
       "N2 amplitude (0.0023) exceeds M2 (0.0004)",
       "Q1 amplitude (0.0031) exceeds O1 (0.0023)"
     ],
@@ -59596,7 +59596,7 @@
     },
     "issues": [
       "MLWS (3.458) > MLW (3.161)",
-      "MLW (3.161) < LAT (3.183)"
+      "MLW (3.161) < LAT (3.173)"
     ],
     "reason": "datum"
   },
@@ -59673,8 +59673,8 @@
       "coverage": 0
     },
     "issues": [
-      "MLWS (-0.063) > MLW (-0.089)",
-      "MHWS (0.063) < MHW (0.097)",
+      "MLWS (-0.063) > MLW (-0.1)",
+      "MHWS (0.063) < MHW (0.085)",
       "Superseded source: noaa",
       "Seasonal band (0.168m) is 1.6x the largest tidal constituent O1 (0.105m): the yearly swing exceeds the daily one"
     ],
@@ -62561,7 +62561,6 @@
     "issues": [
       "MLWS (1.128) > MLW (1.109)",
       "MHWS (1.132) < MHW (1.16)",
-      "LLWLT (0.403) < LAT (0.937) - 0.5",
       "P1 amplitude (0.0021) exceeds K1 (0.0002): physically impossible",
       "Seasonal band (0.179m) is 84.4x the largest tidal constituent P1 (0.002m): the yearly swing exceeds the daily one"
     ],
@@ -71682,6 +71681,7 @@
       "coverage": 0
     },
     "issues": [
+      "MLW (-0.262) < MLLW (-0.258)",
       "P1 amplitude (0.1049) exceeds K1 (0.0873): physically impossible",
       "Seasonal band (0.464m) is 2.5x the largest tidal constituent M2 (0.184m): the yearly swing exceeds the daily one"
     ],
@@ -71731,6 +71731,7 @@
       "coverage": 0
     },
     "issues": [
+      "MLW (-0.262) < MLLW (-0.258)",
       "P1 amplitude (0.1049) exceeds K1 (0.0873): physically impossible",
       "Seasonal band (0.464m) is 2.5x the largest tidal constituent M2 (0.184m): the yearly swing exceeds the daily one"
     ],
@@ -73466,7 +73467,8 @@
       "coverage": 0.027
     },
     "issues": [
-      "MHWS (0.457) < MHW (0.535)"
+      "MLWS (-0.457) > MLW (-0.464)",
+      "MHWS (0.457) < MHW (0.532)"
     ]
   },
   {
@@ -80598,7 +80600,7 @@
     "issues": [
       "MLWS (-0.059) > MLW (-0.099)",
       "MHWS (-0.055) < MHW (0.037)",
-      "HAT (0.06) < MHHW (0.1)",
+      "HAT (0.062) < MHHW (0.1)",
       "Seasonal band (0.047m) is 2.8x the largest tidal constituent M1 (0.017m): the yearly swing exceeds the daily one"
     ],
     "reason": "datum",
@@ -81061,7 +81063,7 @@
       "coverage": 0.736
     },
     "issues": [
-      "MHHW (0.335) < MHW (0.339)"
+      "MHHW (0.337) < MHW (0.34)"
     ]
   },
   {
@@ -85596,8 +85598,8 @@
       "MLW (18.422) < MLLW (18.428)",
       "MLWS (18.502) > MLW (18.422)",
       "MHW (18.479) <= MSL (18.506)",
-      "MLW (18.422) < LAT (18.445)",
-      "HAT (18.584) < MHHW (18.624)",
+      "MLW (18.422) < LAT (18.448)",
+      "HAT (18.581) < MHHW (18.624)",
       "Seasonal band (0.020m) is 1.9x the largest tidal constituent S1 (0.011m): the yearly swing exceeds the daily one",
       "N2 amplitude (0.0007) exceeds M2 (0.0004)",
       "Q1 amplitude (0.0018) exceeds O1 (0.0015)"
@@ -103425,8 +103427,8 @@
       "coverage": 0
     },
     "issues": [
-      "MLWS (-0.049) > MLW (-0.075)",
-      "MHWS (0.049) < MHW (0.1)",
+      "MLWS (-0.049) > MLW (-0.072)",
+      "MHWS (0.049) < MHW (0.091)",
       "Superseded source: noaa"
     ],
     "reason": "superseded"
@@ -106579,9 +106581,8 @@
       "coverage": 0.556
     },
     "issues": [
-      "MLW (-0.043) < MLLW (-0.04)",
-      "MLWS (-0.009) > MLW (-0.043)",
-      "MHW (-0.012) <= MSL (0)",
+      "MHWS (0.009) < MHW (0.133)",
+      "MSL (0) <= MLW (0.116)",
       "Seasonal band (0.350m) is 37.6x the largest tidal constituent S1 (0.009m): the yearly swing exceeds the daily one",
       "Q1 amplitude (0.0014) exceeds O1 (0.0014)"
     ],
@@ -111175,7 +111176,7 @@
       "coverage": 0.37
     },
     "issues": [
-      "HAT (0.2) < MHHW (0.211)"
+      "HAT (0.207) < MHHW (0.211)"
     ],
     "reason": "datum"
   },
@@ -111698,7 +111699,6 @@
     "issues": [
       "MLWS (0.113) > MLW (0.102)",
       "MHWS (0.121) < MHW (0.132)",
-      "LLWLT (0.223) > MLW (0.102)",
       "Seasonal band (0.146m) is 47.9x the largest tidal constituent M2 (0.003m): the yearly swing exceeds the daily one"
     ],
     "seasonal_dominant": true
@@ -118721,7 +118721,7 @@
     "issues": [
       "MHHW (0.577) < MHW (0.645)",
       "MHWS (0.523) < MHW (0.645)",
-      "LLWLT (0.679) > MLW (0.626)",
+      "LLWLT (0.702) > MLW (0.626)",
       "MSL (0.522) <= MLW (0.626)",
       "Seasonal band (0.622m) is 231.1x the largest tidal constituent S1 (0.003m): the yearly swing exceeds the daily one",
       "N2 amplitude (0.0002) exceeds M2 (0.0001)",
@@ -121255,6 +121255,7 @@
     "issues": [
       "MLWS (0.999) > MLW (0.994)",
       "MHWS (1.001) < MHW (1.009)",
+      "LLWLT (1.121) > MLW (0.994)",
       "Tidal range 1.5cm < 2cm threshold",
       "Seasonal band (0.150m) is 80.2x the largest tidal constituent S1 (0.002m): the yearly swing exceeds the daily one"
     ],
@@ -127261,8 +127262,8 @@
       "coverage": 0.919
     },
     "issues": [
-      "MLWS (-0.129) > MLW (-0.155)",
-      "MHWS (0.129) < MHW (0.178)"
+      "MLWS (-0.129) > MLW (-0.132)",
+      "MHWS (0.129) < MHW (0.186)"
     ]
   },
   {

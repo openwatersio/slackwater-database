@@ -54,6 +54,22 @@ const [shard = 0, shards = 1] = (process.env["SHARD"] ?? "0/1")
   .split("/")
   .map(Number);
 
+// TICON-4's phase lag for these constituents is measured against an
+// equilibrium argument that differs from the engine's by a constant: TICON's
+// argument is the engine's plus this many degrees. Each was found by scoring
+// TICON's constituent against the raw GESLA-4 record at its largest gauges
+// (#239). Subtracting it restates the phase against the engine's argument.
+const TICON_ARGUMENT_OFFSET: Record<string, number> = {
+  M3: 180,
+  SGM: 180,
+  T3: 180,
+  S3: 180,
+  R3: -90,
+  "3L2": -90,
+  "2MK5": -90,
+  "2MO5": 90,
+};
+
 type TiconMetaRow = {
   "FILE NAME": string;
   "SITE NAME": string;
@@ -158,7 +174,10 @@ async function main() {
     const csvHarmonics = rows.map((row) => ({
       name: row.con,
       amplitude: parseFloat(row.amp) / 100, // cm to m
-      phase: ((parseFloat(row.pha) % 360) + 360) % 360,
+      phase:
+        (((parseFloat(row.pha) - (TICON_ARGUMENT_OFFSET[row.con] ?? 0)) % 360) +
+          360) %
+        360,
     }));
 
     // WSV (and other local-time-mislabeled GESLA sources) publish phases that
@@ -251,10 +270,14 @@ async function getDatums(
   harmonic_constituents: PartialStationData["harmonic_constituents"],
 ) {
   if (!forceDatums(id)) {
+    let existing: Awaited<ReturnType<typeof load>> | undefined;
     try {
-      const existing = await load("ticon", id);
-      return {
-        datums: existing.datums,
+      existing = await load("ticon", id);
+    } catch {
+      // no cached record; compute below
+    }
+    if (existing) {
+      const cached = {
         ...(existing.datums_source
           ? { datums_source: existing.datums_source }
           : {}),
@@ -263,8 +286,27 @@ async function getDatums(
           end: toISODate(obsEpoch.end),
         },
       };
-    } catch {
-      // no cached record; compute below
+      if (
+        sameConstituents(existing.harmonic_constituents, harmonic_constituents)
+      )
+        return { datums: existing.datums, ...cached };
+      // The constituents changed since these datums were computed. The
+      // observed means come from the record and still hold; the rest are
+      // synthesized from the constituents, so re-synthesize them.
+      const harmonic = computeDatums(harmonic_constituents, {});
+      return {
+        datums:
+          existing.datums_source === "observed"
+            ? {
+                ...existing.datums,
+                ...shiftHarmonicDatums(
+                  harmonic.datums,
+                  existing.datums["MSL"] ?? 0,
+                ),
+              }
+            : harmonic.datums,
+        ...cached,
+      };
     }
   }
 
@@ -295,24 +337,11 @@ async function getDatums(
     // Means (MHHW…MLLW) come from observations. The astronomical extremes and
     // amplitude-derived chart datums live on the harmonic side (computed over a
     // full nodal cycle, MSL=0 frame); shift them into the observed gauge frame.
-    const shift = obs.datums["MSL"] ?? 0;
-    const HARMONIC_KEYS = [
-      "HAT",
-      "LAT",
-      "LLWLT",
-      "MHWS",
-      "MLWS",
-      "NLLW",
-      "ALLW",
-      "TLT",
-    ];
-    const shifted: Record<string, number> = {};
-    for (const k of HARMONIC_KEYS) {
-      const v = harmonic.datums[k];
-      if (v !== undefined) shifted[k] = toFixed(v + shift, 3);
-    }
     return {
-      datums: { ...obs.datums, ...shifted },
+      datums: {
+        ...obs.datums,
+        ...shiftHarmonicDatums(harmonic.datums, obs.datums["MSL"] ?? 0),
+      },
       datums_source: "observed" as const,
       epoch: { start: toISODate(obs.start), end: toISODate(obs.end) },
     };
@@ -393,6 +422,47 @@ async function getHarmonics(
     throw new Error(`record too short to re-analyze ${src.zone} phases`);
   }
   return fitHarmonics(samples, names);
+}
+
+// Datums that come from harmonic synthesis even when observations supply the
+// means: the astronomical extremes and the amplitude-derived chart datums.
+const HARMONIC_KEYS = [
+  "HAT",
+  "LAT",
+  "LLWLT",
+  "MHWS",
+  "MLWS",
+  "NLLW",
+  "ALLW",
+  "TLT",
+];
+
+/** Harmonic datums (MSL = 0 frame) shifted into the observed gauge frame. */
+function shiftHarmonicDatums(
+  harmonic: Record<string, number>,
+  msl: number,
+): Record<string, number> {
+  const shifted: Record<string, number> = {};
+  for (const k of HARMONIC_KEYS) {
+    const v = harmonic[k];
+    if (v !== undefined) shifted[k] = toFixed(v + msl, 3);
+  }
+  return shifted;
+}
+
+function sameConstituents(
+  a: PartialStationData["harmonic_constituents"],
+  b: PartialStationData["harmonic_constituents"],
+) {
+  return (
+    a.length === b.length &&
+    a.every(
+      (h, i) =>
+        h.name === b[i]!.name &&
+        h.amplitude === b[i]!.amplitude &&
+        h.phase === b[i]!.phase,
+    )
+  );
 }
 
 function toISODate(date: Date) {
