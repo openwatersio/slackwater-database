@@ -15,6 +15,7 @@ import {
   getXTidePredictions,
   getXTideAbout,
   checkXTideAvailable,
+  restoreTcd,
 } from "./xtide.js";
 import { getPredictions, getCurrentPredictions } from "./engine-predictions.js";
 import { comparePredictions, formatComparisonResult } from "./compare.js";
@@ -167,6 +168,84 @@ describe("XTide TCD", () => {
       expect(about.get("Reference")).toBe(
         "Nawiliwili, HI, United States (1611400)",
       );
+    });
+  });
+
+  describe("Licenses", () => {
+    let restored: ReturnType<typeof restoreTcd>;
+    beforeAll(() => {
+      restored = restoreTcd();
+    });
+
+    test("every record keeps its station's license", () => {
+      const expected = new Map(
+        stations.map((s) => [
+          `${s.id.split("/")[0]}/${s.source.id}`,
+          s.license.type,
+        ]),
+      );
+      const restrictions: Record<string, string> = {
+        "public domain": "Public Domain",
+        "cc-by-4.0": "CC BY 4.0",
+        "cc-by-nc-4.0": "CC BY-NC 4.0",
+      };
+      // Each record as a field lookup. Reference records use `# key: value`
+      // hot comments; subordinates use `key="value"` attributes.
+      const fields = (harmonics: string, start: string, offsets: string) => [
+        ...harmonics
+          .split(start)
+          .slice(1)
+          .map(
+            (r) => (k: string) =>
+              r.match(new RegExp(`^# ${k}: ?(.*)$`, "m"))?.[1],
+          ),
+        ...offsets
+          .split("<subordinatestation ")
+          .slice(1)
+          .map(
+            (r) => (k: string) =>
+              r.match(new RegExp(`^\\s*${k}="(.*)"`, "m"))?.[1],
+          ),
+      ];
+      const idOf = (field: (k: string) => string | undefined) =>
+        `${field("station_id_context")}/${field("station_id")}`;
+
+      const dist = (file: string) =>
+        readFileSync(join(process.cwd(), "dist", file), "utf-8");
+      const written = fields(
+        dist("harmonics.txt"),
+        "\n# source: ",
+        dist("offsets.xml"),
+      ).map(idOf);
+      const records = fields(
+        restored.harmonics,
+        "# BEGIN HOT COMMENTS",
+        restored.offsets,
+      );
+
+      // build_tide_db dropped nothing, so every record below is checked
+      expect(records.map(idOf).sort()).toEqual(written.sort());
+      for (const field of records) {
+        expect(field("restriction"), idOf(field)).toBe(
+          restrictions[expected.get(idOf(field))!],
+        );
+      }
+    });
+
+    test("licensed stations carry their attribution", () => {
+      const station = stations.find(
+        (s) => s.id === "ticon/alcudiatg-alc-esp-cmems",
+      )!;
+      const about = getXTideAbout("Alcudia, Balearic Islands, Spain");
+      expect(about.get("Restriction")).toBe("CC BY-NC 4.0");
+
+      const record = restored.harmonics
+        .split("# BEGIN HOT COMMENTS")
+        .find((r) => r.includes("# station_id: alcudiatg-alc-esp-cmems"))!;
+      const notes = [...record.matchAll(/^# note: (.*)$/gm)]
+        .map((m) => m[1])
+        .join(" ");
+      expect(notes).toContain(station.attribution);
     });
   });
 

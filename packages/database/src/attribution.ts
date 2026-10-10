@@ -34,7 +34,7 @@ const SOURCE_CREDITS: Record<string, string | null> = {
  * licence on. A licence absent here (public domain, this project's own MIT
  * records) imposes no notice, so it adds nothing to the station's credit.
  */
-const LICENSE_NAMES: Record<string, string> = {
+export const LICENSE_NAMES: Record<string, string> = {
   "cc-by-4.0": "CC BY 4.0",
   "cc-by-nc-4.0": "CC BY-NC 4.0",
 };
