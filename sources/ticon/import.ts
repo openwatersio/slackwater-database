@@ -23,7 +23,11 @@ import {
   GESLA_DIR,
 } from "@slackwater/datums";
 import { fitHarmonics, isAnalyzable } from "@slackwater/harmonic-analysis";
-import { parseTiconSamples, LOCAL_TIME_SOURCES } from "./samples.ts";
+import {
+  parseTiconSamples,
+  shiftEarlyGauge,
+  hasMislabeledClock,
+} from "./samples.ts";
 import { matchMetadata, type TiconMetaRow } from "./meta.ts";
 import { reduceTiconDatums, cachedDatumNotice } from "./datums.ts";
 
@@ -143,8 +147,9 @@ async function main() {
         360,
     }));
 
-    // WSV (and other local-time-mislabeled GESLA sources) publish phases that
-    // are not UTC-referenced; re-fit them from the raw water levels. See #96.
+    // WSV, RWS and the early Hong Kong gauges have GESLA times that are not
+    // UTC, so TICON's phases are not UTC-referenced; re-fit them from the raw
+    // water levels. See #96 and #360.
     const harmonic_constituents = await getHarmonics(id, csvHarmonics);
 
     const epoch = {
@@ -286,7 +291,7 @@ async function getDatums(
       -Infinity,
     );
     if (rqEnd && rqEnd.getTime() > geslaEnd) {
-      samples = await loadRqdSamples(id, rqEnd);
+      samples = shiftEarlyGauge(id, await loadRqdSamples(id, rqEnd));
     }
   }
   const {
@@ -316,19 +321,18 @@ async function getDatums(
 
 /**
  * Resolve a station's harmonic constituents. For most sources these come
- * straight from TICON's published amplitude/phase. For local-time-mislabeled
- * sources (see LOCAL_TIME_SOURCES) the published phases are not UTC-referenced,
- * so re-fit amplitude + UTC phase from the raw GESLA water levels. Throws when a
- * mislabeled source can't be re-analyzed, so the station is skipped rather than
- * saved with wrong phases. Cached like datums (reused unless FORCE_HARMONICS=1;
- * the fit is ~6s/station).
+ * straight from TICON's published amplitude/phase. For stations whose GESLA
+ * times are not UTC (see LOCAL_TIME_SOURCES and EARLY_GAUGES) the published
+ * phases are not UTC-referenced, so re-fit amplitude + UTC phase from the raw
+ * GESLA water levels. Throws when such a station can't be re-analyzed, so it is
+ * skipped rather than saved with wrong phases. Cached like datums (reused
+ * unless FORCE_HARMONICS=1; the fit is ~6s/station).
  */
 async function getHarmonics(
   id: string,
   csvHarmonics: PartialStationData["harmonic_constituents"],
 ): Promise<PartialStationData["harmonic_constituents"]> {
-  const src = LOCAL_TIME_SOURCES[getSourceSuffix(id)];
-  if (!src) return csvHarmonics;
+  if (!hasMislabeledClock(id)) return csvHarmonics;
 
   if (!forceHarmonics) {
     try {
@@ -346,7 +350,7 @@ async function getHarmonics(
   ).map((p) => ({ t: +p.time, level: p.level }));
   const names = csvHarmonics.map((h) => h.name);
   if (!isAnalyzable(samples, names.length)) {
-    throw new Error(`record too short to re-analyze ${src.zone} phases`);
+    throw new Error("record too short to re-analyze its non-UTC phases");
   }
   return fitHarmonics(samples, names);
 }

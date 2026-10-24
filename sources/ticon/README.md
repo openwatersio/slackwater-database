@@ -102,13 +102,21 @@ Eight constituents sit on the engine's line but are phased against a different e
 
 At its offset each scores close to +1, and at the engine's own argument close to −1 (unrelated) or −3 (anti-phase). 3L2 scores lower and more widely, −0.6 to 2.0, because it is one lunar perigee cycle (8.85 years) from L2 and hard to separate from it. Most of the gauges that disagree are river gauges such as Hedel and Gorinchem, where the constituent scores near −1 at every offset. The exception is S3 at L'Isle-aux-Grues in the St. Lawrence estuary, which scores 0.66 at 0°. S1, P1, T2, R2, S4, RHO1, 2SM2, 2MS6, 3N2 and MKS2 score best at 0° and need no conversion. The re-fit `wsv` and `rws` stations are fit against the engine's arguments, so the conversion applies only to TICON's published phases.
 
-The importer re-fits the `wsv` and `rws` stations, whose GESLA-4 files label local time as UTC (see `LOCAL_TIME_SOURCES` in [`samples.ts`](samples.ts)). `fitHarmonics` skips any constituent whose engine speed differs from its reference speed, so a re-fit never stores a name on a line TICON doesn't mean by it. It also skips 3N2 when the record is shorter than one lunar perigee cycle (8.85 years), the time it takes to separate 3N2 from N2; on those records N2 keeps the signal. To re-fit these stations:
+The importer re-fits the `wsv` and `rws` stations, whose GESLA-4 files label local time as UTC (see `LOCAL_TIME_SOURCES` in [`samples.ts`](samples.ts)), and three Hong Kong gauges whose UHSLC times are one hour early (`EARLY_GAUGES`). `fitHarmonics` skips any constituent whose engine speed differs from its reference speed, so a re-fit never stores a name on a line TICON doesn't mean by it. It also skips 3N2 when the record is shorter than one lunar perigee cycle (8.85 years), the time it takes to separate 3N2 from N2; on those records N2 keeps the signal. To re-fit these stations:
 
 ```sh
 FORCE_HARMONICS=1 npm run import -w sources/ticon
 ```
 
 A re-fit reads each station's whole GESLA-4 record, so it takes a while: about 90 minutes for all of them.
+
+UHSLC stamps its Hong Kong hourly heights one hour early: the height it labels T was measured at T + 1 h UTC. TICON-4 fitted its constants to those times, so `hong_kong-329-hkg-uhslc_fd`, `hong_kong-329a-hkg-uhslc_rq` and `hong_kong-329b-hkg-uhslc_rq` all published M2 phases near 7°, where the Hong Kong Observatory's (HKO) Quarry Bay predictions fit 36.5°. The importer adds the hour to their GESLA-4 samples and to the live UHSLC RQD samples 329b's datums are reduced from, then re-fits. See [#360](https://github.com/openwatersio/slackwater-database/issues/360).
+
+- The UHSLC fast-delivery series (h329) at T matches the IOC `quar` gauge, which reports in UTC, at T + 58 min to 3 mm RMS in June 2019 and August 2026, against 173–182 mm at T. At exactly T + 1 h the RMS is 8–9 mm. The remaining 2 min has not been traced; a mislabeled clock moves whole hours, so the correction is one hour.
+- The research-quality 329 version B matches h329 exactly (0 mm RMS over 78,803 hours, 2010–2018), and matches IOC `quar` at T + 58 min in June 2019, so it carries the same offset.
+- Version A (329a, North Point, 1962–85) ends before IOC `quar` and h329 begin, so there is no overlap to compare. Its published M2 phase was 7.0°, within 0.4° of 329b's. HKO's own predictions put Kwai Chung 7 min after Quarry Bay and Waglan 5 min before it, so a one-hour real difference between North Point and Quarry Bay, both on the north shore of Hong Kong Island, is not plausible. 329a gets the same shift.
+
+Against HKO's hourly Quarry Bay predictions for 2025–26, the published constants fit best 59–60 min late (RMS 3.9–4.4 cm); the re-fit constants fit best at 0 to −1 min (RMS 2.9–3.5 cm).
 
 To check which line a published constituent describes, score it against the raw record with [`score-line.ts`](../../packages/harmonic-analysis/score-line.ts). It reads the GESLA-4 archive the importer downloads:
 
