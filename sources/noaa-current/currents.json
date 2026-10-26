@@ -1,9 +1,9 @@
 {
   "note": "Generated from NOAA CO-OPS mdapi (harcon@currbin + currentpredictionoffsets). NOAA data is public domain; derived predictions are UNOFFICIAL and not for navigation.",
-  "generated": "2026-08-16T02:49:39.737Z",
+  "generated": "2026-10-26T19:42:07.641Z",
   "crossFlow": {
     "measured": "NOAA minorMeanSpeed — flow perpendicular to the flood axis, present at all times including slack",
-    "records": 856,
+    "records": 884,
     "gte0_25kn": 62,
     "gte0_50kn": 12,
     "worstRatio": {
@@ -8679,124 +8679,129 @@
       "type": "harmonic",
       "latitude": 34.17580032348633,
       "longitude": -77.9569091796875,
-      "floodDirection": 354.1,
-      "ebbDirection": 174.10000000000002,
-      "offset": -0.371,
+      "floodDirection": 353.3,
+      "ebbDirection": 173.29999999999995,
+      "offset": -0.202,
       "constituents": [
         {
           "name": "M2",
-          "amplitude": 1.113,
-          "phase": 1.3
+          "amplitude": 0.922,
+          "phase": 359.5
         },
         {
           "name": "S2",
-          "amplitude": 0.123,
-          "phase": 35.1
+          "amplitude": 0.162,
+          "phase": 34
         },
         {
           "name": "N2",
-          "amplitude": 0.212,
-          "phase": 339.5
+          "amplitude": 0.207,
+          "phase": 357.3
         },
         {
           "name": "K1",
-          "amplitude": 0.143,
-          "phase": 140
+          "amplitude": 0.074,
+          "phase": 177
         },
         {
           "name": "M4",
-          "amplitude": 0.092,
-          "phase": 121.3
+          "amplitude": 0.111,
+          "phase": 34.4
         },
         {
           "name": "O1",
-          "amplitude": 0.019,
-          "phase": 157.6
+          "amplitude": 0.121,
+          "phase": 203.3
         },
         {
           "name": "M6",
-          "amplitude": 0.138,
-          "phase": 223.2
+          "amplitude": 0.128,
+          "phase": 217.9
         },
         {
           "name": "S4",
-          "amplitude": 0.012,
-          "phase": 80.6
+          "amplitude": 0.009,
+          "phase": 47.1
         },
         {
           "name": "NU2",
-          "amplitude": 0.041,
-          "phase": 342.5
+          "amplitude": 0.04,
+          "phase": 357.6
         },
         {
           "name": "S6",
-          "amplitude": 0.012,
-          "phase": 282.1
+          "amplitude": 0.014,
+          "phase": 261.1
         },
         {
           "name": "2N2",
-          "amplitude": 0.028,
-          "phase": 317.7
+          "amplitude": 0.027,
+          "phase": 355.2
         },
         {
           "name": "OO1",
-          "amplitude": 0.001,
-          "phase": 122.5
+          "amplitude": 0.005,
+          "phase": 150.7
         },
         {
           "name": "LAM2",
-          "amplitude": 0.008,
-          "phase": 17
+          "amplitude": 0.006,
+          "phase": 15.5
         },
         {
           "name": "M1",
-          "amplitude": 0.001,
-          "phase": 148.8
+          "amplitude": 0.009,
+          "phase": 190.2
         },
         {
           "name": "J1",
-          "amplitude": 0.001,
-          "phase": 131.3
+          "amplitude": 0.01,
+          "phase": 164
         },
         {
           "name": "RHO",
-          "amplitude": 0.001,
-          "phase": 165.2
+          "amplitude": 0.005,
+          "phase": 214.7
         },
         {
           "name": "Q1",
-          "amplitude": 0.004,
-          "phase": 166.3
+          "amplitude": 0.023,
+          "phase": 216.4
         },
         {
           "name": "T2",
-          "amplitude": 0.007,
-          "phase": 33.8
+          "amplitude": 0.01,
+          "phase": 32.6
         },
         {
           "name": "R2",
           "amplitude": 0.001,
-          "phase": 36.5
+          "phase": 35.3
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.003,
+          "phase": 229.5
         },
         {
           "name": "P1",
-          "amplitude": 0.047,
-          "phase": 141.4
+          "amplitude": 0.025,
+          "phase": 179
         },
         {
           "name": "L2",
           "amplitude": 0.03,
-          "phase": 339.4
+          "phase": 357.3
         },
         {
           "name": "K2",
-          "amplitude": 0.033,
-          "phase": 37.9
+          "amplitude": 0.044,
+          "phase": 36.7
         },
         {
           "name": "M8",
-          "amplitude": 0.032,
-          "phase": 323
+          "amplitude": 0.051,
+          "phase": 316.8
         }
       ]
     },
@@ -75815,6 +75820,3316 @@
       ]
     },
     {
+      "id": "SAV2302",
+      "name": "Tybee Island Approach, 5 nm E of",
+      "type": "harmonic",
+      "latitude": 31.980600357055664,
+      "longitude": -80.75140380859375,
+      "floodDirection": 289.9,
+      "ebbDirection": 109.89999999999998,
+      "offset": -0.015,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 0.555,
+          "phase": 294.3
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.076,
+          "phase": 297.6
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.138,
+          "phase": 288.8
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.076,
+          "phase": 109.5
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.026,
+          "phase": 116.6
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.028,
+          "phase": 115.4
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.012,
+          "phase": 33.6
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.015,
+          "phase": 202.8
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.005,
+          "phase": 124.2
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.013,
+          "phase": 110.3
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.007,
+          "phase": 212
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.006,
+          "phase": 324.7
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.007,
+          "phase": 354.1
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.009,
+          "phase": 14.7
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.008,
+          "phase": 310
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.018,
+          "phase": 58.7
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.01,
+          "phase": 266.8
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.032,
+          "phase": 34.1
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.011,
+          "phase": 38.2
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.019,
+          "phase": 11.2
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.02,
+          "phase": 222.3
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.009,
+          "phase": 248.7
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.03,
+          "phase": 243
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.002,
+          "phase": 223.8
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.009,
+          "phase": 133.4
+        }
+      ]
+    },
+    {
+      "id": "SAV2304",
+      "name": "Savannah River Approach",
+      "type": "harmonic",
+      "latitude": 32.04090118408203,
+      "longitude": 80.84850311279297,
+      "floodDirection": 261,
+      "ebbDirection": 81,
+      "offset": -0.071,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.776,
+          "phase": 312
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.179,
+          "phase": 342.3
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.409,
+          "phase": 300.8
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.108,
+          "phase": 133.9
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.177,
+          "phase": 185.6
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.073,
+          "phase": 133.3
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.16,
+          "phase": 81.5
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.028,
+          "phase": 253
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.03,
+          "phase": 359.7
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.084,
+          "phase": 171
+        },
+        {
+          "name": "S6",
+          "amplitude": 0,
+          "phase": 0
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.111,
+          "phase": 328.7
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0,
+          "phase": 0
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.007,
+          "phase": 303.6
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.009,
+          "phase": 167.7
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.015,
+          "phase": 135.7
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.013,
+          "phase": 147.3
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.024,
+          "phase": 38.4
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.059,
+          "phase": 162.1
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.065,
+          "phase": 126
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.185,
+          "phase": 302.3
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.041,
+          "phase": 336.2
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.073,
+          "phase": 321.7
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.053,
+          "phase": 8.3
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.09,
+          "phase": 233.6
+        }
+      ]
+    },
+    {
+      "id": "SAV2305",
+      "name": "Cockspur Island, NE of",
+      "type": "harmonic",
+      "latitude": 32.03499984741211,
+      "longitude": 80.87319946289062,
+      "floodDirection": 255.2,
+      "ebbDirection": 75.19999999999999,
+      "offset": -0.351,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 2.125,
+          "phase": 325.5
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.477,
+          "phase": 353.1
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.138,
+          "phase": 141
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.188,
+          "phase": 139.7
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.098,
+          "phase": 136.4
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.048,
+          "phase": 199.4
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.035,
+          "phase": 266.6
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.029,
+          "phase": 23.5
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.003,
+          "phase": 108.3
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.193,
+          "phase": 328.9
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.01,
+          "phase": 20.4
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.007,
+          "phase": 39.8
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.134,
+          "phase": 103.5
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.053,
+          "phase": 297.3
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.01,
+          "phase": 111.4
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.126,
+          "phase": 194.8
+        }
+      ]
+    },
+    {
+      "id": "SAV2306",
+      "name": "Fort Pulaski",
+      "type": "harmonic",
+      "latitude": 32.037899017333984,
+      "longitude": -80.904296875,
+      "floodDirection": 277.5,
+      "ebbDirection": 97.5,
+      "offset": -0.319,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 2.193,
+          "phase": 323
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.245,
+          "phase": 3.4
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.442,
+          "phase": 321.7
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.181,
+          "phase": 125.4
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.203,
+          "phase": 135.1
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.133,
+          "phase": 136.4
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.056,
+          "phase": 134.9
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.049,
+          "phase": 282.4
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.01,
+          "phase": 122.1
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.087,
+          "phase": 136
+        },
+        {
+          "name": "S6",
+          "amplitude": 0,
+          "phase": 0
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.032,
+          "phase": 357.4
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.005,
+          "phase": 71.6
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.002,
+          "phase": 84.3
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.006,
+          "phase": 139.6
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.028,
+          "phase": 120.2
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.008,
+          "phase": 217.6
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.034,
+          "phase": 135.3
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.008,
+          "phase": 92.2
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.054,
+          "phase": 105.5
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.119,
+          "phase": 278.6
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.033,
+          "phase": 299.5
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.033,
+          "phase": 4.1
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.029,
+          "phase": 353.8
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.057,
+          "phase": 170.5
+        }
+      ]
+    },
+    {
+      "id": "SAV2307",
+      "name": "Lazaretto Creek Bridge",
+      "type": "harmonic",
+      "latitude": 32.015899658203125,
+      "longitude": 80.88379669189453,
+      "floodDirection": 186.2,
+      "ebbDirection": 6.199999999999989,
+      "offset": 0.006,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.49,
+          "phase": 291
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.239,
+          "phase": 312.5
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.349,
+          "phase": 263.8
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.122,
+          "phase": 114.5
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.401,
+          "phase": 345.4
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.073,
+          "phase": 102.5
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.161,
+          "phase": 330.1
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.064,
+          "phase": 170.4
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.052,
+          "phase": 359.4
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.143,
+          "phase": 311.7
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.009,
+          "phase": 122.7
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.108,
+          "phase": 248.6
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.01,
+          "phase": 122.8
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.005,
+          "phase": 227
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.012,
+          "phase": 120.1
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.019,
+          "phase": 99.4
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.01,
+          "phase": 342.5
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.016,
+          "phase": 117.1
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.052,
+          "phase": 341.3
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.044,
+          "phase": 47.7
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.079,
+          "phase": 256.7
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.061,
+          "phase": 155.6
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.091,
+          "phase": 347.8
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.075,
+          "phase": 29.2
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.084,
+          "phase": 33.5
+        }
+      ]
+    },
+    {
+      "id": "SAV2308",
+      "name": "Long Island, E of",
+      "type": "harmonic",
+      "latitude": 32.04819869995117,
+      "longitude": 80.9354019165039,
+      "floodDirection": 318.3,
+      "ebbDirection": 138.3,
+      "offset": -0.256,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.923,
+          "phase": 320.6
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.249,
+          "phase": 4.1
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.422,
+          "phase": 317.4
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.193,
+          "phase": 131.2
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.17,
+          "phase": 126.3
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.128,
+          "phase": 145.2
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.062,
+          "phase": 76.3
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.058,
+          "phase": 266.7
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.01,
+          "phase": 91.1
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.075,
+          "phase": 129.2
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.002,
+          "phase": 13
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.049,
+          "phase": 28.4
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.012,
+          "phase": 58.2
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.003,
+          "phase": 212.5
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.009,
+          "phase": 190.8
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.02,
+          "phase": 122.3
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.011,
+          "phase": 244.7
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.004,
+          "phase": 321.5
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.055,
+          "phase": 118.9
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.123,
+          "phase": 258.7
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.051,
+          "phase": 274.3
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.046,
+          "phase": 35.6
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.037,
+          "phase": 29.4
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.035,
+          "phase": 170.4
+        }
+      ]
+    },
+    {
+      "id": "SAV2309",
+      "name": "Bird Island, NE of",
+      "type": "harmonic",
+      "latitude": 32.066898345947266,
+      "longitude": 80.95279693603516,
+      "floodDirection": 317.1,
+      "ebbDirection": 137.10000000000002,
+      "offset": -0.148,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.575,
+          "phase": 325.2
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.301,
+          "phase": 359.2
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.375,
+          "phase": 328.3
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.182,
+          "phase": 117.7
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.057,
+          "phase": 92.3
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.128,
+          "phase": 119.5
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.135,
+          "phase": 73.2
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.095,
+          "phase": 222.7
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.008,
+          "phase": 117.4
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.071,
+          "phase": 86.8
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.011,
+          "phase": 306.3
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.027,
+          "phase": 342.8
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.011,
+          "phase": 56
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.01,
+          "phase": 236.6
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.028,
+          "phase": 128.6
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.015,
+          "phase": 122.9
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.004,
+          "phase": 92.9
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.046,
+          "phase": 159.3
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.027,
+          "phase": 93.7
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.064,
+          "phase": 214.5
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.062,
+          "phase": 237.9
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.113,
+          "phase": 351.6
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.028,
+          "phase": 26
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.032,
+          "phase": 149.2
+        }
+      ]
+    },
+    {
+      "id": "SAV2310",
+      "name": "Elba Island, E of",
+      "type": "harmonic",
+      "latitude": 32.09049987792969,
+      "longitude": 80.99330139160156,
+      "floodDirection": 327.8,
+      "ebbDirection": 147.8,
+      "offset": -0.613,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.38,
+          "phase": 320
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.071,
+          "phase": 16.6
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.281,
+          "phase": 308.7
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.078,
+          "phase": 165.3
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.155,
+          "phase": 102.5
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.055,
+          "phase": 114.2
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.096,
+          "phase": 153.1
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.032,
+          "phase": 147.1
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.008,
+          "phase": 131.2
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.083,
+          "phase": 79.4
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.002,
+          "phase": 27.7
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.054,
+          "phase": 36.2
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.01,
+          "phase": 70.8
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.011,
+          "phase": 223.3
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.012,
+          "phase": 126.2
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.028,
+          "phase": 137.5
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.041,
+          "phase": 96
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.054,
+          "phase": 98.1
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.027,
+          "phase": 107
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.077,
+          "phase": 139.9
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.211,
+          "phase": 319.7
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.049,
+          "phase": 239.5
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.069,
+          "phase": 278.2
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.014,
+          "phase": 168.1
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.072,
+          "phase": 190.4
+        }
+      ]
+    },
+    {
+      "id": "SAV2311",
+      "name": "Elba Island, N of",
+      "type": "harmonic",
+      "latitude": 32.10049819946289,
+      "longitude": -80.99909973144531,
+      "floodDirection": 325.3,
+      "ebbDirection": 145.3,
+      "offset": -0.466,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.628,
+          "phase": 330.3
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.181,
+          "phase": 2
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.32,
+          "phase": 321.5
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.17,
+          "phase": 135.5
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.062,
+          "phase": 125.5
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.118,
+          "phase": 157.3
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.103,
+          "phase": 131.2
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.014,
+          "phase": 274.4
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.006,
+          "phase": 107.4
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.036,
+          "phase": 195.3
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.006,
+          "phase": 328.3
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.031,
+          "phase": 47.6
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.008,
+          "phase": 34.7
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.003,
+          "phase": 248.8
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.022,
+          "phase": 116.2
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.023,
+          "phase": 132.2
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.007,
+          "phase": 172.7
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.015,
+          "phase": 226.6
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.021,
+          "phase": 57.2
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.035,
+          "phase": 126.6
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.095,
+          "phase": 278.8
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.025,
+          "phase": 305.4
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.044,
+          "phase": 336.6
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.042,
+          "phase": 286.8
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.022,
+          "phase": 242.8
+        }
+      ]
+    },
+    {
+      "id": "SAV2312",
+      "name": "Mackey Point, 0.4 nm W of",
+      "type": "harmonic",
+      "latitude": 32.0885009765625,
+      "longitude": 81.02619934082031,
+      "floodDirection": 237.7,
+      "ebbDirection": 57.69999999999999,
+      "offset": -0.206,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.295,
+          "phase": 323.6
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.138,
+          "phase": 359.6
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.345,
+          "phase": 321.4
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.097,
+          "phase": 145.3
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.081,
+          "phase": 203.5
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.084,
+          "phase": 122.8
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.116,
+          "phase": 147.9
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.048,
+          "phase": 224.1
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.014,
+          "phase": 9.7
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.016,
+          "phase": 150.9
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.005,
+          "phase": 234.6
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.111,
+          "phase": 351.3
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.008,
+          "phase": 141.2
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.012,
+          "phase": 183.9
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.021,
+          "phase": 127.8
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.028,
+          "phase": 130.1
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.008,
+          "phase": 37.7
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.028,
+          "phase": 102.1
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.034,
+          "phase": 131.9
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.052,
+          "phase": 131.5
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.143,
+          "phase": 283.5
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.025,
+          "phase": 263.9
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.068,
+          "phase": 333.1
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.048,
+          "phase": 329.3
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.061,
+          "phase": 225.5
+        }
+      ]
+    },
+    {
+      "id": "SAV2313",
+      "name": "Fort Jackson",
+      "type": "harmonic",
+      "latitude": 32.08259963989258,
+      "longitude": 81.03720092773438,
+      "floodDirection": 244,
+      "ebbDirection": 64,
+      "offset": -0.286,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.081,
+          "phase": 317
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.12,
+          "phase": 357
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.334,
+          "phase": 319.9
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.082,
+          "phase": 172.1
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.111,
+          "phase": 197.5
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.066,
+          "phase": 122.1
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.081,
+          "phase": 113.6
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.037,
+          "phase": 224.5
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.014,
+          "phase": 86.8
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.08,
+          "phase": 155.2
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.003,
+          "phase": 332.4
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.138,
+          "phase": 334.3
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.006,
+          "phase": 105.7
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.011,
+          "phase": 157.5
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.024,
+          "phase": 135.2
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.019,
+          "phase": 123.9
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.02,
+          "phase": 44.1
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.041,
+          "phase": 352.6
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.029,
+          "phase": 168.4
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.055,
+          "phase": 138.6
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.172,
+          "phase": 275.9
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.03,
+          "phase": 275.1
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.055,
+          "phase": 323
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.054,
+          "phase": 342.9
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.032,
+          "phase": 216.5
+        }
+      ]
+    },
+    {
+      "id": "SAV2314",
+      "name": "Fig Island Turning Basin",
+      "type": "harmonic",
+      "latitude": 32.079898834228516,
+      "longitude": 81.0719985961914,
+      "floodDirection": 265.8,
+      "ebbDirection": 85.80000000000001,
+      "offset": -0.612,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.077,
+          "phase": 315
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.237,
+          "phase": 341.4
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.266,
+          "phase": 331.1
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.056,
+          "phase": 153.3
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.092,
+          "phase": 332.8
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.069,
+          "phase": 142.2
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.08,
+          "phase": 135.3
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.072,
+          "phase": 226.2
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.03,
+          "phase": 95.8
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.012,
+          "phase": 117.1
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.009,
+          "phase": 257.4
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.134,
+          "phase": 352
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.016,
+          "phase": 136.4
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.014,
+          "phase": 220.7
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.023,
+          "phase": 164.7
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.015,
+          "phase": 84.7
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.015,
+          "phase": 76.8
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.009,
+          "phase": 31.7
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.021,
+          "phase": 158.4
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.049,
+          "phase": 173.8
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.163,
+          "phase": 293.1
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.059,
+          "phase": 229.3
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.103,
+          "phase": 13.8
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.027,
+          "phase": 267.6
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.026,
+          "phase": 126.6
+        }
+      ]
+    },
+    {
+      "id": "SAV2315",
+      "name": "Talmadge Memorial Bridge, 0.25 nm S of",
+      "type": "harmonic",
+      "latitude": 32.08509826660156,
+      "longitude": -81.0968017578125,
+      "floodDirection": 311.3,
+      "ebbDirection": 131.3,
+      "offset": -0.192,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 0.577,
+          "phase": 324.3
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.11,
+          "phase": 8
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.142,
+          "phase": 331.5
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.085,
+          "phase": 141.4
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.14,
+          "phase": 263.4
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.08,
+          "phase": 147
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.086,
+          "phase": 125.3
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.004,
+          "phase": 248.8
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.012,
+          "phase": 161.8
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.069,
+          "phase": 224.8
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.008,
+          "phase": 334.9
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.046,
+          "phase": 65.7
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.012,
+          "phase": 67.3
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.005,
+          "phase": 179.6
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.023,
+          "phase": 113
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.016,
+          "phase": 142.3
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.006,
+          "phase": 346.5
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.01,
+          "phase": 26.8
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.022,
+          "phase": 113.6
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.079,
+          "phase": 242.5
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.027,
+          "phase": 240.8
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.036,
+          "phase": 328.3
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.026,
+          "phase": 142.1
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.031,
+          "phase": 258.8
+        }
+      ]
+    },
+    {
+      "id": "SAV2317",
+      "name": "Marsh Island Turning Basin",
+      "type": "harmonic",
+      "latitude": 32.11140060424805,
+      "longitude": 81.12129974365234,
+      "floodDirection": 333.6,
+      "ebbDirection": 153.60000000000002,
+      "offset": -0.345,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 0.476,
+          "phase": 329.9
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.061,
+          "phase": 20.9
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.1,
+          "phase": 333.4
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.013,
+          "phase": 231.3
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.062,
+          "phase": 134.7
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.078,
+          "phase": 110.5
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.032,
+          "phase": 244.8
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.01,
+          "phase": 44.3
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.014,
+          "phase": 115.6
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.005,
+          "phase": 314
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.045,
+          "phase": 55.6
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.005,
+          "phase": 102.2
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.008,
+          "phase": 80.8
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.016,
+          "phase": 120.4
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.019,
+          "phase": 163.9
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.009,
+          "phase": 348.9
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.021,
+          "phase": 149.3
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.023,
+          "phase": 163.1
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.067,
+          "phase": 337.5
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.017,
+          "phase": 282.7
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.011,
+          "phase": 62.4
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.04,
+          "phase": 203.2
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.032,
+          "phase": 199.1
+        }
+      ]
+    },
+    {
+      "id": "SAV2318",
+      "name": "Georgia Hutchinson Island, 0.2 nm NW of",
+      "type": "harmonic",
+      "latitude": 32.14500045776367,
+      "longitude": 81.1405029296875,
+      "floodDirection": 354.5,
+      "ebbDirection": 174.5,
+      "offset": -0.373,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.236,
+          "phase": 342.5
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.115,
+          "phase": 17.3
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.19,
+          "phase": 359.4
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.151,
+          "phase": 148.5
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.095,
+          "phase": 103.5
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.132,
+          "phase": 160.3
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.153,
+          "phase": 186.2
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.068,
+          "phase": 289.9
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.018,
+          "phase": 206.6
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.012,
+          "phase": 176.3
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.009,
+          "phase": 37.2
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.048,
+          "phase": 115.1
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.008,
+          "phase": 53
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.011,
+          "phase": 284
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.024,
+          "phase": 156.2
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.02,
+          "phase": 193.7
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.007,
+          "phase": 259.7
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.021,
+          "phase": 217.4
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.023,
+          "phase": 98.9
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.031,
+          "phase": 98.6
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.089,
+          "phase": 310.6
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.09,
+          "phase": 309.2
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.051,
+          "phase": 321.3
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.02,
+          "phase": 324.5
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.03,
+          "phase": 270.3
+        }
+      ]
+    },
+    {
+      "id": "SAV2319",
+      "name": "Houlihan Bridge",
+      "type": "harmonic",
+      "latitude": 32.165000915527344,
+      "longitude": 81.15570068359375,
+      "floodDirection": 9,
+      "ebbDirection": 189,
+      "offset": -0.034,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 0.889,
+          "phase": 335.4
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.093,
+          "phase": 17.3
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.243,
+          "phase": 356.2
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.112,
+          "phase": 168.5
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.114,
+          "phase": 284.5
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.096,
+          "phase": 145.2
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.041,
+          "phase": 194
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.041,
+          "phase": 260.5
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.023,
+          "phase": 87.3
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.024,
+          "phase": 283.5
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.003,
+          "phase": 234.7
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.145,
+          "phase": 17.3
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.004,
+          "phase": 140.2
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.006,
+          "phase": 91.1
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.016,
+          "phase": 159.9
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.023,
+          "phase": 144.7
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.005,
+          "phase": 161.7
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.027,
+          "phase": 137.2
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.024,
+          "phase": 133
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.036,
+          "phase": 163.2
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.166,
+          "phase": 309.3
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.03,
+          "phase": 254
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.042,
+          "phase": 342.2
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.032,
+          "phase": 162.1
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.018,
+          "phase": 300.4
+        }
+      ]
+    },
+    {
+      "id": "SAV2320",
+      "name": "Braddock Point",
+      "type": "harmonic",
+      "latitude": 32.105201721191406,
+      "longitude": -80.82939910888672,
+      "floodDirection": 323.6,
+      "ebbDirection": 143.60000000000002,
+      "offset": -0.347,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.447,
+          "phase": 302.4
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.154,
+          "phase": 15.7
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.293,
+          "phase": 310.5
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.109,
+          "phase": 110.5
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.317,
+          "phase": 37.7
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.08,
+          "phase": 109.7
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.103,
+          "phase": 6.9
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.041,
+          "phase": 183.2
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.011,
+          "phase": 348.4
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.1,
+          "phase": 46.5
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.031,
+          "phase": 282.6
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.005,
+          "phase": 309.9
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.007,
+          "phase": 50.2
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.012,
+          "phase": 193.8
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.011,
+          "phase": 288.6
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.019,
+          "phase": 100
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.011,
+          "phase": 12.4
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.035,
+          "phase": 78.5
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.019,
+          "phase": 201
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.056,
+          "phase": 33.4
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.071,
+          "phase": 294.3
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.052,
+          "phase": 238.3
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.088,
+          "phase": 70.2
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.1,
+          "phase": 143
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.049,
+          "phase": 61.2
+        }
+      ]
+    },
+    {
+      "id": "SAV2321",
+      "name": "Port Royal Sound, Middle Shoal",
+      "type": "harmonic",
+      "latitude": 32.260398864746094,
+      "longitude": -80.658203125,
+      "floodDirection": 335.5,
+      "ebbDirection": 155.5,
+      "offset": -0.102,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.927,
+          "phase": 316.8
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.188,
+          "phase": 312.6
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.153,
+          "phase": 105.7
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.075,
+          "phase": 81.5
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.102,
+          "phase": 132.1
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.182,
+          "phase": 92.5
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.011,
+          "phase": 337.5
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.026,
+          "phase": 15.1
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.018,
+          "phase": 311.1
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.08,
+          "phase": 248.3
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.009,
+          "phase": 62.2
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.007,
+          "phase": 286.9
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.039,
+          "phase": 64.7
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.041,
+          "phase": 310.2
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.036,
+          "phase": 259.3
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.018,
+          "phase": 131.4
+        }
+      ]
+    },
+    {
+      "id": "SAV2322",
+      "name": "Causton Bluff, 0.1 nm S of, Wilmington River",
+      "type": "harmonic",
+      "latitude": 32.062400817871094,
+      "longitude": 81.029296875,
+      "floodDirection": 193,
+      "ebbDirection": 13,
+      "offset": 0.025,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 0.384,
+          "phase": 271.8
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.101,
+          "phase": 331.4
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.115,
+          "phase": 283
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.05,
+          "phase": 54.7
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.435,
+          "phase": 353.3
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.035,
+          "phase": 64.2
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.21,
+          "phase": 5.7
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.119,
+          "phase": 148.7
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.014,
+          "phase": 119.2
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.195,
+          "phase": 354
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.009,
+          "phase": 278.1
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.052,
+          "phase": 354.8
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.009,
+          "phase": 79.1
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.016,
+          "phase": 0.6
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.019,
+          "phase": 19.9
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.001,
+          "phase": 195.3
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.019,
+          "phase": 321.9
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.011,
+          "phase": 225.3
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.039,
+          "phase": 141.1
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.095,
+          "phase": 146.3
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.027,
+          "phase": 10.5
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.07,
+          "phase": 96.5
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.066,
+          "phase": 47.3
+        }
+      ]
+    },
+    {
+      "id": "SAV2323",
+      "name": "Thunderbolt Bridge",
+      "type": "harmonic",
+      "latitude": 32.03369903564453,
+      "longitude": -81.04570007324219,
+      "floodDirection": 13.6,
+      "ebbDirection": 193.6,
+      "offset": -0.115,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 0.704,
+          "phase": 331
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.061,
+          "phase": 16.5
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.115,
+          "phase": 319.7
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.066,
+          "phase": 168.9
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.276,
+          "phase": 152.2
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.055,
+          "phase": 164.1
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.114,
+          "phase": 122.5
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.051,
+          "phase": 282.5
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.011,
+          "phase": 70.7
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.128,
+          "phase": 152.4
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.001,
+          "phase": 329.1
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.024,
+          "phase": 79.5
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.001,
+          "phase": 263.3
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.003,
+          "phase": 61.6
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.017,
+          "phase": 126.2
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.013,
+          "phase": 159.9
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.006,
+          "phase": 68.9
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.028,
+          "phase": 76.8
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.019,
+          "phase": 98.4
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.01,
+          "phase": 16.7
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.025,
+          "phase": 294.5
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.042,
+          "phase": 301.5
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.021,
+          "phase": 343
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.012,
+          "phase": 141
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.04,
+          "phase": 205.1
+        }
+      ]
+    },
+    {
+      "id": "SAV2324",
+      "name": "Wassaw Sound Entrance",
+      "type": "harmonic",
+      "latitude": 31.916099548339844,
+      "longitude": 80.94280242919922,
+      "floodDirection": 280.8,
+      "ebbDirection": 100.80000000000001,
+      "offset": -0.257,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.695,
+          "phase": 297.8
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.246,
+          "phase": 327.9
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.417,
+          "phase": 288.9
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.131,
+          "phase": 96.1
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.137,
+          "phase": 48.9
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.067,
+          "phase": 86.9
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.101,
+          "phase": 66.4
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.054,
+          "phase": 198.5
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.013,
+          "phase": 352.1
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.07,
+          "phase": 34.7
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.003,
+          "phase": 345.4
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.084,
+          "phase": 302.9
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.002,
+          "phase": 81
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.003,
+          "phase": 207.7
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.007,
+          "phase": 302.7
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.023,
+          "phase": 79.9
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.004,
+          "phase": 233
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.024,
+          "phase": 92.6
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.017,
+          "phase": 106.2
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.057,
+          "phase": 93.3
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.106,
+          "phase": 286.5
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.02,
+          "phase": 234.6
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.053,
+          "phase": 340
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.022,
+          "phase": 240.9
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.06,
+          "phase": 130
+        }
+      ]
+    },
+    {
+      "id": "SAV2325",
+      "name": "Ossabaw Sound, North Channel Entrance",
+      "type": "harmonic",
+      "latitude": 31.861600875854492,
+      "longitude": -81.02439880371094,
+      "floodDirection": 288.3,
+      "ebbDirection": 108.30000000000001,
+      "offset": -0.112,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.507,
+          "phase": 317.6
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.161,
+          "phase": 5.2
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.323,
+          "phase": 316.9
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.084,
+          "phase": 132.3
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.09,
+          "phase": 133.5
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.092,
+          "phase": 137.4
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.214,
+          "phase": 108.8
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.045,
+          "phase": 273.7
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.02,
+          "phase": 126.5
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.06,
+          "phase": 125.6
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.005,
+          "phase": 285.6
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.027,
+          "phase": 34.9
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.01,
+          "phase": 57.1
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.006,
+          "phase": 163.5
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.013,
+          "phase": 126.3
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.02,
+          "phase": 137.4
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.005,
+          "phase": 260.7
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.067,
+          "phase": 122.8
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.016,
+          "phase": 43.5
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.024,
+          "phase": 78.5
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.101,
+          "phase": 274.7
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.042,
+          "phase": 284.8
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.016,
+          "phase": 4.6
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.03,
+          "phase": 336.2
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.044,
+          "phase": 178.4
+        }
+      ]
+    },
+    {
+      "id": "SAV2326",
+      "name": "Butter Bean Beach, Skidaway River",
+      "type": "harmonic",
+      "latitude": 31.947399139404297,
+      "longitude": 81.06510162353516,
+      "floodDirection": 44.9,
+      "ebbDirection": 224.9,
+      "offset": -0.036,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 0.616,
+          "phase": 186.3
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.093,
+          "phase": 233.2
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.157,
+          "phase": 198.4
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.021,
+          "phase": 321.4
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.352,
+          "phase": 354.1
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.032,
+          "phase": 358.4
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.118,
+          "phase": 300.2
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.085,
+          "phase": 148.7
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.014,
+          "phase": 193.8
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.166,
+          "phase": 347.7
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.003,
+          "phase": 36.2
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.086,
+          "phase": 223.9
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.006,
+          "phase": 87.5
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.01,
+          "phase": 65.8
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.006,
+          "phase": 95.9
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.008,
+          "phase": 2
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.003,
+          "phase": 15.4
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.001,
+          "phase": 209.9
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.015,
+          "phase": 347.1
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.015,
+          "phase": 339.8
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.095,
+          "phase": 151.5
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.053,
+          "phase": 140.8
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.024,
+          "phase": 227.5
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.011,
+          "phase": 112.8
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.114,
+          "phase": 56.4
+        }
+      ]
+    },
+    {
+      "id": "SAV9701",
+      "name": "Savannah River Entrance",
+      "type": "harmonic",
+      "latitude": 32.03559875488281,
+      "longitude": -80.89029693603516,
+      "floodDirection": 283.4,
+      "ebbDirection": 103.39999999999998,
+      "offset": -0.221,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 2.021,
+          "phase": 320.5
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.274,
+          "phase": 347.3
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.416,
+          "phase": 301.2
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.138,
+          "phase": 119.2
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.161,
+          "phase": 165.3
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.113,
+          "phase": 135.6
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.096,
+          "phase": 92.1
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.038,
+          "phase": 299.5
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.015,
+          "phase": 354.9
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.041,
+          "phase": 117.8
+        },
+        {
+          "name": "NU2",
+          "amplitude": 0.1,
+          "phase": 256.5
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.011,
+          "phase": 300.2
+        },
+        {
+          "name": "MU2",
+          "amplitude": 0.02,
+          "phase": 154.9
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0,
+          "phase": 0
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.017,
+          "phase": 57.5
+        },
+        {
+          "name": "LAM2",
+          "amplitude": 0.032,
+          "phase": 173.3
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.018,
+          "phase": 172.4
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.01,
+          "phase": 175.6
+        },
+        {
+          "name": "RHO",
+          "amplitude": 0.012,
+          "phase": 99.2
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.044,
+          "phase": 120.7
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.004,
+          "phase": 173.2
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.046,
+          "phase": 106.9
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.022,
+          "phase": 104.9
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.069,
+          "phase": 99.4
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.1,
+          "phase": 309.4
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.006,
+          "phase": 260.9
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.103,
+          "phase": 327.9
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.024,
+          "phase": 203.4
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.044,
+          "phase": 200.4
+        }
+      ]
+    },
+    {
+      "id": "SAV9702",
+      "name": "St. Simons Sound Entrance, N. of Channel",
+      "type": "harmonic",
+      "latitude": 31.133699417114258,
+      "longitude": -81.40370178222656,
+      "floodDirection": 282.2,
+      "ebbDirection": 102.19999999999999,
+      "offset": 0.237,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.358,
+          "phase": 314.9
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.278,
+          "phase": 341.1
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.356,
+          "phase": 296.9
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.111,
+          "phase": 142.4
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.15,
+          "phase": 337.8
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.092,
+          "phase": 121.7
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.094,
+          "phase": 120.4
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.025,
+          "phase": 253.2
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.015,
+          "phase": 273.3
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.07,
+          "phase": 313.4
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.006,
+          "phase": 275.7
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.099,
+          "phase": 313.9
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.013,
+          "phase": 155.2
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.002,
+          "phase": 133
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.015,
+          "phase": 217.4
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.028,
+          "phase": 99.5
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.014,
+          "phase": 92.4
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.007,
+          "phase": 116.2
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.025,
+          "phase": 105.4
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.096,
+          "phase": 246.3
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.038,
+          "phase": 197
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.05,
+          "phase": 160.2
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.035,
+          "phase": 337
+        }
+      ]
+    },
+    {
       "id": "SEA0103",
       "name": "Wrangell Narrows (off Petersburg)",
       "type": "harmonic",
@@ -78480,129 +81795,129 @@
       "type": "harmonic",
       "latitude": 57.11598,
       "longitude": -133.92482,
-      "floodDirection": 80.8,
-      "ebbDirection": 260.8,
-      "offset": 0.144,
+      "floodDirection": 75.9,
+      "ebbDirection": 255.9,
+      "offset": 0.117,
       "constituents": [
         {
           "name": "M2",
-          "amplitude": 1.074,
-          "phase": 175.1
+          "amplitude": 1.186,
+          "phase": 181.8
         },
         {
           "name": "S2",
-          "amplitude": 0.439,
-          "phase": 222.6
+          "amplitude": 0.339,
+          "phase": 217.1
         },
         {
           "name": "N2",
-          "amplitude": 0.264,
-          "phase": 152.7
+          "amplitude": 0.219,
+          "phase": 173
         },
         {
           "name": "K1",
-          "amplitude": 0.125,
-          "phase": 177.8
+          "amplitude": 0.128,
+          "phase": 171.9
         },
         {
           "name": "M4",
-          "amplitude": 0.118,
-          "phase": 13
+          "amplitude": 0.064,
+          "phase": 257.1
         },
         {
           "name": "O1",
-          "amplitude": 0.092,
-          "phase": 168.3
+          "amplitude": 0.109,
+          "phase": 154.1
         },
         {
           "name": "M6",
-          "amplitude": 0.032,
-          "phase": 307.9
+          "amplitude": 0.021,
+          "phase": 50.6
         },
         {
           "name": "S4",
-          "amplitude": 0.013,
-          "phase": 0.3
+          "amplitude": 0.008,
+          "phase": 172.7
         },
         {
           "name": "NU2",
-          "amplitude": 0.051,
-          "phase": 155.6
+          "amplitude": 0.042,
+          "phase": 174.1
         },
         {
           "name": "S6",
-          "amplitude": 0.015,
-          "phase": 98.1
+          "amplitude": 0.011,
+          "phase": 348.7
         },
         {
           "name": "2N2",
-          "amplitude": 0.035,
-          "phase": 130.3
+          "amplitude": 0.029,
+          "phase": 164.1
         },
         {
           "name": "OO1",
-          "amplitude": 0.004,
-          "phase": 187.4
+          "amplitude": 0.005,
+          "phase": 189.8
         },
         {
           "name": "LAM2",
           "amplitude": 0.008,
-          "phase": 197.1
+          "phase": 198.1
         },
         {
           "name": "M1",
-          "amplitude": 0.007,
-          "phase": 173.1
+          "amplitude": 0.008,
+          "phase": 163
         },
         {
           "name": "J1",
-          "amplitude": 0.007,
-          "phase": 182.6
+          "amplitude": 0.009,
+          "phase": 180.8
         },
         {
           "name": "RHO",
-          "amplitude": 0.003,
-          "phase": 164.1
+          "amplitude": 0.004,
+          "phase": 146.3
         },
         {
           "name": "Q1",
-          "amplitude": 0.018,
-          "phase": 163.5
+          "amplitude": 0.021,
+          "phase": 145.2
         },
         {
           "name": "T2",
-          "amplitude": 0.026,
-          "phase": 220.7
+          "amplitude": 0.02,
+          "phase": 215.6
         },
         {
           "name": "R2",
-          "amplitude": 0.004,
-          "phase": 224.5
+          "amplitude": 0.003,
+          "phase": 218.5
         },
         {
           "name": "2Q1",
-          "amplitude": 0.002,
-          "phase": 158.8
+          "amplitude": 0.003,
+          "phase": 136.4
         },
         {
           "name": "P1",
-          "amplitude": 0.041,
-          "phase": 177.1
+          "amplitude": 0.042,
+          "phase": 170.5
         },
         {
           "name": "L2",
-          "amplitude": 0.038,
-          "phase": 152.7
+          "amplitude": 0.031,
+          "phase": 173
         },
         {
           "name": "K2",
-          "amplitude": 0.12,
-          "phase": 226.4
+          "amplitude": 0.092,
+          "phase": 219.9
         },
         {
           "name": "M8",
-          "amplitude": 0.018,
-          "phase": 270.2
+          "amplitude": 0.017,
+          "phase": 170
         }
       ]
     },
@@ -116977,6 +120292,417 @@
       ]
     },
     {
+      "id": "SAV2320@6",
+      "name": "Braddock Point",
+      "type": "harmonic",
+      "latitude": 32.105201721191406,
+      "longitude": -80.82939910888672,
+      "floodDirection": 322.1,
+      "ebbDirection": 142.10000000000002,
+      "offset": -0.263,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.344,
+          "phase": 302.2
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.113,
+          "phase": 351.9
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.248,
+          "phase": 311.4
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.096,
+          "phase": 102.7
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.295,
+          "phase": 40.6
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.079,
+          "phase": 96.7
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.102,
+          "phase": 349
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.045,
+          "phase": 200.9
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.018,
+          "phase": 295.1
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.105,
+          "phase": 43.8
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.019,
+          "phase": 284.7
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0,
+          "phase": 0
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.006,
+          "phase": 212.9
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.009,
+          "phase": 60.1
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.009,
+          "phase": 95.4
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.025,
+          "phase": 128.9
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.016,
+          "phase": 320.8
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.026,
+          "phase": 173
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.01,
+          "phase": 271.3
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.032,
+          "phase": 26.1
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.059,
+          "phase": 308.3
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.04,
+          "phase": 227.6
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.033,
+          "phase": 75.2
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.089,
+          "phase": 138.6
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.052,
+          "phase": 59.4
+        }
+      ]
+    },
+    {
+      "id": "SAV2324@8",
+      "name": "Wassaw Sound Entrance",
+      "type": "harmonic",
+      "latitude": 31.916099548339844,
+      "longitude": 80.94280242919922,
+      "floodDirection": 280.1,
+      "ebbDirection": 100.10000000000002,
+      "offset": -0.195,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.645,
+          "phase": 296.7
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.232,
+          "phase": 328.5
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.419,
+          "phase": 290.3
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.121,
+          "phase": 102
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.163,
+          "phase": 53
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.067,
+          "phase": 88.9
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.106,
+          "phase": 54.6
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.058,
+          "phase": 201.6
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.015,
+          "phase": 353.3
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.071,
+          "phase": 35.8
+        },
+        {
+          "name": "S6",
+          "amplitude": 0,
+          "phase": 0
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.097,
+          "phase": 307.5
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.002,
+          "phase": 99.1
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.007,
+          "phase": 250
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.005,
+          "phase": 343
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.025,
+          "phase": 102.4
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.004,
+          "phase": 284.8
+        },
+        {
+          "name": "P1",
+          "amplitude": 0.027,
+          "phase": 76.3
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.012,
+          "phase": 91.9
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.053,
+          "phase": 95.4
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.118,
+          "phase": 272.9
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.014,
+          "phase": 221.1
+        },
+        {
+          "name": "K2",
+          "amplitude": 0.05,
+          "phase": 332.7
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.032,
+          "phase": 232.7
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.064,
+          "phase": 127.1
+        }
+      ]
+    },
+    {
+      "id": "SAV2325@6",
+      "name": "Ossabaw Sound, North Channel Entrance",
+      "type": "harmonic",
+      "latitude": 31.861600875854492,
+      "longitude": -81.02439880371094,
+      "floodDirection": 283,
+      "ebbDirection": 103,
+      "offset": 0.092,
+      "constituents": [
+        {
+          "name": "M2",
+          "amplitude": 1.429,
+          "phase": 318.9
+        },
+        {
+          "name": "S2",
+          "amplitude": 0.153,
+          "phase": 0.8
+        },
+        {
+          "name": "N2",
+          "amplitude": 0.349,
+          "phase": 313.8
+        },
+        {
+          "name": "K1",
+          "amplitude": 0.141,
+          "phase": 117.5
+        },
+        {
+          "name": "M4",
+          "amplitude": 0.058,
+          "phase": 168.6
+        },
+        {
+          "name": "O1",
+          "amplitude": 0.094,
+          "phase": 111.2
+        },
+        {
+          "name": "M6",
+          "amplitude": 0.129,
+          "phase": 106.5
+        },
+        {
+          "name": "MK3",
+          "amplitude": 0.039,
+          "phase": 338.8
+        },
+        {
+          "name": "S4",
+          "amplitude": 0.012,
+          "phase": 160.1
+        },
+        {
+          "name": "MN4",
+          "amplitude": 0.065,
+          "phase": 166.9
+        },
+        {
+          "name": "S6",
+          "amplitude": 0.004,
+          "phase": 65.9
+        },
+        {
+          "name": "2N2",
+          "amplitude": 0.061,
+          "phase": 28.1
+        },
+        {
+          "name": "OO1",
+          "amplitude": 0.008,
+          "phase": 136
+        },
+        {
+          "name": "M1",
+          "amplitude": 0.008,
+          "phase": 53.7
+        },
+        {
+          "name": "J1",
+          "amplitude": 0.018,
+          "phase": 69.7
+        },
+        {
+          "name": "Q1",
+          "amplitude": 0.018,
+          "phase": 83.6
+        },
+        {
+          "name": "2Q1",
+          "amplitude": 0.013,
+          "phase": 218.8
+        },
+        {
+          "name": "P1",
+          "amplitude": 0,
+          "phase": 0
+        },
+        {
+          "name": "2SM2",
+          "amplitude": 0.003,
+          "phase": 70.2
+        },
+        {
+          "name": "M3",
+          "amplitude": 0.047,
+          "phase": 106.2
+        },
+        {
+          "name": "L2",
+          "amplitude": 0.101,
+          "phase": 265.2
+        },
+        {
+          "name": "2MK3",
+          "amplitude": 0.022,
+          "phase": 310.6
+        },
+        {
+          "name": "K2",
+          "amplitude": 0,
+          "phase": 0
+        },
+        {
+          "name": "M8",
+          "amplitude": 0.057,
+          "phase": 232.5
+        },
+        {
+          "name": "MS4",
+          "amplitude": 0.043,
+          "phase": 215.4
+        }
+      ]
+    },
+    {
       "id": "MIH0901@7",
       "name": "Miami Harbor Entrance",
       "type": "harmonic",
@@ -133952,95 +137678,79 @@
       "type": "subordinate",
       "latitude": 32.13330078125,
       "longitude": -80.58329772949219,
-      "reference": "ACT6651",
+      "reference": "SAV2321",
       "floodDirection": 310,
       "ebbDirection": 150,
-      "slackBeforeFloodOffset": -1800,
-      "slackBeforeEbbOffset": -540,
-      "floodTimeOffset": -2280,
+      "slackBeforeFloodOffset": -4920,
+      "slackBeforeEbbOffset": -2580,
+      "floodTimeOffset": -4620,
       "ebbTimeOffset": -720,
-      "floodSpeedRatio": 0.8,
-      "ebbSpeedRatio": 0.8
+      "floodSpeedRatio": 0.77,
+      "ebbSpeedRatio": 0.77
     },
     {
       "id": "ACT7186",
       "name": "Port Royal Plantation Tower, east of",
       "type": "subordinate",
-      "latitude": 32.22333,
-      "longitude": -80.65667,
-      "reference": "ACT6651",
+      "latitude": 32.22330093383789,
+      "longitude": -80.65670013427734,
+      "reference": "SAV2321",
       "floodDirection": 347,
       "ebbDirection": 147,
-      "slackBeforeFloodOffset": 1980,
-      "slackBeforeEbbOffset": 1140,
-      "floodTimeOffset": -960,
+      "slackBeforeFloodOffset": -1140,
+      "slackBeforeEbbOffset": -1500,
+      "floodTimeOffset": -3300,
       "ebbTimeOffset": 960,
-      "floodSpeedRatio": 0.9,
-      "ebbSpeedRatio": 1
+      "floodSpeedRatio": 0.89,
+      "ebbSpeedRatio": 0.9
     },
     {
       "id": "ACT7191",
       "name": "Bay Point Island, S of, Broad River entrance",
       "type": "subordinate",
-      "latitude": 32.23333,
-      "longitude": -80.63,
-      "reference": "ACT6651",
+      "latitude": 32.233299255371094,
+      "longitude": -80.62999725341797,
+      "reference": "SAV2321",
       "floodDirection": 320,
       "ebbDirection": 128,
-      "slackBeforeFloodOffset": 2340,
-      "slackBeforeEbbOffset": 360,
-      "floodTimeOffset": -4140,
+      "slackBeforeFloodOffset": -780,
+      "slackBeforeEbbOffset": -1680,
+      "floodTimeOffset": -6480,
       "ebbTimeOffset": 2760,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.9
+      "floodSpeedRatio": 0.69,
+      "ebbSpeedRatio": 0.83
     },
     {
       "id": "ACT7196",
       "name": "Broad River Entrance, Point Royal Sound",
       "type": "subordinate",
-      "latitude": 32.23167,
-      "longitude": -80.64,
-      "reference": "ACT6651",
+      "latitude": 32.2317008972168,
+      "longitude": -80.63999938964844,
+      "reference": "SAV2321",
       "floodDirection": 324,
       "ebbDirection": 138,
-      "slackBeforeFloodOffset": 2160,
-      "slackBeforeEbbOffset": 1920,
-      "floodTimeOffset": 1260,
+      "slackBeforeFloodOffset": -960,
+      "slackBeforeEbbOffset": -120,
+      "floodTimeOffset": -1080,
       "ebbTimeOffset": -1500,
-      "floodSpeedRatio": 1,
-      "ebbSpeedRatio": 0.9
-    },
-    {
-      "id": "ACT7201",
-      "name": "Hilton Head",
-      "type": "subordinate",
-      "latitude": 32.25,
-      "longitude": -80.66667,
-      "reference": "ACT6651",
-      "floodDirection": 324,
-      "ebbDirection": 146,
-      "slackBeforeFloodOffset": 960,
-      "slackBeforeEbbOffset": 1920,
-      "floodTimeOffset": 2940,
-      "ebbTimeOffset": 60,
-      "floodSpeedRatio": 1.1,
-      "ebbSpeedRatio": 0.9
+      "floodSpeedRatio": 0.99,
+      "ebbSpeedRatio": 0.81
     },
     {
       "id": "ACT7206",
       "name": "Beaufort River Entrance",
       "type": "subordinate",
-      "latitude": 32.28833,
-      "longitude": -80.65167,
-      "reference": "ACT6651",
+      "latitude": 32.288299560546875,
+      "longitude": -80.65170288085938,
+      "reference": "SAV2321",
       "floodDirection": 10,
       "ebbDirection": 195,
-      "slackBeforeFloodOffset": 1140,
-      "slackBeforeEbbOffset": 1200,
-      "floodTimeOffset": 4260,
+      "slackBeforeFloodOffset": -1980,
+      "slackBeforeEbbOffset": -840,
+      "floodTimeOffset": 1920,
       "ebbTimeOffset": -180,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.7
+      "floodSpeedRatio": 0.75,
+      "ebbSpeedRatio": 0.66
     },
     {
       "id": "ACT7211",
@@ -134048,31 +137758,31 @@
       "type": "subordinate",
       "latitude": 32.326698303222656,
       "longitude": -80.65670013427734,
-      "reference": "ACT6651",
+      "reference": "SAV2321",
       "floodDirection": 356,
       "ebbDirection": 175,
-      "slackBeforeFloodOffset": 1740,
-      "slackBeforeEbbOffset": 660,
-      "floodTimeOffset": 4320,
-      "ebbTimeOffset": -720,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.8
+      "slackBeforeFloodOffset": -1380,
+      "slackBeforeEbbOffset": -1380,
+      "floodTimeOffset": 1980,
+      "ebbTimeOffset": 0,
+      "floodSpeedRatio": 0.72,
+      "ebbSpeedRatio": 0.7
     },
     {
       "id": "ACT7216",
       "name": "Chowan Creek",
       "type": "subordinate",
-      "latitude": 32.37,
-      "longitude": -80.63833,
-      "reference": "ACT6651",
+      "latitude": 32.369998931884766,
+      "longitude": -80.63829803466797,
+      "reference": "SAV2321",
       "floodDirection": 39,
       "ebbDirection": 246,
-      "slackBeforeFloodOffset": 1440,
-      "slackBeforeEbbOffset": 1380,
-      "floodTimeOffset": 6780,
+      "slackBeforeFloodOffset": -1680,
+      "slackBeforeEbbOffset": -660,
+      "floodTimeOffset": 4440,
       "ebbTimeOffset": -2040,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.6
+      "floodSpeedRatio": 0.56,
+      "ebbSpeedRatio": 0.54
     },
     {
       "id": "ACT7221",
@@ -134080,15 +137790,15 @@
       "type": "subordinate",
       "latitude": 32.36000061035156,
       "longitude": -80.67500305175781,
-      "reference": "ACT6651",
+      "reference": "SAV2321",
       "floodDirection": 341,
       "ebbDirection": 149,
-      "slackBeforeFloodOffset": 3360,
-      "slackBeforeEbbOffset": 3060,
-      "floodTimeOffset": 4740,
+      "slackBeforeFloodOffset": 240,
+      "slackBeforeEbbOffset": 1020,
+      "floodTimeOffset": 2400,
       "ebbTimeOffset": 1320,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.7
+      "floodSpeedRatio": 0.71,
+      "ebbSpeedRatio": 0.68
     },
     {
       "id": "ACT7226",
@@ -134096,159 +137806,143 @@
       "type": "subordinate",
       "latitude": 32.40330123901367,
       "longitude": -80.67169952392578,
-      "reference": "ACT6651",
+      "reference": "SAV2321",
       "floodDirection": 12,
       "ebbDirection": 200,
-      "slackBeforeFloodOffset": 3840,
-      "slackBeforeEbbOffset": 3660,
-      "floodTimeOffset": 4740,
+      "slackBeforeFloodOffset": 720,
+      "slackBeforeEbbOffset": 1620,
+      "floodTimeOffset": 2400,
       "ebbTimeOffset": 1980,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.5
+      "floodSpeedRatio": 0.51,
+      "ebbSpeedRatio": 0.49
     },
     {
       "id": "ACT7231",
       "name": "Beaufort, Beaufort River",
       "type": "subordinate",
-      "latitude": 32.43,
-      "longitude": -80.67667,
-      "reference": "ACT6651",
+      "latitude": 32.43000030517578,
+      "longitude": -80.67669677734375,
+      "reference": "SAV2321",
       "floodDirection": 73,
       "ebbDirection": 257,
-      "slackBeforeFloodOffset": 3300,
-      "slackBeforeEbbOffset": 4080,
-      "floodTimeOffset": 4680,
+      "slackBeforeFloodOffset": 180,
+      "slackBeforeEbbOffset": 6120,
+      "floodTimeOffset": 2340,
       "ebbTimeOffset": 1020,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.6
+      "floodSpeedRatio": 0.67,
+      "ebbSpeedRatio": 0.54
     },
     {
       "id": "ACT7236",
       "name": "Beaufort Airport, Beaufort River",
       "type": "subordinate",
-      "latitude": 32.45,
-      "longitude": -80.66333,
-      "reference": "ACT6651",
+      "latitude": 32.45000076293945,
+      "longitude": -80.66329956054688,
+      "reference": "SAV2321",
       "floodDirection": 333,
       "ebbDirection": 152,
-      "slackBeforeFloodOffset": 5100,
-      "slackBeforeEbbOffset": 4860,
-      "floodTimeOffset": 5940,
+      "slackBeforeFloodOffset": 1980,
+      "slackBeforeEbbOffset": 2820,
+      "floodTimeOffset": 3600,
       "ebbTimeOffset": 4080,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.5
+      "floodSpeedRatio": 0.54,
+      "ebbSpeedRatio": 0.44
     },
     {
       "id": "ACT7241",
       "name": "Brickyard Creek",
       "type": "subordinate",
-      "latitude": 32.47333,
-      "longitude": -80.69167,
-      "reference": "ACT6651",
+      "latitude": 32.47330093383789,
+      "longitude": -80.69170379638672,
+      "reference": "SAV2321",
       "floodDirection": 351,
       "ebbDirection": 171,
-      "slackBeforeFloodOffset": 6480,
-      "slackBeforeEbbOffset": 10200,
-      "floodTimeOffset": 1800,
+      "slackBeforeFloodOffset": 3360,
+      "slackBeforeEbbOffset": 8160,
+      "floodTimeOffset": -540,
       "ebbTimeOffset": 10680,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.4
-    },
-    {
-      "id": "ACT7246",
-      "name": "Skull Creek, north entrance",
-      "type": "subordinate",
-      "latitude": 32.26333,
-      "longitude": -80.74167,
-      "reference": "ACT6651",
-      "floodDirection": 222,
-      "ebbDirection": 35,
-      "slackBeforeFloodOffset": -6600,
-      "slackBeforeEbbOffset": -7080,
-      "floodTimeOffset": -4800,
-      "ebbTimeOffset": -8040,
-      "floodSpeedRatio": 0.4,
-      "ebbSpeedRatio": 0.6
+      "floodSpeedRatio": 0.47,
+      "ebbSpeedRatio": 0.39
     },
     {
       "id": "ACT7251",
       "name": "Daws Island, SE of, Broad River",
       "type": "subordinate",
-      "latitude": 32.30167,
-      "longitude": -80.725,
-      "reference": "ACT6651",
+      "latitude": 32.301700592041016,
+      "longitude": -80.7249984741211,
+      "reference": "SAV2321",
       "floodDirection": 330,
       "ebbDirection": 150,
-      "slackBeforeFloodOffset": 2760,
-      "slackBeforeEbbOffset": 2340,
-      "floodTimeOffset": 300,
+      "slackBeforeFloodOffset": -360,
+      "slackBeforeEbbOffset": 300,
+      "floodTimeOffset": -2040,
       "ebbTimeOffset": 1860,
       "floodSpeedRatio": 0.8,
-      "ebbSpeedRatio": 0.8
+      "ebbSpeedRatio": 0.74
     },
     {
       "id": "ACT7256",
       "name": "Parris Island Lookout Tower, Broad River",
       "type": "subordinate",
-      "latitude": 32.31167,
-      "longitude": -80.70667,
-      "reference": "ACT6651",
+      "latitude": 32.31169891357422,
+      "longitude": -80.70670318603516,
+      "reference": "SAV2321",
       "floodDirection": 339,
       "ebbDirection": 152,
-      "slackBeforeFloodOffset": 2340,
-      "slackBeforeEbbOffset": 1740,
-      "floodTimeOffset": -420,
+      "slackBeforeFloodOffset": -780,
+      "slackBeforeEbbOffset": -300,
+      "floodTimeOffset": -2760,
       "ebbTimeOffset": 960,
-      "floodSpeedRatio": 0.7,
+      "floodSpeedRatio": 0.67,
       "ebbSpeedRatio": 0.7
     },
     {
       "id": "ACT7261",
       "name": "Daws Island, south of, Chechessee River",
       "type": "subordinate",
-      "latitude": 32.28667,
-      "longitude": -80.74333,
-      "reference": "ACT6651",
+      "latitude": 32.28670120239258,
+      "longitude": -80.74330139160156,
+      "reference": "SAV2321",
       "floodDirection": 317,
       "ebbDirection": 142,
-      "slackBeforeFloodOffset": 1860,
-      "slackBeforeEbbOffset": 2040,
-      "floodTimeOffset": -1320,
+      "slackBeforeFloodOffset": -1260,
+      "slackBeforeEbbOffset": 0,
+      "floodTimeOffset": -3660,
       "ebbTimeOffset": 1860,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.7
+      "floodSpeedRatio": 0.57,
+      "ebbSpeedRatio": 0.63
     },
     {
       "id": "ACT7266",
       "name": "Lemon Island South, Chechessee River",
       "type": "subordinate",
-      "latitude": 32.35,
-      "longitude": -80.80667,
-      "reference": "ACT6651",
+      "latitude": 32.349998474121094,
+      "longitude": -80.80670166015625,
+      "reference": "SAV2321",
       "floodDirection": 359,
       "ebbDirection": 175,
-      "slackBeforeFloodOffset": 1980,
-      "slackBeforeEbbOffset": 2340,
-      "floodTimeOffset": 4740,
+      "slackBeforeFloodOffset": -1140,
+      "slackBeforeEbbOffset": 240,
+      "floodTimeOffset": 2400,
       "ebbTimeOffset": -120,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.7
+      "floodSpeedRatio": 0.56,
+      "ebbSpeedRatio": 0.61
     },
     {
       "id": "ACT7271",
       "name": "Broad River Bridge, S of, Broad River",
       "type": "subordinate",
-      "latitude": 32.38167,
-      "longitude": -80.77667,
-      "reference": "ACT6651",
+      "latitude": 32.38169860839844,
+      "longitude": -80.77670288085938,
+      "reference": "SAV2321",
       "floodDirection": 341,
       "ebbDirection": 156,
-      "slackBeforeFloodOffset": 3120,
-      "slackBeforeEbbOffset": 2940,
-      "floodTimeOffset": -900,
+      "slackBeforeFloodOffset": 0,
+      "slackBeforeEbbOffset": 900,
+      "floodTimeOffset": -3240,
       "ebbTimeOffset": 420,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.8
+      "floodSpeedRatio": 0.64,
+      "ebbSpeedRatio": 0.71
     },
     {
       "id": "ACT7276",
@@ -134256,95 +137950,79 @@
       "type": "subordinate",
       "latitude": 32.45669937133789,
       "longitude": -80.81829833984375,
-      "reference": "ACT6651",
+      "reference": "SAV2321",
       "floodDirection": 354,
       "ebbDirection": 174,
-      "slackBeforeFloodOffset": 5220,
-      "slackBeforeEbbOffset": 5520,
-      "floodTimeOffset": 3060,
+      "slackBeforeFloodOffset": 2100,
+      "slackBeforeEbbOffset": 3480,
+      "floodTimeOffset": 720,
       "ebbTimeOffset": 3120,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.5
+      "floodSpeedRatio": 0.56,
+      "ebbSpeedRatio": 0.48
     },
     {
       "id": "ACT7281",
       "name": "Little Barnwell I., E of, Whale Branch River",
       "type": "subordinate",
-      "latitude": 32.50167,
-      "longitude": -80.78667,
-      "reference": "ACT6651",
+      "latitude": 32.50170135498047,
+      "longitude": -80.78669738769531,
+      "reference": "SAV2321",
       "floodDirection": 354,
       "ebbDirection": 175,
-      "slackBeforeFloodOffset": 6060,
-      "slackBeforeEbbOffset": 6840,
-      "floodTimeOffset": 10980,
+      "slackBeforeFloodOffset": 2940,
+      "slackBeforeEbbOffset": 4800,
+      "floodTimeOffset": 8640,
       "ebbTimeOffset": 2400,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.4
-    },
-    {
-      "id": "ACT7286",
-      "name": "Braddock Point, SW of, Calibogue Sound",
-      "type": "subordinate",
-      "latitude": 32.105,
-      "longitude": -80.83667,
-      "reference": "ACT7351",
-      "floodDirection": 6,
-      "ebbDirection": 183,
-      "slackBeforeFloodOffset": -900,
-      "slackBeforeEbbOffset": -240,
-      "floodTimeOffset": 960,
-      "ebbTimeOffset": -3840,
-      "floodSpeedRatio": 0.8,
-      "ebbSpeedRatio": 1
+      "floodSpeedRatio": 0.61,
+      "ebbSpeedRatio": 0.41
     },
     {
       "id": "ACT7291",
       "name": "Haig Point Light, NW of, Cooper River",
       "type": "subordinate",
-      "latitude": 32.14833,
-      "longitude": -80.84167,
-      "reference": "ACT7351",
+      "latitude": 32.14830017089844,
+      "longitude": -80.8416976928711,
+      "reference": "SAV2320@6",
       "floodDirection": 278,
       "ebbDirection": 94,
-      "slackBeforeFloodOffset": -3060,
-      "slackBeforeEbbOffset": -2400,
-      "floodTimeOffset": -300,
-      "ebbTimeOffset": -4320,
-      "floodSpeedRatio": 0.4,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": -240,
+      "slackBeforeEbbOffset": -540,
+      "floodTimeOffset": -420,
+      "ebbTimeOffset": -720,
+      "floodSpeedRatio": 0.89,
+      "ebbSpeedRatio": 0.76
     },
     {
       "id": "ACT7296",
       "name": "Ramshorn Creek Light, E of, Cooper River",
       "type": "subordinate",
-      "latitude": 32.13,
-      "longitude": -80.88167,
-      "reference": "ACT7351",
+      "latitude": 32.130001068115234,
+      "longitude": -80.88169860839844,
+      "reference": "SAV2320@6",
       "floodDirection": 280,
       "ebbDirection": 98,
-      "slackBeforeFloodOffset": 360,
-      "slackBeforeEbbOffset": 900,
-      "floodTimeOffset": -3180,
-      "ebbTimeOffset": -4620,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": 3180,
+      "slackBeforeEbbOffset": 2760,
+      "floodTimeOffset": -3300,
+      "ebbTimeOffset": -1020,
+      "floodSpeedRatio": 1.22,
+      "ebbSpeedRatio": 0.75
     },
     {
       "id": "ACT7301",
       "name": "Spanish Wells, Calibogue Sound",
       "type": "subordinate",
-      "latitude": 32.18667,
-      "longitude": -80.785,
-      "reference": "ACT7351",
+      "latitude": 32.18669891357422,
+      "longitude": -80.78500366210938,
+      "reference": "SAV2320@6",
       "floodDirection": 28,
       "ebbDirection": 204,
-      "slackBeforeFloodOffset": -840,
-      "slackBeforeEbbOffset": 720,
-      "floodTimeOffset": 3060,
-      "ebbTimeOffset": -4200,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": 1980,
+      "slackBeforeEbbOffset": 2580,
+      "floodTimeOffset": 2940,
+      "ebbTimeOffset": -600,
+      "floodSpeedRatio": 1.62,
+      "ebbSpeedRatio": 0.83
     },
     {
       "id": "ACT7306",
@@ -134366,17 +138044,17 @@
       "id": "ACT7311",
       "name": "MacKay Creek, south entrance",
       "type": "subordinate",
-      "latitude": 32.22,
-      "longitude": -80.79,
-      "reference": "ACT7351",
+      "latitude": 32.220001220703125,
+      "longitude": -80.79000091552734,
+      "reference": "SAV2320@6",
       "floodDirection": 33,
       "ebbDirection": 212,
-      "slackBeforeFloodOffset": 360,
-      "slackBeforeEbbOffset": 720,
-      "floodTimeOffset": 180,
-      "ebbTimeOffset": -1560,
-      "floodSpeedRatio": 0.3,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": 3180,
+      "slackBeforeEbbOffset": 2580,
+      "floodTimeOffset": 60,
+      "ebbTimeOffset": 2040,
+      "floodSpeedRatio": 0.78,
+      "ebbSpeedRatio": 0.64
     },
     {
       "id": "ACT7316",
@@ -134430,33 +138108,33 @@
       "id": "ACT7336",
       "name": "Walls Cut, Turtle Island",
       "type": "subordinate",
-      "latitude": 32.08167,
-      "longitude": -80.91667,
-      "reference": "ACT7351",
+      "latitude": 32.08169937133789,
+      "longitude": -80.91670227050781,
+      "reference": "SAV9701",
       "floodDirection": 294,
       "ebbDirection": 100,
-      "slackBeforeFloodOffset": -8940,
-      "slackBeforeEbbOffset": -4320,
-      "floodTimeOffset": -3420,
-      "ebbTimeOffset": -11100,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.5
+      "slackBeforeFloodOffset": -9360,
+      "slackBeforeEbbOffset": -4140,
+      "floodTimeOffset": -3660,
+      "ebbTimeOffset": -11280,
+      "floodSpeedRatio": 0.54,
+      "ebbSpeedRatio": 0.4
     },
     {
       "id": "ACT7341",
       "name": "Daufuskie Landing Light, south of",
       "type": "subordinate",
-      "latitude": 32.10167,
-      "longitude": -80.89833,
-      "reference": "ACT7351",
+      "latitude": 32.10169982910156,
+      "longitude": -80.89830017089844,
+      "reference": "SAV9701",
       "floodDirection": 43,
       "ebbDirection": 226,
-      "slackBeforeFloodOffset": 420,
-      "slackBeforeEbbOffset": 120,
-      "floodTimeOffset": 3840,
-      "ebbTimeOffset": -6300,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.8
+      "slackBeforeFloodOffset": 0,
+      "slackBeforeEbbOffset": 300,
+      "floodTimeOffset": 3600,
+      "ebbTimeOffset": -6000,
+      "floodSpeedRatio": 0.83,
+      "ebbSpeedRatio": 0.74
     },
     {
       "id": "ACT7356",
@@ -134510,17 +138188,17 @@
       "id": "ACT7371",
       "name": "McQueen Island Cut",
       "type": "subordinate",
-      "latitude": 32.065,
-      "longitude": -80.98667,
-      "reference": "ACT7351",
+      "latitude": 32.064998626708984,
+      "longitude": -80.98670196533203,
+      "reference": "SAV9701",
       "floodDirection": 251,
       "ebbDirection": 69,
-      "slackBeforeFloodOffset": -9540,
-      "slackBeforeEbbOffset": -3840,
-      "floodTimeOffset": -9900,
-      "ebbTimeOffset": -9840,
-      "floodSpeedRatio": 0.3,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": -9960,
+      "slackBeforeEbbOffset": -3660,
+      "floodTimeOffset": -10140,
+      "ebbTimeOffset": -10020,
+      "floodSpeedRatio": 0.38,
+      "ebbSpeedRatio": 0.53
     },
     {
       "id": "ACT7376",
@@ -134654,17 +138332,17 @@
       "id": "ACT7416",
       "name": "Kings Island Channel, Savannah River",
       "type": "subordinate",
-      "latitude": 32.12667,
-      "longitude": -81.13667,
-      "reference": "ACT7351",
+      "latitude": 32.12670135498047,
+      "longitude": -81.13670349121094,
+      "reference": "SAV9701",
       "floodDirection": 339,
       "ebbDirection": 152,
-      "slackBeforeFloodOffset": 4860,
-      "slackBeforeEbbOffset": 360,
-      "floodTimeOffset": 2700,
-      "ebbTimeOffset": -1260,
-      "floodSpeedRatio": 0.8,
-      "ebbSpeedRatio": 1
+      "slackBeforeFloodOffset": 4440,
+      "slackBeforeEbbOffset": 540,
+      "floodTimeOffset": 2460,
+      "ebbTimeOffset": -1440,
+      "floodSpeedRatio": 0.84,
+      "ebbSpeedRatio": 0.91
     },
     {
       "id": "ACT7421",
@@ -134750,33 +138428,33 @@
       "id": "ACT7451",
       "name": "Wilmington Island, SSE of, Bull River",
       "type": "subordinate",
-      "latitude": 31.96667,
-      "longitude": -80.93,
-      "reference": "ACT7351",
+      "latitude": 31.966699600219727,
+      "longitude": -80.93000030517578,
+      "reference": "SAV2324@8",
       "floodDirection": 35,
       "ebbDirection": 218,
-      "slackBeforeFloodOffset": -2100,
-      "slackBeforeEbbOffset": -2400,
-      "floodTimeOffset": 2280,
-      "ebbTimeOffset": -7200,
-      "floodSpeedRatio": 0.4,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": 540,
+      "slackBeforeEbbOffset": 300,
+      "floodTimeOffset": 4320,
+      "ebbTimeOffset": -2880,
+      "floodSpeedRatio": 0.54,
+      "ebbSpeedRatio": 0.72
     },
     {
       "id": "ACT7456",
       "name": "Lazaretto Creek Entrance, N of, Bull River",
       "type": "subordinate",
       "latitude": 32,
-      "longitude": -80.92833,
-      "reference": "ACT7351",
+      "longitude": -80.92829895019531,
+      "reference": "SAV2324@8",
       "floodDirection": 15,
       "ebbDirection": 207,
-      "slackBeforeFloodOffset": -2220,
-      "slackBeforeEbbOffset": -1980,
-      "floodTimeOffset": 0,
-      "ebbTimeOffset": -7440,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": 420,
+      "slackBeforeEbbOffset": 660,
+      "floodTimeOffset": 2040,
+      "ebbTimeOffset": -3120,
+      "floodSpeedRatio": 0.73,
+      "ebbSpeedRatio": 0.69
     },
     {
       "id": "ACT7461",
@@ -134830,17 +138508,17 @@
       "id": "ACT7476",
       "name": "Joe's Cut, Wilmington River",
       "type": "subordinate",
-      "latitude": 31.94333,
-      "longitude": -80.985,
-      "reference": "ACT7351",
+      "latitude": 31.943300247192383,
+      "longitude": -80.98500061035156,
+      "reference": "SAV2324@8",
       "floodDirection": 315,
       "ebbDirection": 123,
-      "slackBeforeFloodOffset": -3240,
-      "slackBeforeEbbOffset": -2040,
-      "floodTimeOffset": -2880,
-      "ebbTimeOffset": -6240,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 1
+      "slackBeforeFloodOffset": -600,
+      "slackBeforeEbbOffset": 600,
+      "floodTimeOffset": -840,
+      "ebbTimeOffset": -1920,
+      "floodSpeedRatio": 0.94,
+      "ebbSpeedRatio": 0.99
     },
     {
       "id": "ACT7481",
@@ -134878,17 +138556,17 @@
       "id": "ACT7491",
       "name": "Oatland Island, north tip",
       "type": "subordinate",
-      "latitude": 32.07333,
-      "longitude": -81.01,
-      "reference": "ACT7351",
+      "latitude": 32.073299407958984,
+      "longitude": -81.01000213623047,
+      "reference": "SAV9701",
       "floodDirection": 317,
       "ebbDirection": 138,
-      "slackBeforeFloodOffset": -12000,
-      "slackBeforeEbbOffset": -2580,
-      "floodTimeOffset": -8040,
-      "ebbTimeOffset": -9120,
-      "floodSpeedRatio": 0.3,
-      "ebbSpeedRatio": 0.5
+      "slackBeforeFloodOffset": -12420,
+      "slackBeforeEbbOffset": -2400,
+      "floodTimeOffset": -8280,
+      "ebbTimeOffset": -9300,
+      "floodSpeedRatio": 0.31,
+      "ebbSpeedRatio": 0.41
     },
     {
       "id": "ACT7496",
@@ -134910,33 +138588,33 @@
       "id": "ACT7501",
       "name": "Skidaway Island, N End, Wilmington River",
       "type": "subordinate",
-      "latitude": 32.01,
-      "longitude": -81.00833,
-      "reference": "ACT7351",
+      "latitude": 32.0099983215332,
+      "longitude": -81.00830078125,
+      "reference": "SAV2324@8",
       "floodDirection": 307,
       "ebbDirection": 119,
-      "slackBeforeFloodOffset": -1980,
-      "slackBeforeEbbOffset": -1380,
-      "floodTimeOffset": 960,
-      "ebbTimeOffset": -6540,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.9
+      "slackBeforeFloodOffset": 660,
+      "slackBeforeEbbOffset": 1260,
+      "floodTimeOffset": 3000,
+      "ebbTimeOffset": -2220,
+      "floodSpeedRatio": 0.85,
+      "ebbSpeedRatio": 0.91
     },
     {
       "id": "ACT7506",
       "name": "Dutch Island, SE of, Skidaway River",
       "type": "subordinate",
-      "latitude": 31.99167,
-      "longitude": -81.02,
-      "reference": "ACT7351",
+      "latitude": 31.99169921875,
+      "longitude": -81.0199966430664,
+      "reference": "SAV2324@8",
       "floodDirection": 245,
       "ebbDirection": 61,
-      "slackBeforeFloodOffset": -2400,
-      "slackBeforeEbbOffset": -1980,
-      "floodTimeOffset": 960,
-      "ebbTimeOffset": -7320,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": 240,
+      "slackBeforeEbbOffset": 660,
+      "floodTimeOffset": 3000,
+      "ebbTimeOffset": -3000,
+      "floodSpeedRatio": 0.76,
+      "ebbSpeedRatio": 0.59
     },
     {
       "id": "ACT7511",
@@ -135054,24 +138732,24 @@
       "id": "ACT7546",
       "name": "Burnside Island, SE of, Burnside River",
       "type": "subordinate",
-      "latitude": 31.92167,
-      "longitude": -81.08,
-      "reference": "ACT7351",
+      "latitude": 31.92169952392578,
+      "longitude": -81.08000183105469,
+      "reference": "SAV2325@6",
       "floodDirection": 114,
       "ebbDirection": 295,
-      "slackBeforeFloodOffset": -2400,
-      "slackBeforeEbbOffset": -1200,
-      "floodTimeOffset": 3180,
-      "ebbTimeOffset": -7500,
-      "floodSpeedRatio": 0.4,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": -1860,
+      "slackBeforeEbbOffset": -7140,
+      "floodTimeOffset": 3000,
+      "ebbTimeOffset": -6480,
+      "floodSpeedRatio": 0.56,
+      "ebbSpeedRatio": 0.94
     },
     {
       "id": "ACT7551",
       "name": "Little Don Island, east of, Vernon River",
       "type": "subordinate",
-      "latitude": 31.87,
-      "longitude": -81.07333,
+      "latitude": 31.8700008392334,
+      "longitude": -81.07330322265625,
       "reference": "ACT7351",
       "floodDirection": 316,
       "ebbDirection": 153,
@@ -135086,33 +138764,33 @@
       "id": "ACT7556",
       "name": "Little Ogeechee River Entrance",
       "type": "subordinate",
-      "latitude": 31.88833,
-      "longitude": -81.09833,
-      "reference": "ACT7351",
+      "latitude": 31.8882999420166,
+      "longitude": -81.09829711914062,
+      "reference": "SAV2325@6",
       "floodDirection": 259,
       "ebbDirection": 71,
-      "slackBeforeFloodOffset": -900,
-      "slackBeforeEbbOffset": -180,
-      "floodTimeOffset": -3540,
-      "ebbTimeOffset": -3960,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 1
+      "slackBeforeFloodOffset": -360,
+      "slackBeforeEbbOffset": -1260,
+      "floodTimeOffset": -3720,
+      "ebbTimeOffset": -2940,
+      "floodSpeedRatio": 0.86,
+      "ebbSpeedRatio": 1.6
     },
     {
       "id": "ACT7561",
       "name": "Montgomery, Vernon River",
       "type": "subordinate",
-      "latitude": 31.935,
-      "longitude": -81.12833,
-      "reference": "ACT7351",
+      "latitude": 31.934999465942383,
+      "longitude": -81.12830352783203,
+      "reference": "SAV2325@6",
       "floodDirection": 267,
       "ebbDirection": 89,
-      "slackBeforeFloodOffset": -1920,
-      "slackBeforeEbbOffset": -1440,
-      "floodTimeOffset": 0,
-      "ebbTimeOffset": -5400,
-      "floodSpeedRatio": 0.3,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": -1380,
+      "slackBeforeEbbOffset": -2520,
+      "floodTimeOffset": -180,
+      "ebbTimeOffset": -4380,
+      "floodSpeedRatio": 0.4,
+      "ebbSpeedRatio": 0.85
     },
     {
       "id": "ACT7566",
@@ -135120,15 +138798,15 @@
       "type": "subordinate",
       "latitude": 31.86829948425293,
       "longitude": -81,
-      "reference": "ACT7351",
+      "reference": "SAV2325@6",
       "floodDirection": 32,
       "ebbDirection": 212,
-      "slackBeforeFloodOffset": -3240,
-      "slackBeforeEbbOffset": -2880,
-      "floodTimeOffset": 2640,
-      "ebbTimeOffset": -8040,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.9
+      "slackBeforeFloodOffset": -2700,
+      "slackBeforeEbbOffset": -3960,
+      "floodTimeOffset": 2460,
+      "ebbTimeOffset": -7020,
+      "floodSpeedRatio": 0.87,
+      "ebbSpeedRatio": 1.36
     },
     {
       "id": "ACT7571",
@@ -135150,49 +138828,49 @@
       "id": "ACT7576",
       "name": "Bradley Point, NNE of",
       "type": "subordinate",
-      "latitude": 31.83167,
-      "longitude": -81.03833,
-      "reference": "ACT7351",
+      "latitude": 31.83169937133789,
+      "longitude": -81.03829956054688,
+      "reference": "SAV2325@6",
       "floodDirection": 302,
       "ebbDirection": 125,
-      "slackBeforeFloodOffset": -2880,
-      "slackBeforeEbbOffset": -2880,
-      "floodTimeOffset": -3480,
-      "ebbTimeOffset": -4320,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.8
+      "slackBeforeFloodOffset": -2340,
+      "slackBeforeEbbOffset": -3960,
+      "floodTimeOffset": -3660,
+      "ebbTimeOffset": -3300,
+      "floodSpeedRatio": 0.82,
+      "ebbSpeedRatio": 1.27
     },
     {
       "id": "ACT7581",
       "name": "Raccoon Key",
       "type": "subordinate",
-      "latitude": 31.86167,
-      "longitude": -81.055,
-      "reference": "ACT7351",
+      "latitude": 31.8617000579834,
+      "longitude": -81.05500030517578,
+      "reference": "SAV2325@6",
       "floodDirection": 285,
       "ebbDirection": 117,
-      "slackBeforeFloodOffset": -2700,
-      "slackBeforeEbbOffset": -2160,
-      "floodTimeOffset": -4980,
-      "ebbTimeOffset": -5700,
-      "floodSpeedRatio": 0.8,
-      "ebbSpeedRatio": 0.9
+      "slackBeforeFloodOffset": -2160,
+      "slackBeforeEbbOffset": -3240,
+      "floodTimeOffset": -5160,
+      "ebbTimeOffset": -4680,
+      "floodSpeedRatio": 1.02,
+      "ebbSpeedRatio": 1.43
     },
     {
       "id": "ACT7586",
       "name": "Little Wassaw Island, SW of",
       "type": "subordinate",
-      "latitude": 31.87,
-      "longitude": -81.05,
-      "reference": "ACT7351",
+      "latitude": 31.8700008392334,
+      "longitude": -81.05000305175781,
+      "reference": "SAV2325@6",
       "floodDirection": 282,
       "ebbDirection": 116,
-      "slackBeforeFloodOffset": -3900,
-      "slackBeforeEbbOffset": -1260,
-      "floodTimeOffset": -1020,
-      "ebbTimeOffset": -6660,
-      "floodSpeedRatio": 0.9,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": -3360,
+      "slackBeforeEbbOffset": -2940,
+      "floodTimeOffset": -1200,
+      "ebbTimeOffset": -5640,
+      "floodSpeedRatio": 1.08,
+      "ebbSpeedRatio": 1.02
     },
     {
       "id": "ACT7591",
@@ -135214,97 +138892,97 @@
       "id": "ACT7596",
       "name": "Little Ogeechee River Entrance, north of",
       "type": "subordinate",
-      "latitude": 31.89667,
-      "longitude": -81.095,
-      "reference": "ACT7351",
+      "latitude": 31.896699905395508,
+      "longitude": -81.09500122070312,
+      "reference": "SAV2325@6",
       "floodDirection": 324,
       "ebbDirection": 156,
-      "slackBeforeFloodOffset": -2460,
-      "slackBeforeEbbOffset": -1800,
-      "floodTimeOffset": 1740,
-      "ebbTimeOffset": -7380,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.8
+      "slackBeforeFloodOffset": -1920,
+      "slackBeforeEbbOffset": -2880,
+      "floodTimeOffset": 1560,
+      "ebbTimeOffset": -6360,
+      "floodSpeedRatio": 0.8,
+      "ebbSpeedRatio": 1.21
     },
     {
       "id": "ACT7601",
       "name": "Raccoon Key & Egg Island Shoal, between",
       "type": "subordinate",
-      "latitude": 31.84283,
-      "longitude": -81.0675,
-      "reference": "ACT7351",
+      "latitude": 31.84280014038086,
+      "longitude": -81.06749725341797,
+      "reference": "SAV2325@6",
       "floodDirection": 254,
       "ebbDirection": 129,
-      "slackBeforeFloodOffset": 1200,
-      "slackBeforeEbbOffset": -1380,
-      "floodTimeOffset": 1020,
-      "ebbTimeOffset": -3420,
-      "floodSpeedRatio": 0.8,
-      "ebbSpeedRatio": 1
+      "slackBeforeFloodOffset": 1740,
+      "slackBeforeEbbOffset": -2460,
+      "floodTimeOffset": 840,
+      "ebbTimeOffset": -2400,
+      "floodSpeedRatio": 1.05,
+      "ebbSpeedRatio": 1.51
     },
     {
       "id": "ACT7606",
       "name": "Florida Passage, N of, Ogeechee River",
       "type": "subordinate",
-      "latitude": 31.85667,
-      "longitude": -81.14333,
-      "reference": "ACT7351",
+      "latitude": 31.856700897216797,
+      "longitude": -81.14330291748047,
+      "reference": "SAV2325@6",
       "floodDirection": 302,
       "ebbDirection": 127,
-      "slackBeforeFloodOffset": 600,
-      "slackBeforeEbbOffset": -60,
-      "floodTimeOffset": 60,
-      "ebbTimeOffset": -300,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 1
+      "slackBeforeFloodOffset": 1140,
+      "slackBeforeEbbOffset": -1140,
+      "floodTimeOffset": -120,
+      "ebbTimeOffset": 720,
+      "floodSpeedRatio": 0.94,
+      "ebbSpeedRatio": 1.57
     },
     {
       "id": "ACT7611",
       "name": "Florida Passage (south)",
       "type": "subordinate",
-      "latitude": 31.82967,
-      "longitude": -81.15783,
-      "reference": "ACT7351",
+      "latitude": 31.829700469970703,
+      "longitude": -81.15779876708984,
+      "reference": "SAV2325@6",
       "floodDirection": 187,
       "ebbDirection": 18,
-      "slackBeforeFloodOffset": -6480,
-      "slackBeforeEbbOffset": -1380,
-      "floodTimeOffset": -4380,
-      "ebbTimeOffset": -4200,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": -5940,
+      "slackBeforeEbbOffset": -2460,
+      "floodTimeOffset": -4560,
+      "ebbTimeOffset": -3180,
+      "floodSpeedRatio": 0.6,
+      "ebbSpeedRatio": 1.01
     },
     {
       "id": "ACT7616",
       "name": "610 Statute Mile Mark",
       "type": "subordinate",
-      "latitude": 31.8105,
-      "longitude": -81.17667,
-      "reference": "ACT7351",
+      "latitude": 31.81049919128418,
+      "longitude": -81.17669677734375,
+      "reference": "SAV9701",
       "floodDirection": 357,
       "ebbDirection": 175,
-      "slackBeforeFloodOffset": 1200,
-      "slackBeforeEbbOffset": -300,
-      "floodTimeOffset": 2880,
-      "ebbTimeOffset": -2340,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": 780,
+      "slackBeforeEbbOffset": -120,
+      "floodTimeOffset": 2640,
+      "ebbTimeOffset": -2520,
+      "floodSpeedRatio": 0.55,
+      "ebbSpeedRatio": 0.63
     },
     {
       "id": "ACT7621",
       "name": "North of Big Tom Creek Entrance",
       "type": "subordinate",
-      "latitude": 31.78333,
-      "longitude": -81.16033,
-      "reference": "ACT7351",
+      "latitude": 31.783300399780273,
+      "longitude": -81.1603012084961,
+      "reference": "SAV9701",
       "floodDirection": 11,
       "ebbDirection": 179,
-      "slackBeforeFloodOffset": -1440,
-      "slackBeforeEbbOffset": -1140,
-      "floodTimeOffset": -780,
-      "ebbTimeOffset": -5100,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": -1860,
+      "slackBeforeEbbOffset": -960,
+      "floodTimeOffset": -1020,
+      "ebbTimeOffset": -5280,
+      "floodSpeedRatio": 0.68,
+      "ebbSpeedRatio": 0.63
     },
     {
       "id": "ACT7626",
@@ -135326,177 +139004,177 @@
       "id": "ACT7631",
       "name": "Northwest of Newell Creek Entrance",
       "type": "subordinate",
-      "latitude": 31.74883,
-      "longitude": -81.1655,
-      "reference": "ACT7351",
+      "latitude": 31.74880027770996,
+      "longitude": -81.16549682617188,
+      "reference": "SAV9701",
       "floodDirection": 349,
       "ebbDirection": 149,
-      "slackBeforeFloodOffset": -660,
-      "slackBeforeEbbOffset": -960,
-      "floodTimeOffset": 720,
-      "ebbTimeOffset": -4320,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.9
+      "slackBeforeFloodOffset": -1080,
+      "slackBeforeEbbOffset": -780,
+      "floodTimeOffset": 480,
+      "ebbTimeOffset": -4500,
+      "floodSpeedRatio": 0.64,
+      "ebbSpeedRatio": 0.78
     },
     {
       "id": "ACT7636",
       "name": "Medway River at Marsh Island",
       "type": "subordinate",
-      "latitude": 31.74333,
-      "longitude": -81.22,
-      "reference": "ACT7351",
+      "latitude": 31.74329948425293,
+      "longitude": -81.22000122070312,
+      "reference": "SAV9701",
       "floodDirection": 313,
       "ebbDirection": 117,
-      "slackBeforeFloodOffset": 1200,
-      "slackBeforeEbbOffset": -900,
-      "floodTimeOffset": -1080,
-      "ebbTimeOffset": -3360,
-      "floodSpeedRatio": 0.3,
-      "ebbSpeedRatio": 0.8
+      "slackBeforeFloodOffset": 780,
+      "slackBeforeEbbOffset": -720,
+      "floodTimeOffset": -1320,
+      "ebbTimeOffset": -3540,
+      "floodSpeedRatio": 0.33,
+      "ebbSpeedRatio": 0.7
     },
     {
       "id": "ACT7641",
       "name": "St. Catherines Sound Entrance",
       "type": "subordinate",
-      "latitude": 31.715,
-      "longitude": -81.1405,
-      "reference": "ACT7351",
+      "latitude": 31.71500015258789,
+      "longitude": -81.1405029296875,
+      "reference": "SAV9701",
       "floodDirection": 291,
       "ebbDirection": 126,
-      "slackBeforeFloodOffset": -2340,
-      "slackBeforeEbbOffset": 780,
-      "floodTimeOffset": -1860,
-      "ebbTimeOffset": -5220,
-      "floodSpeedRatio": 0.9,
-      "ebbSpeedRatio": 0.8
+      "slackBeforeFloodOffset": -2760,
+      "slackBeforeEbbOffset": 960,
+      "floodTimeOffset": -2100,
+      "ebbTimeOffset": -5400,
+      "floodSpeedRatio": 1.01,
+      "ebbSpeedRatio": 0.73
     },
     {
       "id": "ACT7646",
       "name": "Medway River, northwest of Cedar Point",
       "type": "subordinate",
-      "latitude": 31.7145,
-      "longitude": -81.19083,
-      "reference": "ACT7351",
+      "latitude": 31.714500427246094,
+      "longitude": -81.19080352783203,
+      "reference": "SAV9701",
       "floodDirection": 304,
       "ebbDirection": 146,
-      "slackBeforeFloodOffset": -2400,
-      "slackBeforeEbbOffset": -1380,
-      "floodTimeOffset": -2580,
-      "ebbTimeOffset": -1260,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.8
+      "slackBeforeFloodOffset": -2820,
+      "slackBeforeEbbOffset": -1200,
+      "floodTimeOffset": -2820,
+      "ebbTimeOffset": -1440,
+      "floodSpeedRatio": 0.82,
+      "ebbSpeedRatio": 0.75
     },
     {
       "id": "ACT7651",
       "name": "N. Newport River, NE of Vandyke Creek",
       "type": "subordinate",
-      "latitude": 31.69117,
-      "longitude": -81.187,
-      "reference": "ACT7351",
+      "latitude": 31.691200256347656,
+      "longitude": -81.18699645996094,
+      "reference": "SAV9701",
       "floodDirection": 233,
       "ebbDirection": 45,
-      "slackBeforeFloodOffset": -1620,
-      "slackBeforeEbbOffset": 0,
-      "floodTimeOffset": 720,
-      "ebbTimeOffset": -4860,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.8
+      "slackBeforeFloodOffset": -2040,
+      "slackBeforeEbbOffset": -720,
+      "floodTimeOffset": 480,
+      "ebbTimeOffset": -5040,
+      "floodSpeedRatio": 0.71,
+      "ebbSpeedRatio": 0.73
     },
     {
       "id": "ACT7656",
       "name": "N. Newport River, above Walburg Creek",
       "type": "subordinate",
-      "latitude": 31.67383,
-      "longitude": -81.19533,
-      "reference": "ACT7351",
+      "latitude": 31.673799514770508,
+      "longitude": -81.19529724121094,
+      "reference": "SAV9701",
       "floodDirection": 195,
       "ebbDirection": 11,
-      "slackBeforeFloodOffset": -2040,
-      "slackBeforeEbbOffset": -2340,
-      "floodTimeOffset": 1800,
-      "ebbTimeOffset": -2400,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.8
+      "slackBeforeFloodOffset": -2460,
+      "slackBeforeEbbOffset": -2160,
+      "floodTimeOffset": 1560,
+      "ebbTimeOffset": -2580,
+      "floodSpeedRatio": 0.59,
+      "ebbSpeedRatio": 0.67
     },
     {
       "id": "ACT7661",
       "name": "N. Newport River, NW of Johnson Creek",
       "type": "subordinate",
-      "latitude": 31.663,
-      "longitude": -81.2105,
-      "reference": "ACT7351",
+      "latitude": 31.663000106811523,
+      "longitude": -81.21050262451172,
+      "reference": "SAV9701",
       "floodDirection": 312,
       "ebbDirection": 138,
-      "slackBeforeFloodOffset": 1200,
-      "slackBeforeEbbOffset": -2220,
-      "floodTimeOffset": -3660,
-      "ebbTimeOffset": -1620,
+      "slackBeforeFloodOffset": 780,
+      "slackBeforeEbbOffset": -1440,
+      "floodTimeOffset": -3900,
+      "ebbTimeOffset": -1800,
       "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.9
+      "ebbSpeedRatio": 0.77
     },
     {
       "id": "ACT7666",
       "name": "N. Newport River, ESE of S. Newport Cut",
       "type": "subordinate",
-      "latitude": 31.66533,
-      "longitude": -81.2645,
-      "reference": "ACT7351",
+      "latitude": 31.665300369262695,
+      "longitude": -81.2645034790039,
+      "reference": "SAV9701",
       "floodDirection": 319,
       "ebbDirection": 147,
-      "slackBeforeFloodOffset": 1920,
-      "slackBeforeEbbOffset": 1620,
-      "floodTimeOffset": -780,
-      "ebbTimeOffset": 900,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": 1500,
+      "slackBeforeEbbOffset": 1800,
+      "floodTimeOffset": -1020,
+      "ebbTimeOffset": 720,
+      "floodSpeedRatio": 0.54,
+      "ebbSpeedRatio": 0.6
     },
     {
       "id": "ACT7671",
       "name": "S. Newport River, below S. Newport Cut",
       "type": "subordinate",
-      "latitude": 31.65033,
-      "longitude": -81.302,
-      "reference": "ACT7351",
+      "latitude": 31.650299072265625,
+      "longitude": -81.302001953125,
+      "reference": "SAV9701",
       "floodDirection": 306,
       "ebbDirection": 134,
-      "slackBeforeFloodOffset": 4800,
-      "slackBeforeEbbOffset": 9660,
-      "floodTimeOffset": 5400,
-      "ebbTimeOffset": 8100,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.5
+      "slackBeforeFloodOffset": 4380,
+      "slackBeforeEbbOffset": 9840,
+      "floodTimeOffset": 5160,
+      "ebbTimeOffset": 7920,
+      "floodSpeedRatio": 0.52,
+      "ebbSpeedRatio": 0.44
     },
     {
       "id": "ACT7676",
       "name": "S. Newport River, above Swain River Ent",
       "type": "subordinate",
-      "latitude": 31.6245,
-      "longitude": -81.21667,
-      "reference": "ACT7351",
+      "latitude": 31.624500274658203,
+      "longitude": -81.2166976928711,
+      "reference": "SAV9701",
       "floodDirection": 335,
       "ebbDirection": 156,
-      "slackBeforeFloodOffset": -1320,
-      "slackBeforeEbbOffset": 0,
-      "floodTimeOffset": -4380,
-      "ebbTimeOffset": -2580,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": -1740,
+      "slackBeforeEbbOffset": 180,
+      "floodTimeOffset": -4620,
+      "ebbTimeOffset": -2760,
+      "floodSpeedRatio": 0.63,
+      "ebbSpeedRatio": 0.52
     },
     {
       "id": "ACT7681",
-      "name": "Entrance",
+      "name": "Sapelo Sound Entrance",
       "type": "subordinate",
-      "latitude": 31.54,
-      "longitude": -81.18,
-      "reference": "ACT7351",
+      "latitude": 31.540000915527344,
+      "longitude": -81.18000030517578,
+      "reference": "SAV9701",
       "floodDirection": 290,
       "ebbDirection": 118,
-      "slackBeforeFloodOffset": -1800,
-      "slackBeforeEbbOffset": -360,
-      "floodTimeOffset": 1680,
-      "ebbTimeOffset": -3540,
-      "floodSpeedRatio": 0.9,
-      "ebbSpeedRatio": 1.1
+      "slackBeforeFloodOffset": -3300,
+      "slackBeforeEbbOffset": -840,
+      "floodTimeOffset": -2400,
+      "ebbTimeOffset": -3900,
+      "floodSpeedRatio": 0.73,
+      "ebbSpeedRatio": 0.75
     },
     {
       "id": "ACT7686",
@@ -135518,65 +139196,65 @@
       "id": "ACT7691",
       "name": "Cedar Hammock, south of",
       "type": "subordinate",
-      "latitude": 31.545,
-      "longitude": -81.24667,
-      "reference": "ACT7351",
+      "latitude": 31.545000076293945,
+      "longitude": -81.24669647216797,
+      "reference": "SAV9701",
       "floodDirection": 277,
       "ebbDirection": 96,
-      "slackBeforeFloodOffset": -1560,
-      "slackBeforeEbbOffset": -720,
-      "floodTimeOffset": -3600,
-      "ebbTimeOffset": -5880,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": -1980,
+      "slackBeforeEbbOffset": -540,
+      "floodTimeOffset": -4140,
+      "ebbTimeOffset": -6060,
+      "floodSpeedRatio": 0.78,
+      "ebbSpeedRatio": 0.54
     },
     {
       "id": "ACT7696",
       "name": "Sapelo River Entrance",
       "type": "subordinate",
-      "latitude": 31.535,
-      "longitude": -81.27167,
-      "reference": "ACT7351",
+      "latitude": 31.53499984741211,
+      "longitude": -81.27169799804688,
+      "reference": "SAV9701",
       "floodDirection": 234,
       "ebbDirection": 58,
-      "slackBeforeFloodOffset": -1380,
-      "slackBeforeEbbOffset": -780,
-      "floodTimeOffset": -3900,
-      "ebbTimeOffset": -2580,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": -1800,
+      "slackBeforeEbbOffset": -600,
+      "floodTimeOffset": -4140,
+      "ebbTimeOffset": -2760,
+      "floodSpeedRatio": 0.62,
+      "ebbSpeedRatio": 0.55
     },
     {
       "id": "ACT7701",
       "name": "Sutherland Bluff, Sapelo River",
       "type": "subordinate",
-      "latitude": 31.54833,
-      "longitude": -81.33333,
-      "reference": "ACT7351",
+      "latitude": 31.54829978942871,
+      "longitude": -81.33329772949219,
+      "reference": "SAV9701",
       "floodDirection": 281,
       "ebbDirection": 104,
-      "slackBeforeFloodOffset": -1800,
-      "slackBeforeEbbOffset": -720,
-      "floodTimeOffset": 600,
-      "ebbTimeOffset": -4560,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": -2220,
+      "slackBeforeEbbOffset": -540,
+      "floodTimeOffset": 360,
+      "ebbTimeOffset": -4740,
+      "floodSpeedRatio": 0.55,
+      "ebbSpeedRatio": 0.5
     },
     {
       "id": "ACT7706",
       "name": "Front River",
       "type": "subordinate",
-      "latitude": 31.51333,
-      "longitude": -81.29833,
-      "reference": "ACT7351",
+      "latitude": 31.5132999420166,
+      "longitude": -81.29830169677734,
+      "reference": "SAV9701",
       "floodDirection": 227,
       "ebbDirection": 56,
-      "slackBeforeFloodOffset": -1980,
-      "slackBeforeEbbOffset": -1500,
-      "floodTimeOffset": 4560,
-      "ebbTimeOffset": -7500,
-      "floodSpeedRatio": 0.4,
-      "ebbSpeedRatio": 0.5
+      "slackBeforeFloodOffset": -2400,
+      "slackBeforeEbbOffset": -1320,
+      "floodTimeOffset": 4320,
+      "ebbTimeOffset": -7680,
+      "floodSpeedRatio": 0.45,
+      "ebbSpeedRatio": 0.43
     },
     {
       "id": "ACT7711",
@@ -135598,33 +139276,33 @@
       "id": "ACT7716",
       "name": "Crescent River",
       "type": "subordinate",
-      "latitude": 31.48667,
-      "longitude": -81.30667,
-      "reference": "ACT7351",
+      "latitude": 31.4867000579834,
+      "longitude": -81.30670166015625,
+      "reference": "SAV9701",
       "floodDirection": 293,
       "ebbDirection": 133,
-      "slackBeforeFloodOffset": -5220,
-      "slackBeforeEbbOffset": -2040,
-      "floodTimeOffset": 4020,
-      "ebbTimeOffset": -4860,
-      "floodSpeedRatio": 0.2,
-      "ebbSpeedRatio": 0.5
+      "slackBeforeFloodOffset": -5640,
+      "slackBeforeEbbOffset": -1860,
+      "floodTimeOffset": 3780,
+      "ebbTimeOffset": -5040,
+      "floodSpeedRatio": 0.26,
+      "ebbSpeedRatio": 0.48
     },
     {
       "id": "ACT7721",
       "name": "Old Teakettle Creek (north)",
       "type": "subordinate",
-      "latitude": 31.47833,
-      "longitude": -81.32833,
-      "reference": "ACT7351",
+      "latitude": 31.478300094604492,
+      "longitude": -81.32830047607422,
+      "reference": "SAV9701",
       "floodDirection": 78,
       "ebbDirection": 256,
-      "slackBeforeFloodOffset": -2100,
-      "slackBeforeEbbOffset": 840,
-      "floodTimeOffset": 60,
-      "ebbTimeOffset": -2220,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": -2520,
+      "slackBeforeEbbOffset": 1020,
+      "floodTimeOffset": -180,
+      "ebbTimeOffset": -2400,
+      "floodSpeedRatio": 0.49,
+      "ebbSpeedRatio": 0.53
     },
     {
       "id": "ACT7726",
@@ -135646,177 +139324,177 @@
       "id": "ACT7731",
       "name": "Entrance",
       "type": "subordinate",
-      "latitude": 31.34167,
-      "longitude": -81.26333,
-      "reference": "ACT7351",
+      "latitude": 31.341699600219727,
+      "longitude": -81.26329803466797,
+      "reference": "SAV9701",
       "floodDirection": 289,
       "ebbDirection": 106,
-      "slackBeforeFloodOffset": -1920,
-      "slackBeforeEbbOffset": -1440,
-      "floodTimeOffset": -600,
-      "ebbTimeOffset": -6540,
-      "floodSpeedRatio": 0.8,
-      "ebbSpeedRatio": 0.9
+      "slackBeforeFloodOffset": -2340,
+      "slackBeforeEbbOffset": -1080,
+      "floodTimeOffset": -840,
+      "ebbTimeOffset": -7320,
+      "floodSpeedRatio": 0.88,
+      "ebbSpeedRatio": 0.79
     },
     {
       "id": "ACT7736",
       "name": "Old Teakettle Creek Entrance, south of",
       "type": "subordinate",
-      "latitude": 31.42,
-      "longitude": -81.315,
-      "reference": "ACT7351",
+      "latitude": 31.420000076293945,
+      "longitude": -81.31500244140625,
+      "reference": "SAV9701",
       "floodDirection": 335,
       "ebbDirection": 159,
-      "slackBeforeFloodOffset": -2700,
-      "slackBeforeEbbOffset": 0,
-      "floodTimeOffset": -3540,
-      "ebbTimeOffset": -5220,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.5
+      "slackBeforeFloodOffset": -3120,
+      "slackBeforeEbbOffset": 180,
+      "floodTimeOffset": -3780,
+      "ebbTimeOffset": -5400,
+      "floodSpeedRatio": 0.6,
+      "ebbSpeedRatio": 0.47
     },
     {
       "id": "ACT7741",
       "name": "Old Teakettle Creek (south)",
       "type": "subordinate",
-      "latitude": 31.43667,
-      "longitude": -81.30833,
-      "reference": "ACT7351",
+      "latitude": 31.43670082092285,
+      "longitude": -81.30829620361328,
+      "reference": "SAV9701",
       "floodDirection": 21,
       "ebbDirection": 207,
-      "slackBeforeFloodOffset": -11520,
-      "slackBeforeEbbOffset": -8160,
-      "floodTimeOffset": -6300,
-      "ebbTimeOffset": -9840,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.4
+      "slackBeforeFloodOffset": -11940,
+      "slackBeforeEbbOffset": -7980,
+      "floodTimeOffset": -6540,
+      "ebbTimeOffset": -10020,
+      "floodSpeedRatio": 0.51,
+      "ebbSpeedRatio": 0.32
     },
     {
       "id": "ACT7746",
       "name": "Folly River and Cardigan River, between",
       "type": "subordinate",
-      "latitude": 31.44167,
-      "longitude": -81.33667,
-      "reference": "ACT7351",
+      "latitude": 31.441699981689453,
+      "longitude": -81.33670043945312,
+      "reference": "SAV9701",
       "floodDirection": 327,
       "ebbDirection": 150,
-      "slackBeforeFloodOffset": -3300,
-      "slackBeforeEbbOffset": -960,
-      "floodTimeOffset": -3360,
-      "ebbTimeOffset": -3600,
-      "floodSpeedRatio": 0.3,
-      "ebbSpeedRatio": 0.3
+      "slackBeforeFloodOffset": -3720,
+      "slackBeforeEbbOffset": -780,
+      "floodTimeOffset": -3600,
+      "ebbTimeOffset": -3780,
+      "floodSpeedRatio": 0.37,
+      "ebbSpeedRatio": 0.25
     },
     {
       "id": "ACT7751",
       "name": "South River",
       "type": "subordinate",
-      "latitude": 31.36667,
-      "longitude": -81.31167,
-      "reference": "ACT7351",
+      "latitude": 31.36669921875,
+      "longitude": -81.31169891357422,
+      "reference": "SAV9701",
       "floodDirection": 282,
       "ebbDirection": 95,
-      "slackBeforeFloodOffset": -1320,
-      "slackBeforeEbbOffset": -1920,
-      "floodTimeOffset": -1500,
-      "ebbTimeOffset": -1440,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": -1740,
+      "slackBeforeEbbOffset": -1740,
+      "floodTimeOffset": -1740,
+      "ebbTimeOffset": -1620,
+      "floodSpeedRatio": 0.64,
+      "ebbSpeedRatio": 0.57
     },
     {
       "id": "ACT7756",
       "name": "North River at Darien River",
       "type": "subordinate",
-      "latitude": 31.38333,
-      "longitude": -81.335,
-      "reference": "ACT7351",
+      "latitude": 31.38330078125,
+      "longitude": -81.33499908447266,
+      "reference": "SAV9701",
       "floodDirection": 247,
       "ebbDirection": 29,
-      "slackBeforeFloodOffset": -600,
-      "slackBeforeEbbOffset": 480,
-      "floodTimeOffset": -1980,
-      "ebbTimeOffset": 1320,
-      "floodSpeedRatio": 0.2,
-      "ebbSpeedRatio": 0.2
+      "slackBeforeFloodOffset": -1020,
+      "slackBeforeEbbOffset": 660,
+      "floodTimeOffset": -2220,
+      "ebbTimeOffset": 1140,
+      "floodSpeedRatio": 0.26,
+      "ebbSpeedRatio": 0.19
     },
     {
       "id": "ACT7761",
       "name": "Doboy Island (North River)",
       "type": "subordinate",
-      "latitude": 31.40333,
-      "longitude": -81.32833,
-      "reference": "ACT7351",
+      "latitude": 31.40329933166504,
+      "longitude": -81.32830047607422,
+      "reference": "SAV9701",
       "floodDirection": 224,
       "ebbDirection": 37,
-      "slackBeforeFloodOffset": -840,
-      "slackBeforeEbbOffset": 2820,
-      "floodTimeOffset": -360,
-      "ebbTimeOffset": 780,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.5
+      "slackBeforeFloodOffset": -1260,
+      "slackBeforeEbbOffset": 3000,
+      "floodTimeOffset": -600,
+      "ebbTimeOffset": 600,
+      "floodSpeedRatio": 0.61,
+      "ebbSpeedRatio": 0.48
     },
     {
       "id": "ACT7766",
       "name": "Buzzard Roost Creek",
       "type": "subordinate",
-      "latitude": 31.415,
+      "latitude": 31.415000915527344,
       "longitude": -81.375,
-      "reference": "ACT7351",
+      "reference": "SAV9701",
       "floodDirection": 177,
       "ebbDirection": 2,
-      "slackBeforeFloodOffset": 1320,
-      "slackBeforeEbbOffset": 3360,
-      "floodTimeOffset": 720,
-      "ebbTimeOffset": 1680,
-      "floodSpeedRatio": 0.3,
-      "ebbSpeedRatio": 0.2
+      "slackBeforeFloodOffset": 900,
+      "slackBeforeEbbOffset": 3540,
+      "floodTimeOffset": 480,
+      "ebbTimeOffset": 1500,
+      "floodSpeedRatio": 0.39,
+      "ebbSpeedRatio": 0.19
     },
     {
       "id": "ACT7771",
       "name": "Little Egg Island, northwest of",
       "type": "subordinate",
-      "latitude": 31.31833,
-      "longitude": -81.305,
-      "reference": "ACT7351",
+      "latitude": 31.318300247192383,
+      "longitude": -81.30500030517578,
+      "reference": "SAV9701",
       "floodDirection": 296,
       "ebbDirection": 110,
-      "slackBeforeFloodOffset": -1980,
-      "slackBeforeEbbOffset": -1500,
-      "floodTimeOffset": -3180,
-      "ebbTimeOffset": -4200,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": -2400,
+      "slackBeforeEbbOffset": -1320,
+      "floodTimeOffset": -3420,
+      "ebbTimeOffset": -4380,
+      "floodSpeedRatio": 0.64,
+      "ebbSpeedRatio": 0.53
     },
     {
       "id": "ACT7776",
       "name": "Little Mud River Range",
       "type": "subordinate",
-      "latitude": 31.32667,
-      "longitude": -81.31833,
-      "reference": "ACT7351",
+      "latitude": 31.32670021057129,
+      "longitude": -81.31829833984375,
+      "reference": "SAV9701",
       "floodDirection": 304,
       "ebbDirection": 116,
-      "slackBeforeFloodOffset": -2280,
-      "slackBeforeEbbOffset": -1380,
-      "floodTimeOffset": -3900,
-      "ebbTimeOffset": -360,
-      "floodSpeedRatio": 0.3,
-      "ebbSpeedRatio": 0.5
+      "slackBeforeFloodOffset": -2700,
+      "slackBeforeEbbOffset": -1200,
+      "floodTimeOffset": -4140,
+      "ebbTimeOffset": -540,
+      "floodSpeedRatio": 0.35,
+      "ebbSpeedRatio": 0.41
     },
     {
       "id": "ACT7781",
       "name": "Little St. Simon Island (north)",
       "type": "subordinate",
-      "latitude": 31.31167,
-      "longitude": -81.35333,
-      "reference": "ACT7351",
+      "latitude": 31.31170082092285,
+      "longitude": -81.35330200195312,
+      "reference": "SAV9701",
       "floodDirection": 267,
       "ebbDirection": 89,
-      "slackBeforeFloodOffset": 600,
-      "slackBeforeEbbOffset": -900,
-      "floodTimeOffset": 360,
-      "ebbTimeOffset": -5340,
-      "floodSpeedRatio": 0.6,
-      "ebbSpeedRatio": 0.8
+      "slackBeforeFloodOffset": 180,
+      "slackBeforeEbbOffset": -720,
+      "floodTimeOffset": 120,
+      "ebbTimeOffset": -5520,
+      "floodSpeedRatio": 0.64,
+      "ebbSpeedRatio": 0.69
     },
     {
       "id": "ACT7786",
@@ -135838,33 +139516,33 @@
       "id": "ACT7791",
       "name": "Broughton Island (south)",
       "type": "subordinate",
-      "latitude": 31.31,
-      "longitude": -81.41333,
-      "reference": "ACT7351",
+      "latitude": 31.309999465942383,
+      "longitude": -81.41329956054688,
+      "reference": "SAV9701",
       "floodDirection": 222,
       "ebbDirection": 30,
-      "slackBeforeFloodOffset": -7560,
-      "slackBeforeEbbOffset": -60,
-      "floodTimeOffset": 720,
-      "ebbTimeOffset": -6660,
-      "floodSpeedRatio": 0.4,
-      "ebbSpeedRatio": 0.4
+      "slackBeforeFloodOffset": -7980,
+      "slackBeforeEbbOffset": 120,
+      "floodTimeOffset": 480,
+      "ebbTimeOffset": -6840,
+      "floodSpeedRatio": 0.48,
+      "ebbSpeedRatio": 0.36
     },
     {
       "id": "ACT7796",
-      "name": "Bar Channel",
+      "name": "St. Simons Sound Bar Channel",
       "type": "subordinate",
-      "latitude": 31.105,
-      "longitude": -81.33833,
-      "reference": "ACT7351",
+      "latitude": 31.104999542236328,
+      "longitude": -81.33830261230469,
+      "reference": "SAV9702",
       "floodDirection": 308,
       "ebbDirection": 119,
-      "slackBeforeFloodOffset": -780,
-      "slackBeforeEbbOffset": 540,
-      "floodTimeOffset": -2640,
-      "ebbTimeOffset": -120,
-      "floodSpeedRatio": 0.4,
-      "ebbSpeedRatio": 0.8
+      "slackBeforeFloodOffset": 1020,
+      "slackBeforeEbbOffset": 0,
+      "floodTimeOffset": -3900,
+      "ebbTimeOffset": 3960,
+      "floodSpeedRatio": 0.49,
+      "ebbSpeedRatio": 1.4
     },
     {
       "id": "ACT7801",
@@ -135902,17 +139580,17 @@
       "id": "ACT7811",
       "name": "Back River entrance",
       "type": "subordinate",
-      "latitude": 31.14833,
-      "longitude": -81.44167,
-      "reference": "ACT7351",
+      "latitude": 31.148300170898438,
+      "longitude": -81.44170379638672,
+      "reference": "SAV9702",
       "floodDirection": 288,
       "ebbDirection": 111,
-      "slackBeforeFloodOffset": -2220,
-      "slackBeforeEbbOffset": 360,
-      "floodTimeOffset": 5640,
-      "ebbTimeOffset": -4560,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.5
+      "slackBeforeFloodOffset": -420,
+      "slackBeforeEbbOffset": -180,
+      "floodTimeOffset": 4380,
+      "ebbTimeOffset": -480,
+      "floodSpeedRatio": 0.58,
+      "ebbSpeedRatio": 0.94
     },
     {
       "id": "ACT7816",
@@ -135950,17 +139628,17 @@
       "id": "ACT7826",
       "name": "Brunswick River Bridge, southeast of",
       "type": "subordinate",
-      "latitude": 31.115,
-      "longitude": -81.47667,
-      "reference": "ACT7351",
-      "floodDirection": 308,
-      "ebbDirection": 132,
-      "slackBeforeFloodOffset": -900,
-      "slackBeforeEbbOffset": 1560,
-      "floodTimeOffset": 780,
-      "ebbTimeOffset": -4140,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.7
+      "latitude": 31.114999771118164,
+      "longitude": -81.47669982910156,
+      "reference": "SAV9702",
+      "floodDirection": 306,
+      "ebbDirection": 129,
+      "slackBeforeFloodOffset": 2940,
+      "slackBeforeEbbOffset": 2820,
+      "floodTimeOffset": 1260,
+      "ebbTimeOffset": 3960,
+      "floodSpeedRatio": 0.59,
+      "ebbSpeedRatio": 1.26
     },
     {
       "id": "ACT7831",
@@ -135998,81 +139676,81 @@
       "id": "ACT7841",
       "name": "Turtle River, off Andrews Island",
       "type": "subordinate",
-      "latitude": 31.14333,
-      "longitude": -81.52667,
-      "reference": "ACT7351",
+      "latitude": 31.143299102783203,
+      "longitude": -81.52670288085938,
+      "reference": "SAV9702",
       "floodDirection": 339,
       "ebbDirection": 153,
-      "slackBeforeFloodOffset": -1260,
-      "slackBeforeEbbOffset": 1860,
-      "floodTimeOffset": 2400,
-      "ebbTimeOffset": -1380,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": 540,
+      "slackBeforeEbbOffset": 1320,
+      "floodTimeOffset": 1140,
+      "ebbTimeOffset": 2700,
+      "floodSpeedRatio": 0.62,
+      "ebbSpeedRatio": 1.18
     },
     {
       "id": "ACT7846",
-      "name": "Entrance",
+      "name": "St. Andrews Sound Entrance",
       "type": "subordinate",
-      "latitude": 30.98667,
-      "longitude": -81.405,
-      "reference": "ACT7351",
+      "latitude": 30.9867000579834,
+      "longitude": -81.40499877929688,
+      "reference": "SAV9702",
       "floodDirection": 268,
       "ebbDirection": 103,
-      "slackBeforeFloodOffset": -1080,
-      "slackBeforeEbbOffset": 120,
-      "floodTimeOffset": 780,
-      "ebbTimeOffset": -3600,
-      "floodSpeedRatio": 1.1,
-      "ebbSpeedRatio": 1.1
+      "slackBeforeFloodOffset": 960,
+      "slackBeforeEbbOffset": -240,
+      "floodTimeOffset": -540,
+      "ebbTimeOffset": 360,
+      "floodSpeedRatio": 1.21,
+      "ebbSpeedRatio": 1.85
     },
     {
       "id": "ACT7851",
       "name": "Jekyll Creek, south entrance",
       "type": "subordinate",
-      "latitude": 31.035,
-      "longitude": -81.43333,
-      "reference": "ACT7351",
+      "latitude": 31.03499984741211,
+      "longitude": -81.43329620361328,
+      "reference": "SAV9702",
       "floodDirection": 60,
       "ebbDirection": 232,
-      "slackBeforeFloodOffset": -1260,
-      "slackBeforeEbbOffset": -1500,
-      "floodTimeOffset": -1260,
-      "ebbTimeOffset": -4800,
-      "floodSpeedRatio": 0.5,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": 540,
+      "slackBeforeEbbOffset": -2040,
+      "floodTimeOffset": -2520,
+      "ebbTimeOffset": -720,
+      "floodSpeedRatio": 0.58,
+      "ebbSpeedRatio": 1.18
     },
     {
       "id": "ACT7856",
       "name": "Cumberland River, north entrance",
       "type": "subordinate",
-      "latitude": 30.95833,
-      "longitude": -81.43167,
-      "reference": "ACT7351",
+      "latitude": 30.95829963684082,
+      "longitude": -81.43170166015625,
+      "reference": "SAV9702",
       "floodDirection": 191,
       "ebbDirection": 18,
-      "slackBeforeFloodOffset": -1740,
-      "slackBeforeEbbOffset": -1020,
-      "floodTimeOffset": 1920,
-      "ebbTimeOffset": -4680,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.7
+      "slackBeforeFloodOffset": 60,
+      "slackBeforeEbbOffset": -1560,
+      "floodTimeOffset": 660,
+      "ebbTimeOffset": -600,
+      "floodSpeedRatio": 0.75,
+      "ebbSpeedRatio": 1.26
     },
     {
       "id": "ACT7861",
       "name": "Cabin Bluff, Cumberland River",
       "type": "subordinate",
-      "latitude": 30.88167,
-      "longitude": -81.51333,
-      "reference": "ACT7351",
+      "latitude": 30.88170051574707,
+      "longitude": -81.51329803466797,
+      "reference": "SAV9702",
       "floodDirection": 171,
       "ebbDirection": 355,
-      "slackBeforeFloodOffset": 1260,
-      "slackBeforeEbbOffset": 3060,
-      "floodTimeOffset": 5340,
-      "ebbTimeOffset": -2700,
-      "floodSpeedRatio": 0.7,
-      "ebbSpeedRatio": 0.6
+      "slackBeforeFloodOffset": 3060,
+      "slackBeforeEbbOffset": 2520,
+      "floodTimeOffset": 4080,
+      "ebbTimeOffset": 1380,
+      "floodSpeedRatio": 0.75,
+      "ebbSpeedRatio": 1.1
     },
     {
       "id": "ACT7886",
