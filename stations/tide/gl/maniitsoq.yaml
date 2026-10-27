@@ -1,5 +1,9 @@
+# The GLOSS record runs June 1997 to June 1999, inside the observations DMI's prediction header cites (06/1997 - 01/2002): https://ocean.dmi.dk/tides/2027/Maniitsoq.t.txt
 sources:
   - ticon/maniitsoq-man-grl-gloss
+  - dmi/2991380
+redirect_from:
+  - /tides/gl/maniitsoq-dmi-2991380/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -13,6 +17,21 @@ computed:
           epoch: 0.106
           recency: 0.73
           source: 0.03
+          quality: 1
+          amplitude: 1
+          coverage: 0.009
+    dmi/2991380:
+      position: [65.4167, -52.9]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/maniitsoq-man-grl-gloss
+        score: 45
+        factors:
+          epoch: 0
+          recency: 0
+          source: 0.495
           quality: 1
           amplitude: 1
           coverage: 0.009
