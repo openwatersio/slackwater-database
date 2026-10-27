@@ -14,6 +14,10 @@ export interface RouteMember {
   region_code?: string;
   /** Quality rejected the record, so it sorts after the ones a route shows. */
   rejected?: boolean;
+  /** The record's source is authoritative, so it leads the records quality scored. */
+  authoritative?: boolean;
+  /** Quality's score, which orders the rest. */
+  score?: number;
 }
 
 export interface RouteLockEntry {
@@ -177,13 +181,22 @@ export function buildRoutes(
     const formerPaths = new Set(previous?.former_paths ?? []);
     if (previous) formerPaths.add(previous.path);
     formerPaths.delete(path);
-    // Consumers show a route's first station: the curated record, else an
-    // accepted one.
+    // Consumers show a route's first station: the curated record, else one
+    // quality does not score (a CHS identity), else the accepted record a
+    // merge names primary (merges.ts), an authoritative one or else the best
+    // scored, so a station never shows a weaker record on the order of its
+    // ids. Rejected records keep id order.
+    const scored = (m: RouteMember) => !m.rejected && m.score !== undefined;
     const stationIds = group
       .sort(
         (a, b) =>
           Number(registryIds.has(b.id)) - Number(registryIds.has(a.id)) ||
           Number(a.rejected ?? false) - Number(b.rejected ?? false) ||
+          Number(scored(a)) - Number(scored(b)) ||
+          (scored(a) && scored(b)
+            ? Number(b.authoritative ?? false) -
+                Number(a.authoritative ?? false) || b.score! - a.score!
+            : 0) ||
           compare(a.id, b.id),
       )
       .map((member) => member.id);

@@ -18,6 +18,7 @@ import {
 } from "./routes.ts";
 import { filePath, type StationFile } from "./station-files.ts";
 import { cleanName } from "./name-cleanup.ts";
+import { isAuthoritative } from "./filtering.ts";
 
 export interface CatalogueInputs {
   tides: StationInput[];
@@ -138,6 +139,10 @@ export function buildCatalogue(inputs: CatalogueInputs): {
       country_code: station.country_code,
       ...(station.region_code ? { region_code: station.region_code } : {}),
       ...(station.quality?.accepted === false ? { rejected: true } : {}),
+      ...(isAuthoritative(station) ? { authoritative: true } : {}),
+      ...(station.quality?.score !== undefined
+        ? { score: station.quality.score }
+        : {}),
     };
   });
 

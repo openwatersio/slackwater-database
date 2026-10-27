@@ -1,25 +1,13 @@
 # UHSLC 809 starts in October 2007, the month DMI's prediction header dates its observations from (10/2007 - 12/2023): https://ocean.dmi.dk/tides/2027/Ittoqqortoormiit.t.txt
 sources:
-  - dmi/2992600
   - ticon/ittoqqortoormiit-809-dnk-uhslc_fd
+  - dmi/2992600
 redirect_from:
   - /tides/dk/ittoqqortoormiit/
+  - /tides/gl/ittoqqortoormiit-scoresbysund/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    dmi/2992600:
-      position: [70.4836, -21.9621]
-      coastline: unverifiable
-      quality:
-        accepted: true
-        score: 45
-        factors:
-          epoch: 0
-          recency: 0
-          source: 0.495
-          quality: 1
-          amplitude: 1
-          coverage: 0.016
     ticon/ittoqqortoormiit-809-dnk-uhslc_fd:
       position: [70.483, -21.983]
       coastline: unverifiable
@@ -30,6 +18,19 @@ computed:
           epoch: 0.947
           recency: 0.99
           source: 0.99
+          quality: 1
+          amplitude: 1
+          coverage: 0.016
+    dmi/2992600:
+      position: [70.4836, -21.9621]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 45
+        factors:
+          epoch: 0
+          recency: 0
+          source: 0.495
           quality: 1
           amplitude: 1
           coverage: 0.016

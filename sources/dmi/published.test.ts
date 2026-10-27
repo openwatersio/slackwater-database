@@ -70,6 +70,53 @@ test.each([
   },
 );
 
+test.each([
+  [
+    "/tides/dk/gedser/",
+    "ticon/gedser-837a-dnk-uhslc_rq",
+    "dmi/31616",
+    "/tides/dk/gedser-dmi-31616/",
+  ],
+  [
+    "/tides/dk/hornbaek/",
+    "ticon/hornbaek-838a-dnk-uhslc_rq",
+    "dmi/30017",
+    "/tides/dk/hornbaek-dmi-30017/",
+  ],
+  [
+    "/tides/dk/esbjerg/",
+    "ticon/esbjerg-esb-dnk-dmi",
+    "dmi/25149",
+    "/tides/dk/esbjerg-havn/",
+  ],
+  [
+    "/tides/gl/ittoqqortoormiit/",
+    "ticon/ittoqqortoormiit-809-dnk-uhslc_fd",
+    "dmi/2992600",
+    "/tides/gl/ittoqqortoormiit-scoresbysund/",
+  ],
+  [
+    "/tides/gl/maniitsoq/",
+    "ticon/maniitsoq-man-grl-gloss",
+    "dmi/2991380",
+    "/tides/gl/maniitsoq-dmi-2991380/",
+  ],
+  [
+    "/tides/gl/qaqortoq/",
+    "ticon/qaqortoq-299-dnk-uhslc_fd",
+    "dmi/2991140",
+    "/tides/dk/qaqortoq/",
+  ],
+])(
+  "%s shows %s and holds DMI's record of the same gauge",
+  (path, lead, dmi, absorbed) => {
+    const route = stationRoutes("tide").find((r) => r.path === path);
+    expect(route?.stationIds[0]).toBe(lead);
+    expect(route?.stationIds).toContain(dmi);
+    expect(route?.formerPaths).toContain(absorbed);
+  },
+);
+
 test.each(["25149", "2991540", "2988270"])(
   "%s retains its prediction data, route and redistribution notice in the database",
   (id) => {
