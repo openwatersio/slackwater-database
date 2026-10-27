@@ -1,4 +1,4 @@
-# TICON's id names DMI as the source, and DMI's Esbjerg Havn gauges 25148 and 25149 are at the prediction fix; TICON rounds the position to the minute: https://opendataapi.dmi.dk/v2/oceanObs/collections/station/items?stationId=25149
+# TICON's id names DMI as the source, and DMI's Esbjerg Havn gauge 25149 is at the prediction fix, where 25148 ran before it; TICON rounds the position to the minute: https://opendataapi.dmi.dk/v2/oceanObs/collections/station/items?stationId=25149
 sources:
   - dmi/25149
   - ticon/esbjerg-esb-dnk-dmi
