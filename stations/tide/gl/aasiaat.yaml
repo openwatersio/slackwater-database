@@ -1,8 +1,25 @@
+# The GLOSS record runs June 1997 to June 1999, inside the observations DMI's prediction header cites (06/1997 - 12/2001); TICON's position is rounded and sits 2.5 km from DMI's: https://ocean.dmi.dk/tides/2027/Aasiaat.t.txt
 sources:
+  - dmi/2991540
   - ticon/aasiaat-aas-grl-gloss
+redirect_from:
+  - /tides/gl/aasiaat-dmi-2991540/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    dmi/2991540:
+      position: [68.7189, -52.8253]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 46
+        factors:
+          epoch: 0
+          recency: 0
+          source: 0.495
+          quality: 1
+          amplitude: 1
+          coverage: 0.051
     ticon/aasiaat-aas-grl-gloss:
       position: [68.71, -52.8833]
       coastline: unverifiable

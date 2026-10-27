@@ -1,8 +1,25 @@
+# UHSLC 838A credits DMI and starts 1891-01-01, the day DMI's Hornbæk Havn gauge 30018 begins; its successor 30017 is at the prediction fix: https://opendataapi.dmi.dk/v2/oceanObs/collections/station/items?stationId=30018
 sources:
+  - dmi/30017
   - ticon/hornbaek-838a-dnk-uhslc_rq
+redirect_from:
+  - /tides/dk/hornbaek-dmi-30017/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    dmi/30017:
+      position: [56.0934, 12.4571]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 45
+        factors:
+          epoch: 0
+          recency: 0
+          source: 0.495
+          quality: 1
+          amplitude: 1
+          coverage: 0.019
     ticon/hornbaek-838a-dnk-uhslc_rq:
       position: [56.1, 12.467]
       coastline: unverifiable

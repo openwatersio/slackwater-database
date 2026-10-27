@@ -1,5 +1,9 @@
+# UHSLC 298A, Ilulissat in Greenland. TICON files it under Denmark. It stays apart from DMI's Ilulissat, whose
+# prediction header gives no observation period to match it against.
 sources:
   - ticon/ilulissat-298a-dnk-uhslc_rq
+redirect_from:
+  - /tides/dk/ilulissat/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
