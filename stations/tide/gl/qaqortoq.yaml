@@ -1,4 +1,4 @@
-# UHSLC 299 (2008 to 2025) covers the years of the observations DMI's prediction header cites (10/2005 - 12/2023), 180 m from DMI's fix: https://ocean.dmi.dk/tides/2027/Qaqortoq.t.txt
+# UHSLC 299 (2008 to 2025) overlaps the observations DMI's prediction header cites (10/2005 to 12/2023), 180 m from DMI's fix: https://ocean.dmi.dk/tides/2027/Qaqortoq.t.txt
 sources:
   - ticon/qaqortoq-299-dnk-uhslc_fd
   - dmi/2991140
@@ -6,6 +6,7 @@ sources:
 redirect_from:
   - /tides/dk/qaqortoq-kujalleq/
   - /tides/dk/qaqortoq/
+  - /tides/gl/qaqortoq-julianehabsfjord/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
