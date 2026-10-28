@@ -81,3 +81,59 @@ export function matchMetadata(
 
   return matched;
 }
+
+// GESLA-4, and so TICON-4, places these UHSLC research-quality records
+// kilometres from their gauges. Each takes the position UHSLC publishes for the
+// same series (uhslc-metadata.json), which a second source also puts at the
+// gauge. `published` is TICON's position, so a TICON release that moves the
+// record stops the import instead of being overwritten. See #371.
+export const POSITION_CORRECTIONS: Record<
+  string,
+  { published: Position; corrected: Position }
+> = {
+  // Tasiilaq harbour, 0.4 km from DMI's Tasiilaq gauge (dmi/2992310). TICON's
+  // position is 29 km east.
+  "ammassalik-297a-dnk-uhslc_rq": {
+    published: { lat: 65.6, lon: -37 },
+    corrected: { lat: 65.615, lon: -37.625 },
+  },
+  // TICON's fast-delivery series of the same gauge, langkawi-142-mys-uhslc_fd,
+  // is at 6.432, 99.765. TICON's position is 49 km north, in Thailand's Satun
+  // Province.
+  "langkawi-142a-mys-uhslc_rq": {
+    published: { lat: 6.87, lon: 99.77 },
+    corrected: { lat: 6.43049, lon: 99.76286 },
+  },
+  // OpenStreetMap places it in Cajueiros, Macaé's district by Imbetiba
+  // harbour. TICON's position is 35 km east-northeast, in no municipality,
+  // which in Brazil means at sea.
+  "macae-719a-bra-uhslc_rq": {
+    published: { lat: -22.233, lon: -41.467 },
+    corrected: { lat: -22.385, lon: -41.77 },
+  },
+  // OpenStreetMap places it in Goilanai, on Alotau's Milne Bay waterfront.
+  // TICON's position is 17 km north.
+  "alotau-069a-png-uhslc_rq": {
+    published: { lat: -10.168, lon: 150.453 },
+    corrected: { lat: -10.3167, lon: 150.4533 },
+  },
+};
+
+// How far TICON's position may sit from the one a correction was written
+// against: enough for a float rounding, far less than any real move.
+const MAX_PUBLISHED_DRIFT_KM = 0.01;
+
+/**
+ * The gauge's position: TICON's, or its correction. Throws when TICON no
+ * longer publishes the position a correction was written against.
+ */
+export function correctPosition(id: string, published: Position): Position {
+  const correction = POSITION_CORRECTIONS[id];
+  if (!correction) return published;
+  const { lat, lon } = correction.published;
+  if (distance(published.lat, published.lon, lat, lon) > MAX_PUBLISHED_DRIFT_KM)
+    throw new Error(
+      `${id}: TICON now places the gauge at ${published.lat}, ${published.lon}, not ${lat}, ${lon}; review its entry in POSITION_CORRECTIONS`,
+    );
+  return correction.corrected;
+}

@@ -31,7 +31,7 @@ import {
   cachedRefit,
   sameConstituents,
 } from "./samples.ts";
-import { matchMetadata, type TiconMetaRow } from "./meta.ts";
+import { correctPosition, matchMetadata, type TiconMetaRow } from "./meta.ts";
 import { reduceTiconDatums, cachedDatumNotice } from "./datums.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -137,9 +137,11 @@ async function main() {
     const gesla = metadata[rows[0].tide_gauge_name];
     if (!gesla) throw new Error(`${rows[0].tide_gauge_name}: no meta.csv row`);
 
-    const lat = parseFloat(rows[0].lat);
-    const lon = parseFloat(rows[0].lon);
     const id = rows[0].tide_gauge_name;
+    const { lat, lon } = correctPosition(id, {
+      lat: parseFloat(rows[0].lat),
+      lon: parseFloat(rows[0].lon),
+    });
 
     const csvHarmonics = rows.map((row) => ({
       name: row.con,
