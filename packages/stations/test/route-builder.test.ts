@@ -214,6 +214,55 @@ describe("geographic routes", () => {
     ]);
   });
 
+  test("leads with an authoritative record, then the best scored, not the first id", () => {
+    const routes = buildRoutes(
+      [
+        { ...routeMember("tide", "gedser", "dmi/31616", "DK"), score: 45 },
+        {
+          ...routeMember("tide", "gedser", "ticon/gedser-837a", "DK"),
+          score: 83,
+        },
+        {
+          ...routeMember("tide", "massacre-bay", "noaa/9460150", "US", "US-AK"),
+          authoritative: true,
+          score: 55,
+        },
+        {
+          ...routeMember(
+            "tide",
+            "massacre-bay",
+            "ticon/massacre_bay",
+            "US",
+            "US-AK",
+          ),
+          score: 79,
+        },
+      ],
+      { routeLock: emptyRoutes(), registryIds: new Set() },
+    );
+    expect(routes.tide.map((route) => route.station_ids)).toEqual([
+      ["ticon/gedser-837a", "dmi/31616"],
+      ["noaa/9460150", "ticon/massacre_bay"],
+    ]);
+  });
+
+  test("keeps a record quality does not score ahead of scored ones", () => {
+    const routes = buildRoutes(
+      [
+        {
+          ...routeMember("tide", "halifax", "ticon/halifax-275", "CA", "CA-NS"),
+          score: 90,
+        },
+        routeMember("tide", "halifax", "chs-halifax", "CA", "CA-NS"),
+      ],
+      { routeLock: emptyRoutes(), registryIds: new Set() },
+    );
+    expect(routes.tide[0]?.station_ids).toEqual([
+      "chs-halifax",
+      "ticon/halifax-275",
+    ]);
+  });
+
   test("redirects a station's previous path after its geography moves", () => {
     const routes = buildRoutes(
       [routeMember("tide", "victoria", "chs-victoria", "CA", "CA-BC")],

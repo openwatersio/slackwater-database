@@ -6,6 +6,15 @@ region: CA-BC
 aliases: [turret rock, tremble island, seymour inlet, belize inlet]
 position: [51.0967, -127.5033]
 provider: chs
+magnitude_note: 11.5 kn flood · 14.5 kn ebb
+chs_fit:
+  tier: online
+  miss:
+    clause: slack_worst
+    value: 49.8
+  # Curated water kind, for the app's online note; not measured. Slack runs about six minutes (Sailing Directions PAC 202); CHS gives 14.5 knots ebbing against 11.5 flooding (see the header).
+  miss_context: rapids
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-nakwakto-rapids
 # Written by `npm run stations`. Do not edit.

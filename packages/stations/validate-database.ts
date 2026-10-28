@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { join } from "node:path";
+import { evidenceProblems } from "./chs-fit-evidence.ts";
 import { evaluateQuality } from "./evaluate-quality.ts";
 import { loadProductionCatalogue } from "./load-catalogue.ts";
 import { SEPARATE_TWINS, separatedTwins, staleSeparations } from "./merges.ts";
@@ -15,9 +17,17 @@ import {
   ROOT,
 } from "./station-files.ts";
 
+const files = readStationFiles();
+
+// Every chs_fit is what the results release it cites says of its gate.
+assert.deepEqual(
+  evidenceProblems(files, join(ROOT, "metadata", "chs-current-validation")),
+  [],
+  "chs_fit disagrees with its results release; fix the station file, or run npm run refresh:chs-fit -w packages/stations -- <tag> for a release that is not snapshotted",
+);
+
 // Quality is evaluated again, not read back, so a code or data change that
 // alters a record's evaluation shows as a stale station file.
-const files = readStationFiles();
 const quality = new Map((await evaluateQuality()).map((q) => [q.id, q]));
 const catalogue = await loadProductionCatalogue(ROOT, files, quality);
 

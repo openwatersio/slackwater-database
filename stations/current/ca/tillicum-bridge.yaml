@@ -5,6 +5,14 @@ cities: [Victoria]
 position: [48.4464, -123.4002]
 provider: chs
 tide_reference: chs-victoria
+chs_fit:
+  tier: online
+  miss:
+    clause: invented_slack
+    value: 42
+  # Curated water kind, for the app's online note; not measured.
+  miss_context: tidal_falls
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-tillicum-bridge
 # Written by `npm run stations`. Do not edit.

@@ -70,6 +70,19 @@ public enum Slackwater_DatumFrame: UInt8, Enum, Verifiable {
 }
 
 
+public enum Slackwater_ChsFitTier: UInt8, Enum, Verifiable {
+  public typealias T = UInt8
+  public static var byteSize: Int { return MemoryLayout<UInt8>.size }
+  public var value: UInt8 { return self.rawValue }
+  case online = 0
+  case bounded = 1
+  case final_ = 2
+
+  public static var max: Slackwater_ChsFitTier { return .final_ }
+  public static var min: Slackwater_ChsFitTier { return .online }
+}
+
+
 ///  12 bytes, contiguous per station. Amplitude in metres (tides) or knots
 ///  (currents); phase in degrees. float32 keeps 7 significant digits, which
 ///  drops published digits only far below any analysis's uncertainty.
@@ -696,6 +709,141 @@ public struct Slackwater_TideDerivedCurrent: FlatBufferObject, Verifiable {
   }
 }
 
+public struct Slackwater_ChsFitMiss: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  public var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  public static var id: String { "TCDB" } 
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_ChsFitMiss.id, addPrefix: prefix) }
+  private init(_ t: Table) { _accessor = t }
+  public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case clause = 4
+    case value = 6
+    case valueMissing = 8
+    case nearBar = 10
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  public var clause: String! { let o = _accessor.offset(VTOFFSET.clause.v); return _accessor.string(at: o) }
+  public var clauseSegmentArray: [UInt8]! { return _accessor.getVector(at: VTOFFSET.clause.v) }
+  public var value: Double { let o = _accessor.offset(VTOFFSET.value.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Double.self, at: o) }
+  public var valueMissing: Bool { let o = _accessor.offset(VTOFFSET.valueMissing.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
+  public var nearBar: Bool { let o = _accessor.offset(VTOFFSET.nearBar.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
+  public static func startChsFitMiss(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 4) }
+  public static func add(clause: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: clause, at: VTOFFSET.clause.p) }
+  public static func add(value: Double, _ fbb: inout FlatBufferBuilder) { fbb.add(element: value, def: 0.0, at: VTOFFSET.value.p) }
+  public static func add(valueMissing: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: valueMissing, def: false,
+   at: VTOFFSET.valueMissing.p) }
+  public static func add(nearBar: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: nearBar, def: false,
+   at: VTOFFSET.nearBar.p) }
+  public static func endChsFitMiss(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4]); return end }
+  public static func createChsFitMiss(
+    _ fbb: inout FlatBufferBuilder,
+    clauseOffset clause: Offset,
+    value: Double = 0.0,
+    valueMissing: Bool = false,
+    nearBar: Bool = false
+  ) -> Offset {
+    let __start = Slackwater_ChsFitMiss.startChsFitMiss(&fbb)
+    Slackwater_ChsFitMiss.add(clause: clause, &fbb)
+    Slackwater_ChsFitMiss.add(value: value, &fbb)
+    Slackwater_ChsFitMiss.add(valueMissing: valueMissing, &fbb)
+    Slackwater_ChsFitMiss.add(nearBar: nearBar, &fbb)
+    return Slackwater_ChsFitMiss.endChsFitMiss(&fbb, start: __start)
+  }
+
+  public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.clause.p, fieldName: "clause", required: true, type: ForwardOffset<String>.self)
+    try _v.visit(field: VTOFFSET.value.p, fieldName: "value", required: false, type: Double.self)
+    try _v.visit(field: VTOFFSET.valueMissing.p, fieldName: "valueMissing", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.nearBar.p, fieldName: "nearBar", required: false, type: Bool.self)
+    _v.finish()
+  }
+}
+
+///  A fitted CHS gate's measured tier, from the results release `evidence` names.
+///  Zero in a ushort field means absent: no window, bound or provisional bound is 0.
+public struct Slackwater_ChsFit: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  public var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  public static var id: String { "TCDB" } 
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_ChsFit.id, addPrefix: prefix) }
+  private init(_ t: Table) { _accessor = t }
+  public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case tier = 4
+    case days = 6
+    case slackBoundMinutes = 8
+    case provisionalSlackMinutes = 10
+    case miss = 12
+    case missContext = 14
+    case evidence = 16
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  public var tier: UInt8 { let o = _accessor.offset(VTOFFSET.tier.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt8.self, at: o) }
+  public var days: UInt16 { let o = _accessor.offset(VTOFFSET.days.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt16.self, at: o) }
+  public var slackBoundMinutes: UInt16 { let o = _accessor.offset(VTOFFSET.slackBoundMinutes.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt16.self, at: o) }
+  public var provisionalSlackMinutes: UInt16 { let o = _accessor.offset(VTOFFSET.provisionalSlackMinutes.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt16.self, at: o) }
+  public var miss: Slackwater_ChsFitMiss? { let o = _accessor.offset(VTOFFSET.miss.v); return o == 0 ? nil : Slackwater_ChsFitMiss(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public var missContext: String? { let o = _accessor.offset(VTOFFSET.missContext.v); return o == 0 ? nil : _accessor.string(at: o) }
+  public var missContextSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.missContext.v) }
+  public var evidence: String! { let o = _accessor.offset(VTOFFSET.evidence.v); return _accessor.string(at: o) }
+  public var evidenceSegmentArray: [UInt8]! { return _accessor.getVector(at: VTOFFSET.evidence.v) }
+  public static func startChsFit(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 7) }
+  public static func add(tier: UInt8, _ fbb: inout FlatBufferBuilder) { fbb.add(element: tier, def: 0, at: VTOFFSET.tier.p) }
+  public static func add(days: UInt16, _ fbb: inout FlatBufferBuilder) { fbb.add(element: days, def: 0, at: VTOFFSET.days.p) }
+  public static func add(slackBoundMinutes: UInt16, _ fbb: inout FlatBufferBuilder) { fbb.add(element: slackBoundMinutes, def: 0, at: VTOFFSET.slackBoundMinutes.p) }
+  public static func add(provisionalSlackMinutes: UInt16, _ fbb: inout FlatBufferBuilder) { fbb.add(element: provisionalSlackMinutes, def: 0, at: VTOFFSET.provisionalSlackMinutes.p) }
+  public static func add(miss: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: miss, at: VTOFFSET.miss.p) }
+  public static func add(missContext: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: missContext, at: VTOFFSET.missContext.p) }
+  public static func add(evidence: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: evidence, at: VTOFFSET.evidence.p) }
+  public static func endChsFit(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [16]); return end }
+  public static func createChsFit(
+    _ fbb: inout FlatBufferBuilder,
+    tier: UInt8 = 0,
+    days: UInt16 = 0,
+    slackBoundMinutes: UInt16 = 0,
+    provisionalSlackMinutes: UInt16 = 0,
+    missOffset miss: Offset = Offset(),
+    missContextOffset missContext: Offset = Offset(),
+    evidenceOffset evidence: Offset
+  ) -> Offset {
+    let __start = Slackwater_ChsFit.startChsFit(&fbb)
+    Slackwater_ChsFit.add(tier: tier, &fbb)
+    Slackwater_ChsFit.add(days: days, &fbb)
+    Slackwater_ChsFit.add(slackBoundMinutes: slackBoundMinutes, &fbb)
+    Slackwater_ChsFit.add(provisionalSlackMinutes: provisionalSlackMinutes, &fbb)
+    Slackwater_ChsFit.add(miss: miss, &fbb)
+    Slackwater_ChsFit.add(missContext: missContext, &fbb)
+    Slackwater_ChsFit.add(evidence: evidence, &fbb)
+    return Slackwater_ChsFit.endChsFit(&fbb, start: __start)
+  }
+
+  public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.tier.p, fieldName: "tier", required: false, type: UInt8.self)
+    try _v.visit(field: VTOFFSET.days.p, fieldName: "days", required: false, type: UInt16.self)
+    try _v.visit(field: VTOFFSET.slackBoundMinutes.p, fieldName: "slackBoundMinutes", required: false, type: UInt16.self)
+    try _v.visit(field: VTOFFSET.provisionalSlackMinutes.p, fieldName: "provisionalSlackMinutes", required: false, type: UInt16.self)
+    try _v.visit(field: VTOFFSET.miss.p, fieldName: "miss", required: false, type: ForwardOffset<Slackwater_ChsFitMiss>.self)
+    try _v.visit(field: VTOFFSET.missContext.p, fieldName: "missContext", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VTOFFSET.evidence.p, fieldName: "evidence", required: true, type: ForwardOffset<String>.self)
+    _v.finish()
+  }
+}
+
 public struct Slackwater_Current: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_25_9_23() }
@@ -718,6 +866,7 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
     case floodDirectionMissing = 18
     case ebbDirectionMissing = 20
     case meanFlowMissing = 22
+    case chsFit = 24
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -735,7 +884,8 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
   public var floodDirectionMissing: Bool { let o = _accessor.offset(VTOFFSET.floodDirectionMissing.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
   public var ebbDirectionMissing: Bool { let o = _accessor.offset(VTOFFSET.ebbDirectionMissing.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
   public var meanFlowMissing: Bool { let o = _accessor.offset(VTOFFSET.meanFlowMissing.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
-  public static func startCurrent(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 10) }
+  public var chsFit: Slackwater_ChsFit? { let o = _accessor.offset(VTOFFSET.chsFit.v); return o == 0 ? nil : Slackwater_ChsFit(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
+  public static func startCurrent(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 11) }
   public static func add(floodDirection: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: floodDirection, def: 0.0, at: VTOFFSET.floodDirection.p) }
   public static func add(ebbDirection: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: ebbDirection, def: 0.0, at: VTOFFSET.ebbDirection.p) }
   public static func add(meanFlow: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: meanFlow, def: 0.0, at: VTOFFSET.meanFlow.p) }
@@ -749,6 +899,7 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
    at: VTOFFSET.ebbDirectionMissing.p) }
   public static func add(meanFlowMissing: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: meanFlowMissing, def: false,
    at: VTOFFSET.meanFlowMissing.p) }
+  public static func add(chsFit: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: chsFit, at: VTOFFSET.chsFit.p) }
   public static func endCurrent(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createCurrent(
     _ fbb: inout FlatBufferBuilder,
@@ -761,7 +912,8 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
     derivedOffset derived: Offset = Offset(),
     floodDirectionMissing: Bool = false,
     ebbDirectionMissing: Bool = false,
-    meanFlowMissing: Bool = false
+    meanFlowMissing: Bool = false,
+    chsFitOffset chsFit: Offset = Offset()
   ) -> Offset {
     let __start = Slackwater_Current.startCurrent(&fbb)
     Slackwater_Current.add(floodDirection: floodDirection, &fbb)
@@ -774,6 +926,7 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
     Slackwater_Current.add(floodDirectionMissing: floodDirectionMissing, &fbb)
     Slackwater_Current.add(ebbDirectionMissing: ebbDirectionMissing, &fbb)
     Slackwater_Current.add(meanFlowMissing: meanFlowMissing, &fbb)
+    Slackwater_Current.add(chsFit: chsFit, &fbb)
     return Slackwater_Current.endCurrent(&fbb, start: __start)
   }
 
@@ -789,6 +942,7 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.floodDirectionMissing.p, fieldName: "floodDirectionMissing", required: false, type: Bool.self)
     try _v.visit(field: VTOFFSET.ebbDirectionMissing.p, fieldName: "ebbDirectionMissing", required: false, type: Bool.self)
     try _v.visit(field: VTOFFSET.meanFlowMissing.p, fieldName: "meanFlowMissing", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.chsFit.p, fieldName: "chsFit", required: false, type: ForwardOffset<Slackwater_ChsFit>.self)
     _v.finish()
   }
 }

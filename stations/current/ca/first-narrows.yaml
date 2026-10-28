@@ -6,6 +6,10 @@ cities: [Vancouver]
 position: [49.316, -123.1401]
 provider: chs
 tide_reference: chs-vancouver
+chs_fit:
+  tier: final
+  days: 60
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-first-narrows
 # Written by `npm run stations`. Do not edit.

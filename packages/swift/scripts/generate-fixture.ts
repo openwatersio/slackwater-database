@@ -7,6 +7,7 @@
 import { writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { openDatabase } from "../../database/src/database/reader.ts";
 import { buildDatabase } from "../../database/src/database/builder.ts";
 import type { StationInput } from "../../database/src/types.ts";
 
@@ -47,6 +48,40 @@ const stations: StationInput[] = [
         slack_before_flood: -30,
         flood_time: 0,
         flood_speed_ratio: 0.8,
+      },
+    },
+  },
+  {
+    // The three chs_fit gates sort last so the index-based assertions above hold.
+    ...identity,
+    id: "test/zfit-bounded",
+    name: "A bounded gate",
+    latitude: 48.2,
+    longitude: -122.9,
+    current: {
+      flood_direction: 90,
+      chs_fit: {
+        tier: "bounded",
+        days: 210,
+        slack_bound_minutes: 40,
+        provisional_slack_minutes: 45,
+        evidence: "fit-2026-10-22-8f85912-r2",
+      },
+    },
+  },
+  {
+    ...identity,
+    id: "test/zfit-online",
+    name: "An online gate",
+    latitude: 48.3,
+    longitude: -123.0,
+    current: {
+      flood_direction: 90,
+      chs_fit: {
+        tier: "online",
+        miss: { clause: "slack_median", value: null, near_bar: true },
+        miss_context: "rapids",
+        evidence: "fit-2026-10-22-8f85912-r2",
       },
     },
   },
@@ -129,6 +164,24 @@ const stations: StationInput[] = [
   },
 ];
 
+// A tier byte past the last one this reader knows: built as final, then patched
+// to raw 3 below, since the builder only writes known tiers.
+stations.push({
+  ...identity,
+  id: "test/zfit-unknown",
+  name: "An unknown-tier gate",
+  latitude: 48.4,
+  longitude: -123.1,
+  current: {
+    flood_direction: 90,
+    chs_fit: {
+      tier: "final",
+      days: 210,
+      evidence: "fit-2026-10-22-8f85912-r2",
+    },
+  },
+});
+
 const bytes = buildDatabase(stations, {
   credits: new Map([["Test Source", null]]),
   version: "0.0.0-fixture",
@@ -143,6 +196,13 @@ const bytes = buildDatabase(stations, {
     current: [{ slug: "a-current", station_ids: ["test/current"] }],
   },
 });
+const unknownFit = openDatabase(bytes);
+for (let i = 0; i < unknownFit.stationsLength(); i++) {
+  const station = unknownFit.stations(i)!;
+  if (station.id() !== "test/zfit-unknown") continue;
+  const fit = station.current()!.chsFit()!;
+  bytes[fit.bb_pos + fit.bb!.__offset(fit.bb_pos, 4)] = 3;
+}
 const out = join(
   dirname(fileURLToPath(import.meta.url)),
   "..",

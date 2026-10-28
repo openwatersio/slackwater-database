@@ -11,7 +11,14 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { format } from "prettier";
 import { Document, parse, parseDocument, YAMLMap } from "yaml";
-import type { DatabaseRoutes, StationQuality } from "@slackwater/database";
+import type {
+  ChsFitClause,
+  ChsFitContext,
+  ChsFitData,
+  ChsFitTier,
+  DatabaseRoutes,
+  StationQuality,
+} from "@slackwater/database";
 import type {
   Corrections,
   Registry,
@@ -62,7 +69,139 @@ export interface StationFile {
     high_water_lag_minutes: number;
     low_water_lag_minutes: number;
   };
+  /** A fitted CHS current gate's measured tier, window and bounds. */
+  chs_fit?: ChsFitData;
   computed?: { sources?: Record<string, ComputedSource> };
+}
+
+export const CHS_FIT_TIERS = [
+  "final",
+  "bounded",
+  "online",
+] as const satisfies readonly ChsFitTier[];
+export const CHS_FIT_CLAUSES = [
+  "reversed_axis",
+  "invented_slack",
+  "missed_slack",
+  "slack_worst",
+  "slack_median",
+  "extremum_timing",
+  "peak_speed",
+] as const satisfies readonly ChsFitClause[];
+export const CHS_FIT_CONTEXTS = [
+  "slow_reversal",
+  "tidal_falls",
+  "rapids",
+] as const satisfies readonly ChsFitContext[];
+
+/** A results release tag, like fit-2026-10-22-8f85912-r2. */
+export const CHS_FIT_EVIDENCE = /^fit-\d{4}-\d{2}-\d{2}-[0-9a-f]{7}-r\d+$/;
+
+const CHS_FIT_KEYS = new Set([
+  "tier",
+  "days",
+  "slack_bound_minutes",
+  "provisional_slack_minutes",
+  "miss",
+  "miss_context",
+  "evidence",
+]);
+// Every field optional and unknown: a hand-written file can hold anything.
+type Loose<K extends string> = { [Key in K]?: unknown };
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+/** What is wrong with a `chs_fit` block; messages leave off the file prefix. */
+export function chsFitProblems(input: unknown): string[] {
+  if (!isObject(input)) return ["must be a mapping"];
+  const fit = input as Loose<
+    | "tier"
+    | "days"
+    | "slack_bound_minutes"
+    | "provisional_slack_minutes"
+    | "miss"
+    | "miss_context"
+    | "evidence"
+  >;
+  const problems: string[] = [];
+  for (const key of Object.keys(input))
+    if (!CHS_FIT_KEYS.has(key)) problems.push(`has unknown field ${key}`);
+  const tier = fit.tier;
+  const known = (CHS_FIT_TIERS as readonly unknown[]).includes(tier);
+  if (!known) problems.push(`tier must be one of ${CHS_FIT_TIERS.join(", ")}`);
+  if (typeof fit.evidence !== "string" || !CHS_FIT_EVIDENCE.test(fit.evidence))
+    problems.push(
+      "evidence must be a results release tag, like fit-2026-10-22-8f85912-r2",
+    );
+  if (!known) return problems;
+  const fitted = tier !== "online";
+  const bad = (field: string, rule: string) =>
+    problems.push(`${field} ${rule}`);
+
+  if (fit.days === undefined && fitted)
+    bad("days", "is required for a final or bounded gate");
+  if (fit.days !== undefined) {
+    if (!fitted) bad("days", "belongs to a final or bounded gate");
+    else if (fit.days !== 60 && fit.days !== 210)
+      bad("days", "must be 60 or 210");
+  }
+  if (fit.slack_bound_minutes !== undefined) {
+    if (tier !== "bounded")
+      bad("slack_bound_minutes", "belongs to a bounded gate");
+    else if (![35, 40, 45].includes(fit.slack_bound_minutes as number))
+      bad("slack_bound_minutes", "must be 35, 40 or 45");
+  } else if (tier === "bounded") {
+    bad("slack_bound_minutes", "is required for a bounded gate");
+  }
+  if (fit.provisional_slack_minutes !== undefined) {
+    const value = fit.provisional_slack_minutes;
+    if (!fitted)
+      bad("provisional_slack_minutes", "belongs to a final or bounded gate");
+    else if (fit.days !== 210)
+      bad("provisional_slack_minutes", "is offered only by a 210-day gate");
+    else if (
+      typeof value !== "number" ||
+      !Number.isInteger(value) ||
+      value % 5 !== 0 ||
+      value <= 0 ||
+      value > 45
+    )
+      bad("provisional_slack_minutes", "must be a multiple of 5, at most 45");
+    else if (
+      typeof fit.slack_bound_minutes === "number" &&
+      value < fit.slack_bound_minutes
+    )
+      bad("provisional_slack_minutes", "must be at least slack_bound_minutes");
+  }
+  if (fit.miss !== undefined) {
+    if (fitted) bad("miss", "belongs to an online gate");
+    else if (!isObject(fit.miss)) bad("miss", "must be a mapping");
+    else {
+      const miss = fit.miss as Loose<"clause" | "value" | "near_bar">;
+      for (const key of Object.keys(miss))
+        if (!["clause", "value", "near_bar"].includes(key))
+          bad(`miss.${key}`, "is not a known field");
+      if (!(CHS_FIT_CLAUSES as readonly unknown[]).includes(miss.clause))
+        bad("miss.clause", `must be one of ${CHS_FIT_CLAUSES.join(", ")}`);
+      if (
+        miss.value !== null &&
+        (typeof miss.value !== "number" || !Number.isFinite(miss.value))
+      )
+        bad("miss.value", "must be a number or null");
+      if (miss.near_bar !== undefined && miss.near_bar !== true)
+        bad("miss.near_bar", "must be true when set");
+    }
+  } else if (!fitted) {
+    bad("miss", "is required for an online gate");
+  }
+  if (fit.miss_context !== undefined) {
+    if (fitted) bad("miss_context", "belongs to an online gate");
+    else if (
+      !(CHS_FIT_CONTEXTS as readonly unknown[]).includes(fit.miss_context)
+    )
+      bad("miss_context", `must be one of ${CHS_FIT_CONTEXTS.join(", ")}`);
+  }
+  return problems;
 }
 
 // In the order a file lists them: curated fields, membership, then computed.
@@ -78,6 +217,7 @@ const KEYS = new Set([
   "tide_reference",
   "magnitude_note",
   "derived",
+  "chs_fit",
   "sources",
   "retired_sources",
   "redirect_from",
@@ -156,11 +296,19 @@ export function readStationFiles(dir = STATIONS_DIR): StationFile[] {
             problems.push(
               `${file}: redirect ${JSON.stringify(path)} is not a route path`,
             );
-        for (const field of ["magnitude_note", "derived"])
+        for (const field of ["magnitude_note", "derived", "chs_fit"])
           if (value[field] !== undefined && value.provider === undefined)
             problems.push(
               `${file}: ${field} describes a record this repo owns; it needs provider`,
             );
+        if (value.chs_fit !== undefined) {
+          if (kind !== "current" || value.provider !== "chs")
+            problems.push(`${file}: chs_fit fits an owned CHS current gate`);
+          if (value.derived !== undefined)
+            problems.push(`${file}: chs_fit and derived exclude each other`);
+          for (const problem of chsFitProblems(value.chs_fit))
+            problems.push(`${file}: chs_fit ${problem}`);
+        }
         if (value.tide_reference !== undefined && kind !== "current")
           problems.push(`${file}: tide_reference pairs a current station`);
         if (
@@ -255,6 +403,7 @@ export function curatedRecords(
         provider: file.provider,
         kind: file.kind,
         ...(file.magnitude_note ? { magnitudeNote: file.magnitude_note } : {}),
+        ...(file.chs_fit ? { chsFit: file.chs_fit } : {}),
         ...(file.derived
           ? {
               derived: {
@@ -487,6 +636,7 @@ const CURATED = [
   "tide_reference",
   "magnitude_note",
   "derived",
+  "chs_fit",
 ] as const;
 
 /**

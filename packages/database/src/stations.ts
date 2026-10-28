@@ -1,5 +1,6 @@
 import {
   Constituent,
+  ChsFitTier,
   Datum,
   DatumFrame,
   DatumsSource,
@@ -12,12 +13,21 @@ import { PROJECT_CREDIT } from "./attribution.js";
 import { openDatabase } from "./database/reader.js";
 import type {
   AstronomicalBounds,
+  ChsFitClause,
+  ChsFitContext,
+  ChsFitData,
   CurrentData,
   HarmonicConstituent,
   Station,
   StationData,
   StationQuality,
 } from "./types.js";
+
+const CHS_FIT_TIER_NAMES: Record<number, ChsFitData["tier"]> = {
+  [ChsFitTier.Final]: "final",
+  [ChsFitTier.Bounded]: "bounded",
+  [ChsFitTier.Online]: "online",
+};
 
 // The whole database is one FlatBuffers file (schemas/database.fbs). On
 // Node the bytes are a Buffer — external memory, off the V8 heap; in the
@@ -249,6 +259,33 @@ function readCurrent(index: number): CurrentData | undefined {
       high_water_lag_minutes: derived.highWaterLagMinutes(),
       low_water_lag_minutes: derived.lowWaterLagMinutes(),
     };
+  }
+  const fit = table.chsFit();
+  if (fit) {
+    const known = CHS_FIT_TIER_NAMES[fit.tier()];
+    const data: ChsFitData = {
+      tier: known ?? "online",
+      evidence: fit.evidence()!,
+    };
+    // A tier this reader does not know reads as online, with no measured numbers.
+    if (known) {
+      if (fit.days()) data.days = fit.days() as 60 | 210;
+      if (fit.slackBoundMinutes())
+        data.slack_bound_minutes = fit.slackBoundMinutes();
+      if (fit.provisionalSlackMinutes())
+        data.provisional_slack_minutes = fit.provisionalSlackMinutes();
+    }
+    const miss = fit.miss();
+    if (miss) {
+      data.miss = {
+        clause: miss.clause()! as ChsFitClause,
+        value: miss.valueMissing() ? null : miss.value(),
+      };
+      if (miss.nearBar()) data.miss.near_bar = true;
+    }
+    const missContext = fit.missContext();
+    if (missContext) data.miss_context = missContext as ChsFitContext;
+    current.chs_fit = data;
   }
   return current;
 }

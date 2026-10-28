@@ -7,6 +7,12 @@ aliases: [masset channel, masset narrows, masset bar, masset harbour]
 cities: [Masset]
 position: [54.0029, -132.1543]
 provider: chs
+chs_fit:
+  tier: online
+  miss:
+    clause: slack_worst
+    value: 47.3
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-masset-sound
 # Written by `npm run stations`. Do not edit.

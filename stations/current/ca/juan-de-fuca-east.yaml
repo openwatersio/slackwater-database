@@ -4,6 +4,14 @@ region: CA-BC
 cities: [Victoria]
 position: [48.2317, -123.53]
 provider: chs
+chs_fit:
+  tier: online
+  miss:
+    clause: invented_slack
+    value: 24
+  # Curated water kind, for the app's online note; not measured.
+  miss_context: slow_reversal
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-juan-de-fuca-east
 redirect_from:

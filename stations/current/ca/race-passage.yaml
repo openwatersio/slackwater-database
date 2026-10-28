@@ -4,6 +4,12 @@ region: CA-BC
 cities: [Victoria]
 position: [48.3067, -123.5367]
 provider: chs
+chs_fit:
+  tier: online
+  miss:
+    clause: invented_slack
+    value: 16
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-race-passage
 # Written by `npm run stations`. Do not edit.

@@ -4,6 +4,12 @@ region: CA-BC
 position: [50.3001, -125.2083]
 provider: chs
 tide_reference: chs-owen-bay
+chs_fit:
+  tier: online
+  miss:
+    clause: slack_worst
+    value: 45.3
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-hole-in-the-wall
 # Written by `npm run stations`. Do not edit.

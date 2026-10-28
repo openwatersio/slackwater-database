@@ -4,6 +4,12 @@ region: CA-BC
 position: [49.015, -123.585]
 provider: chs
 tide_reference: chs-fulford-harbour
+chs_fit:
+  tier: online
+  miss:
+    clause: slack_worst
+    value: 53.7
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-porlier-pass
 # Written by `npm run stations`. Do not edit.

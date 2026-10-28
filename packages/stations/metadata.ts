@@ -2,7 +2,7 @@ import countryLookup from "country-code-lookup";
 import { countryByName } from "./country.ts";
 import { find as findTimezone } from "geo-tz/all";
 import { parse } from "yaml";
-import type { StationInput } from "@slackwater/database";
+import type { ChsFitData, StationInput } from "@slackwater/database";
 import { cleanName, isRegionContext } from "./name-cleanup.ts";
 import type { GeocodeResult, Geocoder } from "./geocode.ts";
 import type { MaritimeZones } from "./maritime-zones.ts";
@@ -47,6 +47,7 @@ export interface RegistryRecord extends Correction {
   provider?: string;
   kind?: "tide" | "current";
   magnitudeNote?: string;
+  chsFit?: ChsFitData;
   derived?: {
     reference: string;
     hwLagMinutes: number;
@@ -584,6 +585,7 @@ export function resolveMetadata(
       if (tideReference) result.current.tide_reference = tideReference;
       if (registry.magnitudeNote)
         result.current.magnitude_note = registry.magnitudeNote;
+      if (registry.chsFit) result.current.chs_fit = registry.chsFit;
       if (registry.derived)
         result.current.derived = {
           reference: registry.derived.reference,

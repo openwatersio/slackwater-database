@@ -58,6 +58,15 @@ jobs:
           fi
           npm run validate
 
+      - name: Check CHS fit snapshots against their releases
+        run: npm run validate:chs-fit -w packages/stations
+
+      - name: Warn when CHS current results are stale
+        if: ${{ !cancelled() }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run report:chs-fit-age -w packages/stations
+
   tcd:
     runs-on: ubuntu-latest
     steps:

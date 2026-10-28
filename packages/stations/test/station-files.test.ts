@@ -5,6 +5,7 @@ import { dirname, join } from "node:path";
 import { describe, expect, test } from "vitest";
 import type { ResolvedStation } from "../metadata.ts";
 import {
+  chsFitProblems,
   curatedRecords,
   mergeStationFiles,
   newlyRetired,
@@ -558,5 +559,183 @@ computed:
       new Set(),
     );
     expect([...registry.keys()]).toEqual(["chs-victoria"]);
+  });
+});
+
+describe("chs_fit", () => {
+  const evidence = "fit-2026-10-22-8f85912-r2";
+  const ok = [
+    { tier: "final", days: 60, evidence },
+    { tier: "final", days: 210, provisional_slack_minutes: 35, evidence },
+    { tier: "bounded", days: 210, slack_bound_minutes: 45, evidence },
+    {
+      tier: "online",
+      miss: { clause: "slack_worst", value: 47.4 },
+      miss_context: "rapids",
+      evidence,
+    },
+    {
+      tier: "online",
+      miss: { clause: "slack_worst", value: 44.5, near_bar: true },
+      evidence,
+    },
+    { tier: "online", miss: { clause: "slack_median", value: null }, evidence },
+  ];
+
+  test("accepts each tier's fields", () => {
+    for (const fit of ok) expect(chsFitProblems(fit)).toEqual([]);
+  });
+
+  test("rejects fields outside a tier", () => {
+    const bounded = { tier: "bounded", days: 210, slack_bound_minutes: 45 };
+    const miss = { clause: "slack_worst", value: 50 };
+    const cases: [object, string][] = [
+      [
+        { tier: "final", days: 60, slack_bound_minutes: 45, evidence },
+        "slack_bound_minutes",
+      ],
+      [{ tier: "final", days: 60, miss, evidence }, "miss"],
+      [{ ...bounded, miss, evidence }, "miss"],
+      [{ tier: "online", days: 60, miss, evidence }, "days"],
+      [{ tier: "online", evidence }, "miss"],
+      [
+        { tier: "final", days: 60, provisional_slack_minutes: 35, evidence },
+        "provisional_slack_minutes",
+      ],
+      [{ tier: "bounded", days: 210, evidence }, "slack_bound_minutes"],
+      [{ tier: "final", evidence }, "days"],
+      [{ tier: "bounded", slack_bound_minutes: 45, evidence }, "days"],
+      [
+        { tier: "final", days: 60, miss_context: "rapids", evidence },
+        "miss_context",
+      ],
+    ];
+    for (const [fit, field] of cases) {
+      const problems = chsFitProblems(fit);
+      expect(problems).toHaveLength(1);
+      expect(problems[0]).toContain(field);
+    }
+  });
+
+  test("rejects bad values", () => {
+    const final = { tier: "final", days: 210, evidence };
+    const bounded = { tier: "bounded", days: 210, evidence };
+    const online = {
+      tier: "online",
+      miss: { clause: "slack_worst", value: 50 },
+      evidence,
+    };
+    const cases: [object, string][] = [
+      [{ ...final, days: 90 }, "days"],
+      [{ ...final, tier: "fitted" }, "tier"],
+      [{ ...bounded, slack_bound_minutes: 30 }, "slack_bound_minutes"],
+      [{ ...bounded, slack_bound_minutes: 50 }, "slack_bound_minutes"],
+      [{ ...bounded, slack_bound_minutes: 37 }, "slack_bound_minutes"],
+      [
+        { ...final, provisional_slack_minutes: 50 },
+        "provisional_slack_minutes",
+      ],
+      [
+        { ...final, provisional_slack_minutes: 33 },
+        "provisional_slack_minutes",
+      ],
+      [
+        {
+          ...bounded,
+          slack_bound_minutes: 45,
+          provisional_slack_minutes: 40,
+        },
+        "provisional_slack_minutes",
+      ],
+      [{ ...online, miss: { clause: "slack_max", value: 50 } }, "clause"],
+      [{ ...online, miss: { clause: "slack_worst", value: "47" } }, "value"],
+      [
+        {
+          ...online,
+          miss: { clause: "slack_worst", value: 50, near_bar: false },
+        },
+        "near_bar",
+      ],
+      [{ ...online, miss_context: "river" }, "miss_context"],
+      [{ ...final, evidence: "r2" }, "evidence"],
+      [{ ...final, evidence: "fit-2026-10-22-8f8591-r2" }, "evidence"],
+      [{ ...final, evidence: "fit-2026-10-22-8f85912" }, "evidence"],
+      [{ ...final, extra: 1 }, "extra"],
+      [{ ...online, miss: { ...online.miss, extra: 1 } }, "extra"],
+    ];
+    for (const [fit, field] of cases) {
+      const problems = chsFitProblems(fit);
+      expect(problems, JSON.stringify(fit)).toHaveLength(1);
+      expect(problems[0]).toContain(field);
+    }
+  });
+
+  const fitYaml =
+    "provider: chs\ntide_reference: chs-1\nchs_fit:\n  tier: final\n  days: 60\n  evidence: fit-2026-10-22-8f85912-r2\nsources:\n  - chs-gate\n";
+
+  test("chs_fit needs an owned CHS current gate", () => {
+    const bad: Record<string, string> = {
+      "stations/current/ca/a.yaml": fitYaml.replace("provider: chs\n", ""),
+      "stations/tide/ca/b.yaml": fitYaml.replace("tide_reference: chs-1\n", ""),
+      "stations/current/ca/c.yaml": fitYaml.replace(
+        "sources:",
+        "derived:\n  reference: chs-2\n  high_water_lag_minutes: 1\n  low_water_lag_minutes: 1\nsources:",
+      ),
+    };
+    for (const [path, text] of Object.entries(bad)) {
+      const root = repo({ [path]: text });
+      expect(() => readStationFiles(join(root, "stations"))).toThrow(
+        new RegExp(path.replace(/\./g, "\\.")),
+      );
+    }
+  });
+
+  test("npm run stations keeps chs_fit", async () => {
+    const text = `# A fitted gate.\n${fitYaml}`;
+    const gate = {
+      ...station("chs-gate", 48.5, "CA-BC"),
+      country: "Canada",
+      country_code: "CA",
+    } as ResolvedStation;
+    const routes = {
+      tide: [],
+      current: [{ slug: "gate", station_ids: ["chs-gate"], former_paths: [] }],
+    };
+    // The first run adds the computed block; once written, nothing changes.
+    const first = readStationFiles(
+      join(repo({ "stations/current/ca/gate.yaml": text }), "stations"),
+    );
+    expect(first[0]?.chs_fit).toMatchObject({ tier: "final", days: 60 });
+    const root = repo({ "stations/current/ca/gate.yaml": text });
+    const [planned] = await planStationFiles(first, [gate], routes, root);
+    expect(planned?.text).toContain("# A fitted gate.");
+    expect(planned?.text).toContain("chs_fit:\n  tier: final\n  days: 60\n");
+    const settled = repo({ "stations/current/ca/gate.yaml": planned!.text });
+    expect(
+      await planStationFiles(
+        readStationFiles(join(settled, "stations")),
+        [gate],
+        routes,
+        settled,
+      ),
+    ).toEqual([]);
+  });
+
+  test("merging keeps chs_fit", async () => {
+    const root = repo({
+      "stations/current/ca/gate.yaml": fitYaml,
+      "stations/current/ca/other.yaml": "sources:\n  - noaa/x\n",
+    });
+    const files = readStationFiles(join(root, "stations"));
+    const survivor = files.find(({ slug }) => slug === "gate")!;
+    const absorbed = files.find(({ slug }) => slug === "other")!;
+    const merged = await mergeStationFiles(
+      survivor,
+      [absorbed],
+      survivor,
+      { country: "CA" },
+      root,
+    );
+    expect(merged.write.text).toContain("chs_fit:\n  tier: final");
   });
 });

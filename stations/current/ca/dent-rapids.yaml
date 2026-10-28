@@ -3,6 +3,14 @@ context: Cordero Channel
 region: CA-BC
 position: [50.41, -125.2117]
 provider: chs
+chs_fit:
+  tier: online
+  miss:
+    clause: slack_worst
+    value: 51.9
+  # Curated water kind, for the app's online note; not measured.
+  miss_context: rapids
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-dent-rapids
 # Written by `npm run stations`. Do not edit.

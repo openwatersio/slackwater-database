@@ -1,5 +1,14 @@
+# UHSLC 837A credits DMI and starts 1891-09-01, the day DMI's Gedser Havn gauge 31618 begins; 31618 closes on 1991-10-18 and 31616, at the prediction fix, opens on 1991-11-07: https://opendataapi.dmi.dk/v2/oceanObs/collections/station/items?bbox=11.85,54.5,12.0,54.6
+# TICON's ged-dnk-dmi record names DMI as its source, at UHSLC 837A's position; its CMEMS copy came with it.
 sources:
   - ticon/gedser-837a-dnk-uhslc_rq
+  - dmi/31616
+  - ticon/gedser-ged-dnk-cmems
+  - ticon/gedser-ged-dnk-dmi
+redirect_from:
+  - /tides/dk/gedser-dmi-31616/
+  - /tides/dk/gedser-ticon-gedser-ged-dnk-cmems/
+  - /tides/dk/gedser-zealand/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -18,3 +27,50 @@ computed:
           coverage: 0.001
         issues:
           - HAT (0.26) < MHHW (0.263)
+    dmi/31616:
+      position: [54.5721, 11.9245]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 45
+        factors:
+          epoch: 0
+          recency: 0
+          source: 0.495
+          quality: 1
+          amplitude: 1
+          coverage: 0.016
+        issues:
+          - MLWS (-0.022) > MLW (-0.047)
+    ticon/gedser-ged-dnk-cmems:
+      position: [54.5667, 11.9333]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/gedser-837a-dnk-uhslc_rq
+        score: 65
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+        issues:
+          - MLWS (0.055) > MLW (0.048)
+    ticon/gedser-ged-dnk-dmi:
+      position: [54.566666, 11.933333]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/gedser-837a-dnk-uhslc_rq
+        score: 80
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.758
+          quality: 1
+          amplitude: 1
+          coverage: 0.001

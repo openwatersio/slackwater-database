@@ -97,6 +97,30 @@ table TideDerivedCurrent {
   low_water_lag_minutes: int;
 }
 
+// Online is 0 so a missing or unknown tier reads as the least confident claim.
+enum ChsFitTier : ubyte { Online = 0, Bounded = 1, Final = 2 }
+
+table ChsFitMiss {
+  clause: string (required);   // one of the seven clause names
+  // In the clause's unit: percent of extrema for reversed_axis, slacks for
+  // invented_slack and missed_slack, knots for peak_speed, minutes for the rest.
+  value: double;
+  value_missing: bool;         // a quarter had nothing to measure
+  near_bar: bool;
+}
+
+/// A fitted CHS gate's measured tier, from the results release `evidence` names.
+/// Zero in a ushort field means absent: no window, bound or provisional bound is 0.
+table ChsFit {
+  tier: ubyte;                 // a ChsFitTier value; readers treat any other value as Online
+  days: ushort;
+  slack_bound_minutes: ushort;
+  provisional_slack_minutes: ushort;
+  miss: ChsFitMiss;
+  miss_context: string;
+  evidence: string (required);
+}
+
 table Current {
   flood_direction: float;   // degrees true
   ebb_direction: float;
@@ -109,6 +133,7 @@ table Current {
   flood_direction_missing: bool;
   ebb_direction_missing: bool;
   mean_flow_missing: bool;
+  chs_fit: ChsFit;
 }
 
 table Source {

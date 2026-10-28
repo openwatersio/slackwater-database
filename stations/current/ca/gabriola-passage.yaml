@@ -3,6 +3,12 @@ context: Gulf Islands
 region: CA-BC
 position: [49.1291, -123.7043]
 provider: chs
+chs_fit:
+  tier: online
+  miss:
+    clause: invented_slack
+    value: 2
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-gabriola-passage
 # Written by `npm run stations`. Do not edit.

@@ -6,6 +6,12 @@ region: CA-BC
 cities: [Nanaimo]
 position: [49.13546639419797, -123.81735084108287]
 provider: chs
+chs_fit:
+  tier: online
+  miss:
+    clause: slack_worst
+    value: 49.3
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-dodd-narrows
 # Written by `npm run stations`. Do not edit.

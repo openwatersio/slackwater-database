@@ -8,6 +8,14 @@ position: [49.7383, -123.8983]
 provider: chs
 tide_reference: chs-point-atkinson
 magnitude_note: 16.5 kn flood · 16 kn ebb
+chs_fit:
+  tier: online
+  miss:
+    clause: invented_slack
+    value: 16
+  # Curated water kind, for the app's online note; not measured. Speeds are 16.5 knots flood and 16 knots ebb (Sailing Directions PAC 201, paragraph 224).
+  miss_context: rapids
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-sechelt-rapids
 # Written by `npm run stations`. Do not edit.

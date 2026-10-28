@@ -3,6 +3,11 @@ context: Port Neville
 region: CA-BC
 position: [50.4717, -126.1367]
 provider: chs
+chs_fit:
+  tier: final
+  days: 210
+  provisional_slack_minutes: 35
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-johnstone-strait-central
 # Written by `npm run stations`. Do not edit.

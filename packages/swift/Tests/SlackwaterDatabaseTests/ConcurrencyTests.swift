@@ -15,6 +15,7 @@ final class ConcurrencyTests: XCTestCase {
           group.addTask {
             XCTAssertEqual(db.map(\.id), [
               "test/current", "test/reference", "test/subordinate", "test/subordinate-fixed",
+              "test/zfit-bounded", "test/zfit-online", "test/zfit-unknown",
             ])
             XCTAssertEqual(db.stationRoute(kind: .tide, slug: "reference")?.stationIDs, ["test/reference"])
             XCTAssertEqual(db.stationRoutes(kind: .current).map(\.slug), ["a-current"])

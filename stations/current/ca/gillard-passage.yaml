@@ -4,6 +4,11 @@ region: CA-BC
 aliases: [yucultas]
 position: [50.3933, -125.1567]
 provider: chs
+chs_fit:
+  tier: bounded
+  days: 210
+  slack_bound_minutes: 40
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-gillard-passage
 # Written by `npm run stations`. Do not edit.

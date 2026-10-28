@@ -1,0 +1,158 @@
+{
+  "database": "1.0.0-beta.20261017",
+  "engine": "b9beff5b7ba7d42296cbff3b92e9976e6846f402",
+  "gates": {
+    "chs-active-pass": {
+      "days": 60,
+      "tier": "final"
+    },
+    "chs-arran-rapids": {
+      "miss": {
+        "clause": "slack_worst",
+        "value": 47.4
+      },
+      "tier": "online"
+    },
+    "chs-beazley-passage": {
+      "miss": {
+        "clause": "slack_worst",
+        "near_bar": true,
+        "value": 44.5
+      },
+      "tier": "online"
+    },
+    "chs-blackney-passage": {
+      "days": 210,
+      "slack_bound_minutes": 45,
+      "tier": "bounded"
+    },
+    "chs-dent-rapids": {
+      "miss": {
+        "clause": "slack_worst",
+        "value": 51.9
+      },
+      "tier": "online"
+    },
+    "chs-dodd-narrows": {
+      "miss": {
+        "clause": "slack_worst",
+        "value": 49.3
+      },
+      "tier": "online"
+    },
+    "chs-first-narrows": {
+      "days": 60,
+      "tier": "final"
+    },
+    "chs-gabriola-passage": {
+      "miss": {
+        "clause": "invented_slack",
+        "value": 2
+      },
+      "tier": "online"
+    },
+    "chs-gillard-passage": {
+      "days": 210,
+      "slack_bound_minutes": 40,
+      "tier": "bounded"
+    },
+    "chs-great-bras-dor": {
+      "miss": {
+        "clause": "slack_worst",
+        "value": 70.8
+      },
+      "tier": "online"
+    },
+    "chs-hole-in-the-wall": {
+      "miss": {
+        "clause": "slack_worst",
+        "value": 45.3
+      },
+      "tier": "online"
+    },
+    "chs-johnstone-strait-central": {
+      "days": 210,
+      "provisional_slack_minutes": 35,
+      "tier": "final"
+    },
+    "chs-juan-de-fuca-east": {
+      "miss": {
+        "clause": "invented_slack",
+        "value": 24
+      },
+      "tier": "online"
+    },
+    "chs-masset-sound": {
+      "miss": {
+        "clause": "slack_worst",
+        "value": 47.3
+      },
+      "tier": "online"
+    },
+    "chs-nakwakto-rapids": {
+      "miss": {
+        "clause": "slack_worst",
+        "value": 49.8
+      },
+      "tier": "online"
+    },
+    "chs-porlier-pass": {
+      "miss": {
+        "clause": "slack_worst",
+        "value": 53.7
+      },
+      "tier": "online"
+    },
+    "chs-quatsino-narrows": {
+      "days": 210,
+      "slack_bound_minutes": 40,
+      "tier": "bounded"
+    },
+    "chs-race-passage": {
+      "miss": {
+        "clause": "invented_slack",
+        "value": 16
+      },
+      "tier": "online"
+    },
+    "chs-sechelt-rapids": {
+      "miss": {
+        "clause": "invented_slack",
+        "value": 16
+      },
+      "tier": "online"
+    },
+    "chs-second-narrows": {
+      "miss": {
+        "clause": "invented_slack",
+        "value": 2
+      },
+      "tier": "online"
+    },
+    "chs-seymour-narrows": {
+      "days": 60,
+      "tier": "final"
+    },
+    "chs-tillicum-bridge": {
+      "miss": {
+        "clause": "invented_slack",
+        "value": 42
+      },
+      "tier": "online"
+    },
+    "chs-weynton-passage": {
+      "miss": {
+        "clause": "slack_worst",
+        "value": 45.3
+      },
+      "tier": "online"
+    }
+  },
+  "newest": {
+    "fit_end": "2026-10-22",
+    "grid": -1
+  },
+  "release": "fit-2026-10-22-8f85912-r2",
+  "scorer": 4,
+  "stamp": "8f85912ce223"
+}

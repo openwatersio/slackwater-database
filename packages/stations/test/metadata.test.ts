@@ -953,6 +953,17 @@ chs-derived:
     reference: chs-port
     hwLagMinutes: 25
     lwLagMinutes: 35
+chs-fitted:
+  name: Seymour Narrows
+  position: [50.1, -125.35]
+  provider: chs
+  kind: current
+  chsFit:
+    tier: online
+    miss:
+      clause: slack_median
+      value: null
+    evidence: fit-2026-10-22-8f85912-r2
 `);
 
     expect(validateMetadata(new Map(), registry)).toEqual([]);
@@ -963,6 +974,16 @@ chs-derived:
           id: "chs-gate",
           kind: "current",
           current: expect.objectContaining({ tide_reference: "chs-port" }),
+        }),
+        expect.objectContaining({
+          id: "chs-fitted",
+          current: expect.objectContaining({
+            chs_fit: {
+              tier: "online",
+              miss: { clause: "slack_median", value: null },
+              evidence: "fit-2026-10-22-8f85912-r2",
+            },
+          }),
         }),
         expect.objectContaining({
           id: "chs-derived",

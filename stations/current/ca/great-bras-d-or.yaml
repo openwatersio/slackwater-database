@@ -6,6 +6,12 @@ region: CA-NS
 aliases: [big bras d'or, bras d'or lakes, boularderie, seal island bridge]
 position: [46.2816, -60.4247]
 provider: chs
+chs_fit:
+  tier: online
+  miss:
+    clause: slack_worst
+    value: 70.8
+  evidence: fit-2026-10-22-8f85912-r2
 sources:
   - chs-great-bras-dor
 # Written by `npm run stations`. Do not edit.

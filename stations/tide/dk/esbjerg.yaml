@@ -1,7 +1,10 @@
+# TICON's id names DMI as the source, and DMI's Esbjerg Havn gauge 25149 is at the prediction fix, where 25148 ran before it; TICON rounds the position to the minute: https://opendataapi.dmi.dk/v2/oceanObs/collections/station/items?stationId=25149
 sources:
   - ticon/esbjerg-esb-dnk-dmi
+  - dmi/25149
   - ticon/esbjergtg-esb-dnk-cmems
 redirect_from:
+  - /tides/dk/esbjerg-havn/
   - /tides/dk/esbjerg-south-denmark/
 # Written by `npm run stations`. Do not edit.
 computed:
@@ -19,6 +22,19 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0
+    dmi/25149:
+      position: [55.4602, 8.4397]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 45
+        factors:
+          epoch: 0
+          recency: 0
+          source: 0.495
+          quality: 1
+          amplitude: 1
+          coverage: 0.017
     ticon/esbjergtg-esb-dnk-cmems:
       position: [55.466702, 8.4333]
       coastline: unverifiable
