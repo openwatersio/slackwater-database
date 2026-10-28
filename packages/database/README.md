@@ -187,7 +187,7 @@ What the string contains, and why that is sufficient:
 
 - **The creator credit.** For TICON-4 stations, the citation its authors ask for; for Kartverket, LINZ, JHOD and DMI, the publishing agency. JHOD also carries the source editing notice. A source that requires no credit, such as public-domain NOAA data, contributes nothing here.
 - **The licence and its URI**, taken from the station rather than its source. Licence varies within a single source — the TICON stations relayed from CMEMS are CC BY-NC while the rest are CC BY — so the notice names the one that actually applies to the station in hand.
-- **An indication that the material was modified**, pointing at [what this project changes](https://github.com/openwatersio/slackwater-database#modifications-to-source-data): derived datums, normalized names, geocoded location fields, re-fit phases for two GESLA sources and three Hong Kong gauges whose clock is one hour early, and harmonics fitted from DMI predictions.
+- **An indication that the material was modified**, pointing at [what this project changes](https://github.com/openwatersio/slackwater-database#modifications-to-source-data): derived datums, normalized names, geocoded location fields, re-fit phases for two GESLA sources and three Hong Kong gauges whose clock is one hour early, UHSLC's positions for four TICON gauges that TICON places 17 to 49 km away, and harmonics fitted from DMI predictions.
 
 JHOD stations name the Government Standard Terms of Use 2.0 and link the publisher's terms.
 
