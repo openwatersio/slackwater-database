@@ -22,10 +22,12 @@ const con = (
 });
 
 // A fake NOAA built from a station list plus per-(id,bin) harcon and per-id offsets.
-function fakeNoaa({ stations, harcon = {}, offsets = {} }) {
+function fakeNoaa({ stations, harcon = {}, offsets = {}, metadata = {} }) {
   return async (url) => {
     const ok = (body) => ({ ok: true, json: async () => body });
     if (url.includes("stations.json")) return ok({ stations });
+    const m = url.match(/stations\/([^/]+)\.json$/);
+    if (m) return ok({ stations: metadata[m[1]] ?? [] });
     const h = url.match(
       /stations\/([^/]+)\/harcon\.json\?units=english&bin=(\d+)/,
     );
@@ -445,3 +447,82 @@ test("subordinates are not sampled — they have no harcon of their own", async 
   );
   assert.equal(bundle.crossFlow.worstAbsolute.id, "REF");
 });
+
+test("an unrelated invalid or rotary station cannot block an explicitly selected import", async () => {
+  const stations = [
+    { id: "GOOD", lat: 48, lng: -123, type: "H", currbin: 1 },
+    { id: "BAD", lat: 32, lng: 80, type: "H", currbin: 1 },
+    { id: "ROTARY", lat: 32, lng: 80, type: "W", currbin: 1 },
+  ];
+  const { bundle } = await run(
+    fakeNoaa({ stations, harcon: { "GOOD@1": [con("M2", 1, 0)] } }),
+    { stations: ["GOOD"] },
+  );
+  assert.deepEqual(
+    bundle.stations.map((s) => s.id),
+    ["GOOD"],
+  );
+  const withoutBad = await run(
+    fakeNoaa({
+      stations: stations.filter((s) => s.id !== "BAD"),
+      harcon: { "GOOD@1": [con("M2", 1, 0)] },
+    }),
+  );
+  assert.equal(withoutBad.skipped.typeW, 1);
+});
+
+test("repairs positions before box selection and for referenced depth bins", async () => {
+  const stations = [
+    { id: "SAV2324", lat: 32.04, lng: 80.85, type: "H", currbin: 1 },
+    { id: "SUB", lat: 32.04, lng: -80.85, type: "S", currbin: 1 },
+  ];
+  const fake = () =>
+    fakeNoaa({
+      stations: structuredClone(stations),
+      harcon: {
+        "SAV2324@1": [con("M2", 1, 0)],
+        "SAV2324@8": [con("M2", 2, 0)],
+      },
+      offsets: { SUB: { refStationId: "SAV2324", refStationBin: 8 } },
+      metadata: { SAV2324: [{ id: "SAV2324", lat: 32.04089, lng: -80.84851 }] },
+    });
+  for (const options of [{ box: [31, -82, 33, -80] }, { stations: ["SUB"] }]) {
+    const { bundle } = await run(fake(), options);
+    if ("box" in options)
+      assert.equal(
+        bundle.stations.find((s) => s.id === "SAV2324").longitude,
+        -80.84851,
+      );
+    assert.equal(
+      bundle.stations.find((s) => s.id === "SAV2324@8").longitude,
+      -80.84851,
+    );
+    assert.equal(
+      bundle.stations.find((s) => s.id === "SUB").reference,
+      "SAV2324@8",
+    );
+  }
+});
+
+for (const longitude of [-175.56667, 178.11667]) {
+  test(`checks ambiguous positive Aleutian longitudes against metadata: ${longitude}`, async () => {
+    const { bundle } = await run(
+      fakeNoaa({
+        stations: [
+          {
+            id: "ALEUTIAN",
+            lat: 51.96,
+            lng: Math.abs(longitude),
+            type: "H",
+            currbin: 1,
+          },
+        ],
+        harcon: { "ALEUTIAN@1": [con("M2", 1, 0)] },
+        metadata: {
+          ALEUTIAN: [{ id: "ALEUTIAN", lat: 51.96, lng: longitude }],
+        },
+      }),
+    );
+    assert.equal(bundle.stations[0].longitude, longitude);
+  });
+}

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { validateBundle } from "../src/validate.js";
@@ -142,4 +143,41 @@ test("a bundle predating the census is valid, not broken", () => {
 test("a null census (no harmonic stations) is valid", () => {
   const v = validateBundle({ stations: [harmonic("A")], crossFlow: null });
   assert.equal(v.ok, true);
+});
+
+for (const [latitude, longitude] of [
+  [32.04, 80.85],
+  [91, -123],
+  [48, -181],
+  [-32, -81],
+]) {
+  test(`rejects a position outside NOAA's US coastal regions: ${latitude}, ${longitude}`, () => {
+    const v = validateBundle({
+      stations: [harmonic("SAV2304", { latitude, longitude })],
+    });
+    assert.equal(v.ok, false);
+    assert.match(v.errors.join(), /SAV2304.*outside NOAA/);
+  });
+}
+
+for (const [latitude, longitude] of [
+  [32.04, -80.85],
+  [52, 179],
+  [13.4, 144.7],
+  [-14.3, -170.7],
+  [18.4, -65],
+]) {
+  test(`accepts US coastal and territory positions: ${latitude}, ${longitude}`, () => {
+    assert.equal(
+      validateBundle({ stations: [harmonic("A", { latitude, longitude })] }).ok,
+      true,
+    );
+  });
+}
+
+test("the committed bundle has valid positions and references", () => {
+  const bundle = JSON.parse(
+    readFileSync(new URL("../currents.json", import.meta.url), "utf8"),
+  );
+  assert.deepEqual(validateBundle(bundle).errors, []);
 });

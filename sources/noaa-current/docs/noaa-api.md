@@ -59,6 +59,12 @@ id, name, lat, lng, type, currbin
 `type` is `H` (harmonic), `S` (subordinate), or `W` (weak and variable / rotary —
 NOAA doesn't publish a usable reversing model for these; we skip them).
 
+## Station-list positions
+
+The current-prediction list can lose longitude signs. For example, its `SAV2304` entry reports approximately 32.0409, +80.8485, while [the individual station metadata](https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/SAV2304.json) reports 32.040889739990234, −80.8485107421875. The importer uses the individual endpoint's published coordinates when a needed station's list position fails the geographic sanity check or has a positive longitude. Positive longitudes need verification because a lost sign can place a western Aleutian station inside the valid eastern Aleutian bounds; verified positive coordinates are kept. A missing or implausible metadata position stops extraction rather than guessing a sign. List-only drift checks do not fetch positions.
+
+`plausiblePosition` defines this project's broad sanity bounds for US coastal regions, including Pacific territories and Alaska across the date line. These rectangles are not borders and cannot detect a wrong position inside an allowed region. The bundle validator applies the same bounds, and the source tests validate the committed bundle.
+
 ## `harcon.json` fields
 
 ```

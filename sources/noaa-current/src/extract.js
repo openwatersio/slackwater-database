@@ -15,7 +15,13 @@
 //      the reduction to them overshoots badly (PUG1716: 89 min wrong as a reduction,
 //      6.8 min as harmonic). Always try own-harcon first.
 
-import { fetchStationList, fetchHarcon, fetchOffsets } from "./noaa.js";
+import {
+  fetchStationList,
+  fetchStationPosition,
+  fetchHarcon,
+  fetchOffsets,
+} from "./noaa.js";
+import { plausiblePosition } from "./validate.js";
 import { crossFlowCensus } from "./cross-flow.js";
 
 const BUNDLE_NOTE =
@@ -38,6 +44,16 @@ export async function extractBundle(opts = {}) {
   const all = await fetchStationList(fetchOpts);
   const primaryBin = new Map(all.map((s) => [s.id, s.currbin]));
 
+  const resolvedPositions = new Set();
+  async function ensurePosition(station) {
+    if (resolvedPositions.has(station.id)) return;
+    // A lost western longitude sign can still land inside the Aleutian bounds.
+    if (station.lng > 0 || !plausiblePosition(station.lat, station.lng)) {
+      Object.assign(station, await fetchStationPosition(station.id, fetchOpts));
+      resolvedPositions.add(station.id);
+    }
+  }
+
   let selected = all;
   if (wanted?.length) {
     const want = new Set(wanted);
@@ -46,6 +62,9 @@ export async function extractBundle(opts = {}) {
     if (missing.length)
       throw new Error(`not in NOAA's station list: ${missing.join(", ")}`);
   } else if (box) {
+    for (const s of selected) {
+      if (s.type !== "W") await ensurePosition(s);
+    }
     const [south, west, north, east] = box;
     selected = all.filter(
       (s) => s.lat >= south && s.lat <= north && s.lng >= west && s.lng <= east,
@@ -107,6 +126,7 @@ export async function extractBundle(opts = {}) {
       skipped.typeW++;
       continue;
     } // weak/rotary — not modeled
+    await ensurePosition(s);
     if (await ensureHarmonic(s.id, s.id, s.currbin, s.name, s.lat, s.lng))
       continue;
     if (s.type === "H") {
@@ -162,6 +182,7 @@ export async function extractBundle(opts = {}) {
       );
       continue;
     }
+    await ensurePosition(ref);
     await ensureHarmonic(
       sub.reference,
       sub._refId,
