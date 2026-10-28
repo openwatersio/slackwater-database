@@ -1,9 +1,7 @@
 region: US-GA
-sources:
+sources: []
+retired_sources:
   - noaa/ACT7286
 # Written by `npm run stations`. Do not edit.
 computed:
-  sources:
-    noaa/ACT7286:
-      position: [32.105, -80.83667]
-      coastline: unverifiable
+  sources: {}

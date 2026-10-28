@@ -1,0 +1,9 @@
+region: US-GA
+sources:
+  - noaa/SAV2307
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    noaa/SAV2307:
+      position: [32.015869140625, -80.88381958007812]
+      coastline: unverifiable

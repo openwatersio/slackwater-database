@@ -1,6 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { getJson } from "../src/noaa.js";
+import {
+  getJson,
+  fetchStationList,
+  fetchStationPosition,
+} from "../src/noaa.js";
 
 // retryMs: 0 everywhere — the backoff schedule isn't what's under test, the
 // retry/no-retry decision is.
@@ -56,3 +60,75 @@ test("retries a network error, then rethrows it if it persists", async () => {
   );
   assert.equal(count, 2);
 });
+
+test("list-only drift checks do not fetch or validate positions", async () => {
+  let calls = 0;
+  const station = { id: "SAV2304", lat: 32.04, lng: 80.85, currbin: 1 };
+  const stations = await fetchStationList(
+    opts(async () => {
+      calls++;
+      return {
+        ok: true,
+        json: async () => ({ stations: [station, { ...station, currbin: 2 }] }),
+      };
+    }),
+  );
+  assert.equal(calls, 1);
+  assert.deepEqual(stations, [station]);
+});
+
+test("reads published coordinates from individual station metadata", async () => {
+  const position = await fetchStationPosition(
+    "SAV2304",
+    opts(async (url) => {
+      assert.match(url, /stations\/SAV2304.json$/);
+      return {
+        ok: true,
+        json: async () => ({
+          stations: [
+            { id: "SAV2304", lat: 32.040889739990234, lng: -80.8485107421875 },
+          ],
+        }),
+      };
+    }),
+  );
+  assert.deepEqual(position, {
+    lat: 32.040889739990234,
+    lng: -80.8485107421875,
+  });
+});
+
+test("a failed metadata lookup stops extraction instead of inventing a position", async () => {
+  await assert.rejects(
+    () =>
+      fetchStationPosition(
+        "SAV2304",
+        opts(async () => ({ ok: false, status: 404 })),
+      ),
+    /NOAA 404/,
+  );
+});
+
+for (const metadata of [
+  [],
+  [{ id: "SAV2304", lat: 32.04, lng: 80.85 }],
+  [{ id: "OTHER", lat: 32.04, lng: -80.85 }],
+]) {
+  test(`refuses an invalid metadata fallback: ${JSON.stringify(metadata)}`, async () => {
+    await assert.rejects(
+      () =>
+        fetchStationPosition(
+          "SAV2304",
+          opts(async (url) => ({
+            ok: true,
+            json: async () => ({
+              stations: url.includes("stations.json")
+                ? [{ id: "SAV2304", lat: 32.04, lng: 80.85 }]
+                : metadata,
+            }),
+          })),
+        ),
+      /SAV2304.*outside NOAA/,
+    );
+  });
+}

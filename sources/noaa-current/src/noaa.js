@@ -8,6 +8,8 @@
 //   - the station list repeats each station once per depth bin; de-dup keep-first.
 //   - NOAA throttles bulk callers. An extraction is thousands of requests: pace them.
 
+import { plausiblePosition } from "./validate.js";
+
 const MDAPI = "https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi";
 const DATAGETTER = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter";
 
@@ -62,6 +64,20 @@ export async function fetchStationList(opts = {}) {
   return list.stations.filter((s) =>
     seen.has(s.id) ? false : (seen.add(s.id), true),
   );
+}
+
+export async function fetchStationPosition(id, opts = {}) {
+  // NOAA's list can lose longitude signs while station metadata remains correct (#373).
+  const details = await getJson(
+    `${MDAPI}/stations/${encodeURIComponent(id)}.json`,
+    opts,
+  );
+  const position = details.stations?.find((station) => station.id === id);
+  if (!plausiblePosition(position?.lat, position?.lng))
+    throw new Error(
+      `${id}: position outside NOAA's US coastal regions in station metadata`,
+    );
+  return { lat: position.lat, lng: position.lng };
 }
 
 /**

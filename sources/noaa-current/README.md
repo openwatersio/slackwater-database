@@ -111,7 +111,7 @@ npm run validate -w sources/noaa-current
 
 `validate` gates the automated review branch: it fails on a subordinate whose reference
 went missing, duplicate ids, a harmonic station with no constituents, or a bundle that
-lost its Z₀ offsets — the shapes a truncated extraction takes.
+lost its Z₀ offsets. It also rejects missing coordinates and positions outside the broad US coastal bounds documented in [the API notes](docs/noaa-api.md#station-list-positions).
 
 ## Don't trust it until you've diffed it
 

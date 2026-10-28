@@ -4,6 +4,23 @@
 
 import { CROSS_FLOW_RATIO_MAX } from "./cross-flow.js";
 
+// Broad sanity bounds, not borders: include US territories and Alaska across 180°.
+export function plausiblePosition(latitude, longitude) {
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return false;
+  return [
+    [15, -180, 75, -50],
+    [45, 170, 75, 180],
+    [10, 130, 25, 155],
+    [-20, -180, -10, -160],
+  ].some(
+    ([south, west, north, east]) =>
+      latitude >= south &&
+      latitude <= north &&
+      longitude >= west &&
+      longitude <= east,
+  );
+}
+
 /** @returns {{ok: boolean, counts: object, crossFlow: object|null, errors: string[]}} */
 export function validateBundle(bundle) {
   const errors = [];
@@ -61,6 +78,17 @@ export function validateBundle(bundle) {
           .map((s) => s.id)
           .join(", "),
     );
+  }
+
+  for (const s of stations) {
+    if (
+      Number.isFinite(s.latitude) &&
+      Number.isFinite(s.longitude) &&
+      !plausiblePosition(s.latitude, s.longitude)
+    )
+      errors.push(
+        `${s.id}: position ${s.latitude}, ${s.longitude} outside NOAA's US coastal regions`,
+      );
   }
 
   // The bundle's whole model is one signed speed along a fixed flood axis. When

@@ -1,11 +1,9 @@
 region: US-SC
-sources:
+sources: []
+retired_sources:
   - noaa/ACT7246
 redirect_from:
   - /currents/us/sc/skull-creek/
 # Written by `npm run stations`. Do not edit.
 computed:
-  sources:
-    noaa/ACT7246:
-      position: [32.26333, -80.74167]
-      coastline: unverifiable
+  sources: {}
