@@ -78,16 +78,16 @@ npm run refresh:uhslc -w sources/ticon
 
 ## Positions
 
-A record takes TICON's position, which matches the GESLA-4 metadata TICON ships in `meta.csv`. That metadata places a few UHSLC research-quality records kilometres from their gauges, so `POSITION_CORRECTIONS` in [meta.ts](meta.ts) moves each to the position UHSLC publishes for the same series in [uhslc-metadata.json](uhslc-metadata.json), where a second source also puts the gauge:
+A record takes TICON's position, which matches the GESLA-4 metadata TICON ships in `meta.csv`. That metadata places a few UHSLC research-quality records kilometres from their gauges, so `POSITION_CORRECTIONS` in [meta.ts](meta.ts) moves each to the position UHSLC publishes for the same series in [uhslc-metadata.json](uhslc-metadata.json). A sea-level network's own station list places each gauge there too:
 
-| Record            | TICON's position             | Second source                                              |
-| ----------------- | ---------------------------- | ---------------------------------------------------------- |
-| Ammassalik (297A) | 29 km east                   | DMI's Tasiilaq gauge, 0.4 km from UHSLC's position         |
-| Langkawi (142A)   | 49 km north, in Thailand     | TICON's fast-delivery series of the same gauge (142)       |
-| Macaé (719A)      | 35 km east-northeast, at sea | OpenStreetMap: Cajueiros, the district by Imbetiba harbour |
-| Alotau (069A)     | 17 km north                  | OpenStreetMap: Goilanai, on the Milne Bay waterfront       |
+| Record            | TICON's position             | Station list placing the gauge at UHSLC's position                                                                           |
+| ----------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Ammassalik (297A) | 29 km east                   | [IOC sea level monitoring](https://www.ioc-sealevelmonitoring.org/station.php?code=tasw), Tasiilaq Harbour, 0.1 km away      |
+| Langkawi (142A)   | 49 km north, in Thailand     | [PSMSL](https://psmsl.org/data/obtaining/stations/1676.php) 1676, Pulau Langkawi, 0.15 km away                               |
+| Macaé (719A)      | 35 km east-northeast, at sea | [GLOSS](https://www.bodc.ac.uk/resources/inventories/gloss_handbook/stations/352/) 352, Porto de Macaé, at the same position |
+| Alotau (069A)     | 17 km north                  | [PSMSL](https://psmsl.org/data/obtaining/stations/1607.php) 1607, Alotau, 0.4 km away                                        |
 
-The record's timezone and quality's duplicate checks use the corrected position. Each entry also holds TICON's position, and the import stops when TICON publishes a different one, so a TICON release that moves the record is reviewed rather than overwritten. A record UHSLC places elsewhere keeps TICON's position until a second source confirms UHSLC's: at Chuuk (054A), NOAA's own record of the gauge agrees with TICON. See [#371](https://github.com/openwatersio/slackwater-database/issues/371).
+The record's timezone, its place names and quality's duplicate checks use the corrected position. Each entry also holds TICON's position, and the import stops when TICON drops the record or publishes it somewhere else, so a TICON release that changes it is reviewed rather than overwritten. A record UHSLC places elsewhere keeps TICON's position until another station list confirms UHSLC's: at Chuuk (054A), NOAA's own record of the gauge agrees with TICON. See [#371](https://github.com/openwatersio/slackwater-database/issues/371).
 
 ## Constituent names
 

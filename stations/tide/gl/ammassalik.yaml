@@ -1,6 +1,7 @@
 # UHSLC 297A, Ammassalik (Tasiilaq) in Greenland. TICON files it under Denmark, 29 km east of the gauge, and the TICON
-# importer moves it to UHSLC's position (POSITION_CORRECTIONS in sources/ticon/meta.ts). It stays apart from DMI's
-# gl/tasiilaq, 0.4 km away: this record ends in 1998 and DMI's prediction dates its observations 08/2000 to 09/2001.
+# importer moves it to UHSLC's position (POSITION_CORRECTIONS in sources/ticon/meta.ts). DMI's gl/tasiilaq is 0.4 km
+# away, and quality rejects DMI's record there as this one's duplicate. The stations stay apart because this record
+# ends in 1998 and DMI's prediction dates its observations 08/2000 to 09/2001.
 sources:
   - ticon/ammassalik-297a-dnk-uhslc_rq
 redirect_from:

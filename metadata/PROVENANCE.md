@@ -53,7 +53,7 @@ Neither snapshot is included in the published database or npm package. Only the 
 
 ## UHSLC relay metadata
 
-`sources/ticon/uhslc-metadata.json` pins five fields (station name, position, current data provider, originator number, last update) from the per-station metadata the University of Hawaii Sea Level Center publishes with its research-quality records, the Joint Archive for Sea Level (Caldwell, Merrifield and Thompson, 2015, NOAA NCEI, https://doi.org/10.7289/V5V40S7W). It is used only to match a TICON relay to the gauge it copies. None of it reaches the published database or npm package. `sources/ticon/fetch-uhslc-metadata.ts` refreshes it; review the diff before committing.
+`sources/ticon/uhslc-metadata.json` pins five fields (station name, position, current data provider, originator number, last update) from the per-station metadata the University of Hawaii Sea Level Center publishes with its research-quality records, the Joint Archive for Sea Level (Caldwell, Merrifield and Thompson, 2015, NOAA NCEI, https://doi.org/10.7289/V5V40S7W). It matches a TICON relay to the gauge it copies, and it supplies the position for the four TICON records `POSITION_CORRECTIONS` in `sources/ticon/meta.ts` corrects (see [sources/ticon/README.md](../sources/ticon/README.md#positions)). Those four positions are the only part of it that reaches the published database or npm package. `sources/ticon/fetch-uhslc-metadata.ts` refreshes it; review the diff before committing.
 
 ## CHS current results
 

@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  checkCorrections,
   correctPosition,
   matchMetadata,
   POSITION_CORRECTIONS,
@@ -173,11 +174,40 @@ describe("correctPosition", () => {
     for (const [id, { corrected }] of Object.entries(POSITION_CORRECTIONS)) {
       const series = id.match(/-(\d+[a-z])-[a-z]{3}-uhslc_rq$/)?.[1];
       const station = uhslc[series!.toUpperCase()];
-      expect(station, id).toBeDefined();
-      expect(corrected, id).toEqual({
+      // A refresh of uhslc-metadata.json that moves one of these lands here:
+      // check the new position against the station list its comment cites.
+      const message = `${id}: UHSLC's position differs from POSITION_CORRECTIONS in meta.ts`;
+      expect(station, message).toBeDefined();
+      expect(corrected, message).toEqual({
         lat: station!.latitude,
         lon: station!.longitude,
       });
     }
+  });
+});
+
+describe("checkCorrections", () => {
+  const published = new Map(
+    Object.entries(POSITION_CORRECTIONS).map(([id, c]) => [id, c.published]),
+  );
+
+  it("passes when TICON publishes every corrected gauge where expected", () => {
+    expect(() => checkCorrections(published)).not.toThrow();
+  });
+
+  it("throws when TICON no longer publishes a corrected gauge", () => {
+    const renamed = new Map(published);
+    renamed.delete("macae-719a-bra-uhslc_rq");
+    expect(() => checkCorrections(renamed)).toThrow(
+      "macae-719a-bra-uhslc_rq: TICON no longer publishes this gauge",
+    );
+  });
+
+  it("throws when TICON moves a corrected gauge", () => {
+    const moved = new Map(published);
+    moved.set("alotau-069a-png-uhslc_rq", { lat: -10.3, lon: 150.45 });
+    expect(() => checkCorrections(moved)).toThrow(
+      "alotau-069a-png-uhslc_rq: TICON now places the gauge at -10.3, 150.45",
+    );
   });
 });
