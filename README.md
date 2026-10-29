@@ -163,6 +163,7 @@ For TICON-4 stations:
 
 - Harmonic constituents are carried through as published, except for the German `wsv` and Dutch `rws` gauges, whose GESLA-4 records are timestamped in local legal time but labeled UTC, and the three Hong Kong gauges `329`, `329a` and `329b`, whose UHSLC times are one hour early. Those are re-fit from the water levels, with each Hong Kong gauge's times moved one hour later, so their phases are UTC-referenced like every other station, and a station that cannot be re-fit is dropped rather than published with wrong phases. See [#96](https://github.com/openwatersio/slackwater-database/issues/96), [#98](https://github.com/openwatersio/slackwater-database/issues/98) and [#360](https://github.com/openwatersio/slackwater-database/issues/360).
 - Datums use supported GESLA-4 observation windows or a labeled harmonic fallback, since TICON does not publish them. See [sources/ticon/README.md](./sources/ticon/README.md) for the method and its uncertainties.
+- Four UHSLC research-quality records, Ammassalik (297A), Langkawi (142A), Macaé (719A) and Alotau (069A), take UHSLC's position for the gauge instead of TICON's, which sits 17 to 49 km away. See [sources/ticon/README.md](./sources/ticon/README.md#positions) and [#371](https://github.com/openwatersio/slackwater-database/issues/371).
 
 For Kartverket stations, published harmonic phases are converted from UTC+1 to UTC and centimetres are converted to metres. The original responses and comparison results are pinned under [sources/kartverket](./sources/kartverket/README.md).
 

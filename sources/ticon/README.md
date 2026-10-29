@@ -68,13 +68,26 @@ The importer runs one process per core, each taking every nth station. Set `SHAR
 
 Many TICON records relay a gauge this repo also imports directly. [provenance.ts](provenance.ts) names the record a relay was copied from when the relay declares it: a TICON NOAA relay carries the NOAA station number in its id, a Norwegian Hydrographic Service (`nhs`) relay carries Kartverket's gauge code, a JODC Coast Guard (`jodc_jcg`) relay carries an `HD` code matched through [JHOD's crosswalk](../jhod/ticon-originators.json), and UHSLC research-quality metadata names an originator. UHSLC records that explicitly name JODC and an `HD` code use that same crosswalk. An originator number counts only when the provider of its `Data_Source`'s current period, the first line or the first under an open-ended period heading such as `For 1997-:`, matches a provider in `UHSLC_RULES`, since UHSLC numbers have no namespace (071 is both Wellington and La Libertad). UHSLC records the Norwegian Hydrographic Service with no number, so those gauges match the Kartverket record of the same place name, read from `data/kartverket`. Quality evaluation shares a declaration across every TICON record of one gauge, so UHSLC's fast-delivery series follows its research-quality sibling.
 
-The UHSLC metadata is pinned in [uhslc-metadata.json](uhslc-metadata.json), because UHSLC edits it in place. It holds only what matching needs (station name, position, its data source's current provider, originator number, last update) from UHSLC's public research-quality metadata, and nothing from it reaches the published database. Refresh it deliberately and review the diff:
+The UHSLC metadata is pinned in [uhslc-metadata.json](uhslc-metadata.json), because UHSLC edits it in place. It holds only what matching needs (station name, position, its data source's current provider, originator number, last update) from UHSLC's public research-quality metadata. Of that, only the positions the [position corrections](#positions) copy reach the published database. Refresh it deliberately and review the diff:
 
 ```shell
 npm run refresh:uhslc -w sources/ticon
 ```
 
 `npm run report:merges -w packages/stations` lists the station merges this provenance, CMEMS copies, shared gauge codes and quality's duplicate and superseded links propose, and `npm run merge -w packages/stations` makes the confident ones in the station files (see [stations/README.md](../../stations/README.md)).
+
+## Positions
+
+A record takes TICON's position, which matches the GESLA-4 metadata TICON ships in `meta.csv`. That metadata places a few UHSLC research-quality records kilometres from their gauges, so `POSITION_CORRECTIONS` in [meta.ts](meta.ts) moves each to the position UHSLC publishes for the same series in [uhslc-metadata.json](uhslc-metadata.json). A sea-level network's own station list places each gauge there too:
+
+| Record            | TICON's position             | Station list placing the gauge at UHSLC's position                                                                           |
+| ----------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Ammassalik (297A) | 29 km east                   | [IOC sea level monitoring](https://www.ioc-sealevelmonitoring.org/station.php?code=tasw), Tasiilaq Harbour, 0.1 km away      |
+| Langkawi (142A)   | 49 km north, in Thailand     | [PSMSL](https://psmsl.org/data/obtaining/stations/1676.php) 1676, Pulau Langkawi, 0.15 km away                               |
+| Macaé (719A)      | 35 km east-northeast, at sea | [GLOSS](https://www.bodc.ac.uk/resources/inventories/gloss_handbook/stations/352/) 352, Porto de Macaé, at the same position |
+| Alotau (069A)     | 17 km north                  | [PSMSL](https://psmsl.org/data/obtaining/stations/1607.php) 1607, Alotau, 0.4 km away                                        |
+
+The record's timezone, its place names and quality's duplicate checks use the corrected position. Each entry also holds TICON's position, and the import stops when TICON drops the record or publishes it somewhere else, so a TICON release that changes it is reviewed rather than overwritten. A record UHSLC places elsewhere keeps TICON's position until another station list confirms UHSLC's: at Chuuk (054A), NOAA's own record of the gauge agrees with TICON. See [#371](https://github.com/openwatersio/slackwater-database/issues/371).
 
 ## Constituent names
 

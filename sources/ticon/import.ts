@@ -31,7 +31,12 @@ import {
   cachedRefit,
   sameConstituents,
 } from "./samples.ts";
-import { matchMetadata, type TiconMetaRow } from "./meta.ts";
+import {
+  checkCorrections,
+  correctPosition,
+  matchMetadata,
+  type TiconMetaRow,
+} from "./meta.ts";
 import { reduceTiconDatums, cachedDatumNotice } from "./datums.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -41,17 +46,19 @@ const gauges = groupBy(
   parseCSV<TiconRow>(await readFile(dataPath, "utf-8")),
   (r) => r.tide_gauge_name,
 );
+const positions = new Map(
+  Object.entries(gauges).map(([id, [row]]) => [
+    id,
+    { lat: parseFloat(row!.lat), lon: parseFloat(row!.lon) },
+  ]),
+);
 // Match against every gauge, not just this shard's: a misfiled row's rightful
 // gauge can sit in another shard.
 const metadata = matchMetadata(
   parseCSV<TiconMetaRow>(await readFile(metaPath, "utf-8")),
-  new Map(
-    Object.entries(gauges).map(([id, [row]]) => [
-      id,
-      { lat: parseFloat(row!.lat), lon: parseFloat(row!.lon) },
-    ]),
-  ),
+  positions,
 );
+checkCorrections(positions);
 // FORCE_DATUMS=1 recomputes every station's datums; a comma-separated list of
 // source suffixes (e.g. FORCE_DATUMS=uhslc_rq) recomputes only those sources.
 const FORCE_DATUMS = process.env["FORCE_DATUMS"] ?? "";
@@ -137,9 +144,11 @@ async function main() {
     const gesla = metadata[rows[0].tide_gauge_name];
     if (!gesla) throw new Error(`${rows[0].tide_gauge_name}: no meta.csv row`);
 
-    const lat = parseFloat(rows[0].lat);
-    const lon = parseFloat(rows[0].lon);
     const id = rows[0].tide_gauge_name;
+    const { lat, lon } = correctPosition(id, {
+      lat: parseFloat(rows[0].lat),
+      lon: parseFloat(rows[0].lon),
+    });
 
     const csvHarmonics = rows.map((row) => ({
       name: row.con,

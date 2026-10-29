@@ -1,5 +1,13 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { matchMetadata, type Position, type TiconMetaRow } from "../meta.ts";
+import {
+  checkCorrections,
+  correctPosition,
+  matchMetadata,
+  POSITION_CORRECTIONS,
+  type Position,
+  type TiconMetaRow,
+} from "../meta.ts";
 
 function row(
   key: string,
@@ -129,6 +137,77 @@ describe("matchMetadata", () => {
       ),
     ).toThrow(
       'north_twin: the misfiled meta.csv row "North" at its position is already taken by north',
+    );
+  });
+});
+
+describe("correctPosition", () => {
+  const AMMASSALIK = "ammassalik-297a-dnk-uhslc_rq";
+
+  it("keeps TICON's position for a gauge with no correction", () => {
+    expect(correctPosition("north", NORTH)).toBe(NORTH);
+  });
+
+  it("moves a corrected gauge to UHSLC's position", () => {
+    expect(correctPosition(AMMASSALIK, { lat: 65.6, lon: -37 })).toEqual({
+      lat: 65.615,
+      lon: -37.625,
+    });
+  });
+
+  it("throws when TICON moves a corrected gauge", () => {
+    expect(() =>
+      correctPosition(AMMASSALIK, { lat: 65.61, lon: -37.6 }),
+    ).toThrow(
+      `${AMMASSALIK}: TICON now places the gauge at 65.61, -37.6, not 65.6, -37`,
+    );
+  });
+
+  it("takes each correction from UHSLC's metadata for the same series", () => {
+    const uhslc: Record<string, { latitude: number; longitude: number }> =
+      JSON.parse(
+        readFileSync(
+          new URL("../uhslc-metadata.json", import.meta.url),
+          "utf8",
+        ),
+      );
+    for (const [id, { corrected }] of Object.entries(POSITION_CORRECTIONS)) {
+      const series = id.match(/-(\d+[a-z])-[a-z]{3}-uhslc_rq$/)?.[1];
+      const station = uhslc[series!.toUpperCase()];
+      // A refresh of uhslc-metadata.json that moves one of these lands here:
+      // check the new position against the station list its comment cites.
+      const message = `${id}: UHSLC's position differs from POSITION_CORRECTIONS in meta.ts`;
+      expect(station, message).toBeDefined();
+      expect(corrected, message).toEqual({
+        lat: station!.latitude,
+        lon: station!.longitude,
+      });
+    }
+  });
+});
+
+describe("checkCorrections", () => {
+  const published = new Map(
+    Object.entries(POSITION_CORRECTIONS).map(([id, c]) => [id, c.published]),
+  );
+
+  it("passes when TICON publishes every corrected gauge where expected", () => {
+    expect(() => checkCorrections(published)).not.toThrow();
+  });
+
+  it("throws when TICON no longer publishes a corrected gauge", () => {
+    const renamed = new Map(published);
+    renamed.delete("macae-719a-bra-uhslc_rq");
+    expect(() => checkCorrections(renamed)).toThrow(
+      "macae-719a-bra-uhslc_rq: TICON no longer publishes this gauge",
+    );
+  });
+
+  it("throws when TICON moves a corrected gauge", () => {
+    const moved = new Map(published);
+    moved.set("alotau-069a-png-uhslc_rq", { lat: -10.3, lon: 150.45 });
+    expect(() => checkCorrections(moved)).toThrow(
+      "alotau-069a-png-uhslc_rq: TICON now places the gauge at -10.3, 150.45",
     );
   });
 });

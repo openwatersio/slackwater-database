@@ -7,12 +7,14 @@ computed:
       position: [65.6167, -37.6167]
       coastline: unverifiable
       quality:
-        accepted: true
-        score: 53
+        accepted: false
+        reason: duplicate
+        redundant: ticon/ammassalik-297a-dnk-uhslc_rq
+        score: 45
         factors:
           epoch: 0
           recency: 0
           source: 0.495
           quality: 1
           amplitude: 1
-          coverage: 0.568
+          coverage: 0.009
