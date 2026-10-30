@@ -6,8 +6,11 @@ import {
   normalize,
   type PartialStationData,
 } from "../station.js";
-import { allStations } from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
+
 import type { Station } from "@slackwater/database";
+
+const { all: allStations } = await loadStations();
 
 const tideStations = allStations.filter(
   (station) => station.kind === "tide" && station.quality,

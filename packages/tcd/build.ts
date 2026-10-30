@@ -15,7 +15,7 @@ import { fileURLToPath } from "url";
 import { astro, constituents } from "@slackwater/engine";
 import {
   LICENSE_NAMES,
-  stations,
+  loadStations,
   type CurrentData,
   type Station,
   type StationData,
@@ -753,6 +753,7 @@ function currentOffsetsOf(station: Station): CurrentOffsets | undefined {
 
 async function main() {
   console.error("Loading stations...");
+  const { accepted: stations } = await loadStations();
 
   // Registry-only tide ports and identity-only current references carry no
   // constituents; XTide would list them and predict a flat line.

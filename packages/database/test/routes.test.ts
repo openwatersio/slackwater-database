@@ -1,13 +1,16 @@
 import { describe, expect, test } from "vitest";
-import {
-  stationRouteBySlug,
-  stationRoutes,
-  stations,
-  stationsById,
-} from "../src/index.js";
+import { loadStations } from "../src/index.js";
+
 // From source: station files are the stations package's, and this test checks
 // the shipped database against them.
 import { filePath, readStationFiles } from "../../stations/station-files.ts";
+
+const {
+  stationRouteBySlug,
+  stationRoutes,
+  accepted: stations,
+  byId,
+} = await loadStations();
 
 describe("station routes", () => {
   test("Roseau's UHSLC records share a Dominica route and keep their former paths", () => {
@@ -25,7 +28,7 @@ describe("station routes", () => {
       ]),
     });
     for (const id of ids)
-      expect(stationsById.get(id)).toMatchObject({
+      expect(byId(id)).toMatchObject({
         country: "Dominica",
         country_code: "DM",
         timezone: "America/Dominica",
@@ -36,7 +39,7 @@ describe("station routes", () => {
     expect(
       stations.filter(({ id }) => ids.includes(id)).map(({ id }) => id),
     ).toEqual(["ticon/roseau-786-dom-uhslc_fd"]);
-    expect(stationsById.get(ids[1]!)?.quality).toMatchObject({
+    expect(byId(ids[1]!)?.quality).toMatchObject({
       accepted: false,
       redundant: "ticon/roseau-786-dom-uhslc_fd",
     });

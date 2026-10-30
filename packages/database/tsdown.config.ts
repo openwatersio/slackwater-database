@@ -5,11 +5,11 @@ import macros from "unplugin-macros/rolldown";
 
 // Three builds, differing only in how `#slackwater.tcdb` resolves. The Node and
 // browser builds resolve it through package.json `imports` conditions (Node
-// reads the shared dist/generated/slackwater.tcdb from disk, the browser
-// fetches it). The worker build serves Cloudflare Workers — selected by the
-// `workerd`/`worker` export conditions — which can neither read files nor
-// fetch during module evaluation, so its source inlines the database into the
-// bundle as base64.
+// loads the shared dist/generated/slackwater.tcdb from disk, the browser
+// fetches it, both only when loadStations() is called). The worker build serves
+// Cloudflare Workers — selected by the `workerd`/`worker` export conditions —
+// which can neither read files nor fetch during module evaluation, so its
+// source inlines the database as base64 and decodes it only when loading.
 const workerBytes = {
   name: "worker-database-bytes",
   resolveId: (id: string) =>

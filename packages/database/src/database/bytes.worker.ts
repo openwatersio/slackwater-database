@@ -1,16 +1,14 @@
-// Cloudflare Workers source for the "#slackwater.tcdb" subpath import, selected by
-// aliasing it in the worker build (see tsdown.config.ts). Workers can't
-// construct file URLs from import.meta.url and disallow fetch during module
-// evaluation, so the database ships inside the bundle as a base64 literal —
-// the same bundle-the-data approach the JSON-string browser build used —
-// decoded here at module evaluation (compute in global scope is allowed; only
-// I/O is not).
+// The build embeds the database as base64. Decode only when loading the
+// bundled source; supplied URLs are fetched when the loader is called.
 import { createDatabaseBase64 } from "./inline.ts" with { type: "macro" };
+import { fetchDatabase } from "./fetch.js";
 
-let encoded: string | undefined = createDatabaseBase64();
-const binary = atob(encoded!);
-encoded = undefined; // let the ~8 MB base64 string go to GC
-const bytes = new Uint8Array(binary.length);
-for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-
-export default bytes;
+export default async function loadBytes(
+  source?: string | URL,
+): Promise<Uint8Array> {
+  if (source !== undefined) return fetchDatabase(source);
+  const binary = atob(createDatabaseBase64());
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}

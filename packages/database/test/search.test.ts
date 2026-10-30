@@ -1,5 +1,7 @@
 import { describe, test, expect } from "vitest";
-import { near, nearest, search, bbox } from "../src/index.js";
+import { loadStations } from "../src/index.js";
+
+const { near, nearest, search, bbox } = await loadStations();
 
 describe("near", () => {
   [
