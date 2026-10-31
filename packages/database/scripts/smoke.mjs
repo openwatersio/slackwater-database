@@ -24,15 +24,15 @@ globalThis.fetch = async (url, init) => {
   return realFetch(url, init);
 };
 
-function check(db, label) {
-  for (const station of db.allStations) {
+function check(db, api, label) {
+  for (const station of db.all) {
     assert.ok(
-      db.credits?.has(station.source.name),
+      api.credits?.has(station.source.name),
       `${label}: credit decision for ${station.source.name}`,
     );
     assert.equal(
-      db.attributionWithCredit(
-        db.credits.get(station.source.name),
+      api.attributionWithCredit(
+        api.credits.get(station.source.name),
         station.license,
       ),
       station.attribution,
@@ -40,10 +40,10 @@ function check(db, label) {
     );
   }
   assert.ok(
-    db.buildDatabase([db.stations[0]], { credits: db.credits }).length > 0,
+    api.buildDatabase([db.accepted[0]], { credits: api.credits }).length > 0,
   );
 
-  const ref = db.stations.find(
+  const ref = db.accepted.find(
     (s) => s.type === "reference" && s.harmonic_constituents.length > 0,
   );
   assert.ok(ref, `${label}: a reference station with harmonics`);
@@ -53,7 +53,7 @@ function check(db, label) {
   );
   assert.ok(Object.keys(ref.datums).length > 0, `${label}: reference datums`);
 
-  const sub = db.stations.find((s) => s.type === "subordinate" && s.offsets);
+  const sub = db.accepted.find((s) => s.type === "subordinate" && s.offsets);
   assert.ok(sub, `${label}: a subordinate station`);
   assert.ok(
     sub.harmonic_constituents.length > 0,
@@ -68,22 +68,47 @@ function check(db, label) {
   assert.ok(db.datums.length > 0, `${label}: datums export`);
 }
 
-check(await import(new URL("node/index.js", dist)), "node ESM");
-check(await import(new URL("browser/index.js", dist)), "browser ESM");
+const realAtob = globalThis.atob;
+async function checkEntry(bundle, label) {
+  const fetchForLoading = globalThis.fetch;
+  globalThis.fetch = () => {
+    throw new Error(`${label}: fetch during import`);
+  };
+  globalThis.atob = () => {
+    throw new Error(`${label}: base64 decode during import`);
+  };
+  let api;
+  try {
+    api = await import(new URL(`${bundle}/index.js`, dist));
+  } finally {
+    if (bundle !== "worker") globalThis.fetch = fetchForLoading;
+    globalThis.atob = realAtob;
+  }
+  const db = await api.loadStations();
+  globalThis.fetch = fetchForLoading;
+  const station = db.byId("noaa/9447130");
+  assert.ok(station, `${label}: individual lookup`);
+  assert.equal(db.byId(station.id), station, `${label}: cached identity`);
+  assert.equal(
+    db.all.find((s) => s.id === station.id),
+    station,
+  );
+  check(db, api, label);
+}
+
+await checkEntry("node", "node ESM");
+await checkEntry("browser", "browser ESM");
 
 // require() of the ESM entry works only while its module graph is synchronous;
-// this fails with ERR_REQUIRE_ASYNC_MODULE if top-level await sneaks back into
-// the Node bundle (the browser source keeps its fetch await to itself).
+// this fails with ERR_REQUIRE_ASYNC_MODULE if top-level await sneaks back in.
 const require = createRequire(import.meta.url);
-check(require(fileURLToPath(new URL("node/index.js", dist))), "node require");
+const nodeApi = require(fileURLToPath(new URL("node/index.js", dist)));
+check(await nodeApi.loadStations(), nodeApi, "node require");
 
 // The worker bundle must start with no fetch and no filesystem, like a
-// Cloudflare Worker's global scope: poison fetch for the duration of its
-// import to prove startup never calls it.
-globalThis.fetch = () => {
-  throw new Error("worker bundle called fetch during module evaluation");
-};
-check(await import(new URL("worker/index.js", dist)), "worker ESM");
+// Cloudflare Worker's global scope: poison fetch through its import and its
+// bundled load to prove neither calls it, since the database ships inside.
+await checkEntry("worker", "worker ESM");
 globalThis.fetch = realFetch;
 
 for (const bundle of ["browser", "worker"]) {
@@ -92,7 +117,7 @@ for (const bundle of ["browser", "worker"]) {
     "utf8",
   );
   assert.ok(
-    !/["']node:fs["']|require\(["']fs["']\)/.test(src),
+    !/["'](?:node:)?fs(?:\/promises)?["']/.test(src),
     `${bundle} bundle must not reference node:fs`,
   );
 }

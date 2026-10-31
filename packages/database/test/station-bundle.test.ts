@@ -1,11 +1,13 @@
 import { describe, test, expect } from "vitest";
-import {
+import { loadStations } from "../src/index.js";
+
+const {
   datums,
-  stations,
-  stationsById,
-  allStations,
+  accepted: stations,
+  byId,
+  all: allStations,
   qualityMap,
-} from "../src/index.js";
+} = await loadStations();
 
 describe("station metadata", () => {
   test("every station has an id and finite coordinates", () => {
@@ -121,12 +123,10 @@ describe("lazily loaded station data", () => {
       const sub = allStations.find(
         (s) =>
           s.offsets?.height.type === type &&
-          stationsById.get(s.offsets.reference)?.astronomical_bounds,
+          byId(s.offsets.reference)?.astronomical_bounds,
       );
       expect(sub, `no subordinate with ${type} height offsets`).toBeDefined();
-      const ref = stationsById.get(
-        sub!.offsets!.reference,
-      )!.astronomical_bounds!;
+      const ref = byId(sub!.offsets!.reference)!.astronomical_bounds!;
       const { high, low } = sub!.offsets!.height;
       expect(sub!.astronomical_bounds).toEqual(
         type === "ratio"
@@ -141,7 +141,7 @@ describe("lazily loaded station data", () => {
       (s) =>
         s.type === "subordinate" &&
         s.offsets &&
-        stationsById.get(s.offsets.reference)?.astronomical_bounds &&
+        byId(s.offsets.reference)?.astronomical_bounds &&
         !s.astronomical_bounds,
     );
     expect(missing.map((s) => s.id)).toEqual([]);
@@ -152,9 +152,9 @@ describe("lazily loaded station data", () => {
       (s) =>
         s.type === "subordinate" &&
         s.offsets &&
-        stationsById.get(s.offsets.reference)?.epoch,
+        byId(s.offsets.reference)?.epoch,
     )!;
-    const ref = stationsById.get(sub.offsets!.reference)!;
+    const ref = byId(sub.offsets!.reference)!;
     expect(sub.harmonic_constituents).toEqual(ref.harmonic_constituents);
     expect(sub.datums).toEqual(ref.datums);
     expect(sub.epoch).toBeDefined();

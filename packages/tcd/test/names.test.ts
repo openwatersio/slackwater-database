@@ -1,11 +1,14 @@
 import { describe, test, expect } from "vitest";
-import { stations, type Station } from "@slackwater/database";
+import { loadStations, type Station } from "@slackwater/database";
+
 import {
   buildConstituentList,
   buildStationNames,
   generateHarmonicsTxt,
   noteLines,
 } from "../build.ts";
+
+const { accepted: stations } = await loadStations();
 
 test("exports every harmonic reference license with its required notice", () => {
   const references = stations.filter(

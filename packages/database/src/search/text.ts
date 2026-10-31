@@ -60,10 +60,16 @@ export async function createTextIndex() {
   const { loadStationMeta } = await import("../station-bundle.js");
   const stations = loadStationMeta();
 
+  const index = buildTextIndex(stations);
+  return JSON.stringify(index.toJSON());
+}
+
+export function buildTextIndex(
+  stations: StationMeta[],
+): MiniSearch<StationMeta> {
   const index = new MiniSearch<StationMeta>(textSearchIndexOptions);
   index.addAll(stations);
-
-  return JSON.stringify(index.toJSON());
+  return index;
 }
 
 export function loadTextIndex(data: string): MiniSearch<StationMeta> {
