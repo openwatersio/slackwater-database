@@ -1,0 +1,23 @@
+region: US-FL
+sources:
+  - noaa/8729333
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    noaa/8729333:
+      position: [30.468299865722656, -86.13829803466797]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 86
+        factors:
+          epoch: 1
+          recency: 0.75
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.23
+        issues:
+          - MLW (-0.045) < MLLW (-0.043)
+          - "Seasonal curve peak (0.153m) exceeds the principal tide M2+S2+K1+O1 (0.109m): the yearly swing exceeds the daily one"

@@ -8,18 +8,18 @@ redirect_from:
 computed:
   sources:
     noaa/8514322:
-      position: [40.75, -73]
+      position: [40.75035095214844, -73.01780700683594]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 84
+        score: 85
         factors:
           epoch: 1
           recency: 0.75
           source: 1
           quality: 1
           amplitude: 1
-          coverage: 0.131
+          coverage: 0.139
     ticon/patchogue-8514322-usa-noaa:
       position: [40.75, -73]
       coastline: unverifiable
@@ -34,6 +34,6 @@ computed:
           source: 0.96
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 0.03
         issues:
           - Superseded by noaa/8514322, its operator's own record

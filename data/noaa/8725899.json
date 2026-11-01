@@ -1,0 +1,231 @@
+{
+  "name": "Nokomis, Venice Inlet",
+  "region": "FL",
+  "country": "United States",
+  "continent": "Americas",
+  "latitude": 27.123300552368164,
+  "longitude": -82.47000122070312,
+  "timezone": "America/New_York",
+  "source": {
+    "name": "US National Oceanic and Atmospheric Administration",
+    "id": "8725899",
+    "published_harmonics": true,
+    "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8725899"
+  },
+  "license": {
+    "type": "public domain",
+    "commercial_use": true,
+    "url": "https://tidesandcurrents.noaa.gov/disclaimers.html"
+  },
+  "disclaimers": "",
+  "datums": {
+    "LAT": -0.736,
+    "HAT": 0.401,
+    "STND": 0,
+    "MHHW": 0.151,
+    "MHW": 0.082,
+    "DTL": -0.132,
+    "MTL": -0.121,
+    "MSL": -0.118,
+    "MLW": -0.326,
+    "MLLW": -0.417,
+    "GT": 0.569,
+    "MN": 0.409,
+    "DHQ": 0.069,
+    "DLQ": 0.091,
+    "NAVD88": 0.011
+  },
+  "chart_datum": "MLLW",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "M2",
+      "amplitude": 0.134,
+      "phase": 137
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.051,
+      "phase": 146.3
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.026,
+      "phase": 129.2
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.134,
+      "phase": 22
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.003,
+      "phase": 95.6
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.121,
+      "phase": 13.1
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.002,
+      "phase": 113.8
+    },
+    {
+      "name": "MK3",
+      "amplitude": 0.004,
+      "phase": 287.9
+    },
+    {
+      "name": "S4",
+      "amplitude": 0.001,
+      "phase": 225.2
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.002,
+      "phase": 66.9
+    },
+    {
+      "name": "NU2",
+      "amplitude": 0.006,
+      "phase": 118.1
+    },
+    {
+      "name": "S6",
+      "amplitude": 0.001,
+      "phase": 46.2
+    },
+    {
+      "name": "MU2",
+      "amplitude": 0.002,
+      "phase": 40.4
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0.003,
+      "phase": 99
+    },
+    {
+      "name": "OO1",
+      "amplitude": 0.005,
+      "phase": 34.1
+    },
+    {
+      "name": "LAM2",
+      "amplitude": 0.002,
+      "phase": 229.1
+    },
+    {
+      "name": "S1",
+      "amplitude": 0.015,
+      "phase": 104.6
+    },
+    {
+      "name": "M1",
+      "amplitude": 0.006,
+      "phase": 86.2
+    },
+    {
+      "name": "J1",
+      "amplitude": 0.007,
+      "phase": 29.1
+    },
+    {
+      "name": "MM",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "SSA",
+      "amplitude": 0.036,
+      "phase": 60.4
+    },
+    {
+      "name": "SA",
+      "amplitude": 0.107,
+      "phase": 156.1
+    },
+    {
+      "name": "MSF",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "MF",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "RHO",
+      "amplitude": 0.004,
+      "phase": 353.6
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.026,
+      "phase": 2.3
+    },
+    {
+      "name": "T2",
+      "amplitude": 0.004,
+      "phase": 143.3
+    },
+    {
+      "name": "R2",
+      "amplitude": 0.001,
+      "phase": 28.2
+    },
+    {
+      "name": "2Q1",
+      "amplitude": 0.003,
+      "phase": 346.1
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.038,
+      "phase": 28.2
+    },
+    {
+      "name": "2SM2",
+      "amplitude": 0.001,
+      "phase": 90.6
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.001,
+      "phase": 307.6
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.004,
+      "phase": 146.3
+    },
+    {
+      "name": "2MK3",
+      "amplitude": 0.004,
+      "phase": 278.6
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.015,
+      "phase": 142.3
+    },
+    {
+      "name": "M8",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.002,
+      "phase": 37.9
+    }
+  ],
+  "epoch": {
+    "start": "1983-01-01",
+    "end": "2001-12-31"
+  }
+}
