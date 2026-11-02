@@ -88,9 +88,11 @@ export interface QualityResult {
   seasonal_dominant?: boolean;
 }
 
-// TICON sources superseded outright: the current Rijkswaterstaat series covers
-// the gauges of its historical one.
-const SUPERSEDED_SOURCES = ["rws_hist"];
+// TICON sources superseded once their series stopped, with the date a series
+// has to reach. A Rijkswaterstaat historical series that runs into 2018 still
+// matches RWS's own predictions; one that stopped earlier may no longer describe
+// the water at that gauge. See docs/quality-evaluation.md.
+const SUPERSEDED_SOURCES: Record<string, string> = { rws_hist: "2018-01-01" };
 
 // Weights for composite score (must sum to 100)
 const WEIGHTS = {
@@ -287,7 +289,8 @@ function originatorsByGauge(stations: Station[]): Map<string, string> {
 /** A relay is superseded when the gauge's operator publishes its own
  *  harmonic constants and they pass every check here: the operator's analysis
  *  is the primary source. A relay of a gauge whose operator publishes no
- *  constants, or whose record is rejected, stands in for it. */
+ *  constants, or whose record is rejected, stands in for it. A source in
+ *  SUPERSEDED_SOURCES needs no operator record: its series only had to stop. */
 function checkSuperseded(
   station: Station,
   stationMap: Map<string, Station>,
@@ -296,7 +299,8 @@ function checkSuperseded(
 ): Gate | null {
   if (!station.id.startsWith("ticon/")) return null;
   const suffix = getSourceSuffix(station.source.id);
-  if (SUPERSEDED_SOURCES.includes(suffix)) {
+  const reaches = SUPERSEDED_SOURCES[suffix];
+  if (reaches && (station.epoch?.end ?? "") < reaches) {
     return { reason: "superseded", issues: [`Superseded source: ${suffix}`] };
   }
   const originator =

@@ -71,6 +71,7 @@ export const SOURCE_PRIORITY: Record<string, number> = {
   // Tier 5: Lower priority - historical series and smaller contributors
   unam: 85,
   unam_hist: 86,
+  rws_hist: 86,
   jodc_pahb: 87,
   jodc_jcg: 88,
   jodc_giaj: 89,

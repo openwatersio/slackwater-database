@@ -1,5 +1,9 @@
+# Same gauge: these records are RWS location `delfzijl` (sources/rws/README.md#historical-series), with M2 within 1.2 cm and 1.5°.
 sources:
   - ticon/delfzijl-delfzl-nld-rws_hist
+  - ticon/delfzijltg-del-nld-cmems
+redirect_from:
+  - /tides/nl/delfzijl-groningen/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -7,16 +11,29 @@ computed:
       position: [53.326353, 6.933123]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: superseded
-        score: 0
+        accepted: true
+        score: 67
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
           coverage: 0.008
         issues:
           - MLWS (-1.537) > MLW (-1.582)
-          - "Superseded source: rws_hist"
+    ticon/delfzijltg-del-nld-cmems:
+      position: [53.330002, 6.934]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/delfzijl-delfzl-nld-rws_hist
+        score: 57
+        factors:
+          epoch: 0.595
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.008

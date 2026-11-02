@@ -1,5 +1,9 @@
+# Same gauge: these records are RWS location `krimpenaandelek.lek` (sources/rws/README.md#historical-series), with M2 within 1.4 cm and 3.3°.
 sources:
   - ticon/krimpen_ad_lek-krimpadlk-nld-rws_hist
+  - ticon/krimpenadlektg-kri-nld-cmems
+redirect_from:
+  - /tides/nl/krimpen-ad-lek-south-holland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -7,15 +11,27 @@ computed:
       position: [51.89072, 4.628906]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: superseded
-        score: 0
+        accepted: true
+        score: 67
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
           coverage: 0.003
-        issues:
-          - "Superseded source: rws_hist"
+    ticon/krimpenadlektg-kri-nld-cmems:
+      position: [51.891998, 4.629]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/krimpen_ad_lek-krimpadlk-nld-rws_hist
+        score: 56
+        factors:
+          epoch: 0.538
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.003

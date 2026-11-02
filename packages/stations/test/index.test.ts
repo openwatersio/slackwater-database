@@ -397,6 +397,29 @@ describe("gauge deduplication", () => {
     });
   });
 
+  test("supersedes a historical RWS series only when it stopped before 2018", () => {
+    const series = allTideStations.filter((s) => s.id.endsWith("-rws_hist"));
+    const byId = new Map(quality.map((r) => [r.id, r]));
+    expect(series.length).toBeGreaterThan(0);
+    for (const s of series) {
+      const superseded = byId
+        .get(s.id)!
+        .issues?.includes("Superseded source: rws_hist");
+      expect(superseded, s.id).toBe(s.epoch!.end < "2018-01-01");
+    }
+    expect(
+      byId.get("ticon/hagestein_beneden-hagsbndn-nld-rws_hist")!.accepted,
+    ).toBe(true);
+    // A 2023-25 fit too short to separate its constituents loses to the long series.
+    expect(byId.get("ticon/vlissingen-vlis-nld-rws")!.redundant).toBe(
+      "ticon/vlissingen-vlissgn-nld-rws_hist",
+    );
+    // Ranked as a historical series, a flagged one does not displace CMEMS.
+    expect(byId.get("ticon/dordrecht-dordt-nld-rws_hist")!.reason).toBe(
+      "duplicate",
+    );
+  });
+
   test("supersedes a relay only by an operator record that passes its checks", () => {
     const byId = new Map(quality.map((r) => [r.id, r]));
     const relays = quality.filter(

@@ -40,15 +40,15 @@ A reference station has its own harmonic constants. A subordinate (secondary) st
 
 These checks are pass or fail. A record that fails any of them is rejected and gets a score of 0. When a record fails more than one, the first failure in the order below is its `reason`, and every failure is listed in its `issues`.
 
-| Check                  | Rejects a record when                                        | Basis                    |
-| ---------------------- | ------------------------------------------------------------ | ------------------------ |
-| Position               | it sits at the (0°, 0°) placeholder                          | Engineering choice       |
-| Clock error            | its source's times are off by a measured amount              | Measured on this data    |
-| Datum consistency      | its datums contradict their definitions                      | NOAA and IHO definitions |
-| Tidal range            | its mean range is under 2 cm                                 | Engineering choice       |
-| Superseded relay       | it relays a gauge whose operator publishes its own constants | Editorial choice         |
-| Essential constituents | it lacks M2, S2, K1 or O1, or a resolved P1 exceeds K1       | Equilibrium tide         |
-| Seasonal contamination | its annual term is five times that of comparable neighbors   | Seasonal cycle physics   |
+| Check                  | Rejects a record when                                                                                                         | Basis                    |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| Position               | it sits at the (0°, 0°) placeholder                                                                                           | Engineering choice       |
+| Clock error            | its source's times are off by a measured amount                                                                               | Measured on this data    |
+| Datum consistency      | its datums contradict their definitions                                                                                       | NOAA and IHO definitions |
+| Tidal range            | its mean range is under 2 cm                                                                                                  | Engineering choice       |
+| Superseded relay       | it relays a gauge whose operator publishes its own constants, or a Rijkswaterstaat historical series that stopped before 2018 | Editorial choice         |
+| Essential constituents | it lacks M2, S2, K1 or O1, or a resolved P1 exceeds K1                                                                        | Equilibrium tide         |
+| Seasonal contamination | its annual term is five times that of comparable neighbors                                                                    | Seasonal cycle physics   |
 
 ### Position
 
@@ -110,7 +110,7 @@ NOAA’s published mean datums receive the observed-mean bound allowance even wh
 - UHSLC's station metadata names the originating agency and, for NOAA and LINZ, its station number. JODC originator `HD` codes use the same JHOD crosswalk. For the Norwegian Hydrographic Service it gives no number, and the gauge is matched to the Kartverket station of the same name, ignoring accents (Vardø matches Vardo).
 - A TICON record that UHSLC's metadata does not cover, such as a fast-delivery series, shares what another record of its gauge (see [Same identifier](#same-identifier)) declares. A record the metadata covers speaks for itself, even when no rule accepts what it names: Bermuda's 1932–1949 series gives St. George's under UHSLC's own data source, so it declares nothing rather than taking its 2000s sibling's Ferry Reach, 0.75 km away. A gauge whose records declare two different originators stops the evaluation.
 
-The relay is rejected when its operator's record has harmonic constants, passes every other check here, lies within 10 km, and has an M2 amplitude that does not contradict the relay's (beyond both a 10% ratio and the amplitude tolerance). Beyond 10 km the declaration is more likely wrong than the coordinates. A relay that fails either test is left to deduplication. The merge report joins a superseded relay's route to its operator's, and also joins a relay whose own id, a NOAA station number from NOAA, or a UHSLC JODC HD declaration names a record within 2 km even when their M2 disagree, since the number says which gauge it is; such a relay stays accepted or rejected as quality decides. A relay whose M2 disagrees with its operator's record by more than one gauge analyzed twice does (see [Disagreeing duplicates](#disagreeing-duplicates)) says so in `issues`. When the operator publishes the gauge only as a subordinate station, not at all, or with a record that fails a check, the relay stands in for it. TICON's historical Rijkswaterstaat series is also rejected, because the current Rijkswaterstaat series covers the same gauges.
+The relay is rejected when its operator's record has harmonic constants, passes every other check here, lies within 10 km, and has an M2 amplitude that does not contradict the relay's (beyond both a 10% ratio and the amplitude tolerance). Beyond 10 km the declaration is more likely wrong than the coordinates. A relay that fails either test is left to deduplication. The merge report joins a superseded relay's route to its operator's, and also joins a relay whose own id, a NOAA station number from NOAA, or a UHSLC JODC HD declaration names a record within 2 km even when their M2 disagree, since the number says which gauge it is; such a relay stays accepted or rejected as quality decides. A relay whose M2 disagrees with its operator's record by more than one gauge analyzed twice does (see [Disagreeing duplicates](#disagreeing-duplicates)) says so in `issues`. When the operator publishes the gauge only as a subordinate station, not at all, or with a record that fails a check, the relay stands in for it. A historical Rijkswaterstaat series that stopped before 2018 is also rejected, with no operator record needed, a rule for this source alone: the current `rws` records carry no such cutoff. One that runs into 2018 goes to deduplication, at the rank of a historical series: [the comparison with Rijkswaterstaat's predictions](../sources/rws/README.md#historical-series) backs that, and the 2018 cutoff is this project's definition.
 
 **Basis.** An editorial choice of this project: the operator's analysis is the primary source.
 
@@ -319,7 +319,7 @@ npm run report:quality -w packages/stations
 | `NULL_ISLAND_RADIUS`                  | 0.05°                                                              | Position                                            |
 | `EPSILON` (in `checkDatumOrdering`)   | 0.5 m                                                              | Low chart datums below LAT                          |
 | `MIN_TIDAL_RANGE`                     | 0.02 m                                                             | Tidal range                                         |
-| `SUPERSEDED_SOURCES`                  | `rws_hist`                                                         | Superseded relay                                    |
+| `SUPERSEDED_SOURCES`                  | `rws_hist` ending before 2018-01-01                                | Superseded relay                                    |
 | `ESSENTIAL_CONSTITUENTS`              | M2, S2, K1, O1                                                     | Essential constituents                              |
 | `SEASONAL_OUTLIER_MIN_SA`             | 0.5 m                                                              | Seasonal contamination                              |
 | `SEASONAL_OUTLIER_RADIUS`             | 25 km                                                              | Seasonal contamination                              |
