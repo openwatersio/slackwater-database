@@ -58,7 +58,7 @@ plateau timestamp choices, so those differences do not block publication.
 
 ## Historical series
 
-TICON's `rws_hist` records are Rijkswaterstaat's long series as GESLA carries them. Quality keeps the ones that run into 2018 and ranks them as historical series. To test that, each record's prediction was compared with the `WATHTE` astronomical series from the `OphalenWaarnemingen` service for January 2026, at the catalogue location nearest the record, with each series' mean removed.
+TICON's `rws_hist` records are Rijkswaterstaat's long series as GESLA carries them. Quality keeps the ones that run into 2018 and ranks them as historical series. To test that, `npm run report:historical -w sources/rws` compares each record's prediction with the `WATHTE` astronomical series from the `OphalenWaarnemingen` service for January 2026, at the catalogue location nearest the record, with each series' mean removed. Rerun it after a TICON refresh, because the figures here come from that report and nothing checks them against the data.
 
 Of the 55 records that run into 2018, 54 have a location within 3 km of their own gauge. They differ from Rijkswaterstaat's prediction by a median RMS of 6.7 cm and at most 14.7 cm (Bath, whose tide has a standard deviation of 158 cm). The other, Rak Zuid, has no such location, and the tidal range check rejects it anyway.
 
