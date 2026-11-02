@@ -1,13 +1,18 @@
-// Node source for the "#slackwater.tcdb" subpath import (also what vitest
-// resolves). readFileSync returns a Buffer, whose bytes are external memory —
-// off the V8 heap — so holding the whole database costs no heap.
-//
-// The relative path works in both layouts because this module sits one
-// directory below the package root in src (src/database/) and the bundle sits
-// one below in dist (dist/node/ and dist/browser/), both resolving to a single
-// shared generated/slackwater.tcdb.
-import { readFileSync } from "node:fs";
+// Node byte loader: file I/O and fetch happen only when called.
+import { readFile } from "node:fs/promises";
+import { fetchDatabase } from "./fetch.js";
 
-export default readFileSync(
-  new URL("../generated/slackwater.tcdb", import.meta.url),
-) as Uint8Array;
+/** Node accepts paths, file URLs, and HTTP(S) URLs. No I/O until called. */
+export default async function loadBytes(
+  source?: string | URL,
+): Promise<Uint8Array> {
+  if (source === undefined) {
+    return readFile(new URL("../generated/slackwater.tcdb", import.meta.url));
+  }
+  if (typeof source === "string" && !/^(?:https?|file):/i.test(source)) {
+    return readFile(source);
+  }
+  const url = typeof source === "string" ? new URL(source) : source;
+  if (url.protocol === "file:") return readFile(url);
+  return fetchDatabase(url);
+}

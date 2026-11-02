@@ -3,13 +3,8 @@ import { readFile } from "fs/promises";
 import { join } from "path";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
-import {
-  stations,
-  allStations,
-  stationsById,
-  near,
-  stationRoutes,
-} from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
+
 import {
   MIN_TIDAL_RANGE,
   OBSERVED_BOUND_ALLOWANCE,
@@ -31,6 +26,14 @@ import {
 } from "../filtering.js";
 import { readStationFiles, storedQuality } from "../station-files.ts";
 import { sourceMetadata } from "../sources.ts";
+
+const {
+  accepted: stations,
+  all: allStations,
+  byId,
+  near,
+  stationRoutes,
+} = await loadStations();
 
 const quality = [...storedQuality(readStationFiles()).values()];
 
@@ -148,7 +151,7 @@ tideStations.forEach((station) => {
           const allowance =
             hasObservedMeanDatums(
               station.offsets?.reference
-                ? stationsById.get(station.offsets.reference)!
+                ? byId(station.offsets.reference)!
                 : station,
             ) && lower === "LAT"
               ? OBSERVED_BOUND_ALLOWANCE + float32DifferenceMargin(h, l)

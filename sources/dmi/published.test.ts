@@ -1,6 +1,8 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { expect, test } from "vitest";
-import { allStations, stationsById, stationRoutes } from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
+
+const { all: allStations, byId, stationRoutes } = await loadStations();
 
 test.each([
   ["2988270", "Tórshavn", "Streymoy"],
@@ -9,7 +11,7 @@ test.each([
 ])(
   "%s has its populated locality and region in the published database",
   (id, locality, region) => {
-    const station = stationsById.get(`dmi/${id}`);
+    const station = byId(`dmi/${id}`);
     expect(station?.locality).toBe(locality);
     expect(station?.region).toBe(region);
   },
@@ -64,9 +66,9 @@ test.each([
       (r) => r.path === path || r.formerPaths.includes(path),
     );
     expect(route?.stationIds).toContain(id);
-    expect(
-      route?.stationIds.some((id) => stationsById.get(id)?.quality?.accepted),
-    ).toBe(true);
+    expect(route?.stationIds.some((id) => byId(id)?.quality?.accepted)).toBe(
+      true,
+    );
   },
 );
 
@@ -126,7 +128,7 @@ test.each(["25149", "2991540", "2988270"])(
         "utf8",
       ),
     );
-    const station = stationsById.get(`dmi/${id}`)!;
+    const station = byId(`dmi/${id}`)!;
     expect(station).toBeDefined();
     expect(station.quality?.accepted).toBe(true);
     expect(station.source.published_harmonics).toBe(false);

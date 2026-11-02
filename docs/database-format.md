@@ -1,12 +1,12 @@
 # The FlatBuffers database file
 
-The whole database ships as one [FlatBuffers](https://flatbuffers.dev) file, `slackwater.tcdb`, built from `schemas/database.fbs`. It is the format the JS module reads, the browser build fetches, and native apps can bundle: readers touch only the bytes they access, so an identity scan reads ids, names, and coordinates without decoding constituents, and a lookup by id reads one station's constituents without decoding anything else. The public API is unchanged and synchronous.
+The whole database ships as one [FlatBuffers](https://flatbuffers.dev) file, `slackwater.tcdb`, built from `schemas/database.fbs`. It is the format the JS module reads, the browser build fetches, and native apps can bundle: readers touch only the bytes they access, so an identity scan reads ids, names, and coordinates without decoding constituents, and a lookup by id reads one station's constituents without decoding anything else. JavaScript consumers explicitly call `await loadStations()`; lookups and getters on the returned instance are synchronous.
 
 ## Why a single binary file
 
 Any platform that needs station data otherwise has to parse all of it into memory to read any of it: object literals, JSON catalogs, and Codable records all decode the whole database up front, whether the consumer is a Node process, a browser, or an iOS widget ranking nearby stations. On the JS side that parse costs ~118 MB of V8 heap and OOMs memory-constrained devices (see [signalk-tides#103](https://github.com/openwatersio/signalk-tides/issues/103)); on a phone it is hundreds of milliseconds of decode before the first read. A file that readers access in place avoids the whole class of problem:
 
-- **Node** reads it with `readFileSync` into a `Buffer`, which is external memory, off the heap.
+- **Node** reads it with `readFile` into a `Buffer`, whose backing bytes are external memory, off the V8 heap.
 - **Browsers** fetch it into an `ArrayBuffer`.
 - **Native apps** can memory-map it; a widget touching one station faults in a few pages.
 
@@ -32,25 +32,29 @@ The schema can't express this; the builder has to produce it deliberately. FlatB
 
 ## The reader
 
-`src/stations.ts` opens the buffer once, materializes identity fields into plain objects (`allStations`), and attaches lazy getters for `harmonic_constituents`, `datums`, `datums_source`, `datum_frame`, `datum_coverage`, `epoch`, `datum_epoch`, and current details that decode one station's data from the buffer on access. Subordinate stations resolve their reference station's harmonics and datums; their own offsets still apply. No caching — a persistent cache on module-level objects would pull the data back onto the heap.
+`loadStations()` obtains the bytes and creates an instance. Importing the package performs no database I/O or station decoding. Node reads a local file or fetches a URL, browsers fetch a URL, and Workers decode the bundled base64 or fetch a supplied URL when the loader is called. A caller can also pass a `Uint8Array` directly. The loader checks the TCDB identifier; it is not a full structural verifier.
 
-The quality gate comes from the same file: `station.quality` carries `accepted` and `score` eagerly (read inline during the identity scan) with lazy getters for the detail, `qualityMap` indexes those objects by id, and the `stations` export filters `allStations` on `accepted`. The module does not bundle the station files; `npm run stations` writes each record's evaluation into its station file, and the build embeds it.
+`src/stations.ts` creates a per-instance reader. `byId(id)` binary-searches the sorted station vector and caches successful lookups and decoded identity objects. `all` materializes the full identity array on demand; `accepted` materializes the quality-accepted subset, checking inline quality flags before decoding identity. Both collections reuse cached objects. Every call for the bundled database shares one instance; each supplied source gets independent identity, collection, route, and search-index caches.
+
+Each station has lazy getters for constituents, datums, epoch, datum metadata, astronomical bounds, and current details. These read from the retained buffer on every access without caching prediction objects. Subordinates resolve their reference record by ID without materializing its identity; their own offsets still apply. `buildDatabase` stores what each subordinate resolved to, so one whose reference a filtered rebuild left out reads its own record instead.
+
+Quality is stored in the file: acceptance and score are read with identity, while factors, issues, reason, redundancy, and seasonal dominance remain lazy. `qualityMap` builds the full quality map only when requested. The runtime reads existing evaluations; it does not rerun the quality analysis.
 
 `quality.seasonal_dominant` is a label, not a rejection: water with no real tide — the Great Lakes, river reaches, Baltic bodden — stays accepted and carries the flag. It is the stable detector, and a consumer must read it rather than count the symptom. Counting days whose high sits at or below datum does not work: across six 2026 dates the count ran 58, 96, 6, 8, 10, 27, and of the 161 stations that showed it on any date, none showed it on all six.
 
 The flag is set when the peak of the seasonal curve, SA·cos(θ − g_SA) + SSA·cos(2θ − g_SSA) at its largest over a year (with SA and SSA under any of the names the sources use, see `seasonalTerms`), exceeds the principal tide M2+S2+K1+O1 by more than 3 mm, the amplitude tolerance the quality gates use (`seasonalPeak` and `SEASONAL_DOMINANCE_RATIO` in [packages/stations/filtering.ts](../packages/stations/filtering.ts)). No published criterion sets this line, so it is this project's definition. Consumers present two bands split at 3× on the ratio of that peak to the principal tide: above it the note leads, below it joins the datum note. A new consumer should read the flag and split at the same 3× rather than invent a threshold. A labelled station can have a principal tide of zero, so the ratio can be infinite. The ratio is derived per consumer from constituents each already ships, deliberately not a database field, and it has to be this ratio: dividing by the largest single constituent, or using the larger of SA and SSA as the peak, disagrees with the flag.
 
-The bytes come from a per-build source behind the `#slackwater.tcdb` subpath import — each default-exports the bytes:
+The bytes come from a per-build source behind the `#slackwater.tcdb` subpath import — each default-exports a loader function:
 
-- **Node** (`src/database/bytes.node.ts`): `readFileSync` into an off-heap `Buffer`.
+- **Node** (`src/database/bytes.node.ts`): `readFile` into an off-heap `Buffer` when loading; supplied HTTP(S) URLs use fetch.
 - **Browser** (`src/database/bytes.browser.ts`): `fetch(new URL("../generated/slackwater.tcdb", import.meta.url))`; bundlers that understand `new URL(..., import.meta.url)` copy the asset and rewrite the URL.
-- **Workers** (`src/database/bytes.worker.ts`, selected by the `workerd`/`worker` export conditions): Cloudflare Workers can't construct file URLs from `import.meta.url` and disallow `fetch` during module evaluation, so the database is inlined into `dist/worker` as a base64 literal by a build-time macro and decoded at module evaluation. The bundle is ~4.5 MiB compressed, which needs a plan with the 10 MiB script limit — free plans (3 MiB) have never fit this database in any format. The smoke test guards the compressed size so data growth surfaces at build time rather than at a consumer's deploy.
+- **Workers** (`src/database/bytes.worker.ts`, selected by the `workerd`/`worker` export conditions): Cloudflare Workers can't construct file URLs from `import.meta.url` and disallow `fetch` during module evaluation, so the database is inlined into `dist/worker` as a base64 literal by a build-time macro and decoded only when `loadStations()` requests the bundled database. The bundle is ~4.5 MiB compressed, which needs a plan with the 10 MiB script limit — free plans (3 MiB) have never fit this database in any format. The smoke test guards the compressed size so data growth surfaces at build time rather than at a consumer's deploy.
 
 Both bundles resolve `../generated/slackwater.tcdb` to one shared copy at `dist/generated/slackwater.tcdb`.
 
 ## Search indexes
 
-`near`/`nearest`/`bbox` use a bundled KDBush geo index (~66 KB, eager); `search()` builds a MiniSearch text index lazily on first call. Both are generated at build time from the raw data, sorted by id so index positions match the buffer's stations vector.
+Both indexes initialize lazily per instance: `near`/`nearest`/`bbox` use KDBush, and `search()` uses MiniSearch. For the bundled database, build-time macros supply serialized indexes generated from that exact file. For a supplied file, URL, or byte buffer, the geo index reads coordinates directly from the loaded buffer and the text index reads searchable metadata. This prevents mismatched record positions, coordinates, names, or IDs when the supplied database differs from the bundled one. Creating these indexes does not populate the station identity cache or read prediction fields; only returned results and custom-filter candidates need identity objects.
 
 ## Build pipeline
 
@@ -60,7 +64,7 @@ Both bundles resolve `../generated/slackwater.tcdb` to one shared copy at `dist/
 2. `tsdown` — builds `dist/node`, `dist/browser`, and `dist/worker` (all ESM), resolving `#slackwater.tcdb` per build.
 3. `copy-database` — copies the file to `dist/generated/`.
 4. `tsc --noEmit` — type-checks src and the tests/tools against the schemas.
-5. `smoke` (`scripts/smoke.mjs`) — imports all three built entries, checks a reference and a subordinate station resolve prediction data, and asserts the browser and worker bundles have no `node:fs` and that the worker bundle neither fetches during module evaluation (fetch is poisoned for its import) nor uses `import.meta.url`.
+5. `smoke` (`scripts/smoke.mjs`) — imports all three built entries, checks a reference and a subordinate station resolve prediction data, and asserts the browser and worker bundles have no filesystem imports. Importing each bundle is tested with fetch and base64 decoding poisoned; the worker bundle also must not use `import.meta.url`.
 
 Releases attach the file as `slackwater-<date>.tcdb` alongside the TCD files.
 

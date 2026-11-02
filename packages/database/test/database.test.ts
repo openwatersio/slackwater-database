@@ -2,6 +2,7 @@ import { describe, test, expect, expectTypeOf, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import * as flatbuffers from "flatbuffers";
 import { buildDatabase } from "../src/database/builder.ts";
+import { loadStations } from "../src/load-stations.ts";
 import { openDatabase } from "../src/database/reader.ts";
 import { Root, Kind, DatumFrame } from "../src/generated/fbs/slackwater.ts";
 import type { ChsFitData, Station, StationInput } from "../src/types.ts";
@@ -464,21 +465,14 @@ describe("buildDatabase", () => {
       current: { flood_direction: 90, chs_fit },
     }));
     const bytes = build([...inputs, ...fitted]);
-    vi.doMock("#slackwater.tcdb", () => ({ default: bytes }));
-    vi.resetModules();
-    try {
-      const { stationsById } = await import("../src/stations.ts");
-      fits.forEach((fit, i) => {
-        const read = stationsById.get(`test/fit-${i}`)!.current!.chs_fit;
-        expect(read).toEqual(fit);
-        expect(read).toStrictEqual(fit);
-      });
-      const nullMiss = stationsById.get("test/fit-4")!.current!.chs_fit!;
-      expect(nullMiss.miss!.value).toBeNull();
-    } finally {
-      vi.doUnmock("#slackwater.tcdb");
-      vi.resetModules();
-    }
+    const { byId } = await loadStations(bytes);
+    fits.forEach((fit, i) => {
+      const read = byId(`test/fit-${i}`)!.current!.chs_fit;
+      expect(read).toEqual(fit);
+      expect(read).toStrictEqual(fit);
+    });
+    const nullMiss = byId("test/fit-4")!.current!.chs_fit!;
+    expect(nullMiss.miss!.value).toBeNull();
   });
 
   test("rejects chs_fit numbers its ushort fields cannot hold", () => {
@@ -532,44 +526,28 @@ describe("buildDatabase", () => {
     expect(tierOffset).not.toBe(0);
     bytes[fit.bb_pos + tierOffset] = 3;
     expect(fit.tier() as number).toBe(3);
-    vi.doMock("#slackwater.tcdb", () => ({ default: bytes }));
-    vi.resetModules();
-    try {
-      const { stationsById } = await import("../src/stations.ts");
-      const read = stationsById.get("test/fit-unknown")!.current!.chs_fit!;
-      expect(read.tier).toBe("online");
-      expect(read.days).toBeUndefined();
-      expect(read.evidence).toBe("fit-2026-10-22-8f85912-r2");
-    } finally {
-      vi.doUnmock("#slackwater.tcdb");
-      vi.resetModules();
-    }
+    const { byId } = await loadStations(bytes);
+    const read = byId("test/fit-unknown")!.current!.chs_fit!;
+    expect(read.tier).toBe("online");
+    expect(read.days).toBeUndefined();
+    expect(read.evidence).toBe("fit-2026-10-22-8f85912-r2");
   });
 
   test("a current without chs_fit reads none", async () => {
     const bytes = build(inputs);
-    vi.doMock("#slackwater.tcdb", () => ({ default: bytes }));
-    vi.resetModules();
-    try {
-      const { stationsById } = await import("../src/stations.ts");
-      expect(stationsById.get("test/3")!.current!.chs_fit).toBeUndefined();
-    } finally {
-      vi.doUnmock("#slackwater.tcdb");
-      vi.resetModules();
-    }
+    const { byId } = await loadStations(bytes);
+    expect(byId("test/3")!.current!.chs_fit).toBeUndefined();
   });
 
   test("exposes kind eagerly and current data lazily", async () => {
     const bytes = build(inputs, { version: "1.2.3" });
-    vi.doMock("#slackwater.tcdb", () => ({ default: bytes }));
-    vi.resetModules();
     const { Station: FlatBufferStation } =
       await import("../src/generated/fbs/slackwater.ts");
     const currentAccessor = vi.spyOn(FlatBufferStation.prototype, "current");
 
     try {
-      const { stationsById } = await import("../src/stations.ts");
-      const station = stationsById.get("test/3")!;
+      const { byId } = await loadStations(bytes);
+      const station = byId("test/3")!;
       expect(station.kind).toBe("current");
       expect(currentAccessor).not.toHaveBeenCalled();
       const current = station.current!;
@@ -593,35 +571,26 @@ describe("buildDatabase", () => {
       expect(currentAccessor).toHaveBeenCalledTimes(1);
     } finally {
       currentAccessor.mockRestore();
-      vi.doUnmock("#slackwater.tcdb");
-      vi.resetModules();
     }
   });
 
   test("inherits datum frame and reduction method with the reference's values", async () => {
     const bytes = build(inputs);
-    vi.doMock("#slackwater.tcdb", () => ({ default: bytes }));
-    vi.resetModules();
-    try {
-      const { stationsById } = await import("../src/stations.ts");
-      const reference = stationsById.get("test/2")!;
-      const subordinate = stationsById.get("test/1")!;
-      expect(reference.datum_frame).toBe("gauge");
-      expect(subordinate.datum_frame).toBe(reference.datum_frame);
-      expect(reference.datum_coverage).toEqual({
-        months: 24,
-        observed_hours: 17520,
-        inferred_hours: 24,
-      });
-      expect(subordinate.datum_coverage).toEqual(reference.datum_coverage);
-      expect(subordinate.datums_source).toBe("observed");
-      expect(subordinate.datums).toEqual(reference.datums);
-      expect(stationsById.get("test/3")!.datum_frame).toBeUndefined();
-      expect(stationsById.get("test/3")!.datum_coverage).toBeUndefined();
-    } finally {
-      vi.doUnmock("#slackwater.tcdb");
-      vi.resetModules();
-    }
+    const { byId } = await loadStations(bytes);
+    const reference = byId("test/2")!;
+    const subordinate = byId("test/1")!;
+    expect(reference.datum_frame).toBe("gauge");
+    expect(subordinate.datum_frame).toBe(reference.datum_frame);
+    expect(reference.datum_coverage).toEqual({
+      months: 24,
+      observed_hours: 17520,
+      inferred_hours: 24,
+    });
+    expect(subordinate.datum_coverage).toEqual(reference.datum_coverage);
+    expect(subordinate.datums_source).toBe("observed");
+    expect(subordinate.datums).toEqual(reference.datums);
+    expect(byId("test/3")!.datum_frame).toBeUndefined();
+    expect(byId("test/3")!.datum_coverage).toBeUndefined();
   });
 
   test("preserves absent current measurements without confusing them with zero", async () => {
@@ -631,18 +600,11 @@ describe("buildDatabase", () => {
       offsets: { reference: "test/2", flood_time: 0 },
     };
     const bytes = build(sparse);
-    vi.doMock("#slackwater.tcdb", () => ({ default: bytes }));
-    vi.resetModules();
 
-    try {
-      const { stationsById } = await import("../src/stations.ts");
-      expect(stationsById.get("test/3")!.current).toEqual({
-        ebb_direction: 0,
-        offsets: { reference: "test/2", flood_time: 0 },
-      });
-    } finally {
-      vi.doUnmock("#slackwater.tcdb");
-      vi.resetModules();
-    }
+    const { byId } = await loadStations(bytes);
+    expect(byId("test/3")!.current).toEqual({
+      ebb_direction: 0,
+      offsets: { reference: "test/2", flood_time: 0 },
+    });
   });
 });

@@ -10,7 +10,8 @@
 import { describe, test, expect, beforeAll } from "vitest";
 import { existsSync, statSync, readFileSync } from "fs";
 import { join } from "path";
-import { stations } from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
+
 import { createTidePredictor } from "@slackwater/engine";
 import {
   getXTidePredictions,
@@ -20,6 +21,8 @@ import {
 } from "./xtide.js";
 import { getPredictions, getCurrentPredictions } from "./engine-predictions.js";
 import { comparePredictions, formatComparisonResult } from "./compare.js";
+
+const { accepted: stations } = await loadStations();
 
 // Test stations - selected to cover different regions, tide types, and station types
 const TEST_STATIONS = [

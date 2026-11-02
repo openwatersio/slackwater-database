@@ -3,7 +3,8 @@ import { readFileSync } from "node:fs";
 import { openDatabase } from "../src/database/reader.ts";
 import { buildDatabase } from "../src/database/builder.ts";
 import { credits } from "../src/generated/credits.ts";
-import { allStations } from "../src/stations.ts";
+import { loadStations } from "../src/load-stations.js";
+
 import {
   MODIFICATIONS_URL,
   PROJECT_CREDIT,
@@ -12,6 +13,8 @@ import {
 // From source: the stations package loads data, and this test checks the
 // database against the same per-source metadata the build used.
 import { loadSources } from "../../stations/sources.ts";
+
+const { all: allStations } = await loadStations();
 
 const sources = loadSources();
 const creditOf = (name: string) => sources.get(name)?.credit;

@@ -129,9 +129,10 @@ Most stations here are CC BY, which obliges anyone redistributing them to credit
 Every station carries the notice it needs as `attribution`, already assembled, so the rule for a consumer is one sentence: **display the station's `attribution`.** Nothing downstream needs its own table of sources, or its own reading of what a licence requires.
 
 ```typescript
-import { stationsById } from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
 
-console.log(stationsById.get("ticon/newlyn-new-gbr-bodc")?.attribution);
+const db = await loadStations();
+console.log(db.byId("ticon/newlyn-new-gbr-bodc")?.attribution);
 // Slackwater database (https://github.com/openwatersio/slackwater-database). Source:
 // Hart-Davis, M., Dettmering, D., Seitz, F. (2025), TICON-4: TIdal CONstants
 // based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129.

@@ -16,34 +16,67 @@ $ npm install @slackwater/database
 
 ## Usage
 
-The package exports every tide and current station that passes the database's quality gates:
+Load a database explicitly, then request individual stations or a collection:
 
 ```typescript
-import { stations, stationsById } from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
 
-console.log("Total stations:", stations.length);
-console.log(stationsById.get("noaa/9447130"));
+const db = await loadStations();
+
+console.log("Total accepted stations:", db.accepted.length);
+console.log(db.byId("noaa/9447130"));
 ```
 
-`stations` leaves out records the quality evaluation rejected, such as duplicate gauges and implausible datums. `allStations` is the unfiltered catalog, `stationsById` maps an id to its station, and every search function below takes `includeAll: true` to search the full catalog instead of the accepted subset.
+Importing the package performs no database I/O or station decoding. `loadStations()` obtains the bundled bytes and creates a reader. Every call for the bundled database returns the same instance, so callers can load it wherever they need it.
 
-Each station carries its identity and location eagerly. The heavy prediction fields — `harmonic_constituents`, `datums`, `datums_source`, `datum_frame`, `datum_coverage`, `epoch`, and `datum_epoch` — are decoded from the database file on access, so importing the module does not pull every station's prediction data onto the heap. [See the format documentation](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md) for how that works.
+`db.byId(id)` binary-searches the database and caches the matching station's identity. `db.all` materializes every identity, including rejected records; `db.accepted` leaves out records rejected by quality evaluation. These collections reuse identities already decoded and are cached on first access. Every search function below takes `includeAll: true` to search the full catalog instead of the accepted subset.
+
+Prediction fields — `harmonic_constituents`, `datums`, `datums_source`, `datum_frame`, `datum_coverage`, `epoch`, and `datum_epoch` — remain getters that decode from the buffer on each access, without persistent caching. [See the format documentation](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md).
+
+The loader also accepts a source:
+
+```typescript
+const local = await loadStations("./stations.tcdb"); // Node filesystem path
+const file = await loadStations(new URL("file:///data/stations.tcdb")); // Node
+const remote = await loadStations("https://example.com/stations.tcdb");
+const supplied = await loadStations(bytes); // Uint8Array, including Node Buffer
+```
+
+Browsers accept relative or absolute fetchable URLs; Workers accept fetchable URLs and bundled bytes. Node accepts filesystem paths, file URLs, and HTTP(S) URLs. URLs download the whole file before returning a reader; individual station reads then use the in-memory buffer. In Workers, call a remote loader in a request handler or another context where fetch is allowed. Each supplied source gets its own instance and caches, so reuse the one it returns.
+
+The geographic and text indexes initialize on first use. Bundled data uses prebuilt indexes; supplied sources build matching indexes from the loaded buffer's coordinates or searchable metadata. Neither path reads prediction data to build an index.
+
+`db.qualityMap` lazily builds the full map of stored quality evaluations, and `db.datums` lists the datum names available in the file. `qualityFilter(station)` checks acceptance and is a direct export.
+
+### Migrating from module-level exports
+
+| Previous API               | Instance API                        |
+| -------------------------- | ----------------------------------- |
+| `stationsById.get(id)`     | `db.byId(id)`                       |
+| `allStations`              | `db.all`                            |
+| `stations`                 | `db.accepted`                       |
+| `qualityMap`, `datums`     | `db.qualityMap`, `db.datums`        |
+| Route and search functions | Methods with the same names on `db` |
+
+Pure helpers such as `qualityFilter`, `routePath`, `positionToPoint`, attribution helpers, `credits`, and `buildDatabase` remain direct exports.
 
 Each station has separate `locality`, `region`, and `country` display fields. `country_code` is an ISO 3166-1 alpha-2 code; `region_code`, when available, is an ISO 3166-2 subdivision code. Consumers can therefore omit country or region text when the surrounding page already supplies it.
 
 ### Stable station routes
 
 ```typescript
-import { stationRouteBySlug, stationsById } from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
 
-const route = stationRouteBySlug("tide", "victoria");
-const station = route && stationsById.get(route.stationIds[0]!);
+const db = await loadStations();
+
+const route = db.stationRouteBySlug("tide", "victoria");
+const station = route && db.byId(route.stationIds[0]!);
 console.log(station?.locality, station?.region, station?.country_code);
 ```
 
 Each route carries its canonical web `path` (`/tides/ca/bc/victoria/`: kind, lowercase ISO country code, subdivision code when the station has one, slug) and the `formerPaths` that should redirect to it.
 
-`stationRouteBySlug(kind, slug)` performs a binary lookup without decoding the full route index. `stationRoutes(kind)` decodes that kind's complete route list on demand. Prediction fields such as constituents and datums remain lazy.
+`db.stationRouteBySlug(kind, slug)` performs a binary lookup without decoding the full route index. `db.stationRoutes(kind)` decodes that kind's complete route list on demand. Prediction fields such as constituents and datums remain lazy.
 
 ### Searching for stations
 
@@ -52,10 +85,12 @@ Each route carries its canonical web `path` (`/tides/ca/bc/victoria/`: kind, low
 `near` returns an array of `[station, distanceInKm]` tuples, closest first:
 
 ```typescript
-import { near, nearest } from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
+
+const db = await loadStations();
 
 // Find stations within 10 km of a lat/lon
-const nearbyStations = near({
+const nearbyStations = db.near({
   lon: -122,
   lat: 37,
   maxDistance: 10,
@@ -67,7 +102,7 @@ console.log("Nearby stations:", nearbyStations.length);
 `nearest` returns a single `[station, distanceInKm]` tuple, or `null` when nothing matches:
 
 ```typescript
-const result = nearest({ longitude: -75.5, latitude: 22 });
+const result = db.nearest({ longitude: -75.5, latitude: 22 });
 if (result) {
   const [station, distance] = result;
   console.log("Nearest station:", station.name, "is", distance, "km away");
@@ -91,14 +126,16 @@ Both functions take the following parameters:
 `bbox` takes a `[minLon, minLat, maxLon, maxLat]` tuple and returns the stations inside it:
 
 ```typescript
-import { bbox } from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
+
+const db = await loadStations();
 
 // Find stations in the Boston area
-const bostonStations = bbox([-71.5, 42, -70.5, 42.8]);
+const bostonStations = db.bbox([-71.5, 42, -70.5, 42.8]);
 console.log("Stations in bounds:", bostonStations.length);
 
 // With a filter
-const referenceOnly = bbox([-72, 41, -70, 43], {
+const referenceOnly = db.bbox([-72, 41, -70, 43], {
   filter: (station) => station.type === "reference",
 });
 ```
@@ -113,22 +150,24 @@ The bounds are `minLon` (west edge), `minLat` (south edge), `maxLon` (east edge)
 You can search for stations by name, region, country, or continent using the `search` function. It supports fuzzy matching and prefix search:
 
 ```typescript
-import { search } from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
+
+const db = await loadStations();
 
 // Search for stations by name with fuzzy matching
-const results = search("Boston");
+const results = db.search("Boston");
 console.log("Found:", results.length, "stations");
 console.log(results[0].name);
 
 // Search with a filter function
-const usStations = search("harbor", {
+const usStations = db.search("harbor", {
   filter: (station) => station.country === "United States",
   maxResults: 10,
 });
 console.log("US harbor stations:", usStations);
 
 // Combine multiple filters
-const referenceStations = search("island", {
+const referenceStations = db.search("island", {
   filter: (station) =>
     station.type === "reference" && station.continent === "Americas",
   maxResults: 20,
@@ -173,9 +212,11 @@ Most stations are CC BY, so displaying or redistributing them carries an obligat
 **Display the station's `attribution`.** That is the whole of the rule. Nothing here needs its own table of sources, or its own reading of what a licence requires.
 
 ```typescript
-import { stationsById } from "@slackwater/database";
+import { loadStations } from "@slackwater/database";
 
-console.log(stationsById.get("ticon/newlyn-new-gbr-bodc")?.attribution);
+const db = await loadStations();
+
+console.log(db.byId("ticon/newlyn-new-gbr-bodc")?.attribution);
 // Slackwater database (https://github.com/openwatersio/slackwater-database). Source:
 // Hart-Davis, M., Dettmering, D., Seitz, F. (2025), TICON-4: TIdal CONstants
 // based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129.
@@ -200,10 +241,11 @@ Those are the three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.o
 To rebuild a filtered database, pass the exported `credits` map to `buildDatabase`. It maps each published `source.name` to its credit line, or `null` when it requires none, using the same source metadata as the bundled database.
 
 ```js
-import { buildDatabase, credits, stations } from "@slackwater/database";
+import { buildDatabase, credits, loadStations } from "@slackwater/database";
 
+const db = await loadStations();
 const bytes = buildDatabase(
-  stations.filter((station) => station.country_code === "CA"),
+  db.accepted.filter((station) => station.country_code === "CA"),
   { credits },
 );
 ```
