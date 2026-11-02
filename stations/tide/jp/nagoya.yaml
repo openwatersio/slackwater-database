@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA22 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [35.091383, 136.880833]
 sources:
+  - jma/NG
   - ticon/nagoya-ma22-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/nagoya-ma22-jpn-jodc_jma:
+    jma/NG:
       position: [35.091383, 136.880833]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 90
+        score: 81
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.413
+    ticon/nagoya-ma22-jpn-jodc_jma:
+      position: [35.091383, 136.880833]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/NG
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.43
+          coverage: 0.018
+        issues:
+          - Superseded by jma/NG, its operator's own record

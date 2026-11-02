@@ -1,21 +1,43 @@
+# Preserve the reviewed TICON JMA MA53 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [35.547783, 133.24305]
 sources:
+  - jma/SK
   - ticon/sakai-ma53-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/sakai-ma53-jpn-jodc_jma:
+    jma/SK:
       position: [35.547783, 133.24305]
       coastline: unverifiable
       quality:
         accepted: true
         seasonal_dominant: true
-        score: 98
+        score: 89
+        factors:
+          epoch: 0.483
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 1
+        issues:
+          - "Seasonal curve peak (0.185m) exceeds the principal tide M2+S2+K1+O1 (0.170m): the yearly swing exceeds the daily one"
+    ticon/sakai-ma53-jpn-jodc_jma:
+      position: [35.547783, 133.24305]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/SK
+        seasonal_dominant: true
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 1
+          coverage: 0.005
         issues:
+          - Superseded by jma/SK, its operator's own record
           - "Seasonal curve peak (0.193m) exceeds the principal tide M2+S2+K1+O1 (0.170m): the yearly swing exceeds the daily one"

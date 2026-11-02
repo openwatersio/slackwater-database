@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA43 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [31.267783, 130.29305]
 sources:
+  - jma/MK
   - ticon/makurazaki-ma43-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/makurazaki-ma43-jpn-jodc_jma:
+    jma/MK:
       position: [31.267783, 130.29305]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 97
+        score: 88
+        factors:
+          epoch: 0.483
+          recency: 0.93
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.903
+    ticon/makurazaki-ma43-jpn-jodc_jma:
+      position: [31.267783, 130.29305]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/MK
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.887
+          coverage: 0.002
+        issues:
+          - Superseded by jma/MK, its operator's own record

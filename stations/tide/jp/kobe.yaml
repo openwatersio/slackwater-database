@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA31 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [34.682217, 135.190283]
 sources:
+  - jma/KB
   - ticon/kobe-ma31-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/kobe-ma31-jpn-jodc_jma:
+    jma/KB:
       position: [34.682217, 135.190283]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 90
+        score: 82
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.45
+    ticon/kobe-ma31-jpn-jodc_jma:
+      position: [34.682217, 135.190283]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/KB
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.447
+          coverage: 0.002
+        issues:
+          - Superseded by jma/KB, its operator's own record

@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA81 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [34.605, 137.1883]
 sources:
+  - jma/I4
   - ticon/akabane-ma81-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/akabane-ma81-jpn-jodc_jma:
+    jma/I4:
       position: [34.605, 137.1883]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 87
+        score: 81
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.385
+    ticon/akabane-ma81-jpn-jodc_jma:
+      position: [34.605, 137.1883]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/I4
+        score: 0
         factors:
           epoch: 0.9
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.376
+          coverage: 0.011
+        issues:
+          - Superseded by jma/I4, its operator's own record

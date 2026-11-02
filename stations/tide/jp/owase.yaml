@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA24 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [34.076383, 136.207217]
 sources:
+  - jma/OW
   - ticon/owase-ma24-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/owase-ma24-jpn-jodc_jma:
+    jma/OW:
       position: [34.076383, 136.207217]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 88
+        score: 80
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.341
+    ticon/owase-ma24-jpn-jodc_jma:
+      position: [34.076383, 136.207217]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/OW
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.342
+          coverage: 0.015
+        issues:
+          - Superseded by jma/OW, its operator's own record

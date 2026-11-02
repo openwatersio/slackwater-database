@@ -11,6 +11,7 @@ import {
   scoreRecency,
   scoreSource,
   tideConflict,
+  deduplicateByGauge,
 } from "../evaluate-quality.ts";
 import { exceeds, seasonalTerms } from "../filtering.ts";
 
@@ -369,4 +370,113 @@ describe("tideConflict", () => {
     const b = station({ M2: { amplitude: 0.002, phase: 60 } });
     expect(tideConflict(a, b)).toBeNull();
   });
+});
+
+test("a superseded research-quality sibling keeps a conflicting fast-delivery relay rejected", () => {
+  const rq = {
+    ...station(BASE, "ticon/minamitorishima-049a-jpn-uhslc_rq"),
+    source: { id: "minamitorishima-049a-jpn-uhslc_rq", name: "TICON-4" },
+  } as Station;
+  const fd = {
+    ...station({ ...BASE, M2: 0.8 }, "ticon/minamitorishima-049-jpn-uhslc_fd"),
+    source: { id: "minamitorishima-049-jpn-uhslc_fd", name: "TICON-4" },
+  } as Station;
+  const direct = station(BASE, "jma/MC");
+  const results = new Map([
+    [
+      rq.id,
+      {
+        id: rq.id,
+        accepted: false,
+        reason: "superseded",
+        redundant: direct.id,
+        score: 0,
+        issues: [],
+      },
+    ],
+    [fd.id, { id: fd.id, accepted: true, score: 71, issues: [] }],
+    [direct.id, { id: direct.id, accepted: true, score: 75, issues: [] }],
+  ]);
+  deduplicateByGauge(
+    [rq.id, fd.id, direct.id],
+    new Map([rq, fd, direct].map((s) => [s.id, s])),
+    results as any,
+    new Map(),
+  );
+  expect(results.get(fd.id)).toMatchObject({
+    accepted: false,
+    reason: "duplicate",
+    redundant: direct.id,
+  });
+  expect(results.get(direct.id)!.accepted).toBe(true);
+});
+
+test("a relay with its own UHSLC metadata does not inherit a sibling operator", () => {
+  const rq = {
+    ...station(BASE, "ticon/bermuda-259b-gbr-uhslc_rq"),
+    source: { id: "bermuda-259b-gbr-uhslc_rq", name: "TICON-4" },
+  } as Station;
+  const fd = {
+    ...station({ ...BASE, M2: 0.8 }, "ticon/bermuda-259a-gbr-uhslc_rq"),
+    source: { id: "bermuda-259a-gbr-uhslc_rq", name: "TICON-4" },
+  } as Station;
+  const direct = station(BASE, "jma/MC");
+  const results = new Map([
+    [
+      rq.id,
+      {
+        id: rq.id,
+        accepted: false,
+        reason: "superseded",
+        redundant: direct.id,
+        score: 0,
+        issues: [],
+      },
+    ],
+    [fd.id, { id: fd.id, accepted: true, score: 71, issues: [] }],
+    [direct.id, { id: direct.id, accepted: true, score: 75, issues: [] }],
+  ]);
+  deduplicateByGauge(
+    [rq.id, fd.id, direct.id],
+    new Map([rq, fd, direct].map((s) => [s.id, s])),
+    results as any,
+    new Map(),
+  );
+  expect(results.get(fd.id)!.accepted).toBe(true);
+  expect(results.get(direct.id)!.accepted).toBe(true);
+});
+
+test("refuses a gauge group with conflicting superseded operator targets", () => {
+  const ids = [
+    "ticon/contradiction-999a-jpn-uhslc_rq",
+    "ticon/contradiction-999b-jpn-uhslc_rq",
+  ];
+  const records = ids.map(
+    (id) =>
+      ({
+        ...station(BASE, id),
+        source: { id: id.slice(6), name: "TICON-4" },
+      }) as Station,
+  );
+  const results = new Map(
+    ids.map((id, i) => [
+      id,
+      {
+        id,
+        accepted: false,
+        reason: "superseded",
+        redundant: `jma/${i}`,
+        score: 0,
+        issues: [],
+      },
+    ]),
+  ) as any;
+  expect(() =>
+    deduplicateByGauge(
+      ids,
+      new Map(records.map((s) => [s.id, s])),
+      results,
+      new Map(),
+    ),
+  ).toThrow(/operator/i);
 });

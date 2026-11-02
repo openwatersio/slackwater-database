@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA11 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [38.296667, 141.505283]
 sources:
+  - jma/AY
   - ticon/ayukawa-ma11-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/ayukawa-ma11-jpn-jodc_jma:
+    jma/AY:
       position: [38.296667, 141.505283]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 91
+        score: 80
+        factors:
+          epoch: 0.43
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.48
+    ticon/ayukawa-ma11-jpn-jodc_jma:
+      position: [38.296667, 141.505283]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/AY
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.484
+          coverage: 0.007
+        issues:
+          - Superseded by jma/AY, its operator's own record

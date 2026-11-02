@@ -1,36 +1,77 @@
+# Preserve the reviewed TICON JMA MA58 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [27.093883, 142.194717]
 sources:
+  - jma/CC
   - ticon/chichijima-047-jpn-uhslc_fd
   - ticon/chichijima-047a-jpn-uhslc_rq
+  - ticon/ma58-ma58-jpn-jodc_jma
 redirect_from:
   - /tides/jp/chichijima-tokyo/
+  - /tides/jp/ogasawara/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/chichijima-047-jpn-uhslc_fd:
-      position: [27.1, 142.183]
+    jma/CC:
+      position: [27.093883, 142.194717]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 85
+        score: 90
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 1
+    ticon/chichijima-047-jpn-uhslc_fd:
+      position: [27.093883, 142.194717]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/CC
+        score: 0
         factors:
           epoch: 1
           recency: 0.99
           source: 0.99
           quality: 1
           amplitude: 1
-          coverage: 0.027
+          coverage: 0.023
+        issues:
+          - Superseded by jma/CC, its operator's own record
     ticon/chichijima-047a-jpn-uhslc_rq:
-      position: [27.1, 142.183]
+      position: [27.093883, 142.194717]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/chichijima-047-jpn-uhslc_fd
-        score: 85
+        reason: superseded
+        redundant: jma/CC
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.99
           quality: 1
           amplitude: 1
-          coverage: 0.027
+          coverage: 0.023
+        issues:
+          - Superseded by jma/CC, its operator's own record
+    ticon/ma58-ma58-jpn-jodc_jma:
+      position: [27.093883, 142.194717]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/CC
+        score: 0
+        factors:
+          epoch: 1
+          recency: 0.97
+          source: 0.929
+          quality: 1
+          amplitude: 1
+          coverage: 0.014
+        issues:
+          - Superseded by jma/CC, its operator's own record

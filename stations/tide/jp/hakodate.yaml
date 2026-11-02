@@ -1,17 +1,39 @@
+# Preserve the reviewed TICON JMA MA06 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [41.781667, 140.724717]
 sources:
+  - jma/HK
   - ticon/hakodate-364-jpn-uhslc_fd
   - ticon/hakodate-364a-jpn-uhslc_rq
+  - ticon/hakodate-ma06-jpn-jodc_jma
 redirect_from:
+  - /tides/jp/hakodate-hokkaido/
   - /tides/jp/hakodate-ticon-hakodate-364a-jpn-uhslc-rq/
+  - /tides/jp/hakodate-ticon-hakodate-ma06-jpn-jodc-jma/
+  - /tides/jp/hakodate-tsugaru-strait/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/hakodate-364-jpn-uhslc_fd:
-      position: [41.783, 140.733]
+    jma/HK:
+      position: [41.781667, 140.724717]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 85
+        score: 86
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.757
+    ticon/hakodate-364-jpn-uhslc_fd:
+      position: [41.781667, 140.724717]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/HK
+        score: 0
         factors:
           epoch: 1
           recency: 0.99
@@ -19,14 +41,16 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.014
+        issues:
+          - Superseded by jma/HK, its operator's own record
     ticon/hakodate-364a-jpn-uhslc_rq:
-      position: [41.783, 140.717]
+      position: [41.781667, 140.724717]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/hakodate-364-jpn-uhslc_fd
-        score: 85
+        reason: superseded
+        redundant: jma/HK
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
@@ -34,3 +58,22 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.013
+        issues:
+          - Superseded by jma/HK, its operator's own record
+    ticon/hakodate-ma06-jpn-jodc_jma:
+      position: [41.781667, 140.724717]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/HK
+        score: 0
+        factors:
+          epoch: 1
+          recency: 0.97
+          source: 0.929
+          quality: 1
+          amplitude: 1
+          coverage: 0.004
+        issues:
+          - Superseded by jma/HK, its operator's own record

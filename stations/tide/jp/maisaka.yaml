@@ -1,17 +1,38 @@
+# Preserve the reviewed TICON JMA MA21 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [34.68195, 137.608883]
 sources:
+  - jma/MI
   - ticon/maisaka-356-jpn-uhslc_fd
   - ticon/maisaka-356a-jpn-uhslc_rq
+  - ticon/maisaka-ma21-jpn-jodc_jma
 redirect_from:
+  - /tides/jp/maisaka-shizuoka/
   - /tides/jp/maisaka-ticon-maisaka-356a-jpn-uhslc-rq/
+  - /tides/jp/maisaka-ticon-maisaka-ma21-jpn-jodc-jma/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/maisaka-356-jpn-uhslc_fd:
-      position: [34.683, 137.617]
+    jma/MI:
+      position: [34.68195, 137.608883]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 85
+        score: 83
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.539
+    ticon/maisaka-356-jpn-uhslc_fd:
+      position: [34.68195, 137.608883]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/MI
+        score: 0
         factors:
           epoch: 1
           recency: 0.99
@@ -19,14 +40,16 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.015
+        issues:
+          - Superseded by jma/MI, its operator's own record
     ticon/maisaka-356a-jpn-uhslc_rq:
-      position: [34.683, 137.617]
+      position: [34.68195, 137.608883]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/maisaka-356-jpn-uhslc_fd
-        score: 85
+        reason: superseded
+        redundant: jma/MI
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
@@ -34,3 +57,22 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.015
+        issues:
+          - Superseded by jma/MI, its operator's own record
+    ticon/maisaka-ma21-jpn-jodc_jma:
+      position: [34.68195, 137.608883]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/MI
+        score: 0
+        factors:
+          epoch: 1
+          recency: 0.97
+          source: 0.929
+          quality: 1
+          amplitude: 1
+          coverage: 0.003
+        issues:
+          - Superseded by jma/MI, its operator's own record

@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA86 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [32.9461, 131.9608]
 sources:
+  - jma/X5
   - ticon/saeki-ma86-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/saeki-ma86-jpn-jodc_jma:
+    jma/X5:
       position: [32.9461, 131.9608]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 91
+        score: 88
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.869
+    ticon/saeki-ma86-jpn-jodc_jma:
+      position: [32.9461, 131.9608]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/X5
+        score: 0
         factors:
           epoch: 0.725
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.876
+          coverage: 0.009
+        issues:
+          - Superseded by jma/X5, its operator's own record

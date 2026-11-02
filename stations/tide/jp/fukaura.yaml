@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA57 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [40.647217, 139.926383]
 sources:
+  - jma/FK
   - ticon/fukaura-ma57-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/fukaura-ma57-jpn-jodc_jma:
+    jma/FK:
       position: [40.647217, 139.926383]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 85
+        score: 77
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.149
+    ticon/fukaura-ma57-jpn-jodc_jma:
+      position: [40.647217, 139.926383]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/FK
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.143
+          coverage: 0.006
+        issues:
+          - Superseded by jma/FK, its operator's own record

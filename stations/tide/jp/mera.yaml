@@ -1,17 +1,38 @@
+# Preserve the reviewed TICON JMA MA14 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [34.918883, 139.825]
 sources:
+  - jma/MR
   - ticon/mera-352-jpn-uhslc_fd
   - ticon/mera-352a-jpn-uhslc_rq
+  - ticon/mera-ma14-jpn-jodc_jma
 redirect_from:
+  - /tides/jp/mera-chiba/
   - /tides/jp/mera-ticon-mera-352a-jpn-uhslc-rq/
+  - /tides/jp/mera-ticon-mera-ma14-jpn-jodc-jma/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/mera-352-jpn-uhslc_fd:
-      position: [34.917, 139.833]
+    jma/MR:
+      position: [34.918883, 139.825]
       coastline: unverifiable
       quality:
         accepted: true
         score: 85
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.662
+    ticon/mera-352-jpn-uhslc_fd:
+      position: [34.918883, 139.825]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/MR
+        score: 0
         factors:
           epoch: 1
           recency: 0.99
@@ -19,14 +40,16 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.015
+        issues:
+          - Superseded by jma/MR, its operator's own record
     ticon/mera-352a-jpn-uhslc_rq:
-      position: [34.917, 139.817]
+      position: [34.918883, 139.825]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/mera-352-jpn-uhslc_fd
-        score: 85
+        reason: superseded
+        redundant: jma/MR
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
@@ -34,3 +57,22 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.015
+        issues:
+          - Superseded by jma/MR, its operator's own record
+    ticon/mera-ma14-jpn-jodc_jma:
+      position: [34.918883, 139.825]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/MR
+        score: 0
+        factors:
+          epoch: 1
+          recency: 0.97
+          source: 0.929
+          quality: 1
+          amplitude: 1
+          coverage: 0.005
+        issues:
+          - Superseded by jma/MR, its operator's own record

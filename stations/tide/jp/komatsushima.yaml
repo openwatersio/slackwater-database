@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA36 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [34.009167, 134.587783]
 sources:
+  - jma/KM
   - ticon/komatsushima-ma36-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/komatsushima-ma36-jpn-jodc_jma:
+    jma/KM:
       position: [34.009167, 134.587783]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 91
+        score: 82
+        factors:
+          epoch: 0.483
+          recency: 0.93
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.556
+    ticon/komatsushima-ma36-jpn-jodc_jma:
+      position: [34.009167, 134.587783]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/KM
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.529
+          coverage: 0.017
+        issues:
+          - Superseded by jma/KM, its operator's own record

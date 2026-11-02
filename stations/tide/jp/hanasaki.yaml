@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA03 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [43.27805, 145.567783]
 sources:
+  - jma/HN
   - ticon/hanasaki-ma03-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/hanasaki-ma03-jpn-jodc_jma:
+    jma/HN:
       position: [43.27805, 145.567783]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 85
+        score: 77
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.135
+    ticon/hanasaki-ma03-jpn-jodc_jma:
+      position: [43.27805, 145.567783]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/HN
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.146
+          coverage: 0.012
+        issues:
+          - Superseded by jma/HN, its operator's own record

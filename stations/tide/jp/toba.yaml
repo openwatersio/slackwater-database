@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA23 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [34.485283, 136.824717]
 sources:
+  - jma/TB
   - ticon/toba-ma23-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/toba-ma23-jpn-jodc_jma:
+    jma/TB:
       position: [34.485283, 136.824717]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 94
+        score: 86
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.715
+    ticon/toba-ma23-jpn-jodc_jma:
+      position: [34.485283, 136.824717]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/TB
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.717
+          coverage: 0.004
+        issues:
+          - Superseded by jma/TB, its operator's own record

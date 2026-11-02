@@ -223,7 +223,7 @@ test("validates shard boundaries", () => {
 test("regenerates selected sorted files only, preserving other fields and unchanged bytes", async () => {
   const root = await mkdtemp(join(tmpdir(), "harmonic-datums-"));
   try {
-    for (const source of ["dmi", "jhod", "linz", "ticon"])
+    for (const source of ["dmi", "jhod", "jma", "linz", "ticon"])
       await mkdir(join(root, source));
     const input = station({
       country: "New Zealand",
@@ -253,7 +253,7 @@ test("regenerates selected sorted files only, preserving other fields and unchan
 test("marks migrated TICON reductions once while leaving NOAA and observation provenance untouched", async () => {
   const root = await mkdtemp(join(tmpdir(), "harmonic-provenance-"));
   try {
-    for (const source of ["dmi", "jhod", "linz", "ticon", "noaa"])
+    for (const source of ["dmi", "jhod", "jma", "linz", "ticon", "noaa"])
       await mkdir(join(root, source));
     const input = station({
       disclaimers: `Provider legal notice. ${OBSERVED_DATUM_NOTICE}`,
@@ -281,6 +281,31 @@ test("marks migrated TICON reductions once while leaving NOAA and observation pr
     expect(await readFile(join(root, "noaa", "a.json"), "utf8")).toBe(
       "NOAA must never be read or rewritten",
     );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("regenerates JMA's derived NLLW and preserves MSL zero", async () => {
+  const root = await mkdtemp(join(tmpdir(), "jma-datums-"));
+  try {
+    for (const source of ["dmi", "jhod", "jma", "linz", "ticon"])
+      await mkdir(join(root, source));
+    const input = station({
+      country: "Japan",
+      chart_datum: "CD",
+      datums_source: "harmonic",
+      datums: { MSL: 0, CD: -0.18, NLLW: 99 },
+    });
+    await writeFile(join(root, "jma", "test.json"), JSON.stringify(input));
+    expect(await regenerateDirectory(root)).toBe(1);
+    const output = JSON.parse(
+      await readFile(join(root, "jma", "test.json"), "utf8"),
+    );
+    expect(output.datums.MSL).toBe(0);
+    expect(output.datums.NLLW).toBe(-1);
+    expect(output.chart_datum).toBe("CD");
+    expect(output.datums.CD).toBe(-0.18);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

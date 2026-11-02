@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA40 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [33.227217, 132.551117]
 sources:
+  - jma/UW
   - ticon/uwajima-ma40-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/uwajima-ma40-jpn-jodc_jma:
+    jma/UW:
       position: [33.227217, 132.551117]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 98
+        score: 90
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 1
+    ticon/uwajima-ma40-jpn-jodc_jma:
+      position: [33.227217, 132.551117]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/UW
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 1
+          coverage: 0.014
+        issues:
+          - Superseded by jma/UW, its operator's own record

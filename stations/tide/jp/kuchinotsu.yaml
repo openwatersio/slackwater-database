@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA48 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [32.605283, 130.195283]
 sources:
+  - jma/KT
   - ticon/kuchinotsu-ma48-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/kuchinotsu-ma48-jpn-jodc_jma:
+    jma/KT:
       position: [32.605283, 130.195283]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 89
+        score: 80
+        factors:
+          epoch: 0.483
+          recency: 0.93
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.38
+    ticon/kuchinotsu-ma48-jpn-jodc_jma:
+      position: [32.605283, 130.195283]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/KT
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.391
+          coverage: 0.012
+        issues:
+          - Superseded by jma/KT, its operator's own record

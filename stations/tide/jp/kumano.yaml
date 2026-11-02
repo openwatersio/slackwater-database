@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA65 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [33.9258, 136.1689]
 sources:
+  - jma/KN
   - ticon/kumano-ma65-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/kumano-ma65-jpn-jodc_jma:
+    jma/KN:
       position: [33.9258, 136.1689]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 88
+        score: 80
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.341
+    ticon/kumano-ma65-jpn-jodc_jma:
+      position: [33.9258, 136.1689]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/KN
+        score: 0
         factors:
           epoch: 0.994
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.342
+          coverage: 0.017
+        issues:
+          - Superseded by jma/KN, its operator's own record

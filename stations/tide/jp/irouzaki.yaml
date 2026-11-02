@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA78 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [34.6117, 138.8492]
 sources:
+  - jma/G9
   - ticon/irouzaki-ma78-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/irouzaki-ma78-jpn-jodc_jma:
+    jma/G9:
       position: [34.6117, 138.8492]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 84
+        score: 76
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.071
+    ticon/irouzaki-ma78-jpn-jodc_jma:
+      position: [34.6117, 138.8492]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/G9
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.074
+          coverage: 0.011
+        issues:
+          - Superseded by jma/G9, its operator's own record
