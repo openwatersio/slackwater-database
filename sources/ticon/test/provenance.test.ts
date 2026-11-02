@@ -160,3 +160,29 @@ test("a NOAA number from NOAA, or in the relay's id, is unambiguous", () => {
   });
   expect(declaration("ticon/bergen-bgo-nor-nhs")?.unambiguous).toBe(true);
 });
+
+test("JMA MA codes identify JMA gauges without joining Coast Guard gauges", () => {
+  expect(declaredOriginator("ticon/wakkanai-ma01-jpn-jodc_jma")).toBe("jma/WN");
+  expect(declaredOriginator("ticon/unknown-ma99-jpn-jodc_jma")).toBeUndefined();
+  expect(
+    declaredOriginator("ticon/wakkanai-ma01-jpn-jodc_jcg"),
+  ).toBeUndefined();
+});
+
+test("UHSLC declares JMA's two-character gauge codes", () => {
+  expect(
+    declaredOriginator("ticon/wakkanai-360a-jpn-uhslc_rq", {
+      "360A": meta("Japan Meteorological Agency", "WN"),
+    }),
+  ).toBe("jma/WN");
+  expect(
+    declaredOriginator("ticon/abashiri-347a-jpn-uhslc_rq", {
+      "347A": meta("Japan Oceanographic Data Center", "AS"),
+    }),
+  ).toBe("jma/AS");
+  expect(
+    declaredOriginator("ticon/wakkanai-360a-jpn-uhslc_rq", {
+      "360A": meta("Other agency", "WN"),
+    }),
+  ).toBeUndefined();
+});

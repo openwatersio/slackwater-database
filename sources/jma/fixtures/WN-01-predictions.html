@@ -1,0 +1,753 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+<title>気象庁 | 潮汐・海面水位のデータ 潮位表　稚内（WAKKANAI）</title>
+<meta name="Author" content="気象庁 Japan Meteorological Agency" />
+<meta name="keywords" content="気象庁 Japan Meteorological Agency" />
+<meta name="description" content="気象庁が提供するページです" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<link rel="stylesheet" type="text/css" href="../../../com/css/define.css" media="all" />
+<script type="text/javascript" src="../../../com/js/jquery.js"></script>
+<style type="text/css" media="all"><!-- @import url(../../../com/default.css); --></style>
+</head>
+
+<body>
+<noscript><div>すべての機能をご利用いただくにはJavascriptを有効にしてください。</div></noscript>
+<!--header start -->
+<div id="header_area">
+	<div id="nheader">
+		<div id="logo"><a href="//www.jma.go.jp/jma/index.html"><img src="//www.jma.go.jp/jma/com/images/logo.gif" alt="気象庁" width="120" height="67" /></a></div>
+
+		<div id="header2_right">
+		        <div id="header2_link">
+		                <ul>
+		                        <li xml:lang="en" lang="en"><a href="//www.jma.go.jp/jma/indexe.html">ENGLISH</a></li>
+		                </ul>
+		        </div>
+		        <!-- search -->　
+		        <div id="gsearch">
+		                <form id="cse-search-box" action="//google.com/cse">
+		                        <input type="hidden" name="cx" value="009950868052057056798:0yrbmp7chwi" />
+		                        <input type="hidden" name="ie" value="UTF-8" />
+		                        <input type="text" name="q" />
+		                        <input type="image" name="sa" src="//www.jma.go.jp/jma/com/images/btn_search6.png" alt="検索"/>
+		                </form>
+		                <script type="text/javascript" src="//www.google.com/cse/brand?form=cse-search-box&lang=ja"></script>
+		        </div>
+		        <!-- search end-->
+		</div> 
+		<ul id="gnavi">
+			<li><a href="//www.jma.go.jp/">ホーム</a></li>
+			<li><a href="//www.jma.go.jp/jma/menu/menuflash.html">防災情報</a></li>
+			<li><a href="//www.jma.go.jp/jma/menu/menureport.html" class="on">各種データ・資料</a></li>
+			<li><a href="//www.jma.go.jp/jma/menu/areas.html">地域の情報</a></li>
+			<li><a href="//www.jma.go.jp/jma/menu/menuknowledge.html">知識・解説</a></li>
+			<li><a href="//www.jma.go.jp/jma/menu/menuappli.html">各種申請・ご案内</a></li>
+		</ul>
+	</div>
+</div>
+<!--header end -->
+
+<div id="contents_area2">
+	<div id="ncontents2">
+<!-- pankuzu menu -->
+		<ul class="breadcrumb2">
+			<li><a href="//www.jma.go.jp/">ホーム</a>&nbsp;&gt;&nbsp;</li>
+			<li><a href="//www.jma.go.jp/jma/menu/menureport.html">各種データ・資料</a>&nbsp;&gt;&nbsp;</li>
+			<li><a href="../../../shindan/index.html">海洋の健康診断表</a>&nbsp;&gt;&nbsp;</li>
+			<li><a href="../../../shindan/index_tide.html">潮汐・海面水位に関する診断表、データ</a>&nbsp;&gt;&nbsp;</li>
+			<li><a href="./index.php">潮位表</a>&nbsp;&gt;&nbsp;</li>
+			<li>潮位表　稚内</li>
+		</ul>
+<!-- //pankuzu menu -->
+
+<div id="main">
+<!-- contents -->
+<h1>潮位表 稚内（WAKKANAI）</h1>
+<ul class="contentslink ltx">
+	<li><a href="explanation.html">解説</a></li>
+</ul>
+<table border="0">
+  <tr align="right"><td nowrap="nowrap" colspan="2">　北海道 稚内市 新港町  </td>
+<td rowspan="4"><a href="s_hokkaidonw.php"><img src="../map/map_hokkaidonw.gif" width="179" height="150" alt="地点索引に戻る" /></a></td>
+</tr>
+<tr align="right"><td nowrap="nowrap">緯度：</td><td nowrap="nowrap">45°24′N</td></tr>
+<tr align="right"><td nowrap="nowrap">経度：</td><td nowrap="nowrap">141°41′E</td></tr>
+<tr align="right"><td nowrap="nowrap">潮位表基準面の標高：</td><td nowrap="nowrap">-21.8(cm)</td></tr>
+<tr><td colspan="3">
+<script language="javascript" type="text/javascript">
+function CheckStn() {
+	var sn = document.fc.stn.selectedIndex;
+	var strs = document.fc.stn.options[sn].value;
+	if ( strs == "top" ) {
+		document.fc.alert.value="表示地点を選択してください。"
+		return false;
+	}
+	return true;
+}
+</script>
+<form name="fc" id="fc" method="post" action="suisan.php" onsubmit='return CheckStn()'>
+<table  border="1" cellspacing="0" bgcolor="#bbffff" width="620" summary="フォーム全体">
+<tr><td>
+<table  border="0" cellspacing="5" bgcolor="#bbffff" summary="地点入力フォーム">
+  <tr>
+    <td align="center" nowrap="nowrap" colspan="5">表示地点
+      <select name="stn">
+        <option value="WN"  selected="selected">稚内 </option>
+        <option value="KE" >枝幸 </option>
+        <option value="A0" >紋別 </option>
+        <option value="AS" >網走 </option>
+        <option value="A6" >羅臼 </option>
+        <option value="NM" >根室 </option>
+        <option value="HN" >花咲 </option>
+        <option value="KP" >霧多布 </option>
+        <option value="KR" >釧路 </option>
+        <option value="B1" >十勝 </option>
+        <option value="A9" >浦河 </option>
+        <option value="C8" >苫小牧東 </option>
+        <option value="TM" >苫小牧西 </option>
+        <option value="SO" >白老 </option>
+        <option value="A8" >室蘭 </option>
+        <option value="A3" >森 </option>
+        <option value="HK" >函館 </option>
+        <option value="Q0" >吉岡 </option>
+        <option value="A5" >松前 </option>
+        <option value="ES" >江差 </option>
+        <option value="ZP" >奥尻 </option>
+        <option value="OR" >奥尻港 </option>
+        <option value="SE" >瀬棚 </option>
+        <option value="B6" >寿都 </option>
+        <option value="B5" >岩内 </option>
+        <option value="Z8" >忍路 </option>
+        <option value="B3" >小樽 </option>
+        <option value="IK" >石狩新港 </option>
+        <option value="B2" >留萌 </option>
+        <option value="F3" >沓形 </option>
+        <option value="Q1" >竜飛 </option>
+        <option value="AO" >青森 </option>
+        <option value="ZA" >浅虫 </option>
+        <option value="Q2" >大湊 </option>
+        <option value="B4" >大間 </option>
+        <option value="SH" >下北 </option>
+        <option value="XS" >むつ小川原 </option>
+        <option value="HC" >八戸 </option>
+        <option value="HG" >八戸港 </option>
+        <option value="XT" >久慈 </option>
+        <option value="MY" >宮古 </option>
+        <option value="Q6" >釜石 </option>
+        <option value="OF" >大船渡 </option>
+        <option value="AY" >鮎川 </option>
+        <option value="E6" >石巻 </option>
+        <option value="SG" >塩釜 </option>
+        <option value="SD" >仙台新港 </option>
+        <option value="ZM" >相馬 </option>
+        <option value="ON" >小名浜 </option>
+        <option value="D1" >日立 </option>
+        <option value="D3" >大洗 </option>
+        <option value="D2" >鹿島 </option>
+        <option value="CS" >銚子漁港 </option>
+        <option value="ZF" >勝浦 </option>
+        <option value="MR" >布良 </option>
+        <option value="TT" >館山 </option>
+        <option value="KZ" >木更津 </option>
+        <option value="QL" >千葉 </option>
+        <option value="CB" >千葉港 </option>
+        <option value="TK" >東京 </option>
+        <option value="KW" >川崎 </option>
+        <option value="YK" >京浜港 </option>
+        <option value="QS" >横浜 </option>
+        <option value="HM" >本牧 </option>
+        <option value="QN" >横須賀 </option>
+        <option value="Z1" >油壺 </option>
+        <option value="OK" >岡田 </option>
+        <option value="QO" >神津島 </option>
+        <option value="MJ" >三宅島（坪田） </option>
+        <option value="QP" >三宅島（阿古） </option>
+        <option value="D4" >八丈島（八重根） </option>
+        <option value="QQ" >八丈島（神湊） </option>
+        <option value="CC" >父島 </option>
+        <option value="MC" >南鳥島 </option>
+        <option value="D8" >湘南港 </option>
+        <option value="OD" >小田原 </option>
+        <option value="Z3" >伊東 </option>
+        <option value="D6" >下田 </option>
+        <option value="QK" >南伊豆 </option>
+        <option value="G9" >石廊崎 </option>
+        <option value="Z4" >田子 </option>
+        <option value="UC" >内浦 </option>
+        <option value="SM" >清水港 </option>
+        <option value="Z5" >焼津 </option>
+        <option value="OM" >御前崎 </option>
+        <option value="MI" >舞阪 </option>
+        <option value="I4" >赤羽根 </option>
+        <option value="G4" >三河 </option>
+        <option value="G5" >形原 </option>
+        <option value="G8" >衣浦 </option>
+        <option value="ZD" >鬼崎 </option>
+        <option value="NG" >名古屋 </option>
+        <option value="G3" >四日市港 </option>
+        <option value="TB" >鳥羽 </option>
+        <option value="OW" >尾鷲 </option>
+        <option value="KN" >熊野 </option>
+        <option value="UR" >浦神 </option>
+        <option value="KS" >串本 </option>
+        <option value="SR" >白浜 </option>
+        <option value="GB" >御坊 </option>
+        <option value="H1" >下津 </option>
+        <option value="Z9" >海南 </option>
+        <option value="WY" >和歌山 </option>
+        <option value="TN" >淡輪 </option>
+        <option value="KK" >関空島 </option>
+        <option value="J2" >岸和田 </option>
+        <option value="IO" >泉大津 </option>
+        <option value="SI" >堺 </option>
+        <option value="OS" >大阪 </option>
+        <option value="AM" >尼崎 </option>
+        <option value="J5" >西宮 </option>
+        <option value="KB" >神戸 </option>
+        <option value="AK" >明石 </option>
+        <option value="ST" >洲本 </option>
+        <option value="EI" >江井 </option>
+        <option value="K1" >姫路（飾磨） </option>
+        <option value="SB" >三蟠 </option>
+        <option value="UN" >宇野 </option>
+        <option value="MM" >水島 </option>
+        <option value="LG" >乙島 </option>
+        <option value="IZ" >糸崎 </option>
+        <option value="TH" >竹原 </option>
+        <option value="Q9" >呉 </option>
+        <option value="Q8" >広島 </option>
+        <option value="QA" >徳山 </option>
+        <option value="J9" >三田尻 </option>
+        <option value="WH" >宇部 </option>
+        <option value="CF" >長府 </option>
+        <option value="A1" >弟子待 </option>
+        <option value="DS" >下関 </option>
+        <option value="TI" >田ノ首 </option>
+        <option value="OH" >大山の鼻 </option>
+        <option value="HR" >南風泊 </option>
+        <option value="MT" >松山 </option>
+        <option value="M3" >波止浜 </option>
+        <option value="M0" >今治市小島 </option>
+        <option value="M1" >来島航路 </option>
+        <option value="L0" >今治 </option>
+        <option value="NI" >新居浜 </option>
+        <option value="L8" >伊予三島 </option>
+        <option value="TX" >多度津 </option>
+        <option value="AX" >青木 </option>
+        <option value="J8" >与島 </option>
+        <option value="TA" >高松 </option>
+        <option value="KM" >小松島 </option>
+        <option value="J6" >橘 </option>
+        <option value="AW" >阿波由岐 </option>
+        <option value="HW" >日和佐 </option>
+        <option value="L7" >甲浦 </option>
+        <option value="MU" >室戸岬 </option>
+        <option value="KC" >高知 </option>
+        <option value="V7" >須崎 </option>
+        <option value="ZH" >久礼 </option>
+        <option value="L6" >高知下田 </option>
+        <option value="TS" >土佐清水 </option>
+        <option value="SU" >片島 </option>
+        <option value="UW" >宇和島 </option>
+        <option value="N1" >日明 </option>
+        <option value="N0" >砂津 </option>
+        <option value="MO" >門司 </option>
+        <option value="AH" >青浜 </option>
+        <option value="O3" >苅田 </option>
+        <option value="BP" >別府 </option>
+        <option value="QC" >大分 </option>
+        <option value="X5" >佐伯 </option>
+        <option value="Z6" >細島 </option>
+        <option value="MG" >宮崎 </option>
+        <option value="AB" >油津 </option>
+        <option value="X6" >志布志 </option>
+        <option value="QG" >大泊 </option>
+        <option value="KG" >鹿児島 </option>
+        <option value="MK" >枕崎 </option>
+        <option value="ZJ" >阿久根 </option>
+        <option value="QH" >西之表 </option>
+        <option value="TJ" >種子島 </option>
+        <option value="QI" >中之島 </option>
+        <option value="QJ" >名瀬 </option>
+        <option value="O9" >奄美 </option>
+        <option value="NK" >中城湾港 </option>
+        <option value="ZO" >沖縄 </option>
+        <option value="NH" >那覇 </option>
+        <option value="DJ" >南大東 </option>
+        <option value="R1" >平良 </option>
+        <option value="IS" >石垣 </option>
+        <option value="IJ" >西表 </option>
+        <option value="YJ" >与那国 </option>
+        <option value="O7" >水俣 </option>
+        <option value="O5" >八代 </option>
+        <option value="HS" >本渡瀬戸 </option>
+        <option value="RH" >苓北 </option>
+        <option value="MS" >三角 </option>
+        <option value="KU" >熊本 </option>
+        <option value="O6" >大牟田 </option>
+        <option value="OU" >大浦 </option>
+        <option value="KT" >口之津 </option>
+        <option value="NS" >長崎 </option>
+        <option value="KO" >皇后 </option>
+        <option value="FE" >福江 </option>
+        <option value="QD" >佐世保 </option>
+        <option value="X2" >平戸瀬戸 </option>
+        <option value="ZL" >仮屋 </option>
+        <option value="KA" >唐津 </option>
+        <option value="QF" >博多 </option>
+        <option value="X3" >郷ノ浦 </option>
+        <option value="QE" >厳原 </option>
+        <option value="O1" >対馬 </option>
+        <option value="N5" >対馬比田勝 </option>
+        <option value="K5" >萩 </option>
+        <option value="ZK" >須佐 </option>
+        <option value="HA" >浜田 </option>
+        <option value="SK" >境 </option>
+        <option value="SA" >西郷 </option>
+        <option value="ZE" >田後 </option>
+        <option value="T6" >津居山 </option>
+        <option value="T2" >宮津 </option>
+        <option value="MZ" >舞鶴 </option>
+        <option value="XM" >敦賀 </option>
+        <option value="ZG" >三国 </option>
+        <option value="T1" >金沢 </option>
+        <option value="Z7" >輪島 </option>
+        <option value="SZ" >能登 </option>
+        <option value="XO" >七尾 </option>
+        <option value="XQ" >伏木富山 </option>
+        <option value="SN" >新湊 </option>
+        <option value="TY" >富山 </option>
+        <option value="I7" >生地 </option>
+        <option value="T3" >直江津 </option>
+        <option value="ZC" >柏崎 </option>
+        <option value="S6" >新潟西港 </option>
+        <option value="I5" >新潟東港 </option>
+        <option value="ZN" >小木 </option>
+        <option value="RZ" >両津 </option>
+        <option value="S0" >佐渡 </option>
+        <option value="QR" >粟島 </option>
+        <option value="ZB" >鼠ヶ関 </option>
+        <option value="S9" >酒田 </option>
+        <option value="ZQ" >飛島 </option>
+        <option value="S1" >秋田 </option>
+        <option value="S2" >船川港 </option>
+        <option value="ZI" >男鹿 </option>
+        <option value="FK" >深浦 </option>
+      </select>
+      　　表示期間
+      <select name="ys">
+        <option value="2011" >2011年 </option>
+        <option value="2012" >2012年 </option>
+        <option value="2013" >2013年 </option>
+        <option value="2014" >2014年 </option>
+        <option value="2015" >2015年 </option>
+        <option value="2016" >2016年 </option>
+        <option value="2017" >2017年 </option>
+        <option value="2018" >2018年 </option>
+        <option value="2019" >2019年 </option>
+        <option value="2020" >2020年 </option>
+        <option value="2021" >2021年 </option>
+        <option value="2022" >2022年 </option>
+        <option value="2023" >2023年 </option>
+        <option value="2024" >2024年 </option>
+        <option value="2025" >2025年 </option>
+        <option value="2026"  selected="selected">2026年 </option>
+        <option value="2027" >2027年 </option>
+      </select>
+      <select name="ms">
+        <option value="01" selected="selected">1月 </option>
+        <option value="02">2月 </option>
+        <option value="03">3月 </option>
+        <option value="04">4月 </option>
+        <option value="05">5月 </option>
+        <option value="06">6月 </option>
+        <option value="07">7月 </option>
+        <option value="08">8月 </option>
+        <option value="09">9月 </option>
+        <option value="10">10月 </option>
+        <option value="11">11月 </option>
+        <option value="12">12月 </option>
+      </select>
+      <select name="ds">
+        <option value="01" selected="selected">1日 </option>
+        <option value="02">2日 </option>
+        <option value="03">3日 </option>
+        <option value="04">4日 </option>
+        <option value="05">5日 </option>
+        <option value="06">6日 </option>
+        <option value="07">7日 </option>
+        <option value="08">8日 </option>
+        <option value="09">9日 </option>
+        <option value="10">10日 </option>
+        <option value="11">11日 </option>
+        <option value="12">12日 </option>
+        <option value="13">13日 </option>
+        <option value="14">14日 </option>
+        <option value="15">15日 </option>
+        <option value="16">16日 </option>
+        <option value="17">17日 </option>
+        <option value="18">18日 </option>
+        <option value="19">19日 </option>
+        <option value="20">20日 </option>
+        <option value="21">21日 </option>
+        <option value="22">22日 </option>
+        <option value="23">23日 </option>
+        <option value="24">24日 </option>
+        <option value="25">25日 </option>
+        <option value="26">26日 </option>
+        <option value="27">27日 </option>
+        <option value="28">28日 </option>
+        <option value="29">29日 </option>
+        <option value="30">30日 </option>
+        <option value="31">31日 </option>
+      </select>
+      ～
+      <select name="ye">
+        <option value="2011" >2011年 </option>
+        <option value="2012" >2012年 </option>
+        <option value="2013" >2013年 </option>
+        <option value="2014" >2014年 </option>
+        <option value="2015" >2015年 </option>
+        <option value="2016" >2016年 </option>
+        <option value="2017" >2017年 </option>
+        <option value="2018" >2018年 </option>
+        <option value="2019" >2019年 </option>
+        <option value="2020" >2020年 </option>
+        <option value="2021" >2021年 </option>
+        <option value="2022" >2022年 </option>
+        <option value="2023" >2023年 </option>
+        <option value="2024" >2024年 </option>
+        <option value="2025" >2025年 </option>
+        <option value="2026"  selected="selected">2026年 </option>
+        <option value="2027" >2027年 </option>
+      </select>
+      <select name="me">
+        <option value="01" selected="selected">1月 </option>
+        <option value="02">2月 </option>
+        <option value="03">3月 </option>
+        <option value="04">4月 </option>
+        <option value="05">5月 </option>
+        <option value="06">6月 </option>
+        <option value="07">7月 </option>
+        <option value="08">8月 </option>
+        <option value="09">9月 </option>
+        <option value="10">10月 </option>
+        <option value="11">11月 </option>
+        <option value="12">12月 </option>
+      </select>
+      <select name="de">
+        <option value="01">1日 </option>
+        <option value="02">2日 </option>
+        <option value="03">3日 </option>
+        <option value="04">4日 </option>
+        <option value="05">5日 </option>
+        <option value="06">6日 </option>
+        <option value="07" selected="selected">7日 </option>
+        <option value="08">8日 </option>
+        <option value="09">9日 </option>
+        <option value="10">10日 </option>
+        <option value="11">11日 </option>
+        <option value="12">12日 </option>
+        <option value="13">13日 </option>
+        <option value="14">14日 </option>
+        <option value="15">15日 </option>
+        <option value="16">16日 </option>
+        <option value="17">17日 </option>
+        <option value="18">18日 </option>
+        <option value="19">19日 </option>
+        <option value="20">20日 </option>
+        <option value="21">21日 </option>
+        <option value="22">22日 </option>
+        <option value="23">23日 </option>
+        <option value="24">24日 </option>
+        <option value="25">25日 </option>
+        <option value="26">26日 </option>
+        <option value="27">27日 </option>
+        <option value="28">28日 </option>
+        <option value="29">29日 </option>
+        <option value="30">30日 </option>
+        <option value="31">31日 </option>
+      </select>
+      <br />
+    </td>
+  </tr>
+  <tr>
+    <td align="right" nowrap="nowrap" colspan="5" style="font-size:9pt">※最大35日間分のデータが表示可能です。<br /></td>
+  </tr>
+  <tr>
+    <td bgcolor="#ddffff" nowrap="nowrap">
+      <span title="潮位を潮位表基準面からの高さで表示します。"><input type="radio" name="LV" value="DL"  checked="checked" />潮位表基準面表示</span><br />
+
+      <span title="潮位を標高で表示します。"><input type="radio" name="LV" value="TP"  />標高表示</span>
+    </td>
+    <td nowrap="nowrap" width="10">　　</td>
+    <td bgcolor="#ddffff" nowrap="nowrap">
+      <input type="checkbox" name="S_HILO"  />満潮・干潮<br />
+      <input type="checkbox" name="GRAPH"  />毎時潮位（グラフ）<br />
+      <input type="checkbox" name="S_HOUR" checked="checked" />毎時潮位（表）<br />
+    </td>
+    <td nowrap="nowrap" width="10">
+　　</td>
+    <td align="center">
+      <input type="submit" value="各項目を入力してクリック" /><br />
+      <input name="alert" type="button" value="" style="background-color: #bbffff; border-style : none; color : red;" /><br />
+    </td>
+  </tr>
+</table>
+</td></tr></table>
+
+</form>
+</td><td>
+</td></tr></table>
+<a name="hry"></a><hr /> 
+<h4>毎時潮位　稚内<br />2026年1月1日～2026年1月7日の潮位予測</h4><table border="0" width="620"><tr><td align="left"><a href="suisan.php?stn=WN&amp;ys=2025&amp;ms=12&amp;ds=25&amp;ye=2025&amp;me=12&amp;de=31&amp;S_HOUR=on&amp;LV=DL#hry">前期間</a></td><td align="right"><a href="suisan.php?stn=WN&amp;ys=2026&amp;ms=01&amp;ds=08&amp;ye=2026&amp;me=01&amp;de=14&amp;S_HOUR=on&amp;LV=DL#hry">次期間</a></td></tr></table><table border="1" cellspacing="0" bgcolor="#e0ffff" width="620">
+  <tr bgcolor="#80ffff" align="center">
+    <th nowrap="nowrap" rowspan="2">年/月/日(曜日)</th><th colspan="24">時刻</th>
+  </tr>
+  <tr bgcolor="#80ffff" align="center">    <th nowrap="nowrap"> 0 </th>
+    <th nowrap="nowrap"> 1 </th>
+    <th nowrap="nowrap"> 2 </th>
+    <th nowrap="nowrap"> 3 </th>
+    <th nowrap="nowrap"> 4 </th>
+    <th nowrap="nowrap"> 5 </th>
+    <th nowrap="nowrap"> 6 </th>
+    <th nowrap="nowrap"> 7 </th>
+    <th nowrap="nowrap"> 8 </th>
+    <th nowrap="nowrap"> 9 </th>
+    <th nowrap="nowrap"> 10 </th>
+    <th nowrap="nowrap"> 11 </th>
+    <th nowrap="nowrap"> 12 </th>
+    <th nowrap="nowrap"> 13 </th>
+    <th nowrap="nowrap"> 14 </th>
+    <th nowrap="nowrap"> 15 </th>
+    <th nowrap="nowrap"> 16 </th>
+    <th nowrap="nowrap"> 17 </th>
+    <th nowrap="nowrap"> 18 </th>
+    <th nowrap="nowrap"> 19 </th>
+    <th nowrap="nowrap"> 20 </th>
+    <th nowrap="nowrap"> 21 </th>
+    <th nowrap="nowrap"> 22 </th>
+    <th nowrap="nowrap"> 23 </th>
+  </tr>  <tr align="right">    <td nowrap="nowrap" bgcolor="#80ffff" align="center">2026/01/01(木)</td>    <td nowrap="nowrap" bgcolor="#c0ffff">  27 </td> 
+    <td nowrap="nowrap">  26 </td> 
+    <td nowrap="nowrap">  24 </td> 
+    <td nowrap="nowrap">  20 </td> 
+    <td nowrap="nowrap">  14 </td> 
+    <td nowrap="nowrap">   9 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">   5 </td> 
+    <td nowrap="nowrap">   2 </td> 
+    <td nowrap="nowrap">   0 </td> 
+    <td nowrap="nowrap">  -1 </td> 
+    <td nowrap="nowrap">  -2 </td> 
+    <td nowrap="nowrap">  -1 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">   2 </td> 
+    <td nowrap="nowrap">   6 </td> 
+    <td nowrap="nowrap">  10 </td> 
+    <td nowrap="nowrap">  14 </td> 
+    <td nowrap="nowrap">  18 </td> 
+    <td nowrap="nowrap">  21 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  24 </td> 
+    <td nowrap="nowrap">  27 </td> 
+    <td nowrap="nowrap">  30 </td> 
+    <td nowrap="nowrap">  31 </td> 
+    <td nowrap="nowrap">  31 </td> 
+    <td nowrap="nowrap">  31 </td> 
+  </tr>
+  <tr align="right">    <td nowrap="nowrap" bgcolor="#80ffff" align="center">2026/01/02(金)</td>    <td nowrap="nowrap" bgcolor="#c0ffff">  30 </td> 
+    <td nowrap="nowrap">  30 </td> 
+    <td nowrap="nowrap">  29 </td> 
+    <td nowrap="nowrap">  26 </td> 
+    <td nowrap="nowrap">  21 </td> 
+    <td nowrap="nowrap">  15 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">   9 </td> 
+    <td nowrap="nowrap">   4 </td> 
+    <td nowrap="nowrap">   1 </td> 
+    <td nowrap="nowrap">  -1 </td> 
+    <td nowrap="nowrap">  -3 </td> 
+    <td nowrap="nowrap">  -3 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  -2 </td> 
+    <td nowrap="nowrap">   2 </td> 
+    <td nowrap="nowrap">   7 </td> 
+    <td nowrap="nowrap">  12 </td> 
+    <td nowrap="nowrap">  16 </td> 
+    <td nowrap="nowrap">  20 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  23 </td> 
+    <td nowrap="nowrap">  26 </td> 
+    <td nowrap="nowrap">  29 </td> 
+    <td nowrap="nowrap">  31 </td> 
+    <td nowrap="nowrap">  33 </td> 
+    <td nowrap="nowrap">  33 </td> 
+  </tr>
+  <tr bgcolor="#c0ffff" align="right">    <td nowrap="nowrap" bgcolor="#80ffff" align="center">2026/01/03(土)</td>    <td nowrap="nowrap" bgcolor="#c0ffff">  32 </td> 
+    <td nowrap="nowrap">  32 </td> 
+    <td nowrap="nowrap">  32 </td> 
+    <td nowrap="nowrap">  31 </td> 
+    <td nowrap="nowrap">  28 </td> 
+    <td nowrap="nowrap">  22 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  15 </td> 
+    <td nowrap="nowrap">   9 </td> 
+    <td nowrap="nowrap">   4 </td> 
+    <td nowrap="nowrap">   0 </td> 
+    <td nowrap="nowrap">  -2 </td> 
+    <td nowrap="nowrap">  -3 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  -3 </td> 
+    <td nowrap="nowrap">  -2 </td> 
+    <td nowrap="nowrap">   2 </td> 
+    <td nowrap="nowrap">   8 </td> 
+    <td nowrap="nowrap">  13 </td> 
+    <td nowrap="nowrap">  17 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  20 </td> 
+    <td nowrap="nowrap">  23 </td> 
+    <td nowrap="nowrap">  25 </td> 
+    <td nowrap="nowrap">  28 </td> 
+    <td nowrap="nowrap">  31 </td> 
+    <td nowrap="nowrap">  32 </td> 
+  </tr>
+  <tr bgcolor="#c0ffff" align="right">    <td nowrap="nowrap" bgcolor="#80ffff" align="center">2026/01/04(日)</td>    <td nowrap="nowrap" bgcolor="#c0ffff">  33 </td> 
+    <td nowrap="nowrap">  33 </td> 
+    <td nowrap="nowrap">  33 </td> 
+    <td nowrap="nowrap">  33 </td> 
+    <td nowrap="nowrap">  32 </td> 
+    <td nowrap="nowrap">  28 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  22 </td> 
+    <td nowrap="nowrap">  15 </td> 
+    <td nowrap="nowrap">   8 </td> 
+    <td nowrap="nowrap">   3 </td> 
+    <td nowrap="nowrap">   0 </td> 
+    <td nowrap="nowrap">  -2 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  -3 </td> 
+    <td nowrap="nowrap">  -3 </td> 
+    <td nowrap="nowrap">  -1 </td> 
+    <td nowrap="nowrap">   4 </td> 
+    <td nowrap="nowrap">   9 </td> 
+    <td nowrap="nowrap">  14 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  17 </td> 
+    <td nowrap="nowrap">  19 </td> 
+    <td nowrap="nowrap">  21 </td> 
+    <td nowrap="nowrap">  23 </td> 
+    <td nowrap="nowrap">  26 </td> 
+    <td nowrap="nowrap">  29 </td> 
+  </tr>
+  <tr align="right">    <td nowrap="nowrap" bgcolor="#80ffff" align="center">2026/01/05(月)</td>    <td nowrap="nowrap" bgcolor="#c0ffff">  31 </td> 
+    <td nowrap="nowrap">  31 </td> 
+    <td nowrap="nowrap">  32 </td> 
+    <td nowrap="nowrap">  33 </td> 
+    <td nowrap="nowrap">  33 </td> 
+    <td nowrap="nowrap">  32 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  27 </td> 
+    <td nowrap="nowrap">  21 </td> 
+    <td nowrap="nowrap">  14 </td> 
+    <td nowrap="nowrap">   7 </td> 
+    <td nowrap="nowrap">   3 </td> 
+    <td nowrap="nowrap">   0 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  -1 </td> 
+    <td nowrap="nowrap">  -2 </td> 
+    <td nowrap="nowrap">  -2 </td> 
+    <td nowrap="nowrap">   1 </td> 
+    <td nowrap="nowrap">   5 </td> 
+    <td nowrap="nowrap">  10 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  13 </td> 
+    <td nowrap="nowrap">  16 </td> 
+    <td nowrap="nowrap">  17 </td> 
+    <td nowrap="nowrap">  18 </td> 
+    <td nowrap="nowrap">  20 </td> 
+    <td nowrap="nowrap">  24 </td> 
+  </tr>
+  <tr align="right">    <td nowrap="nowrap" bgcolor="#80ffff" align="center">2026/01/06(火)</td>    <td nowrap="nowrap" bgcolor="#c0ffff">  26 </td> 
+    <td nowrap="nowrap">  28 </td> 
+    <td nowrap="nowrap">  29 </td> 
+    <td nowrap="nowrap">  30 </td> 
+    <td nowrap="nowrap">  31 </td> 
+    <td nowrap="nowrap">  31 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  29 </td> 
+    <td nowrap="nowrap">  25 </td> 
+    <td nowrap="nowrap">  18 </td> 
+    <td nowrap="nowrap">  11 </td> 
+    <td nowrap="nowrap">   6 </td> 
+    <td nowrap="nowrap">   2 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">   1 </td> 
+    <td nowrap="nowrap">   0 </td> 
+    <td nowrap="nowrap">  -1 </td> 
+    <td nowrap="nowrap">   0 </td> 
+    <td nowrap="nowrap">   3 </td> 
+    <td nowrap="nowrap">   6 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  10 </td> 
+    <td nowrap="nowrap">  13 </td> 
+    <td nowrap="nowrap">  14 </td> 
+    <td nowrap="nowrap">  14 </td> 
+    <td nowrap="nowrap">  15 </td> 
+    <td nowrap="nowrap">  18 </td> 
+  </tr>
+  <tr align="right">    <td nowrap="nowrap" bgcolor="#80ffff" align="center">2026/01/07(水)</td>    <td nowrap="nowrap" bgcolor="#c0ffff">  21 </td> 
+    <td nowrap="nowrap">  24 </td> 
+    <td nowrap="nowrap">  25 </td> 
+    <td nowrap="nowrap">  26 </td> 
+    <td nowrap="nowrap">  27 </td> 
+    <td nowrap="nowrap">  27 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">  27 </td> 
+    <td nowrap="nowrap">  25 </td> 
+    <td nowrap="nowrap">  21 </td> 
+    <td nowrap="nowrap">  14 </td> 
+    <td nowrap="nowrap">   8 </td> 
+    <td nowrap="nowrap">   4 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">   2 </td> 
+    <td nowrap="nowrap">   2 </td> 
+    <td nowrap="nowrap">   1 </td> 
+    <td nowrap="nowrap">   1 </td> 
+    <td nowrap="nowrap">   3 </td> 
+    <td nowrap="nowrap">   5 </td> 
+    <td nowrap="nowrap" bgcolor="#c0ffff">   8 </td> 
+    <td nowrap="nowrap">  11 </td> 
+    <td nowrap="nowrap">  12 </td> 
+    <td nowrap="nowrap">  12 </td> 
+    <td nowrap="nowrap">  12 </td> 
+    <td nowrap="nowrap">  13 </td> 
+  </tr>
+  <tr>
+    <td align="left" colspan="25">
+      注意　（<a href="explanation.html#hourly">解説</a>）<br />・　毎時潮位は<span class="must">潮位表基準面上の値</span>（単位：センチ）で表示しています。      <br />    </td>
+  </tr>
+</table>
+<br /><p>2026年の潮位表（毎時潮位、満潮・干潮の時刻と潮位）は、PDF版、テキストデータ版でもご利用いただけます。</p>
+<p>潮位表ダウンロード（潮位表基準面上の値）　　<a href="../../../data/db/tide/suisan/pdf_hilo/2026/WN.pdf">PDF版（満潮・干潮のみ　約70KB）</a>　　<a href="../../../data/db/tide/suisan/pdf_hourly/2026/WN.pdf">PDF版（毎時潮位含む　約300KB）</a>　　<a href="../../../data/db/tide/suisan/txt/2026/WN.txt">テキストデータ版（50KB）</a></p><a href="readme.html">データのフォーマット</a>
+<p class="totop"><a href="#nheader">このページのトップへ</a></p>
+<br />
+<hr /><br />
+<h2>関連する情報</h2>
+<ul class="pagelink mtx">
+<li>潮位の観測値（実測潮位）については、<a href="../genbo/genbo.php?stn=WN">潮汐観測資料</a>（2026年9月以降は<a href="../sokuho/genbo.php?stn=WN">速報値</a>）をご覧ください。</li><li>最新の潮位の実況（昨日・今日・明日の実測潮位および天文潮位）については、<a href="//www.jma.go.jp/bosai/tidelevel/#point_code=101131
+">潮位観測情報</a>をご覧ください。</li>
+<li>各月の潮汐については、<a href="../gaikyo/index.php">各月の潮汐</a>をご覧ください。</li><li>各年の潮汐については、<a href="../gaikyo/nenindex.php">各年の潮汐</a>をご覧ください。</li></ul>
+<!-- //contents -->
+<p class="totop"><a href="#nheader">このページのトップへ</a></p>
+
+<!-- //contents -->
+
+
+        <div class="plugin clr"> <a href="http://www.adobe.co.jp/products/acrobat/readstep2.html"><img src="../../../com/images/adobe.gif" alt="Adobe Reader" width="112" height="33" /></a>
+
+          <p>このサイトには、Adobe社<a href="http://www.adobe.co.jp/products/acrobat/readstep2.html">Adobe Reader</a>が必要なページがあります。<br />
+            お持ちでない方は左のアイコンよりダウンロードをお願いいたします。</p>
+        </div>
+
+
+<p class="totop"><a href="#nheader">このページのトップへ</a></p>
+</div>
+</div>
+</div>
+
+<div id="footer_area">
+	<div id="nfooter">
+		<ul>
+			<li><a href="//www.jma.go.jp/jma/kishou/info/coment.html">気象庁ホームページについて</a></li>
+		</ul>
+	</div>
+</div>
+</body>
+</html>
+

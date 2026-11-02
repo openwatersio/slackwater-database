@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA75 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [30.4636, 130.9644]
 sources:
+  - jma/TJ
   - ticon/tanegashima-ma75-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/tanegashima-ma75-jpn-jodc_jma:
+    jma/TJ:
       position: [30.4636, 130.9644]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 92
+        score: 84
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.598
+    ticon/tanegashima-ma75-jpn-jodc_jma:
+      position: [30.4636, 130.9644]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/TJ
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.605
+          coverage: 0.007
+        issues:
+          - Superseded by jma/TJ, its operator's own record

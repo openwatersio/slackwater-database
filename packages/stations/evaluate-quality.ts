@@ -991,14 +991,8 @@ function precedence(
   };
 }
 
-/** Deduplicate TICON records that share a physical-gauge key (same station code,
- *  differing only by record segment or provider). Coordinate drift — coarse
- *  rounding in older sources, or slightly different survey points between
- *  providers — pushes these same-gauge records beyond the spatial dedup radius,
- *  so proximity alone never catches them (openwatersio/slackwater-database#112). The
- *  shared code is a deterministic same-gauge signal, so we merge them regardless
- *  of distance and keep the single best record per gauge. */
-function deduplicateByGauge(
+/** Shared TICON gauge IDs unify moved segments (#112); supersession must retain that identity and each relay’s own declaration. */
+export function deduplicateByGauge(
   stationIds: string[],
   stationMap: Map<string, Station>,
   resultsMap: Map<string, QualityResult>,
@@ -1014,9 +1008,37 @@ function deduplicateByGauge(
 
   const order = precedence(stationMap, resultsMap, subordinateCounts);
   for (const ids of groups.values()) {
-    if (ids.length < 2) continue;
-    const [winner, ...losers] = [...ids].sort(order);
-    for (const id of losers) markDuplicate(resultsMap, stationMap, id, winner!);
+    const accepted = ids.filter((id) => resultsMap.get(id)!.accepted);
+    const operators = new Set(
+      ids
+        .filter((id) => resultsMap.get(id)!.reason === "superseded")
+        .flatMap((id) => resultsMap.get(id)!.redundant ?? []),
+    );
+    if (operators.size > 1)
+      throw new Error(
+        `Conflicting operators for gauge ${gaugeKey(stationMap.get(ids[0]!)!.source.id)}`,
+      );
+    const superseded = ids.find(
+      (id) =>
+        resultsMap.get(id)!.reason === "superseded" &&
+        resultsMap.get(id)!.redundant,
+    );
+    // A relay's own UHSLC metadata outranks a sibling's operator declaration.
+    const inherited = superseded
+      ? accepted.filter((id) => !hasUhslcMetadata(id))
+      : [];
+    for (const id of inherited)
+      markDuplicate(
+        resultsMap,
+        stationMap,
+        id,
+        resultsMap.get(superseded!)!.redundant!,
+      );
+    const [winner, ...losers] = accepted
+      .filter((id) => !inherited.includes(id))
+      .sort(order);
+    if (!winner) continue;
+    for (const id of losers) markDuplicate(resultsMap, stationMap, id, winner);
   }
 }
 
@@ -1138,7 +1160,13 @@ export async function evaluateQuality(): Promise<QualityResult[]> {
   const acceptedIds = stations
     .filter((s) => resultsMap.get(s.id)!.accepted)
     .map((s) => s.id);
-  deduplicateByGauge(acceptedIds, stationMap, resultsMap, subordinateCounts);
+  const gaugeIds = stations
+    .filter((s) => {
+      const result = resultsMap.get(s.id)!;
+      return result.accepted || result.reason === "superseded";
+    })
+    .map((s) => s.id);
+  deduplicateByGauge(gaugeIds, stationMap, resultsMap, subordinateCounts);
 
   // 4b: Deduplicate the survivors by proximity and harmonic similarity.
   const survivingIds = acceptedIds.filter((id) => resultsMap.get(id)!.accepted);

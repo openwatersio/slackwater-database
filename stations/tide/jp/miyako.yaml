@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA09 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [39.64305, 141.975283]
 sources:
+  - jma/MY
   - ticon/miyako-ma09-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/miyako-ma09-jpn-jodc_jma:
+    jma/MY:
       position: [39.64305, 141.975283]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 96
+        score: 83
+        factors:
+          epoch: 0.269
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.851
+    ticon/miyako-ma09-jpn-jodc_jma:
+      position: [39.64305, 141.975283]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/MY
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.835
+          coverage: 0.015
+        issues:
+          - Superseded by jma/MY, its operator's own record

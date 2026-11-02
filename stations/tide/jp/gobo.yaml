@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA68 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [33.8508, 135.1644]
 sources:
+  - jma/GB
   - ticon/gobo-ma68-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/gobo-ma68-jpn-jodc_jma:
+    jma/GB:
       position: [33.8508, 135.1644]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 91
+        score: 82
+        factors:
+          epoch: 0.483
+          recency: 0.93
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.538
+    ticon/gobo-ma68-jpn-jodc_jma:
+      position: [33.8508, 135.1644]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/GB
+        score: 0
         factors:
           epoch: 0.994
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.539
+          coverage: 0.002
+        issues:
+          - Superseded by jma/GB, its operator's own record

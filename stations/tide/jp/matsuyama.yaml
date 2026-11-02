@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA34 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [33.858883, 132.712217]
 sources:
+  - jma/MT
   - ticon/matsuyama-ma34-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/matsuyama-ma34-jpn-jodc_jma:
+    jma/MT:
       position: [33.858883, 132.712217]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 95
+        score: 86
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.756
+    ticon/matsuyama-ma34-jpn-jodc_jma:
+      position: [33.858883, 132.712217]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/MT
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.769
+          coverage: 0.017
+        issues:
+          - Superseded by jma/MT, its operator's own record

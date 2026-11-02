@@ -697,12 +697,12 @@ describe("seasonal dominance", () => {
     // than a floor so that a release which quietly moves the rule has to say so:
     // the whole point of the label is that two consumers describe the same water
     // the same way, which a drifting population defeats.
-    expect(labelled.length).toBe(1000);
+    expect(labelled.length).toBe(1001);
   });
 
   test("labels independently of the rejection verdict", () => {
     expect(labelled.filter((q) => q.accepted)).toHaveLength(506);
-    expect(labelled.filter((q) => !q.accepted)).toHaveLength(494);
+    expect(labelled.filter((q) => !q.accepted)).toHaveLength(495);
   });
 
   test("is a different question from the contamination gate", () => {
@@ -835,4 +835,22 @@ describe("CMEMS precedence", () => {
       redundant: "ticon/arklowharbour-ark-irl-cmems",
     });
   });
+});
+
+test("JMA curated map positions retain reviewed MA-gauge coordinates", async () => {
+  const files = readStationFiles().filter(
+    (f) => f.sources.some((id) => id.startsWith("jma/")) && f.position,
+  );
+  expect(files).toHaveLength(69);
+  for (const file of files) {
+    const id = file.sources.find((id) => id.startsWith("jma/"))!;
+    const relayId = file.sources.find((id) => id.endsWith("-jpn-jodc_jma"))!;
+    const relay = JSON.parse(
+      await readFile(join(ROOT, "data", `${relayId}.json`), "utf8"),
+    );
+    expect(file.position, id).toEqual([relay.latitude, relay.longitude]);
+    const station = byId(id)!;
+    expect(station.latitude, id).toBeCloseTo(file.position![0], 4);
+    expect(station.longitude, id).toBeCloseTo(file.position![1], 4);
+  }
 });

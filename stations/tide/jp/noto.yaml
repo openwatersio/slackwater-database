@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA80 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [37.5008, 137.1553]
 sources:
+  - jma/SZ
   - ticon/noto-ma80-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/noto-ma80-jpn-jodc_jma:
+    jma/SZ:
       position: [37.5008, 137.1553]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 91
+        score: 83
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.496
+    ticon/noto-ma80-jpn-jodc_jma:
+      position: [37.5008, 137.1553]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/SZ
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.497
+          coverage: 0.002
+        issues:
+          - Superseded by jma/SZ, its operator's own record

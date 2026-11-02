@@ -186,6 +186,7 @@ export const PUBLISHED_PRECISION: Record<
   linz: { amplitude: 6, phase: 4 },
   // Centimetres to 0.01 cm; local-meridian phases retain the inventory longitude's digits.
   jhod: { amplitude: 4, phase: 11 },
+  jma: { amplitude: 4, phase: 11 },
   // Our fits of DMI's 0.1 cm predictions, published as mm and 0.01 degrees.
   dmi: { amplitude: 3, phase: 2 },
 };
