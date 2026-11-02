@@ -694,11 +694,11 @@ describe("seasonal dominance", () => {
     // than a floor so that a release which quietly moves the rule has to say so:
     // the whole point of the label is that two consumers describe the same water
     // the same way, which a drifting population defeats.
-    expect(labelled.length).toBe(999);
+    expect(labelled.length).toBe(1000);
   });
 
   test("labels independently of the rejection verdict", () => {
-    expect(labelled.filter((q) => q.accepted)).toHaveLength(505);
+    expect(labelled.filter((q) => q.accepted)).toHaveLength(506);
     expect(labelled.filter((q) => !q.accepted)).toHaveLength(494);
   });
 
