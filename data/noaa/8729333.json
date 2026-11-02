@@ -1,0 +1,231 @@
+{
+  "name": "Lagrange Bayou",
+  "region": "FL",
+  "country": "United States",
+  "continent": "Americas",
+  "latitude": 30.468299865722656,
+  "longitude": -86.13829803466797,
+  "timezone": "America/Chicago",
+  "source": {
+    "name": "US National Oceanic and Atmospheric Administration",
+    "id": "8729333",
+    "published_harmonics": true,
+    "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8729333"
+  },
+  "license": {
+    "type": "public domain",
+    "commercial_use": true,
+    "url": "https://tidesandcurrents.noaa.gov/disclaimers.html"
+  },
+  "disclaimers": "",
+  "datums": {
+    "LAT": -0.229,
+    "HAT": 0.301,
+    "STND": 0,
+    "MHHW": 0.144,
+    "MHW": 0.142,
+    "DTL": 0.05,
+    "MTL": 0.048,
+    "MSL": 0.048,
+    "MLW": -0.045,
+    "MLLW": -0.043,
+    "GT": 0.188,
+    "MN": 0.188,
+    "DHQ": 0.002,
+    "DLQ": -0.001,
+    "NAVD88": 0
+  },
+  "chart_datum": "MLLW",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "M2",
+      "amplitude": 0.006,
+      "phase": 160.8
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.004,
+      "phase": 210.2
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.001,
+      "phase": 117.4
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.049,
+      "phase": 107.2
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.002,
+      "phase": 36.9
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.05,
+      "phase": 94.3
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.002,
+      "phase": 270.1
+    },
+    {
+      "name": "MK3",
+      "amplitude": 0.002,
+      "phase": 288.9
+    },
+    {
+      "name": "S4",
+      "amplitude": 0.001,
+      "phase": 226.1
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.001,
+      "phase": 35.1
+    },
+    {
+      "name": "NU2",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "S6",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "MU2",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0.001,
+      "phase": 267.5
+    },
+    {
+      "name": "OO1",
+      "amplitude": 0.005,
+      "phase": 111.6
+    },
+    {
+      "name": "LAM2",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "S1",
+      "amplitude": 0.009,
+      "phase": 148.9
+    },
+    {
+      "name": "M1",
+      "amplitude": 0.003,
+      "phase": 149.5
+    },
+    {
+      "name": "J1",
+      "amplitude": 0.001,
+      "phase": 138.4
+    },
+    {
+      "name": "MM",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "SSA",
+      "amplitude": 0.054,
+      "phase": 49.1
+    },
+    {
+      "name": "SA",
+      "amplitude": 0.113,
+      "phase": 150.4
+    },
+    {
+      "name": "MSF",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "MF",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "RHO",
+      "amplitude": 0.003,
+      "phase": 113.1
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.01,
+      "phase": 76.2
+    },
+    {
+      "name": "T2",
+      "amplitude": 0.001,
+      "phase": 192.4
+    },
+    {
+      "name": "R2",
+      "amplitude": 0.001,
+      "phase": 90.3
+    },
+    {
+      "name": "2Q1",
+      "amplitude": 0.004,
+      "phase": 93.1
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.017,
+      "phase": 112
+    },
+    {
+      "name": "2SM2",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.001,
+      "phase": 10.3
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.001,
+      "phase": 154.4
+    },
+    {
+      "name": "2MK3",
+      "amplitude": 0.002,
+      "phase": 285.6
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.002,
+      "phase": 220.2
+    },
+    {
+      "name": "M8",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.001,
+      "phase": 11.3
+    }
+  ],
+  "epoch": {
+    "start": "1983-01-01",
+    "end": "2001-12-31"
+  }
+}

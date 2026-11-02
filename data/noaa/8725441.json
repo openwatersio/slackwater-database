@@ -3,8 +3,8 @@
   "region": "FL",
   "country": "United States",
   "continent": "Americas",
-  "latitude": 26.55,
-  "longitude": -82.1967,
+  "latitude": 26.549999237060547,
+  "longitude": -82.19670104980469,
   "timezone": "America/New_York",
   "source": {
     "name": "US National Oceanic and Atmospheric Administration",
@@ -17,18 +17,215 @@
     "commercial_use": true,
     "url": "https://tidesandcurrents.noaa.gov/disclaimers.html"
   },
+  "disclaimers": "",
+  "datums": {
+    "LAT": -0.81399995,
+    "HAT": 0.38600004,
+    "STND": 0,
+    "MHHW": 0.095,
+    "MHW": 0.014,
+    "DTL": -0.226,
+    "MTL": -0.193,
+    "MSL": -0.196,
+    "MLW": -0.401,
+    "MLLW": -0.548,
+    "GT": 0.644,
+    "MN": 0.416,
+    "DHQ": 0.081,
+    "DLQ": 0.147,
+    "NAVD88": -0.009
+  },
   "chart_datum": "MLLW",
-  "type": "subordinate",
-  "offsets": {
-    "reference": "noaa/8726520",
-    "height": {
-      "type": "ratio",
-      "high": 0.91,
-      "low": 0.91
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "M2",
+      "amplitude": 0.17,
+      "phase": 154
     },
-    "time": {
-      "high": -55,
-      "low": -74
+    {
+      "name": "S2",
+      "amplitude": 0.03,
+      "phase": 155
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.036,
+      "phase": 138.8
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.139,
+      "phase": 26.7
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.002,
+      "phase": 209.8
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.123,
+      "phase": 14
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.002,
+      "phase": 71.6
+    },
+    {
+      "name": "MK3",
+      "amplitude": 0.002,
+      "phase": 358.9
+    },
+    {
+      "name": "S4",
+      "amplitude": 0.002,
+      "phase": 280.7
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.002,
+      "phase": 109.1
+    },
+    {
+      "name": "NU2",
+      "amplitude": 0.011,
+      "phase": 154.3
+    },
+    {
+      "name": "S6",
+      "amplitude": 0.001,
+      "phase": 297.3
+    },
+    {
+      "name": "MU2",
+      "amplitude": 0.003,
+      "phase": 94.9
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0.006,
+      "phase": 105
+    },
+    {
+      "name": "OO1",
+      "amplitude": 0.005,
+      "phase": 32.6
+    },
+    {
+      "name": "LAM2",
+      "amplitude": 0.006,
+      "phase": 138
+    },
+    {
+      "name": "S1",
+      "amplitude": 0.045,
+      "phase": 112.4
+    },
+    {
+      "name": "M1",
+      "amplitude": 0.002,
+      "phase": 5.9
+    },
+    {
+      "name": "J1",
+      "amplitude": 0.005,
+      "phase": 36.1
+    },
+    {
+      "name": "MM",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "SSA",
+      "amplitude": 0.041,
+      "phase": 149
+    },
+    {
+      "name": "SA",
+      "amplitude": 0.096,
+      "phase": 158.5
+    },
+    {
+      "name": "MSF",
+      "amplitude": 0,
+      "phase": 0
+    },
+    {
+      "name": "MF",
+      "amplitude": 0.028,
+      "phase": 284.5
+    },
+    {
+      "name": "RHO",
+      "amplitude": 0.009,
+      "phase": 7.4
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.031,
+      "phase": 14.3
+    },
+    {
+      "name": "T2",
+      "amplitude": 0.011,
+      "phase": 194.2
+    },
+    {
+      "name": "R2",
+      "amplitude": 0.026,
+      "phase": 340.5
+    },
+    {
+      "name": "2Q1",
+      "amplitude": 0.004,
+      "phase": 34
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.041,
+      "phase": 46.3
+    },
+    {
+      "name": "2SM2",
+      "amplitude": 0.002,
+      "phase": 257.7
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.002,
+      "phase": 314.4
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.008,
+      "phase": 174.6
+    },
+    {
+      "name": "2MK3",
+      "amplitude": 0.002,
+      "phase": 66.3
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.029,
+      "phase": 158.5
+    },
+    {
+      "name": "M8",
+      "amplitude": 0.001,
+      "phase": 87.4
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.001,
+      "phase": 338.5
     }
+  ],
+  "epoch": {
+    "start": "1983-01-01",
+    "end": "2001-12-31"
   }
 }
