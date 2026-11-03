@@ -2,7 +2,7 @@
 
 **Issue:** [openwatersio/tide-database#153](https://github.com/openwatersio/tide-database/issues/153)
 
-**Status:** Draft for review
+**Status:** The 33 harmonic stations ship in releases. Coastal tide zones remain planned in [#251](https://github.com/openwatersio/slackwater-database/issues/251); this design and its tide-zone plan stay open for that work. Maintained station import and validation guidance, including known event-time comparison failures, is in [the source README](../../../sources/kartverket/README.md). The station-only release does not establish that the proposed zone acceptance gates pass.
 
 ## Summary
 
@@ -43,7 +43,7 @@ Twenty-eight Kartverket stations are within one kilometre of an existing TICON r
 
 Create a `sources/kartverket` workspace following the existing source-package pattern. It has two commands:
 
-- `refresh` downloads responses into a staging directory, rejects HTTP and XML error responses, verifies the complete expected inventory, calculates SHA-256 checksums, then atomically replaces the last valid snapshot;
+- `refresh:fixtures` downloads responses into a staging directory, rejects HTTP and XML error responses, verifies the complete expected inventory, calculates SHA-256 checksums, then atomically replaces the last valid snapshot;
 - `import` performs no network requests and deterministically transforms the committed snapshot. Milestone 1 produces `data/kartverket/*.json` station records; milestone 2 also produces `data/kartverket/tide-zones.geojson`.
 
 The manifest records each request URL, retrieval time, and checksum. Retrieval time is excluded from normalized output so importing the same snapshot twice produces byte-identical station JSON. A failed refresh never replaces the previous valid snapshot.
