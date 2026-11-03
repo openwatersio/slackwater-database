@@ -1,0 +1,40 @@
+# Preserve the reviewed TICON JMA MA71 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [34.0572, 139.5439]
+sources:
+  - jma/MJ
+  - ticon/miyakeshima-ma71-jpn-jodc_jma
+redirect_from:
+  - /tides/jp/miyakeshima/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    jma/MJ:
+      position: [34.0572, 139.5439]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 77
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.122
+    ticon/miyakeshima-ma71-jpn-jodc_jma:
+      position: [34.0572, 139.5439]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/MJ
+        score: 0
+        factors:
+          epoch: 1
+          recency: 0.97
+          source: 0.929
+          quality: 1
+          amplitude: 1
+          coverage: 0.016
+        issues:
+          - Superseded by jma/MJ, its operator's own record

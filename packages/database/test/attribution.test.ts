@@ -37,6 +37,19 @@ const publicDomain = {
 };
 
 describe("attribution", () => {
+  test("JMA attribution carries its source, license and editing notice", () => {
+    const notice = attributionWithCredit(
+      creditOf("Japan Meteorological Agency"),
+      ccBy,
+    );
+    expect(notice).toContain("Source: Japan Meteorological Agency website");
+    expect(notice).toContain("station2026.php");
+    expect(notice).toContain("Edited by Open Waters");
+    expect(notice).toContain("Licensed CC BY 4.0");
+    expect(notice).toContain("public_data_license_v1.0");
+    expect(notice).toContain("TICON-4");
+    expect(notice).toContain("10.17882/109129");
+  });
   test("a JHOD station names its licence and preserves the editing notice", () => {
     const notice = attributionWithCredit(
       creditOf("Japan Coast Guard, Hydrographic and Oceanographic Department"),

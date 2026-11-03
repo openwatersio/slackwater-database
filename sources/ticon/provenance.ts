@@ -12,6 +12,13 @@ import { join } from "node:path";
 import pinned from "./uhslc-metadata.json" with { type: "json" };
 import jhodOriginators from "../jhod/ticon-originators.json" with { type: "json" };
 
+import jmaOriginators from "../jma/ticon-originators.json" with { type: "json" };
+
+const jmaRecord = (code: string): string | undefined => {
+  const id = (jmaOriginators as Record<string, string>)[code.toUpperCase()];
+  return id ? `jma/${id}` : undefined;
+};
+
 const jhodRecord = (code: string): string | undefined => {
   const id = (jhodOriginators as Record<string, string>)[code.toUpperCase()];
   return id ? `jhod/${id}` : undefined;
@@ -123,6 +130,15 @@ const UHSLC_RULES: {
     unambiguous: false,
   },
   {
+    source: /^Japan Oceanographic Data Center$|^Japan Meteorological Agency$/i,
+    number: /^[A-Z0-9]{2}$/i,
+    id: (n) =>
+      Object.values(jmaOriginators).includes(n.toUpperCase())
+        ? `jma/${n.toUpperCase()}`
+        : undefined,
+    unambiguous: true,
+  },
+  {
     source: /^Japan Oceanographic Data Center$/i,
     number: /^HD\d{2}$/i,
     id: (n) => jhodRecord(n),
@@ -151,10 +167,12 @@ export function originatorInId(ticonId: string): string | undefined {
     return `kartverket/${parts.at(-3)!.toUpperCase()}`;
   if (parts.at(-1) === "jodc_jcg" && parts.at(-2) === "jpn")
     return jhodRecord(parts.at(-3)!);
+  if (parts.at(-1) === "jodc_jma" && parts.at(-2) === "jpn")
+    return jmaRecord(parts.at(-3)!);
   return undefined;
 }
 
-/** Explicit gauge identifiers establish identity without harmonic agreement; UHSLC's JODC HD codes count alongside relay ids and NOAA numbers. */
+/** Explicit gauge identifiers establish identity without harmonic agreement; UHSLC's JODC HD and JMA gauge codes count alongside relay ids and NOAA numbers. */
 export function declaration(
   ticonId: string,
   metadata: Record<string, UhslcMetadata> = pinned,

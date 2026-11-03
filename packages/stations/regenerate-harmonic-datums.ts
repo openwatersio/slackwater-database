@@ -12,8 +12,8 @@ import {
 } from "../../sources/ticon/datums.ts";
 import { DATA_DIR, pruneDatums } from "./station.ts";
 
-export type HarmonicDatumSource = "ticon" | "dmi" | "linz" | "jhod";
-const SOURCES: HarmonicDatumSource[] = ["dmi", "jhod", "linz", "ticon"];
+export type HarmonicDatumSource = "ticon" | "dmi" | "linz" | "jhod" | "jma";
+const SOURCES: HarmonicDatumSource[] = ["dmi", "jhod", "jma", "linz", "ticon"];
 
 export function mergeHarmonicDatums(
   source: HarmonicDatumSource,
@@ -29,6 +29,8 @@ export function mergeHarmonicDatums(
     return value;
   };
   const msl = requireDatum("MSL");
+  if (source === "jma" && msl !== 0)
+    throw new Error(`jma/${station.source.id}: expected MSL = 0`);
   if (source === "ticon") {
     if (
       !storedDatumNotice(station) ||
@@ -59,6 +61,7 @@ export function mergeHarmonicDatums(
     }),
   );
   shifted["MSL"] = msl;
+  if (source === "jma") shifted["CD"] = requireDatum("CD");
   if (source === "dmi") {
     if (msl !== 0)
       throw new Error(`dmi/${station.source.id}: expected MSL = 0`);

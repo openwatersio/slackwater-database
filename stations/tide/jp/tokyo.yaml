@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA15 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [35.648617, 139.77]
 sources:
+  - jma/TK
   - ticon/tokyo-ma15-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/tokyo-ma15-jpn-jodc_jma:
+    jma/TK:
       position: [35.648617, 139.77]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 84
+        score: 76
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.041
+    ticon/tokyo-ma15-jpn-jodc_jma:
+      position: [35.648617, 139.77]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/TK
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.039
+          coverage: 0.003
+        issues:
+          - Superseded by jma/TK, its operator's own record

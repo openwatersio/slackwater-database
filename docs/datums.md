@@ -46,6 +46,7 @@ lowest low.
 
 How the values are produced differs by source:
 
+- [JMA](../sources/jma/README.md) — stores datums relative to MSL zero, retains the published tide-table zero as CD, and uses CD as the height reference. NLLW is derived separately.
 - [JHOD](../sources/jhod/README.md) — uses the published depth datum as `NLLW = 0` and published `Z0` as MSL above it. Other datums are derived from the constants and shifted by Z0. The rounded publisher value takes precedence over the four-amplitude approximation.
 - [NOAA](../sources/noaa/README.md) - uses datums published by NOAA (`MLLW`, or `STND` for non-tidal stations)
 - [TICON](../sources/ticon/README.md) — datums derived from
@@ -82,7 +83,7 @@ Harmonic reductions use every mathematical turning point of the predicted tide, 
 
 `npm run refresh:harmonic-datums -w packages/stations` recomputes derived values from committed constituents and existing vertical offsets, without downloading observations or refitting harmonics. `SHARD=i/n` selects a deterministic partition for parallel runs. Run `npm run stations` afterward to reevaluate quality and regenerate station files, then `PUBLISHED_REF=origin/main npm run check`.
 
-The command preserves TICON's observed means, observation window and coverage; its harmonic-only records retain their recorded gauge offset or constituent frame. TICON's method notice marks complete-turn reductions, and the importer declines cached datums without that notice. DMI retains published MSL, LAT and MLWS; LINZ retains published MSL and chart zero; JHOD retains published MSL and NLLW. Only derived datum values and the TICON method notice change. Both the complete-turn rule and numerical changes in engine beta.7 can contribute to datum differences. Each shard validates its selected inputs before writing; synthesis or I/O failure can still leave it partially updated, so rerun failed shards and review the complete diff before committing.
+The command preserves TICON's observed means, observation window and coverage; its harmonic-only records retain their recorded gauge offset or constituent frame. TICON's method notice marks complete-turn reductions, and the importer declines cached datums without that notice. DMI retains published MSL, LAT and MLWS; LINZ retains published MSL and chart zero; JHOD retains published MSL and NLLW; JMA retains MSL zero and its published CD offset. Only derived datum values and the TICON method notice change. Both the complete-turn rule and numerical changes in engine beta.7 can contribute to datum differences. Each shard validates its selected inputs before writing; synthesis or I/O failure can still leave it partially updated, so rerun failed shards and review the complete diff before committing.
 
 NOAA records mix published means with published or synthesized LAT/HAT without per-field provenance. The offline command leaves them untouched. Recomputing an existing NOAA bound requires evidence that it was synthesized, such as the original backfill diff and confirmation that NOAA supplies no value. Matching a prediction or the presence of MHW does not establish ownership. The regular NOAA import and LAT/HAT backfill remain the maintained source-update path.
 

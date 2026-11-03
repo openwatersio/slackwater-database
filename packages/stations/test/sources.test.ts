@@ -10,6 +10,7 @@ test("authority comes from each source's metadata.yaml", () => {
     .map(({ name }) => name);
   expect(authoritative).toEqual([
     "Japan Coast Guard, Hydrographic and Oceanographic Department",
+    "Japan Meteorological Agency",
     "Kartverket / Norwegian Mapping Authority, Hydrographic Service",
     "Toitū Te Whenua Land Information New Zealand",
     "US National Oceanic and Atmospheric Administration",

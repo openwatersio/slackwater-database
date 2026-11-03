@@ -1,0 +1,343 @@
+{
+  "name": "Toyama",
+  "country": "Japan",
+  "continent": "Asia",
+  "latitude": 36.766666666666666,
+  "longitude": 137.22472222222223,
+  "timezone": "Asia/Tokyo",
+  "source": {
+    "name": "Japan Meteorological Agency",
+    "id": "TY",
+    "url": "https://www.data.jma.go.jp/gmd/kaiyou/db/tide/suisan/harms60.php?stn=TY&year=2026&tyear=2026",
+    "published_harmonics": true
+  },
+  "license": {
+    "type": "cc-by-4.0",
+    "commercial_use": true,
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "disclaimers": "Source: Japan Meteorological Agency website, https://www.data.jma.go.jp/gmd/kaiyou/db/tide/suisan/station2026.php. Edited by Open Waters: constituent names, units and phases converted; tidal datums derived. Based on JMA content under PDL 1.0, https://www.digital.go.jp/resources/open_data/public_data_license_v1.0. Curated gauge positions: Hart-Davis, M., Dettmering, D., Seitz, F. (2025), TICON-4: TIdal CONstants based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129",
+  "datums": {
+    "HAT": 0.334,
+    "MHHW": 0.097,
+    "MHW": 0.076,
+    "MSL": 0,
+    "MTL": 0.003,
+    "MLW": -0.069,
+    "MLLW": -0.128,
+    "LAT": -0.358,
+    "MHWS": 0.078,
+    "MLWS": -0.078,
+    "NLLW": -0.184,
+    "CD": -0.22
+  },
+  "datums_source": "harmonic",
+  "chart_datum": "CD",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "Sa",
+      "amplitude": 0.159,
+      "phase": 164.55
+    },
+    {
+      "name": "Ssa",
+      "amplitude": 0.019,
+      "phase": 233.17
+    },
+    {
+      "name": "Mm",
+      "amplitude": 0.003,
+      "phase": 102.42
+    },
+    {
+      "name": "MSf",
+      "amplitude": 0.0022,
+      "phase": 310.08
+    },
+    {
+      "name": "Mf",
+      "amplitude": 0.0155,
+      "phase": 193.36
+    },
+    {
+      "name": "2Q1",
+      "amplitude": 0.002,
+      "phase": 143.09527777778
+    },
+    {
+      "name": "sigma1",
+      "amplitude": 0.0018,
+      "phase": 139.72527777778
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.012,
+      "phase": 166.40527777778
+    },
+    {
+      "name": "rho1",
+      "amplitude": 0.0025,
+      "phase": 161.86527777778
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.0523,
+      "phase": 182.87527777778
+    },
+    {
+      "name": "MP1",
+      "amplitude": 0.0004,
+      "phase": 146.12527777778
+    },
+    {
+      "name": "M1C",
+      "amplitude": 0.0022,
+      "phase": 194.25527777778
+    },
+    {
+      "name": "chi1",
+      "amplitude": 0.0005,
+      "phase": 174.12527777778
+    },
+    {
+      "name": "pi1",
+      "amplitude": 0.0012,
+      "phase": 171.15527777778
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.0169,
+      "phase": 204.22527777778
+    },
+    {
+      "name": "S1",
+      "amplitude": 0.0036,
+      "phase": 289.50527777778
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.0536,
+      "phase": 208.06527777778
+    },
+    {
+      "name": "psi1",
+      "amplitude": 0.0029,
+      "phase": 286.00527777778
+    },
+    {
+      "name": "phi1",
+      "amplitude": 0.0012,
+      "phase": 203.05527777778
+    },
+    {
+      "name": "theta1",
+      "amplitude": 0.0008,
+      "phase": 174.55527777778
+    },
+    {
+      "name": "J1",
+      "amplitude": 0.0026,
+      "phase": 236.98527777778
+    },
+    {
+      "name": "SO1",
+      "amplitude": 0.001,
+      "phase": 16.78527777778
+    },
+    {
+      "name": "OO1",
+      "amplitude": 0.0018,
+      "phase": 260.72527777778
+    },
+    {
+      "name": "OQ2",
+      "amplitude": 0.0003,
+      "phase": 259.90055555556
+    },
+    {
+      "name": "MNS2",
+      "amplitude": 0.0005,
+      "phase": 77.10055555556
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0.0022,
+      "phase": 129.47055555556
+    },
+    {
+      "name": "mu2",
+      "amplitude": 0.0044,
+      "phase": 120.87055555556
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.0147,
+      "phase": 153.90055555556
+    },
+    {
+      "name": "nu2",
+      "amplitude": 0.0022,
+      "phase": 158.07055555556
+    },
+    {
+      "name": "OP2",
+      "amplitude": 0.0008,
+      "phase": 53.33055555556
+    },
+    {
+      "name": "M2",
+      "amplitude": 0.0574,
+      "phase": 167.56055555556
+    },
+    {
+      "name": "MKS2",
+      "amplitude": 0.0005,
+      "phase": 155.01055555556
+    },
+    {
+      "name": "lambda2",
+      "amplitude": 0.0003,
+      "phase": 71.35055555556
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.0009,
+      "phase": 136.19055555556
+    },
+    {
+      "name": "T2",
+      "amplitude": 0.0019,
+      "phase": 185.75055555556
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.0208,
+      "phase": 193.44055555556
+    },
+    {
+      "name": "R2",
+      "amplitude": 0.0014,
+      "phase": 105.82055555556
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.0062,
+      "phase": 183.14055555556
+    },
+    {
+      "name": "MSN2",
+      "amplitude": 0.0002,
+      "phase": 264.93055555556
+    },
+    {
+      "name": "KJ2",
+      "amplitude": 0.0005,
+      "phase": 6.75055555556
+    },
+    {
+      "name": "2SM2",
+      "amplitude": 0.0004,
+      "phase": 292.20055555556
+    },
+    {
+      "name": "MO3",
+      "amplitude": 0.0006,
+      "phase": 198.96583333333
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.0005,
+      "phase": 128.95583333333
+    },
+    {
+      "name": "SO3",
+      "amplitude": 0.0006,
+      "phase": 217.68583333333
+    },
+    {
+      "name": "MK3",
+      "amplitude": 0.0007,
+      "phase": 202.27583333333
+    },
+    {
+      "name": "SK3",
+      "amplitude": 0.0004,
+      "phase": 260.23583333333
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.001,
+      "phase": 241.28111111111
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.0021,
+      "phase": 261.97111111111
+    },
+    {
+      "name": "SN4",
+      "amplitude": 0.0003,
+      "phase": 253.80111111111
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0.001,
+      "phase": 298.75111111111
+    },
+    {
+      "name": "MK4",
+      "amplitude": 0.0004,
+      "phase": 270.35111111111
+    },
+    {
+      "name": "S4",
+      "amplitude": 0.0001,
+      "phase": 97.46111111111
+    },
+    {
+      "name": "SK4",
+      "amplitude": 0.0002,
+      "phase": 297.19111111111
+    },
+    {
+      "name": "2MN6",
+      "amplitude": 0.0003,
+      "phase": 250.81166666667
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.0006,
+      "phase": 269.70166666667
+    },
+    {
+      "name": "MSN6",
+      "amplitude": 0.0003,
+      "phase": 311.60166666667
+    },
+    {
+      "name": "2MS6",
+      "amplitude": 0.001,
+      "phase": 333.12166666667
+    },
+    {
+      "name": "2MK6",
+      "amplitude": 0.0004,
+      "phase": 320.07166666667
+    },
+    {
+      "name": "2SM6",
+      "amplitude": 0.0003,
+      "phase": 18.30166666667
+    },
+    {
+      "name": "MSK6",
+      "amplitude": 0.0002,
+      "phase": 9.68166666667
+    }
+  ],
+  "epoch": {
+    "start": "2011-01-01",
+    "end": "2020-12-31"
+  }
+}

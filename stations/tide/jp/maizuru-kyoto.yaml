@@ -1,0 +1,40 @@
+# Preserve the reviewed TICON JMA MA55 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [35.476667, 135.38695]
+sources:
+  - jma/MZ
+  - ticon/maizuru-ma55-jpn-jodc_jma
+redirect_from:
+  - /tides/jp/maizuru-ticon-maizuru-ma55-jpn-jodc-jma/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    jma/MZ:
+      position: [35.476667, 135.38695]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 77
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.144
+    ticon/maizuru-ma55-jpn-jodc_jma:
+      position: [35.476667, 135.38695]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/MZ
+        score: 0
+        factors:
+          epoch: 1
+          recency: 0.97
+          source: 0.929
+          quality: 1
+          amplitude: 1
+          coverage: 0.015
+        issues:
+          - Superseded by jma/MZ, its operator's own record

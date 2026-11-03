@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA19 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [35.011667, 138.5175]
 sources:
+  - jma/SM
   - ticon/shimizuminato-ma19-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/shimizuminato-ma19-jpn-jodc_jma:
+    jma/SM:
       position: [35.011667, 138.5175]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 90
+        score: 82
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.475
+    ticon/shimizuminato-ma19-jpn-jodc_jma:
+      position: [35.011667, 138.5175]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/SM
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.467
+          coverage: 0.011
+        issues:
+          - Superseded by jma/SM, its operator's own record

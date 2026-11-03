@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA33 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [34.488617, 133.94945]
 sources:
+  - jma/UN
   - ticon/uno-ma33-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/uno-ma33-jpn-jodc_jma:
+    jma/UN:
       position: [34.488617, 133.94945]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 88
+        score: 80
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.32
+    ticon/uno-ma33-jpn-jodc_jma:
+      position: [34.488617, 133.94945]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/UN
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.328
+          coverage: 0.012
+        issues:
+          - Superseded by jma/UN, its operator's own record

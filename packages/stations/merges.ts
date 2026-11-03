@@ -317,8 +317,8 @@ export function planMerges(
         target,
         reason: `${apart.toFixed(1)} km apart`,
       });
-    // A provider-qualified gauge code (including NOAA numbers and JODC HD
-    // codes) names one gauge. Unqualified originator numbers and more distant
+    // A provider-qualified gauge code (including NOAA numbers, JODC HD
+    // codes and JMA gauge codes) names one gauge. Unqualified originator numbers and more distant
     // relays still need M2 confirmation.
     else if (
       !(declared.unambiguous && apart <= MAX_GAUGE_CODE_KM) &&

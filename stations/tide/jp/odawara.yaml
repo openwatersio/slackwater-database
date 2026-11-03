@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA83 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [35.2381, 139.1481]
 sources:
+  - jma/OD
   - ticon/odawara-ma83-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/odawara-ma83-jpn-jodc_jma:
+    jma/OD:
       position: [35.2381, 139.1481]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 88
+        score: 85
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.672
+    ticon/odawara-ma83-jpn-jodc_jma:
+      position: [35.2381, 139.1481]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/OD
+        score: 0
         factors:
           epoch: 0.725
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.679
+          coverage: 0.011
+        issues:
+          - Superseded by jma/OD, its operator's own record

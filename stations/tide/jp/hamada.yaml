@@ -1,36 +1,77 @@
+# Preserve the reviewed TICON JMA MA66 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [34.897217, 132.066117]
 sources:
+  - jma/HA
   - ticon/hamada-348-jpn-uhslc_fd
   - ticon/hamada-348a-jpn-uhslc_rq
+  - ticon/hamada-ma66-jpn-jodc_jma
 redirect_from:
   - /tides/jp/hamada-shimane/
+  - /tides/jp/hamada-ticon-hamada-ma66-jpn-jodc-jma/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/hamada-348-jpn-uhslc_fd:
-      position: [34.9, 132.067]
+    jma/HA:
+      position: [34.897217, 132.066117]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 85
+        score: 90
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 1
+    ticon/hamada-348-jpn-uhslc_fd:
+      position: [34.897217, 132.066117]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/HA
+        score: 0
         factors:
           epoch: 1
           recency: 0.99
           source: 0.99
           quality: 1
           amplitude: 1
-          coverage: 0.006
+          coverage: 0.002
+        issues:
+          - Superseded by jma/HA, its operator's own record
     ticon/hamada-348a-jpn-uhslc_rq:
-      position: [34.9, 132.067]
+      position: [34.897217, 132.066117]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/hamada-348-jpn-uhslc_fd
-        score: 85
+        reason: superseded
+        redundant: jma/HA
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.99
           quality: 1
           amplitude: 1
+          coverage: 0.002
+        issues:
+          - Superseded by jma/HA, its operator's own record
+    ticon/hamada-ma66-jpn-jodc_jma:
+      position: [34.897217, 132.066117]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/HA
+        score: 0
+        factors:
+          epoch: 1
+          recency: 0.97
+          source: 0.929
+          quality: 1
+          amplitude: 1
           coverage: 0.006
+        issues:
+          - Superseded by jma/HA, its operator's own record

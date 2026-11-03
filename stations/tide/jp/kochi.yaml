@@ -1,18 +1,38 @@
+# Preserve the reviewed TICON JMA MA38 gauge position; JMA's inventory latitude is rounded to minutes.
+position: [33.499167, 133.569167]
 sources:
+  - jma/KC
   - ticon/kochi-ma38-jpn-jodc_jma
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/kochi-ma38-jpn-jodc_jma:
+    jma/KC:
       position: [33.499167, 133.569167]
       coastline: unverifiable
       quality:
         accepted: true
-        score: 94
+        score: 86
+        factors:
+          epoch: 0.537
+          recency: 0.94
+          source: 1
+          quality: 1
+          amplitude: 1
+          coverage: 0.709
+    ticon/kochi-ma38-jpn-jodc_jma:
+      position: [33.499167, 133.569167]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: superseded
+        redundant: jma/KC
+        score: 0
         factors:
           epoch: 1
           recency: 0.97
           source: 0.929
           quality: 1
           amplitude: 1
-          coverage: 0.708
+          coverage: 0.002
+        issues:
+          - Superseded by jma/KC, its operator's own record
