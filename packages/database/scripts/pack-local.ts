@@ -24,7 +24,7 @@ export function releaseVersion(floor: string, now = new Date()): string {
   const version = `${floor.slice(0, floor.lastIndexOf("."))}.${date}`;
   if (floor.includes("-") && !version.includes("-"))
     throw new Error(
-      `${floor} derives non-prerelease ${version}; a prerelease floor needs a numeric final segment, e.g. 1.0.0-beta.0`,
+      `${floor} derives non-prerelease ${version}; a prerelease floor needs a numeric final segment, e.g. 1.0.1-beta.0`,
     );
   return version;
 }

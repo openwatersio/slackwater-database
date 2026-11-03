@@ -86,7 +86,7 @@ Before dispatching it, test the release in each consumer. This step is required.
 npm run pack:local   # builds and packs packages/database, printing the tarball's path
 ```
 
-The tarball carries the version a release dispatched that UTC day would publish, such as `1.0.0-beta.20261018`, derived the way `publish.yml` derives it, so a consumer that reads the release date from the version sees one. `packages/database/package.json` keeps its floor version.
+The tarball carries the version a release dispatched that UTC day would publish, such as `1.0.1-beta.20261103`, derived the way `publish.yml` derives it, so a consumer that reads the release date from the version sees one. `packages/database/package.json` keeps its floor version.
 
 Install that tarball in each consumer and run its full build and tests against it:
 
@@ -100,7 +100,11 @@ Passing means each consumer's bump is ready to open, not that its failures match
 
 Dispatch `publish.yml` only when both bumps are ready. Don't commit either consumer's install of the tarball; they pin the published version once it is out.
 
-`packages/database/package.json` holds a **floor** version such as `1.0.0-beta.0`. The workflow replaces its last segment with today's date to derive `1.0.0-beta.20260926`, publishes to npm, then tags and creates the GitHub release with the `.tcd` and `.tcdb` assets. The `exact` input exists only for the first stable `X.Y.0`.
+`packages/database/package.json` holds a **floor** version such as `1.0.1-beta.0`. The workflow replaces its last segment with today's date to derive `1.0.1-beta.20261103`, publishes to npm, then tags and creates the GitHub release with the `.tcd` and `.tcdb` assets.
+
+During npm prerelease publishing, a data release that needs a consumer compatibility change starts a new prerelease base in a reviewed PR, such as `1.0.0-beta.0` to `1.0.1-beta.0`. An existing dependency range such as `^1.0.0-beta.20261102` rejects `1.0.1-beta.*`; coordinated consumers opt in with new pins after the required preflight. Each derived release version must sort above the last published version. For stable releases, the `X.Y.0` floor derives `X.Y.<date>`, which sorts above prereleases on the same major and minor version.
+
+This isolates npm prerelease ranges only. The floating `beta` dist-tag still moves to the newest release, and SwiftPM range pins have different rules; use exact versions for controlled rollouts. Old npm caret ranges can accept a later stable `1.x` release, so review consumer upgrades before leaving prerelease mode. Stable breaking changes follow the README's major-version policy.
 
 The workflow publishes the release with GitHub-generated notes and the tag as its title, so finish it right after the run, following the org's [release notes guidance](https://github.com/openwatersio/.github/blob/main/docs/agents/releases.md#release-notes). Retitling and editing a published release is safe; the publish workflow does not run on edits.
 
@@ -112,7 +116,7 @@ Three things that look like failures and are not:
 
 - The npm registry can take twenty minutes to show a new version after the publish step succeeds, while the step's log says "Your package is being processed".
 - `npm view` reports stale dist-tags during that window.
-- npm's `latest` tag sits on the `1.0.0-beta.0` floor. The publish step adds `--tag beta` only when the version contains a `-`, so the first stable `1.0.0` will move `latest` by npm's own default. Install `@slackwater/database@beta` until then. This was filed once and closed as not planned (#206).
+- npm's `latest` tag points at the original `1.0.0-beta.0` release, independently of the current floor. The publish step adds `--tag beta` only when the version contains a `-`, so the first stable publish will move `latest` by npm's own default. Install `@slackwater/database@beta` until then. This was filed once and closed as not planned (#206).
 
 Verify a release against the registry rather than the run log, since the publish step passes before npm has propagated. Install `@slackwater/database@beta` into a scratch directory and read the affected stations back.
 

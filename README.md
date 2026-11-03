@@ -110,11 +110,11 @@ Releases of this database use [Semantic Versioning](https://semver.org/), with t
 
 - Major version changes indicate breaking changes to the data structure or APIs. However, as long as the version is "0.x", breaking changes may occur without a major version bump.
 - Minor version changes indicate backward-compatible additions to the data structure or APIs, such as new fields.
-- Patch version changes indicate updates to station data, and will always be the current date. For example, "0.1.20260101".
+- Stable patch version changes indicate updates to station data, and will always be the current date. For example, "0.1.20260101".
 
 ## Releasing
 
-Releases are created by [running the Publish action](https://github.com/openwatersio/slackwater-database/actions/workflows/publish.yml) on GitHub Actions. The action takes the `version` in `packages/database/package.json` as a floor and replaces its last segment with the current date, so the version always names the data vintage: `1.0.0-beta.0` publishes as `1.0.0-beta.<date>` under the `beta` dist-tag (and a prerelease GitHub release), and `1.0.0` publishes as `1.0.<date>` to `latest`. Release assets are named `slackwater-<date>.*` to match.
+Releases are created by [running the Publish action](https://github.com/openwatersio/slackwater-database/actions/workflows/publish.yml) on GitHub Actions. The action takes the `version` in `packages/database/package.json` as a floor and replaces its last segment with the current date, so the version always names the data vintage: `1.0.1-beta.0` publishes as `1.0.1-beta.<date>` under the `beta` dist-tag (and a prerelease GitHub release), and `1.0.0` publishes as `1.0.<date>` to `latest`. Release assets are named `slackwater-<date>.*` to match. During prereleases, the numeric base can advance to isolate a consumer compatibility update: npm ranges such as `^1.0.0-beta.20261102` do not accept `1.0.1-beta.*`. This does not pin the floating `beta` tag or SwiftPM ranges, and old npm ranges may accept a later stable release. Use exact pins for a controlled rollout.
 
 ## License
 
