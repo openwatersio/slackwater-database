@@ -8,6 +8,10 @@ Tide and water-level data © Kartverket / Norwegian Mapping Authority, Hydrograp
 
 All 33 of Kartverket's public harmonic stations are in `data/kartverket/` and ship in every release since `0.9.20260923`. Kartverket's coastal tide zones are not imported yet; #251 tracks them.
 
+## Import and refresh
+
+Run `npm run import -w sources/kartverket` to rebuild station records from the pinned snapshot without network access, then run `npm run stations` to regenerate the catalogue. To fetch a new source snapshot, run `npm run refresh:fixtures -w sources/kartverket` and review the fixture changes before importing. `npm run refresh:tide-tables -w sources/kartverket` separately refreshes the prediction comparisons used by validation.
+
 ## Validation
 
 The pinned comparison set holds 462 raw Kartverket responses: all 33 stations, in seven 72-hour windows each between 2020 and 2040. Run the offline check with:
