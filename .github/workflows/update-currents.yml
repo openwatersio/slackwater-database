@@ -86,6 +86,9 @@ jobs:
         if: steps.decide.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+        # An explicit `bash` runs with pipefail, so a failed `gh api` listing
+        # fails the step instead of quietly leaving superseded issues open.
+        shell: bash
         run: |
           # `generated` timestamps change on every run; ignore them when deciding
           # whether there is a real change to review.
