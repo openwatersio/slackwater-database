@@ -29,7 +29,7 @@ npm run validate -w sources/noaa-current
   "note": "Generated from NOAA CO-OPS mdapi …",
   "crossFlow": {
     "measured": "…",
-    "records": 856,
+    "records": 884,
     "gte0_25kn": 62,
     "gte0_50kn": 12,
     "worstRatio": {
@@ -45,9 +45,14 @@ npm run validate -w sources/noaa-current
       "id": "PUG1717",
       "name": "Turn Point, Boundary Pass",
       "type": "harmonic",
+      "azimuth": 23.2,
       "floodDirection": 23.2,
       "ebbDirection": 203.2,
       "offset": 0.297,
+      "minorMeanFlow": -0.633,
+      "minorConstituents": [
+        { "name": "M2", "amplitude": 0.14, "phase": 325.6 }
+      ],
       "constituents": [{ "name": "M2", "amplitude": 1.63, "phase": 295.3 }]
     },
     {
@@ -81,11 +86,7 @@ Four details that are easy to get wrong and expensive to debug:
   and NOAA predicts them harmonically; the offset reduction overshoots them badly
   (89 min vs 6.8 min at PUG1716). Rare — 1 of 1,706 — but you can't tell which without
   asking, and the ask is one request.
-- **The model is one axis, and the bundle says how much that costs.** `crossFlow` is a
-  census of NOAA's `minorMeanSpeed`, the flow perpendicular to the flood axis that runs
-  even at slack. `validate` fails above a 0.5 ratio. Bundling the full minor axis was
-  measured and rejected: a 2D magnitude series never crosses zero, so slack detection
-  silently returns nothing.
+- **Both axes are available.** Harmonic records carry `minorConstituents`, `minorMeanFlow`, and `azimuth` when NOAA publishes them. Preserve the signed major curve for slack and extrema; use both axes for timeline magnitude and direction. The root `crossFlow` census remains a diagnostic for consumers using one axis.
 
 ## Maintenance
 
@@ -109,9 +110,7 @@ npm run report:drift -w sources/noaa-current
 npm run validate -w sources/noaa-current
 ```
 
-`validate` gates the automated review branch: it fails on a subordinate whose reference
-went missing, duplicate ids, a harmonic station with no constituents, or a bundle that
-lost its Z₀ offsets. It also rejects missing coordinates and positions outside the broad US coastal bounds documented in [the API notes](docs/noaa-api.md#station-list-positions).
+`validate` gates the automated review branch: it fails on a subordinate whose reference went missing, duplicate ids, a harmonic station with no constituents, or a bundle that lost its Z₀ offsets. It also rejects malformed minor-axis measurements, missing coordinates, and positions outside the broad US coastal bounds documented in [the API notes](docs/noaa-api.md#station-list-positions). The extractor refuses incomplete or non-finite published vector measurements before writing a bundle; missing measurements remain absent.
 
 ## Don't trust it until you've diffed it
 

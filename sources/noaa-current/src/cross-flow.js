@@ -1,29 +1,8 @@
-// What this package emits is a MAJOR-AXIS model: one signed speed along a fixed
-// flood axis. NOAA also publishes `minorMeanSpeed` — the DC component of flow
-// perpendicular to that axis, running at all times INCLUDING slack — and a
-// major-axis model drops it.
-//
-// The per-station minor axis is deliberately not carried (docs/schema.md). But a
-// bundle should be able to state the bound on its own approximation rather than
-// leave it unmeasured, so the extractor records this census instead.
-//
-// Measured 2026-08-15. Across the 856 records a full US bundle holds: worst
-// ratio 0.241 (BOS1130), worst absolute 0.80 kn (PUG1619 Marrowstone Point).
-// The 0.241 also holds across the full 2,800 bin-records across NOAA's 850
-// harmonic stations (not every bin at every one of NOAA's ~2,785 stations —
-// subordinates have no harcon at all), so the bound below is safe for bins we
-// don't currently take.
+// One-axis consumers omit this constant cross-flow even at major-axis slack.
 
 /** Provenance, carried in the census so the number explains itself in the file. */
 const MEASURED =
   "NOAA minorMeanSpeed — flow perpendicular to the flood axis, present at all times including slack";
-
-/**
- * Ratio of cross-flow to along-axis peak above which the flood axis is a poor
- * description of the station, and so the major-axis model there is suspect.
- * ~2x the worst real value: a regression guard, not a quality gate.
- */
-export const CROSS_FLOW_RATIO_MAX = 0.5;
 
 const r3 = (n) => Math.round(n * 1000) / 1000;
 

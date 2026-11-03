@@ -151,6 +151,12 @@ export interface CurrentData {
   ebb_direction?: number;
   /** Knots; the constant term added to the harmonic sum. */
   mean_flow?: number;
+  /** Minor-axis constants in knots with Greenwich phases in degrees. */
+  minor_constituents?: HarmonicConstituent[];
+  /** Constant cross-axis flow in knots; a measured zero is present. */
+  minor_mean_flow?: number;
+  /** Published major-axis azimuth, degrees true. */
+  azimuth?: number;
   /** Id of the tide station whose extremes pair with this current, if any. */
   tide_reference?: string;
   magnitude_note?: string;

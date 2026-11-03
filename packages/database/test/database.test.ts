@@ -437,6 +437,98 @@ describe("buildDatabase", () => {
     expect(offsets.floodSpeedRatio()).toBeCloseTo(0.8, 6);
   });
 
+  test("round-trips minor-only names, small amplitudes and measured zeros", async () => {
+    const input: StationInput = {
+      ...inputs[2]!,
+      id: "test/vector",
+      harmonic_constituents: [{ name: "M2", amplitude: 2, phase: 100 }],
+      current: {
+        mean_flow: -0.619,
+        minor_mean_flow: 0,
+        azimuth: 0,
+        minor_constituents: [
+          { name: "Q1", amplitude: 0.001, phase: 90 },
+          { name: "K1", amplitude: 0, phase: 12.3 },
+        ],
+      },
+    };
+    const { byId } = await loadStations(build([input]));
+    const station = byId("test/vector")!;
+    expect(station.harmonic_constituents[0]!.name).toBe("M2");
+    const current = station.current!;
+    expect(current.minor_mean_flow).toBe(0);
+    expect(current.azimuth).toBe(0);
+    expect(current.minor_constituents).toHaveLength(2);
+    const [q1, k1] = current.minor_constituents!;
+    expect(q1!.name).toBe("Q1");
+    expect(q1!.amplitude).toBeCloseTo(0.001, 8);
+    expect(q1!.phase).toBe(90);
+    expect(k1!.name).toBe("K1");
+    expect(k1!.amplitude).toBe(0);
+    expect(k1!.phase).toBeCloseTo(12.3, 5);
+  });
+
+  test("keeps minor scalars absent or measured independently", async () => {
+    for (const value of [undefined, 0, -0.25]) {
+      const current =
+        value === undefined ? {} : { minor_mean_flow: value, azimuth: 0 };
+      const { byId } = await loadStations(build([{ ...inputs[2]!, current }]));
+      const read = byId("test/3")!.current!;
+      expect(read.minor_mean_flow).toBe(value);
+      expect(read.azimuth).toBe(value === undefined ? undefined : 0);
+      expect(read).not.toHaveProperty("minor_constituents");
+    }
+  });
+
+  test("reads a database predating minor-axis fields without inventing zero measurements", async () => {
+    const bytes = readFileSync(
+      new URL("fixtures/pre-minor-current.tcdb", import.meta.url),
+    );
+    const { byId } = await loadStations(bytes);
+    const current = byId("test/current")!.current!;
+    expect(current.mean_flow).toBeCloseTo(0.4, 6);
+    expect(current).not.toHaveProperty("minor_constituents");
+    expect(current).not.toHaveProperty("minor_mean_flow");
+    expect(current).not.toHaveProperty("azimuth");
+  });
+
+  test("keeps both axes behind all identity tables", () => {
+    const bytes = build(
+      Array.from({ length: 4 }, (_, i) => ({
+        ...inputs[2]!,
+        id: `test/vector-${i}`,
+        harmonic_constituents: [{ name: "M2", amplitude: i + 1, phase: 100 }],
+        current: {
+          minor_constituents: [{ name: "Q1", amplitude: i + 0.001, phase: 90 }],
+        },
+      })),
+    );
+    const db = openDatabase(bytes);
+    let highestTable = 0,
+      lowestPrediction = Infinity;
+    for (let i = 0; i < db.stationsLength(); i++) {
+      const station = db.stations(i)!;
+      highestTable = Math.max(highestTable, station.bb_pos);
+      lowestPrediction = Math.min(
+        lowestPrediction,
+        station.constituents(0)!.bb_pos,
+        station.current()!.minorConstituents(0)!.bb_pos,
+      );
+    }
+    expect(lowestPrediction).toBeGreaterThan(highestTable);
+  });
+
+  test.each([
+    { minor_mean_flow: NaN },
+    { azimuth: Infinity },
+    { minor_constituents: [{ name: "M2", amplitude: Infinity, phase: 0 }] },
+    { minor_constituents: [{ name: "M2", amplitude: 0, phase: NaN }] },
+  ])("rejects invalid vector data %j", (current) => {
+    expect(() => build([{ ...inputs[2]!, current }])).toThrow(
+      /test\/3.*(minor|azimuth)/i,
+    );
+  });
+
   test("round-trips chs_fit", async () => {
     const evidence = "fit-2026-10-22-8f85912-r2";
     const fits: ChsFitData[] = [

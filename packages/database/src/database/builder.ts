@@ -28,6 +28,7 @@ import countryLookup from "country-code-lookup";
 import { attributionWithCredit } from "../attribution.ts";
 import type {
   DatabaseRoutes,
+  HarmonicConstituent,
   StationInput,
   StationRouteInput,
 } from "../types.js";
@@ -89,7 +90,12 @@ export function buildDatabase(
   const preparedRoutes = prepareRoutes(sorted, routes);
 
   const constituentNames = nameTable(
-    sorted.flatMap((s) => (s.harmonic_constituents ?? []).map((c) => c.name)),
+    sorted.flatMap((s) =>
+      [
+        ...(s.harmonic_constituents ?? []),
+        ...(s.current?.minor_constituents ?? []),
+      ].map((c) => c.name),
+    ),
   );
   const datumNames = nameTable(
     sorted.flatMap((s) => Object.keys(s.datums ?? {})),
@@ -99,24 +105,28 @@ export function buildDatabase(
   const str = (v: string | undefined): number =>
     v === undefined ? 0 : builder.createSharedString(v);
 
+  const writeConstituents = (hcs: HarmonicConstituent[]): number => {
+    if (!hcs.length) return 0;
+    Station.startConstituentsVector(builder, hcs.length);
+    for (let i = hcs.length - 1; i >= 0; i--) {
+      const hc = hcs[i]!;
+      Constituent.createConstituent(
+        builder,
+        constituentNames.index.get(hc.name)!,
+        hc.amplitude,
+        hc.phase,
+      );
+    }
+    return builder.endVector();
+  };
+
   // Phase 1: lookup data — prediction vectors and quality detail — together at
   // the tail of the file.
   const prediction = sorted.map((s) => {
-    let constituents = 0;
-    const hcs = s.harmonic_constituents ?? [];
-    if (hcs.length > 0) {
-      Station.startConstituentsVector(builder, hcs.length);
-      for (let i = hcs.length - 1; i >= 0; i--) {
-        const hc = hcs[i]!;
-        Constituent.createConstituent(
-          builder,
-          constituentNames.index.get(hc.name)!,
-          hc.amplitude,
-          hc.phase,
-        );
-      }
-      constituents = builder.endVector();
-    }
+    const constituents = writeConstituents(s.harmonic_constituents ?? []);
+    const minorConstituents = writeConstituents(
+      s.current?.minor_constituents ?? [],
+    );
 
     let datums = 0;
     const entries = Object.entries(s.datums ?? {});
@@ -166,7 +176,7 @@ export function buildDatabase(
       quality = Quality.endQuality(builder);
     }
 
-    return { constituents, datums, quality };
+    return { constituents, minorConstituents, datums, quality };
   });
 
   // Phase 2: identity — strings, sub-tables, and the station tables themselves —
@@ -387,6 +397,10 @@ export function buildDatabase(
       Current.addMagnitudeNote(builder, magnitudeNote);
       Current.addDerived(builder, derived);
       Current.addChsFit(builder, chsFit);
+      Current.addMinorConstituents(builder, prediction[i]!.minorConstituents);
+      if (c.minor_mean_flow !== undefined)
+        Current.addMinorMeanFlow(builder, c.minor_mean_flow);
+      if (c.azimuth !== undefined) Current.addAzimuth(builder, c.azimuth);
       current = Current.endCurrent(builder);
     }
 
@@ -550,6 +564,26 @@ function prepareRoutes(
 function requireIdentity(station: StationInput): void {
   if (!station.id.trim()) throw new Error("Station has no id");
   stationKind(station);
+  const current = station.current;
+  for (const field of ["minor_mean_flow", "azimuth"] as const) {
+    const value = current?.[field];
+    if (value !== undefined && !Number.isFinite(value))
+      throw new Error(`${station.id}: ${field} must be finite when present`);
+  }
+  const minor = current?.minor_constituents;
+  if (
+    minor !== undefined &&
+    (!Array.isArray(minor) ||
+      minor.some(
+        (c) =>
+          !c ||
+          typeof c.name !== "string" ||
+          !c.name ||
+          !Number.isFinite(c.amplitude) ||
+          !Number.isFinite(c.phase),
+      ))
+  )
+    throw new Error(`${station.id}: invalid minor constituents`);
   for (const field of ["name", "timezone", "continent"] as const) {
     if (!station[field]?.trim())
       throw new Error(`Station ${station.id} has no ${field}`);

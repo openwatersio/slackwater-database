@@ -2,8 +2,6 @@
 // happen: a truncated/partial extraction, or a subordinate pointing at a reference
 // that isn't there (which silently yields no prediction at that station).
 
-import { CROSS_FLOW_RATIO_MAX } from "./cross-flow.js";
-
 // Broad sanity bounds, not borders: include US territories and Alaska across 180°.
 export function plausiblePosition(latitude, longitude) {
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return false;
@@ -61,6 +59,26 @@ export function validateBundle(bundle) {
   if (harmonic.length && withZ0 === 0)
     errors.push("no harmonic station carries a Z0 offset");
 
+  for (const s of harmonic) {
+    for (const field of ["minorMeanFlow", "azimuth"]) {
+      if (s[field] !== undefined && !Number.isFinite(s[field]))
+        errors.push(`${s.id}: ${field} must be finite when present`);
+    }
+    if (
+      s.minorConstituents !== undefined &&
+      (!Array.isArray(s.minorConstituents) ||
+        s.minorConstituents.some(
+          (c) =>
+            !c ||
+            typeof c.name !== "string" ||
+            !c.name ||
+            !Number.isFinite(c.amplitude) ||
+            !Number.isFinite(c.phase),
+        ))
+    )
+      errors.push(`${s.id}: invalid minor constituents`);
+  }
+
   const unknownType = stations.filter(
     (s) => s.type !== "harmonic" && s.type !== "subordinate",
   );
@@ -91,17 +109,7 @@ export function validateBundle(bundle) {
       );
   }
 
-  // The bundle's whole model is one signed speed along a fixed flood axis. When
-  // cross-axis flow gets large next to the along-axis flow, that axis has stopped
-  // describing the station and the model there is suspect. A bundle predating this
-  // census carries no block — absent is "not measured", not "failed".
   const cf = bundle.crossFlow ?? null;
-  if (cf?.worstRatio && cf.worstRatio.ratio > CROSS_FLOW_RATIO_MAX) {
-    errors.push(
-      `cross-flow ratio ${cf.worstRatio.ratio} at ${cf.worstRatio.id} exceeds ${CROSS_FLOW_RATIO_MAX} ` +
-        "— the flood axis no longer describes that station, so its major-axis model is suspect",
-    );
-  }
 
   return {
     ok: errors.length === 0,

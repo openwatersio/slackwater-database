@@ -134,7 +134,7 @@ assert.ok(
 // free plans (never fit this database — the previous JSON-string bundle was
 // 4.7 MiB), 10 MiB on paid. Guard well under the paid limit so data growth
 // that would push consumer deployments over it fails here, not at their
-// deploy. The complete worker bundle is about 6.6 MiB; keep 3 MiB of paid-plan headroom.
+// deploy. The 7 MiB guard keeps at least 3 MiB of paid-plan headroom.
 const compressed = gzipSync(workerSrc).length;
 assert.ok(
   compressed < 7 * 1024 * 1024,

@@ -274,6 +274,24 @@ export function createStationReader(db: Root) {
     if (!table.ebbDirectionMissing())
       current.ebb_direction = table.ebbDirection();
     if (!table.meanFlowMissing()) current.mean_flow = table.meanFlow();
+    const minorMeanFlow = table.minorMeanFlow();
+    if (minorMeanFlow !== null) current.minor_mean_flow = minorMeanFlow;
+    const azimuth = table.azimuth();
+    if (azimuth !== null) current.azimuth = azimuth;
+    if (table.minorConstituentsLength()) {
+      const constituent = new Constituent();
+      current.minor_constituents = Array.from(
+        { length: table.minorConstituentsLength() },
+        (_, i) => {
+          table.minorConstituents(i, constituent);
+          return {
+            name: constituentNames[constituent.name()]!,
+            amplitude: constituent.amplitude(),
+            phase: constituent.phase(),
+          };
+        },
+      );
+    }
     const tideReference = table.tideReference();
     if (tideReference) current.tide_reference = tideReference;
     const offsets = table.offsets();

@@ -19,7 +19,7 @@ Per-record JSON decode was never the cost (4 ms for 200 records); the cost is de
 - Constituents are a struct vector: a `ushort` index into the root name table plus two `float` values — 12 bytes per constituent, contiguous, versus ~28 for a table per constituent. Float32 holds seven significant digits. Source files keep each publisher's precision, and digits beyond seven significant figures are dropped here, far below any analysis's uncertainty. Datums use the same struct-plus-name-table pattern.
 - Identical `source` and `license` tables are written once and shared; repeated strings (timezones, countries, epochs) are deduplicated with shared strings.
 - `Station.attribution` is the station's complete display notice — creator credit, licence and its URI, and an indication of modification — assembled by the builder from `source` and `license` so a reader in any language displays it without keeping its own table of sources or its own reading of what a licence requires. It is per station because licence varies within a single source, and a shared string, so the file holds one copy per distinct notice.
-- A `Current` sub-table and `Kind` enum keep current stations in the same `stations` vector and id lookup. It carries directions, mean flow, tide references, subordinate-current offsets, magnitude notes, tide-derived rules, and each fitted CHS gate's measured tier (`chs_fit`).
+- A `Current` sub-table and `Kind` enum keep current stations in the same `stations` vector and id lookup. It carries directions, major and minor mean flow, minor-axis constituents, azimuth, tide references, subordinate-current offsets, magnitude notes, tide-derived rules, and each fitted CHS gate's measured tier (`chs_fit`).
 - `tide_routes` and `current_routes` map stable slugs to one or more provider ids and retain former paths for redirects. Route lookup is a binary search; the full list is decoded only when requested.
 - Quality evaluation (each record's `quality` block in its station file) rides along: the gate — `accepted` and `score` — is inline on `Station` so an identity scan can filter and rank from head pages, and the detail (factors, issues, reason, redundant) is a `Quality` sub-table written at the tail with the other lookup data. The file carries all stations, rejected ones included; readers apply the `accepted` filter.
 - `file_identifier "TCDB"`, `file_extension "tcdb"`.
@@ -71,6 +71,14 @@ Releases attach the file as `slackwater-<date>.tcdb` alongside the TCD files.
 ## Downstream builders
 
 `buildDatabase(stations, { routes, credits })` is exported so downstream generators can write filtered catalogues through the same builder and read them with the same generated readers. The package exports `credits: ReadonlyMap<string, string | null>`, generated from the same `sources/<name>/metadata.yaml` entries as the bundled database. It maps each published `source.name` to its credit line, or null when it needs none. Pass it directly when rebuilding published stations; a custom source needs its own entry, and a station whose source has no entry is refused.
+
+## Current vectors
+
+`Current.minor_constituents`, `minor_mean_flow`, and `azimuth` are appended optional fields. JS exposes the same snake-case names on `station.current`; Swift exposes `minorConstituents`, `minorMeanFlow`, and `azimuth`. Minor constituents use the root constituent-name table, including names found only on the minor axis, and their vectors live in the prediction tail alongside major constituents.
+
+Speeds are knots, phases are Greenwich degrees, and azimuth is the major-axis bearing in degrees true. Optional scalars use FlatBuffers null defaults, so an older file reads as absent while measured zero survives. Older readers ignore the new fields. Records without minor data keep their scalar model; subordinates retain their published time and speed offsets.
+
+Subordinate timelines use the scalar reduction and the subordinate's published bearings. A reference's minor axis must not be projected through a subordinate's time and speed ratios.
 
 ## Datum provenance
 

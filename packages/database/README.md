@@ -62,6 +62,10 @@ Pure helpers such as `qualityFilter`, `routePath`, `positionToPoint`, attributio
 
 Each station has separate `locality`, `region`, and `country` display fields. `country_code` is an ISO 3166-1 alpha-2 code; `region_code`, when available, is an ISO 3166-2 subdivision code. Consumers can therefore omit country or region text when the surrounding page already supplies it.
 
+### Harmonic current vectors
+
+Harmonic currents expose optional `current.minor_constituents`, `current.minor_mean_flow`, and `current.azimuth` for vector predictions. Minor amplitudes and mean flow are knots, phases are Greenwich degrees, and azimuth is degrees true. Missing values return `undefined`; measured zero remains zero. The major constants remain in `harmonic_constituents`. See [the database format](../../docs/database-format.md#current-vectors).
+
 ### Stable station routes
 
 ```typescript

@@ -134,6 +134,9 @@ table Current {
   ebb_direction_missing: bool;
   mean_flow_missing: bool;
   chs_fit: ChsFit;
+  minor_constituents: [Constituent];
+  minor_mean_flow: float = null;  // knots; null is unknown, distinct from measured zero
+  azimuth: float = null;          // major-axis degrees true
 }
 
 table Source {
