@@ -97,6 +97,9 @@ async function main() {
 }
 
 const DETAILS_ATTEMPTS = 5;
+// Unpaced runs get a 403 from NOAA a few thousand requests in.
+// The noaa-current import paces the same API at 300ms and completes.
+const PACE_MS = 300;
 
 async function fetchDetails(id: string): Promise<any> {
   const url = `https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/${id}.json?expand=details,datums,harcon,disclaimers,notices&units=metric`;
@@ -107,6 +110,12 @@ async function fetchDetails(id: string): Promise<any> {
     // It also throttles with a 403 whose body may not be JSON.
     const r = await fetch(url, attempt > 1 ? { cache: "reload" } : {});
     const text = await r.text();
+    // Only a request that reached NOAA counts against its limit; `hit` and
+    // `stale` are answered from the local cache.
+    const cacheStatus = r.headers.get("x-local-cache-status");
+    if (cacheStatus !== "hit" && cacheStatus !== "stale") {
+      await new Promise((resolve) => setTimeout(resolve, PACE_MS));
+    }
     try {
       res = JSON.parse(text);
     } catch {
