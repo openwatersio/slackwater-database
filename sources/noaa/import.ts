@@ -96,7 +96,7 @@ async function main() {
   );
 }
 
-const DETAILS_ATTEMPTS = 3;
+const DETAILS_ATTEMPTS = 5;
 
 async function fetchDetails(id: string): Promise<any> {
   const url = `https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/${id}.json?expand=details,datums,harcon,disclaimers,notices&units=metric`;
@@ -104,11 +104,19 @@ async function fetchDetails(id: string): Promise<any> {
   for (let attempt = 1; attempt <= DETAILS_ATTEMPTS; attempt++) {
     // NOAA occasionally answers 200 with an error body and no stations array,
     // and a retry has to bypass the cache or it reads that same body back.
-    res = await fetch(url, attempt > 1 ? { cache: "reload" } : {}).then((r) =>
-      r.json(),
-    );
-    if (res.stations?.[0]) return res.stations[0];
-    await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+    // It also throttles with a 403 whose body may not be JSON.
+    const r = await fetch(url, attempt > 1 ? { cache: "reload" } : {});
+    const text = await r.text();
+    try {
+      res = JSON.parse(text);
+    } catch {
+      res = { status: r.status, body: text };
+    }
+    if (r.ok && res.stations?.[0]) return res.stations[0];
+    // Back off 2s, 4s, 8s, 16s so a throttle has time to lift.
+    if (attempt < DETAILS_ATTEMPTS) {
+      await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt));
+    }
   }
   throw new Error(
     `No data for station ${id} after ${DETAILS_ATTEMPTS} attempts: ${JSON.stringify(res).slice(0, 200)}`,

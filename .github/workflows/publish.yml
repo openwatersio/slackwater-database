@@ -48,8 +48,11 @@ jobs:
         # station, as its path or one of its redirects; a retired station's
         # paths stay reserved but answer 404.
         run: |
-          # versionsort.suffix sorts a prerelease below its release.
-          LAST=$(git -c versionsort.suffix=- ls-remote --tags --sort=-v:refname origin 'v*' | head -1 | cut -f2)
+          # versionsort.suffix sorts a prerelease below its release. ls-remote
+          # runs outside the pipe so its failure stops the step, rather than
+          # leaving LAST empty and skipping the published-path check.
+          TAGS=$(git -c versionsort.suffix=- ls-remote --tags --sort=-v:refname origin 'v*')
+          LAST=$(head -1 <<< "$TAGS" | cut -f2)
           if [ -n "$LAST" ]; then
             git fetch --depth=1 origin "$LAST"
             export PUBLISHED_REF=FETCH_HEAD

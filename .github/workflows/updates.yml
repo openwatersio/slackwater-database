@@ -37,11 +37,14 @@ jobs:
       - name: Run NOAA stations update
         env:
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        # An explicit `bash` runs with pipefail, so a crashed import fails the
+        # job instead of `tee`'s exit status letting a partial refresh through.
+        shell: bash
         run: |
           npm run -s import -w sources/noaa 2>&1 | tee /tmp/noaa-update.log
           # Extract the markdown summary (everything after "## Summary")
           sed -n '/^## Summary$/,$p' /tmp/noaa-update.log > /tmp/noaa-summary.md
-          printf '\n### Workflow\n\n            This PR was automatically created by the monthly NOAA station update workflow.Run: %s\n' "$WORKFLOW_URL" >> /tmp/noaa-summary.md
+          printf '\n### Workflow\n\nThis PR was automatically created by the monthly NOAA station update workflow. Run: %s\n' "$WORKFLOW_URL" >> /tmp/noaa-summary.md
 
       - name: Backfill LAT/HAT
         # The updater above rewrites `datums` wholesale from NOAA's API, which
