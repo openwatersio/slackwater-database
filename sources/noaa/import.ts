@@ -32,6 +32,22 @@ async function readExisting(id: string): Promise<string | null> {
   }
 }
 
+// The saved record drops any LAT/HAT that backfill-lat-hat synthesized, and the
+// workflow's backfill step recomputes them. Compare as if it already had, so a
+// station whose only difference is that round trip isn't reported as updated.
+function withBackfill(
+  station: StationData,
+  existing: string | null,
+): StationData {
+  if (existing === null || station.datums?.["LAT"] !== undefined) {
+    return station;
+  }
+  const { LAT, HAT } = JSON.parse(existing).datums ?? {};
+  if (LAT === undefined || HAT === undefined) return station;
+  // LAT/HAT lead the datums object, matching backfill-lat-hat.
+  return { ...station, datums: { LAT, HAT, ...station.datums } };
+}
+
 async function main() {
   const { stations } = await fetch(
     `${STATIONS_URL}?type=tidepredictions&expand=details,tidepredoffsets&units=metric`,
@@ -52,9 +68,13 @@ async function main() {
     }
 
     const station = await buildStation(meta);
-    const newContent =
-      JSON.stringify(withPublishedPrecision("noaa", station), null, 2) + "\n";
     const existing = await readExisting(meta.id);
+    const newContent =
+      JSON.stringify(
+        withPublishedPrecision("noaa", withBackfill(station, existing)),
+        null,
+        2,
+      ) + "\n";
 
     await save("noaa", station);
 
