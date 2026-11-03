@@ -45,7 +45,8 @@ for (const [bsh, id] of pairs) {
   const ev = j.years
     .map((y) => y["2026"])
     .find(Boolean)
-    .hwnw_prediction.data.map((e) => ({
+    .hwnw_prediction.data.filter((e) => e.height != null)
+    .map((e) => ({
       t: Date.parse(e.timestamp.replace(" ", "T")),
       hi: e.type === "HW",
     }));
