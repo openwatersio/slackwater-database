@@ -126,6 +126,11 @@ public struct CurrentRecord: Equatable, Sendable {
   public let floodDirection: Double?
   public let ebbDirection: Double?
   public let meanFlow: Double?
+  /// Minor-axis constants in knots and Greenwich degrees; nil when not published.
+  public let minorConstituents: [Station.Constituent]?
+  public let minorMeanFlow: Double?
+  /// Major-axis bearing in degrees true; nil when unknown.
+  public let azimuth: Double?
   public let tideReference: String?
   public let offsets: CurrentOffsets?
   public let magnitudeNote: String?
@@ -334,6 +339,16 @@ public struct Station: Identifiable, @unchecked Sendable {
         floodDirection: current.floodDirectionMissing ? nil : Double(current.floodDirection),
         ebbDirection: current.ebbDirectionMissing ? nil : Double(current.ebbDirection),
         meanFlow: current.meanFlowMissing ? nil : Double(current.meanFlow),
+        minorConstituents: current.minorConstituentsCount == 0 ? nil :
+          (0..<current.minorConstituentsCount).compactMap { index in
+            guard let c = current.minorConstituents(at: index),
+              let name = root.constituentNames(at: Int32(c.name))
+            else { return nil }
+            return Constituent(
+              name: name, amplitude: Double(c.amplitude), phase: Double(c.phase))
+          },
+        minorMeanFlow: current.minorMeanFlow.map { Double($0) },
+        azimuth: current.azimuth.map { Double($0) },
         tideReference: current.tideReference,
         offsets: current.offsets.map { offsets in
           CurrentOffsets(
@@ -392,7 +407,7 @@ public struct Station: Identifiable, @unchecked Sendable {
   }
 
   /// Amplitude in metres (tides) or knots (currents); phase in degrees.
-  public struct Constituent: Sendable {
+  public struct Constituent: Equatable, Sendable {
     public let name: String
     public let amplitude: Double
     public let phase: Double

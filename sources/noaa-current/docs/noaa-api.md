@@ -77,14 +77,16 @@ azi (major-axis azimuth, ° true), binNbr, binDepth, constNum
 
 Mapping that produces predictions matching NOAA's own:
 
-| You want           | Use                              | Notes                                                                                                                                           |
-| ------------------ | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| amplitude          | `majorAmplitude`                 | **knots** under `units=english`, **cm/s** under `units=metric` (÷ 51.4444)                                                                      |
-| phase              | `majorPhaseGMT`                  | Greenwich phase. Pairs with a Greenwich V₀ — confirmed empirically, see below                                                                   |
-| flood direction    | `azi`                            | ebb is `azi + 180`                                                                                                                              |
-| **Z₀ / mean flow** | `majorMeanSpeed`                 | signed, knots. **Do not drop this** — see below                                                                                                 |
-| minor axis         | `minorAmplitude`/`minorPhaseGMT` | for a 2D/rotary model; unused by a major-axis model — but see `minorMeanSpeed` below                                                            |
-| cross-flow         | `minorMeanSpeed`                 | DC flow perpendicular to the axis, running at ALL times including slack. Not carried per station; summarised in the bundle's `crossFlow` census |
+| You want           | Use                              | Notes                                                                                         |
+| ------------------ | -------------------------------- | --------------------------------------------------------------------------------------------- |
+| amplitude          | `majorAmplitude`                 | **knots** under `units=english`, **cm/s** under `units=metric` (÷ 51.4444)                    |
+| phase              | `majorPhaseGMT`                  | Greenwich phase. Pairs with a Greenwich V₀ — confirmed empirically, see below                 |
+| flood direction    | `azi`                            | ebb is `azi + 180`                                                                            |
+| **Z₀ / mean flow** | `majorMeanSpeed`                 | signed, knots. **Do not drop this** — see below                                               |
+| minor axis         | `minorAmplitude`/`minorPhaseGMT` | stored as `minorConstituents` for vector magnitude and direction                              |
+| cross-flow         | `minorMeanSpeed`                 | signed DC flow perpendicular to the axis; stored as `minorMeanFlow`, including published zero |
+
+Minor constants use the same exact depth bin as the major constants. Missing values remain absent. The amplitude=0, phase=0 pair is NOAA's undetermined marker and is omitted from the minor array; all other pairs retain the published precision, including amplitudes below 0.01 knots and zero amplitudes with a nonzero phase.
 
 ### Z₀ is not optional
 

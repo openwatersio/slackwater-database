@@ -42,6 +42,12 @@ const stations: StationInput[] = [
       flood_direction: 90,
       ebb_direction: 270,
       mean_flow: 0.4,
+      minor_constituents: [
+        { name: "Q1", amplitude: 0.001, phase: 12.3 },
+        { name: "K1", amplitude: 0, phase: 45.6 },
+      ],
+      minor_mean_flow: 0,
+      azimuth: 0,
       tide_reference: "test/reference",
       offsets: {
         reference: "test/reference",

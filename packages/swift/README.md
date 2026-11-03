@@ -29,7 +29,10 @@ let range = station?.astronomicalBounds // (lat: -0.619, hat: 3.681)
 
 // The notice to show wherever the station's data appears.
 let notice = station?.attribution
-let current = db.station(id: "noaa-current/PUG1515")?.current
+let current = db.station(id: "noaa/PUG1515")?.current
+let minor = current?.minorConstituents // names, amplitudes in knots, Greenwich phases
+let crossAxisMean = current?.minorMeanFlow // knots; nil means unknown
+let axis = current?.azimuth // degrees true; zero is a known northward axis
 let commercialUse = station?.license?.commercialUse
 
 // Stable links: binary lookup by slug, including former paths in the result.

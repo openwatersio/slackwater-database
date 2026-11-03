@@ -40,7 +40,9 @@ export async function captureGolden(stationId, currbin, start, end, opts = {}) {
     predictionsError = e.message;
   }
 
-  const azi = cons[0].azi ?? 0;
+  const azi = cons[0].azi;
+  if (azi != null && !Number.isFinite(azi))
+    throw new Error(`${stationId}: azimuth must be finite when published`);
   return {
     note:
       "NOAA CO-OPS: harmonic constituents + NOAA's own published predictions for the " +
@@ -49,8 +51,9 @@ export async function captureGolden(stationId, currbin, start, end, opts = {}) {
     bin: currbin,
     start: start.toISOString(),
     end: end.toISOString(),
-    floodDirection: azi,
-    ebbDirection: (azi + 180) % 360,
+    ...(azi != null
+      ? { floodDirection: azi, ebbDirection: (azi + 180) % 360 }
+      : {}),
     offset: cons[0].majorMeanSpeed ?? 0,
     constituents: cons.map((c) => ({
       name: c.constituentName,
