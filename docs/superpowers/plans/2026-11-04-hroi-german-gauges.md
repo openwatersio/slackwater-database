@@ -35,7 +35,8 @@ So BSH's tables are only a yardstick, used through the validator, and nothing fr
 
 - [ ] Backfill PEGELONLINE history from the station pages' "Download Wasserstände (Rohdaten) ab dem 1.1.2000". The API keeps only 31 days. The "Water levels harmonic fitting" session is collecting this data now, so check its result before starting.
 - [ ] Record each gauge's interval, gaps and datum changes across 2000–2026. Raw data are unchecked: flag spikes, flat lines and datum jumps in `src/qc.ts`.
-- [ ] Extract observed high and low waters into `extremes/pegelonline/<station>/<year>.parquet`. PEGELONLINE publishes none, so we need our own rule: smoothing plus a turning-point search, with extremes assigned to transits by HRoI's own `assign`. Document the rule. BSH's rule (Müller-Navarra 2009) isn't available to us.
+- [ ] Extract observed high and low waters into `extremes/pegelonline/<station>/<year>.parquet`. PEGELONLINE publishes none, so we need our own rule: smoothing plus a turning-point search. Document the rule. BSH's rule (Müller-Navarra 2009) isn't available to us. Keep every observed turning point, including double highs and lows ([#152](https://github.com/openwatersio/slackwater-database/issues/152) shows they are real and must not be forced to a fixed count).
+- [ ] Select HRoI training events as a separate, documented step: one high and one low per half lunar day, assigned to transits by HRoI's `assign`. Record per gauge and year what share of half days had extra turning points that the selection dropped. Exclude a gauge from HRoI when that share exceeds a threshold fixed before the evaluation, because forcing its events would bias the fit.
 - [ ] Inventory: which of BSH's 142 gauges are WSV gauges on PEGELONLINE. Hamburg's HPA gauges and state-run gauges may not be. Record which years each has and the TICON record it matches, by PEGELONLINE number. TICON's WSV IDs embed that number, for example `helgolandbinnenhafen-9510070`.
 
 ### 2. Evaluation gate (water-levels)
@@ -45,7 +46,9 @@ Extend `docs/hroi-evaluation.md` with German observations. At the same 15 gauges
 - [ ] Fit HRoI to observed extremes over 19 years (2005–2023 where available), and over 9 years where the record is shorter. Score on observed 2024 and 2025 extremes and on BSH's 2026 and 2027 tables.
 - [ ] Compare four predictors on the same held-out data: HRoI with true transits, HRoI with mean transits, a harmonic fit with shallow-water terms to the same observations, and the current TICON station.
 - [ ] Compare the curve options from decision 2 on held-out 1-minute levels.
-- [ ] **Gate:** go ahead per gauge only where HRoI beats both TICON and the harmonic fit on held-out event-time RMS against observations, and is within a set margin of BSH's tables. Set the margin from what the coastal gauges achieve.
+- [ ] **Gate**, written into the evaluation doc before any candidate is scored:
+  - Against held-out observations, HRoI must beat both TICON and the harmonic fit on event-time RMS (minutes) and on event-height RMS (cm), each by more than that gauge's own spread between its 2024 and 2025 scores, so a win is larger than year-to-year noise.
+  - Against BSH's tables, HRoI must pass the `sources/bsh` validator relative to the gauge's current TICON baseline in `validation.json`, using the validator's existing tolerances: no regression in any metric, and a smaller `|timeMean|` and `timeSd`.
 
 Done when the evaluation has numbers for every candidate gauge and settles decisions 2 and 3.
 
@@ -61,13 +64,15 @@ Done when the evaluation has numbers for every candidate gauge and settles decis
 - [ ] `schemas/database.fbs`: an optional HRoI table on `Station`, kept in the tail band with the other prediction data, plus `schemas/station.schema.json`, the builder, the reader, and the regenerated Swift reader.
 - [ ] `docs/database-format.md`: document the new table, and confirm that older readers ignore the field.
 - [ ] `packages/tcd`: export the fallback constituents and skip the HRoI model.
-- [ ] Datums: derive MHW, MLW, MHWS, MLWS and the neap values from the fitted extremes as observed datums (`DatumsSource.Observed`). Take offsets to chart datum (SKN) and NHN from PEGELONLINE or the lake's `datums`. `docs/datums.md` gets an HRoI section.
+- [ ] Datums: reduce MHW, MLW, MHWS, MLWS and the neap values from the observed extremes, not from the fit, over a stated 19-year window. Count only years where at least 90% of half lunar days have a selected high and low, and record the coverage in `DatumCoverage`. Only that reduction is `DatumsSource.Observed`; a gauge without enough complete years keeps its current datums. Take offsets to chart datum (SKN) and NHN from PEGELONLINE or the lake's `datums`. `docs/datums.md` gets an HRoI section.
 
 ### 5. Source (slackwater-database)
 
 - [ ] `sources/pegelonline`: read each gauge's observed extremes and levels from the lake (`https://water-levels.openwaters.io/`, Parquet). Fit HRoI and the fallback constituents, gate each gauge on its held-out year, and write `data/pegelonline/<id>.json`.
+- [ ] Pin the inputs: `refresh:pegelonline` writes a manifest of the lake files used, with their checksums, and the import reads only what the manifest names. Build the output in a staging directory and replace `data/pegelonline` only when every manifest gauge parsed and the gauge count has not dropped, unless a flag accepts the drop, so a lake revision or partial download can't silently change or erase stations.
 - [ ] `metadata.yaml`: the WSV credit, DL-DE→Zero-2.0, and `authoritative: false`. Add a README with the method, the gate and the measured results.
-- [ ] Join existing station identities by PEGELONLINE number through a reviewed crosswalk, as JMA's `ticon-originators.json` does, not by proximity. Keep the TICON records attached, and rank the new record first where it passes the gate.
+- [ ] Join existing station identities by PEGELONLINE number through a reviewed crosswalk, as JMA's `ticon-originators.json` does, not by proximity. Keep the TICON records attached.
+- [ ] Rank the new record first where it passes the gate. This needs code: `scoreSource` in `packages/stations/evaluate-quality.ts` ranks non-authoritative records by their TICON source suffix, so a `pegelonline/<number>` record falls to the default priority of 50, below TICON's `wsv` records at 20. Add an explicit rule for `pegelonline/`, as `dmi/` has, and a test that the Pegelonline record becomes primary at a merged gauge such as Cuxhaven.
 - [ ] Run `npm run stations` and review the merges with `report:merges`.
 - [ ] Rebaseline the `sources/bsh` validator and record the improvement per gauge.
 
