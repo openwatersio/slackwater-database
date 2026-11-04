@@ -54,10 +54,14 @@ Done when the evaluation has numbers for every candidate gauge and settles decis
 
 ### 3. Engine support (slackwater: `@slackwater/engine` and SlackwaterKit)
 
+- [ ] Move the HRoI implementation from water-levels into `@slackwater/engine`, so there is one implementation. It is about 470 lines: `src/hroi/index.ts` (`estimateIntervals`, `assign`, `measure`, `fit`, `predict`, `meanCurve`, `curveAt`, `canonicalExtremes`), `src/hroi/constituents.ts` (set 3) and `src/hroi/transits.ts`, with `test/hroi.test.ts` and its Cuxhaven fixture. The engine is the home for both fitting and prediction, because it already has the harmonic `fit.ts`, depends on `ml-matrix`, and has an `astronomy/` module. For transits, use that module if it finds the moon's Greenwich transits to within a few seconds, and add `astronomy-engine` otherwise. Do this before phase 2 grows the code, so the evaluation builds on the engine's version.
+  - The fixture is BSH's own Cuxhaven 2026 predictions, kept only as test reference data, with BSH's credit line beside it. Docs and comments that ship with the engine describe HRoI as a published method (Horn 1960; Boesch and Müller-Navarra 2019) and never name BSH as the source of our predictions.
+  - The move leaves decisions 2 and 3 open: `meanCurve` and `curveAt` come along unchanged.
+  - Afterwards, in a separate water-levels PR, delete `src/hroi/` and import the published engine in `scripts/evaluate-bsh.ts` and `scripts/evaluate-rws.ts`.
 - [ ] An HRoI model type: the partial-tide set (BSH's 39-tide set 3, referenced by ID), mean lunitidal intervals, four event series of interval and height coefficients, and the curve data from decision 2. That is about 650 floats per gauge.
 - [ ] Prediction in JS and Swift: transits (decision 3), events per transit, and a timeline from the chosen curve. `useStation` picks HRoI extremes when the station has a model, and harmonics otherwise.
-- [ ] Shared golden fixtures through `fixtures/generate`, so JS and Swift agree to the second and the millimetre, and both agree with the lake's implementation on the lake's test cases.
-- [ ] Decide where fitting lives: next to the engine's harmonic `fit.ts`, or in `packages/harmonic-analysis`. Under lake plan decision 7, fitting stays on the tide-database side.
+- [ ] Shared golden fixtures through `fixtures/generate`, so JS and Swift agree to the second and the millimetre, and both pass the test cases moved from water-levels.
+- [ ] `sources/pegelonline` calls the engine's `fit`. The fitting runs on the tide-database side, as lake plan decision 7 requires, but the code lives in the engine.
 
 ### 4. Database format (slackwater-database)
 
