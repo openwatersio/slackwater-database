@@ -73,7 +73,14 @@ Limits. HRoI predicts events, not a continuous curve, unless the 96-fit variant 
 
 Only the current and next year are online; 2020–2025 return 404. Of the 98 places checked, 79 have a curve and heights, 17 have heights but no curve, and 2 have times only. Interpolated places have no curve.
 
-Terms. Anlage 4 of the Entgeltverzeichnis: use of BSH's digital tide data is free of charge, "Dies schließt die kommerzielle Nutzung und Veröffentlichung mit ein", and needs no written consent. A calendar year's data may be published on the internet only from 1 August of the year before. Whoever edits the data for publication is responsible for its correctness. Where Anlage 4 is silent, the AGB in Anlage 2 apply; those require the credit "Datenquelle: Datensatzbezeichnung ©, Bundesamt für Seeschifffahrt und Hydrographie, Ort, Jahr" and say the data "dürfen in keinem Fall für Navigationszwecke verwendet werden". Whether that navigation clause survives Anlage 4's explicit permission to publish is not stated; it needs a question to gezeiten@bsh.de before we ship BSH-derived stations.
+Terms. Anlage 4 of the Entgeltverzeichnis: use of BSH's digital tide data is free of charge, "Dies schließt die kommerzielle Nutzung und Veröffentlichung mit ein", and needs no written consent. A calendar year's data may be published on the internet only from 1 August of the year before. Whoever edits the data for publication is responsible for its correctness. Where Anlage 4 is silent, the AGB in Anlage 2 apply; those require the credit "Datenquelle: Datensatzbezeichnung ©, Bundesamt für Seeschifffahrt und Hydrographie, Ort, Jahr" and say the data "dürfen in keinem Fall für Navigationszwecke verwendet werden". BSH's tidal information service (Andreas Boesch) answered our questions by email on 2026-11-02 and 2026-11-03:
+
+- Constants we derive from BSH data, and predictions made from them, are our product, published at our risk, and must not name BSH as the source of the predictions.
+- BSH recommends training our own analysis on WSV water level observations rather than on its predictions. If we train on its predictions anyway, we must not acknowledge the underlying BSH data at all.
+- BSH does not release its HRoI constants or other raw results of its tidal analysis; it publishes only final predictions.
+- Harmonic analysis does poorly at many German North Sea gauges, because the Wadden Sea, shallow water and long tidal rivers make the tide curve far from sinusoidal.
+
+The validator below uses BSH's tables only to measure our predictions; nothing BSH publishes ships in the database.
 
 ## How our German stations compare with BSH
 
@@ -108,17 +115,17 @@ About 59 events per cell. BSH has the smaller scatter in every cell, by 1.6–8.
 
 Done: [`sources/bsh`](../../../sources/bsh/README.md) compares our German stations with BSH's current-year high and low waters per gauge, against a committed baseline that fails when a gauge gets worse. It needs the network, so CI does not run it. BSH's responses stay in an uncommitted cache.
 
-### BSH as a station source
+### WSV observations as a station source
 
-Possible, with open questions:
+Recommended, and what BSH advises. Each gauge's Pegelonline station page ("Stammdaten", for example [Helgoland](https://pegelonline.wsv.de/gast/stammdaten?pegelnr=9510070)) offers a download of raw water levels from 1 January 2000, under DL-DE→Zero-2.0 and Pegelonline's terms of use. That is long enough for a 19-year analysis and far more recent than many TICON epochs. The REST API, by contrast, keeps only about 30 days. The data are unvalidated ("Rohdaten"), so a fit has to remove spikes and gaps first. Fits should use a long shallow-water constituent list, given BSH's warning and Goffinet's result, and be scored with the BSH validator before they replace any TICON station.
 
-- Fitting harmonics to BSH's 10-minute curves, as `sources/rws` fits RWS's astronomical series, would give constants that reproduce the official German predictions. Only two years are online at a time against six years of RWS training data, so the fit could not separate constituents closer than about 0.5 cycles per year and would rest on nodal corrections. The curve is HRoI vertices with a fitted mean curve, not a harmonic signal, so how well a harmonic fit can reproduce it, especially in the rivers, has to be measured before deciding. Collecting each year's files as they appear on 1 August would lengthen the record over time.
-- 26 interpolated places and several gauges have no station of ours within 2 km. Interpolated places have no curve, so they could only become subordinate stations with offsets, and BSH's own offsets ("Gezeitenunterschiede") for about 700 places are only in the printed tables.
-- The navigation clause needs BSH's answer first.
+Fitting to BSH's 10-minute curves instead, as `sources/rws` fits RWS's astronomical series, is possible but not advised. BSH asks that such constants not acknowledge BSH, only two years are online at a time, and the curve is not a harmonic signal.
+
+26 interpolated BSH places and several gauges have no station of ours within 2 km. Interpolated places have no curve, so they could only become subordinate stations with offsets, and BSH's own offsets ("Gezeitenunterschiede") for about 700 places are only in the printed tables.
 
 ### HRoI inside our own pipeline
 
-Not recommended. The database and the Swift and JS engines carry harmonic constituents, and HRoI coefficients are a different model: eight series of long-period terms per gauge, tied to computed lunar transits. Shipping it would mean a new station type in the format and a new predictor in both engines. Fitting it ourselves would need about 19 years of German high and low water records, which Pegelonline does not serve (it keeps about 30 days); the 2019 paper credits the WSA offices, HPA, LKN-SH and NLWKN for theirs. Goffinet (2018) shows the harmonic method reaches the same accuracy with enough constituents, so the better route for German rivers is a longer constituent list and more recent data in our harmonic fits, checked against the BSH validator above.
+Not recommended. The database and the Swift and JS engines carry harmonic constituents, and HRoI coefficients are a different model: eight series of long-period terms per gauge, tied to computed lunar transits. Shipping it would mean a new station type in the format and a new predictor in both engines. BSH does not release its coefficients, so we would have to fit them ourselves from 19 years of high and low waters extracted from Pegelonline's raw downloads, for federal gauges only; the 2019 paper also credits HPA, LKN-SH and NLWKN for their records. Goffinet (2018) shows the harmonic method reaches the same accuracy with enough constituents, so the better route for German rivers is a longer constituent list and more recent data in our harmonic fits, checked against the BSH validator above.
 
 Two ideas are worth borrowing without adopting the method:
 
@@ -140,7 +147,7 @@ What does help:
 ## Next steps
 
 - [x] Add a `sources/bsh` validator comparing our German stations with BSH's current-year HW/LW, reported per gauge.
-- [ ] Ask gezeiten@bsh.de whether Anlage 4's permission to publish overrides the AGB clause excluding navigational use, before shipping any BSH-derived station.
-- [ ] Measure a harmonic fit to BSH's 2026 curve validated against its 2027 curve at a coastal gauge and an upper-river gauge, to decide whether BSH can be a station source.
+- [x] Ask BSH how its data may be used (answered 2026-11-02 and 2026-11-03, above).
+- [ ] Fit German gauges from Pegelonline's raw water levels since 2000, with an extended shallow-water constituent list, and score the fits against TICON with the BSH validator.
 - [ ] Test hatyan's `calc_HWLW` rule against RWS's `GETETTPE` events at Hoek van Holland and Den Helder.
 - [ ] Investigate why our upper-river German stations predict low water 20–40 minutes earlier than BSH and with larger scatter against observations: TICON epoch, constituent list, or both.
