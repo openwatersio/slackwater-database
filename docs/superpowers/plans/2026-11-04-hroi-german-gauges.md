@@ -33,11 +33,16 @@ So BSH's tables are only a yardstick, used through the validator, and nothing fr
 
 ### 1. Observation history in the lake (water-levels)
 
-- [ ] Backfill PEGELONLINE history from the station pages' "Download Wasserstände (Rohdaten) ab dem 1.1.2000". The API keeps only 31 days. The "Water levels harmonic fitting" session is collecting this data now, so check its result before starting.
+- [ ] Backfill PEGELONLINE history from each station page's "Download Wasserstände (Rohdaten)" dialog. The API keeps only 31 days, and the dialog's history varies by gauge. Checked on 2026-11-05 for the 137 gauges on the North Sea and tidal rivers:
+  - 94 go back to 1 January 2000, including Cuxhaven, Helgoland, Bake A and Husum.
+  - 26 start later, such as Herbrum (October 2001), Elmshorn (2014), Itzehoe (2015) and Jade-Weser-Port (2017).
+  - 9 offer only the last 31 days. These are all six Hamburg Port Authority gauges (St. Pauli, Seemannshöft, Blankenese, Bunthaus, Harburg and Schöpfstelle), Este AP, and the two Oste barrier gauges.
+  - 8 small sluice gauges offer no download. The "Water levels harmonic fitting" session is collecting this data now, so check its result before starting.
 - [ ] Record each gauge's interval, gaps and datum changes across 2000–2026. Raw data are unchecked: flag spikes, flat lines and datum jumps in `src/qc.ts`.
 - [ ] Extract observed high and low waters into `extremes/pegelonline/<station>/<year>.parquet`. PEGELONLINE publishes none, so we need our own rule: smoothing plus a turning-point search. Document the rule. BSH's rule (Müller-Navarra 2009) isn't available to us. Keep every observed turning point, including double highs and lows ([#152](https://github.com/openwatersio/slackwater-database/issues/152) shows they are real and must not be forced to a fixed count).
 - [ ] Select HRoI training events as a separate, documented step: one high and one low per half lunar day, assigned to transits by HRoI's `assign`. Record per gauge and year what share of half days had extra turning points that the selection dropped. Exclude a gauge from HRoI when that share exceeds a threshold fixed before the evaluation, because forcing its events would bias the fit.
-- [ ] Inventory: which of BSH's 142 gauges are WSV gauges on PEGELONLINE. Hamburg's HPA gauges and state-run gauges may not be. Record which years each has and the TICON record it matches, by PEGELONLINE number. TICON's WSV IDs embed that number, for example `helgolandbinnenhafen-9510070`.
+- [ ] Inventory: which of BSH's 142 gauges are on PEGELONLINE with downloadable history. Record each gauge's first downloadable date, which years each has and the TICON record it matches, by PEGELONLINE number. TICON's WSV IDs embed that number, for example `helgolandbinnenhafen-9510070`.
+- [ ] Find another source for gauges with under 9 years of history, the Hamburg gauges first. GESLA 4.1 has 28 years for St. Pauli (`stpaulitg-stp-deu-cmems`), but it comes from the Copernicus marine service (CMEMS), which `NON_COMMERCIAL_SOURCES` in `packages/stations/filtering.ts` excludes from commercial use. Use it for the evaluation only. For shipped stations, ask HPA for its records and terms. Until then, gauges without a usable source keep their TICON station.
 
 ### 2. Evaluation gate (water-levels)
 
