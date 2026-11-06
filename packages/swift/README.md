@@ -1,6 +1,6 @@
 # SlackwaterDatabase
 
-Swift reader for the station database file (`.tcdb`, [FlatBuffers](https://flatbuffers.dev), [`schemas/database.fbs`](../../schemas/database.fbs)). Open a memory-mapped file, iterate station identity, look up a station by id, and read tide or current data while touching only the bytes each read needs.
+Swift reader and writer for the station database file (`.tcdb`, [FlatBuffers](https://flatbuffers.dev), [`schemas/database.fbs`](../../schemas/database.fbs)). Open a memory-mapped file, iterate station identity, look up a station by id, and read tide or current data while touching only the bytes each read needs. Write a new file from stations read and edited in Swift.
 
 ## Usage
 
@@ -45,6 +45,64 @@ The package requires Swift 6. `StationDatabase`, `Station`, and their typed meta
 
 A subordinate station's record holds no constituents or datums of its own, only the offsets that correct its reference's. Reading `constituents`, `datums`, `chartDatumShift`, or `astronomicalBounds` on one resolves the reference for you, so both station types answer the same questions.
 
+### Bytes you didn't ship
+
+`init(data:)` and `init(contentsOf:)` check only the file identifier, so opening a bundled file pages in nothing. A truncated or corrupt file opened that way can trap the process on a later read. For a download or any other file you didn't ship, open it with `StationDatabase(verifying:)` or `StationDatabase(verifyingContentsOf:)`. They run the FlatBuffers verifier over the whole buffer, check every constituent and datum name index against its table, and check that every string is UTF-8, so a file they accept does not trap on a read; one they refuse throws `InvalidStationDatabase`. They do not check that stations are in id order, that routes name stations in the file, or that references resolve. A file wrong in those ways gives nil or wrong results, not a trap. Verifying reads every page once, so do it once, when the file arrives. `init(verifyingContentsOf:)` memory-maps the file, and reads after verifying go to the file, so it must not change while the database is open. If you can't promise that, read it into `Data` and use `init(verifying:)`.
+
+A `datumCoverage` count is a `uint`, which can overflow `Int` on a 32-bit watch. The verifying open refuses a count above `Int32.max`, and the plain reader returns nil coverage for a count that doesn't fit `Int`.
+
+## Writing a database
+
+`StationDatabase.build` writes a `.tcdb` with the same layout as the TypeScript builder, for tests that need a database with stations renamed, removed, copied or edited:
+
+```swift
+var stations = db.map(StationInput.init) // everything the file stores, per station
+let removed = "noaa/PUG1515"
+stations.removeAll { $0.id == removed }
+if let i = stations.firstIndex(where: { $0.id == "noaa/ACT0101" }) { // a subordinate current
+  stations[i].current?.offsets?.reference = "noaa/ACT0091"
+  stations[i].current?.offsets?.floodTime = nil // written as missing, not zero
+}
+// Every route must name stations in the file.
+var routes: [StationRouteKind: [StationRoute]] = [:]
+for kind in [StationRouteKind.tide, .current] {
+  routes[kind] = db.stationRoutes(kind: kind).compactMap { route in
+    let ids = route.stationIDs.filter { $0 != removed }
+    return ids.isEmpty
+      ? nil : StationRoute(slug: route.slug, stationIDs: ids, formerPaths: route.formerPaths)
+  }
+}
+let data = try StationDatabase.build(stations, version: db.version, routes: routes)
+```
+
+`StationInput(station)` keeps the station's stored `attribution`, and `build` checks a given notice. It must start with the project credit and end with the licence's clause when the licence is one `StationAttribution.licenseNames` lists (which also needs a `url`), or otherwise carry no licence clause. With a `credits` entry for the station's `source.name` it must also equal `StationAttribution.notice(credit:license:)` composed from that entry. Without one it must be the notice `StationInput(station)` read, with the `source` and `license` it was read with, so a hand-written notice or a copy whose source or licence changed is refused. After changing a copied station's `source` or `license`, set `attribution = nil` and pass `credits`, each source's credit line by `source.name` (nil when it needs none), so the notice is composed again with `StationAttribution.notice(credit:license:)`:
+
+```swift
+if var copy = stations.first(where: { $0.id == "noaa/ACT0101" }) {
+  copy.id = "noaa/ACT0101-cc-by"
+  copy.license = StationLicense(
+    type: "cc-by-4.0", url: "https://creativecommons.org/licenses/by/4.0/", commercialUse: true)
+  copy.attribution = nil
+  stations.append(copy)
+}
+let relicensed = try StationDatabase.build(
+  stations, version: db.version, routes: routes,
+  credits: ["US National Oceanic and Atmospheric Administration": nil])
+```
+
+A station with no `attribution` whose source has no entry in `credits` is refused, as in the TypeScript builder.
+
+Rebuild a file from an older release the same way, with every `attribution` set to nil and `credits` for every source. Releases before 1.0.0-beta.20260925 credited the project under its earlier name, so their notices fail the project-credit check; files without the field read back with a nil `attribution` already. `build` throws `StationDatabaseBuildError` for whatever `buildDatabase` refuses, with these differences:
+
+- It does not match `country` against `countryCode`, because that table is a JavaScript dependency.
+- It refuses integer values that would overflow their field (`score` above 255, minutes outside `Int32`) instead of truncating them, and `datumCoverage` counts above `Int32.max`, which the verifying open refuses.
+- A licence `StationAttribution.licenseNames` lists must have a `url`.
+- A station keeping the notice it was read with, for the same source and licence, needs no `credits` entry; the TypeScript builder requires one for every source.
+- A station that carries `tideOffsets` must be `.subordinate`, because the TypeScript reader resolves offsets only for one. The memberwise `StationInput` init infers `type` from the offsets when you leave it out.
+- It refuses a subordinate whose tide `reference` is not in the file and that holds no constituents or datums of its own, which the TypeScript reader could not predict. Current offsets and `tideReference` are not checked, so a currents file can name tide stations that live in another file.
+
+Non-finite major constituents and offsets are written as given, so a consumer's own validation can be tested against them.
+
 Get the database file from the [latest release](https://github.com/openwatersio/slackwater-database/releases) and bundle it with your app, or fetch it at runtime.
 
 ## Attribution
@@ -85,7 +143,7 @@ npm run generate -w swift
 
 The `flatc` version is pinned in [`mise.toml`](../../mise.toml) and must match the FlatBuffers runtime version pinned in [`Package.swift`](../../Package.swift); bump them together. CI fails when the generated code drifts from the schema.
 
-Tests read a fixture written through the TypeScript `buildDatabase` — the same builder that produces the shipped file. From the repo root:
+Tests read a fixture written through the TypeScript `buildDatabase` — the same builder that produces the shipped file — and `attribution.json`, the notice constants from `attribution.ts` that `StationAttribution` must match. The test script's `pretest` writes both; they are git-ignored. From the repo root:
 
 ```sh
 npm install

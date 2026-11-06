@@ -21,7 +21,7 @@ Scientific accuracy comes first. When the scientifically correct change and the 
 - `packages/datums` — datum derivation and the ordering gate.
 - `packages/harmonic-analysis` — constituent fitting.
 - `packages/tcd` — the XTide-compatible TCD writer.
-- `packages/swift` — the generated Swift reader. The generated sources are committed, because SwiftPM consumers cannot run `flatc`.
+- `packages/swift` — the Swift reader and writer, built on generated FlatBuffers accessors. The generated sources are committed, because SwiftPM consumers cannot run `flatc`.
 - `packages/kotlin` — the generated Kotlin/JVM reader. The generated sources are committed, because Gradle composite-build consumers cannot run `flatc`.
 - `sources/*` — one directory per upstream provider: `chs`, `dmi`, `jhod`, `jma`, `kartverket`, `linz`, `noaa`, `noaa-current`, `rws`, `ticon`.
 - `stations/` — one file per published station: its records, URL, redirects and curated fields. See [stations/README.md](stations/README.md).

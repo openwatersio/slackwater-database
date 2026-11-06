@@ -2,7 +2,8 @@ import FlatBuffers
 import Foundation
 
 /// The file is not a station database: too short, or the "TCDB" file identifier
-/// is missing.
+/// is missing. A verifying open also throws it for a file that fails the
+/// FlatBuffers verifier, a name index past its table, or a string that is not UTF-8.
 public struct InvalidStationDatabase: Error {}
 
 public enum StationKind: Hashable, Sendable {
@@ -21,9 +22,15 @@ public enum StationDatumFrame: Hashable, Sendable {
 }
 
 public struct StationDatumCoverage: Hashable, Sendable {
-  public let months: Int
-  public let observedHours: Int
-  public let inferredHours: Int
+  public var months: Int
+  public var observedHours: Int
+  public var inferredHours: Int
+
+  public init(months: Int, observedHours: Int, inferredHours: Int) {
+    self.months = months
+    self.observedHours = observedHours
+    self.inferredHours = inferredHours
+  }
 }
 
 public enum HeightOffsetType: Hashable, Sendable {
@@ -55,61 +62,127 @@ public struct StationRoute: Equatable, Sendable {
   }
 }
 
-public struct StationSource: Equatable, Sendable {
-  public let name: String?
-  public let id: String?
-  public let url: String?
-  public let publishedHarmonics: Bool
+public struct StationSource: Hashable, Sendable {
+  public var name: String?
+  public var id: String?
+  public var url: String?
+  public var publishedHarmonics: Bool
+
+  public init(name: String?, id: String?, url: String?, publishedHarmonics: Bool) {
+    self.name = name
+    self.id = id
+    self.url = url
+    self.publishedHarmonics = publishedHarmonics
+  }
 }
 
-public struct StationLicense: Equatable, Sendable {
-  public let type: String?
-  public let url: String?
-  public let notes: String?
-  public let commercialUse: Bool
+public struct StationLicense: Hashable, Sendable {
+  public var type: String?
+  public var url: String?
+  public var notes: String?
+  public var commercialUse: Bool
+
+  public init(type: String?, url: String?, notes: String? = nil, commercialUse: Bool) {
+    self.type = type
+    self.url = url
+    self.notes = notes
+    self.commercialUse = commercialUse
+  }
 }
 
-public struct StationEpoch: Equatable, Sendable {
-  public let start: String
-  public let end: String
+/// Dates as YYYY-MM-DD; an empty string is a bound the file does not record.
+public struct StationEpoch: Hashable, Sendable {
+  public var start: String
+  public var end: String
+
+  public init(start: String, end: String) {
+    self.start = start
+    self.end = end
+  }
 }
 
 public struct TideOffsets: Equatable, Sendable {
-  public let reference: String
-  public let timeHigh: Int
-  public let timeLow: Int
-  public let heightType: HeightOffsetType
-  public let heightHigh: Double
-  public let heightLow: Double
+  public var reference: String
+  public var timeHigh: Int
+  public var timeLow: Int
+  public var heightType: HeightOffsetType
+  public var heightHigh: Double
+  public var heightLow: Double
+
+  public init(
+    reference: String, timeHigh: Int, timeLow: Int, heightType: HeightOffsetType,
+    heightHigh: Double, heightLow: Double
+  ) {
+    self.reference = reference
+    self.timeHigh = timeHigh
+    self.timeLow = timeLow
+    self.heightType = heightType
+    self.heightHigh = heightHigh
+    self.heightLow = heightLow
+  }
 }
 
 public struct CurrentOffsets: Equatable, Sendable {
-  public let reference: String
-  public let slackBeforeFlood: Int?
-  public let slackBeforeEbb: Int?
-  public let floodTime: Int?
-  public let ebbTime: Int?
-  public let floodSpeedRatio: Double?
-  public let ebbSpeedRatio: Double?
+  public var reference: String
+  public var slackBeforeFlood: Int?
+  public var slackBeforeEbb: Int?
+  public var floodTime: Int?
+  public var ebbTime: Int?
+  public var floodSpeedRatio: Double?
+  public var ebbSpeedRatio: Double?
+
+  public init(
+    reference: String, slackBeforeFlood: Int? = nil, slackBeforeEbb: Int? = nil,
+    floodTime: Int? = nil, ebbTime: Int? = nil, floodSpeedRatio: Double? = nil,
+    ebbSpeedRatio: Double? = nil
+  ) {
+    self.reference = reference
+    self.slackBeforeFlood = slackBeforeFlood
+    self.slackBeforeEbb = slackBeforeEbb
+    self.floodTime = floodTime
+    self.ebbTime = ebbTime
+    self.floodSpeedRatio = floodSpeedRatio
+    self.ebbSpeedRatio = ebbSpeedRatio
+  }
 }
 
 public struct TideDerivedCurrent: Equatable, Sendable {
-  public let reference: String
-  public let highWaterLagMinutes: Int
-  public let lowWaterLagMinutes: Int
+  public var reference: String
+  public var highWaterLagMinutes: Int
+  public var lowWaterLagMinutes: Int
+
+  public init(reference: String, highWaterLagMinutes: Int, lowWaterLagMinutes: Int) {
+    self.reference = reference
+    self.highWaterLagMinutes = highWaterLagMinutes
+    self.lowWaterLagMinutes = lowWaterLagMinutes
+  }
 }
 
 /// A fitted CHS gate's measured tier, from the results release `evidence` names.
 /// `days`, the bounds and `miss` are nil when the gate has none.
 public struct ChsFit: Equatable, Sendable {
   public enum Tier: Sendable { case final, bounded, online }
-  public let tier: Tier
-  public let days: Int?
-  public let slackBoundMinutes: Int?
-  public let provisionalSlackMinutes: Int?
-  public let miss: ChsFitMiss?
-  public let missContext: String?
-  public let evidence: String
+  public var tier: Tier
+  public var days: Int?
+  public var slackBoundMinutes: Int?
+  public var provisionalSlackMinutes: Int?
+  public var miss: ChsFitMiss?
+  public var missContext: String?
+  public var evidence: String
+
+  public init(
+    tier: Tier, days: Int? = nil, slackBoundMinutes: Int? = nil,
+    provisionalSlackMinutes: Int? = nil, miss: ChsFitMiss? = nil, missContext: String? = nil,
+    evidence: String
+  ) {
+    self.tier = tier
+    self.days = days
+    self.slackBoundMinutes = slackBoundMinutes
+    self.provisionalSlackMinutes = provisionalSlackMinutes
+    self.miss = miss
+    self.missContext = missContext
+    self.evidence = evidence
+  }
 }
 
 /// The release-check clause an online gate missed. `value` is in the clause's
@@ -117,25 +190,50 @@ public struct ChsFit: Equatable, Sendable {
 /// `missed_slack`, knots for `peak_speed`, minutes for the rest. It is nil when a
 /// quarter had nothing to measure, never 0.
 public struct ChsFitMiss: Equatable, Sendable {
-  public let clause: String
-  public let value: Double?
-  public let nearBar: Bool
+  public var clause: String
+  public var value: Double?
+  public var nearBar: Bool
+
+  public init(clause: String, value: Double?, nearBar: Bool = false) {
+    self.clause = clause
+    self.value = value
+    self.nearBar = nearBar
+  }
 }
 
 public struct CurrentRecord: Equatable, Sendable {
-  public let floodDirection: Double?
-  public let ebbDirection: Double?
-  public let meanFlow: Double?
+  public var floodDirection: Double?
+  public var ebbDirection: Double?
+  public var meanFlow: Double?
   /// Minor-axis constants in knots and Greenwich degrees; nil when not published.
-  public let minorConstituents: [Station.Constituent]?
-  public let minorMeanFlow: Double?
+  public var minorConstituents: [Station.Constituent]?
+  public var minorMeanFlow: Double?
   /// Major-axis bearing in degrees true; nil when unknown.
-  public let azimuth: Double?
-  public let tideReference: String?
-  public let offsets: CurrentOffsets?
-  public let magnitudeNote: String?
-  public let derived: TideDerivedCurrent?
-  public let chsFit: ChsFit?
+  public var azimuth: Double?
+  public var tideReference: String?
+  public var offsets: CurrentOffsets?
+  public var magnitudeNote: String?
+  public var derived: TideDerivedCurrent?
+  public var chsFit: ChsFit?
+
+  public init(
+    floodDirection: Double? = nil, ebbDirection: Double? = nil, meanFlow: Double? = nil,
+    minorConstituents: [Station.Constituent]? = nil, minorMeanFlow: Double? = nil,
+    azimuth: Double? = nil, tideReference: String? = nil, offsets: CurrentOffsets? = nil,
+    magnitudeNote: String? = nil, derived: TideDerivedCurrent? = nil, chsFit: ChsFit? = nil
+  ) {
+    self.floodDirection = floodDirection
+    self.ebbDirection = ebbDirection
+    self.meanFlow = meanFlow
+    self.minorConstituents = minorConstituents
+    self.minorMeanFlow = minorMeanFlow
+    self.azimuth = azimuth
+    self.tideReference = tideReference
+    self.offsets = offsets
+    self.magnitudeNote = magnitudeNote
+    self.derived = derived
+    self.chsFit = chsFit
+  }
 }
 
 /// A station database file (`.tcdb`, schemas/database.fbs in
@@ -172,6 +270,130 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
   /// Memory-map a database file. Pages fault in as they are read.
   public init(contentsOf url: URL) throws {
     try self.init(data: Data(contentsOf: url, options: .mappedIfSafe))
+  }
+
+  /// Read bytes you didn't ship, such as a download, after checking all of
+  /// them: the FlatBuffers verifier walks every table and vector, every
+  /// constituent and datum name index is checked against its name table, and
+  /// every string is checked for UTF-8. A file that fails throws
+  /// `InvalidStationDatabase` here, so a truncated or corrupt file does not
+  /// trap on a later read. It does not check that stations are sorted, that
+  /// routes name stations in the file, or that references resolve: those give
+  /// nil or wrong results, not traps. This reads the whole buffer once, so
+  /// keep `init(data:)` for a bundled file.
+  public init(verifying data: Data) throws {
+    // Not through init(data:): its unchecked root read traps on a root offset past Int32.
+    var buffer = ByteBuffer(data: data)
+    do {
+      // Default limits: the shipped file of ~12k stations needs under 100k of the million tables allowed.
+      root = try getCheckedRoot(byteBuffer: &buffer, fileId: "TCDB")
+    } catch {
+      throw InvalidStationDatabase()
+    }
+    try checkContents()
+  }
+
+  /// `init(verifying:)` on a memory-mapped file. Reads after verifying go to
+  /// the file, so it must not change while the database is open; a caller who
+  /// can't promise that reads it into `Data` and uses `init(verifying:)`.
+  public init(verifyingContentsOf url: URL) throws {
+    try self.init(verifying: Data(contentsOf: url, options: .mappedIfSafe))
+  }
+
+  // The verifier checks structure, not that a name index lands inside its
+  // table, nor that strings are UTF-8: the runtime reads an invalid one as nil,
+  // which the generated required-string accessors force-unwrap.
+  private func checkContents() throws {
+    let constituentNames = root.constituentNamesCount
+    let datumNames = root.datumNamesCount
+    try requireText(root.version, root.versionSegmentArray)
+    for i in 0..<constituentNames { try requireText(root.constituentNames(at: i)) }
+    for i in 0..<datumNames { try requireText(root.datumNames(at: i)) }
+    for routes in [
+      (0..<root.tideRoutesCount).map { root.tideRoutes(at: $0) },
+      (0..<root.currentRoutesCount).map { root.currentRoutes(at: $0) },
+    ] {
+      for route in routes {
+        guard let route else { throw InvalidStationDatabase() }
+        try requireText(route.slug)
+        for i in 0..<route.stationIdsCount { try requireText(route.stationIds(at: i)) }
+        for i in 0..<route.formerPathsCount { try requireText(route.formerPaths(at: i)) }
+      }
+    }
+    for index in 0..<root.stationsCount {
+      guard let station = root.stations(at: index) else { throw InvalidStationDatabase() }
+      for i in 0..<station.constituentsCount
+      where Int32(station.constituents(at: i)?.name ?? .max) >= constituentNames {
+        throw InvalidStationDatabase()
+      }
+      for i in 0..<station.datumsCount
+      where Int32(station.datums(at: i)?.name ?? .max) >= datumNames {
+        throw InvalidStationDatabase()
+      }
+      try checkStrings(of: station)
+      // uint counts the reader converts to Int, which is 32 bits on a watch.
+      if let coverage = station.datumCoverage,
+        [coverage.months, coverage.observedHours, coverage.inferredHours].contains(where: {
+          $0 > UInt32(Int32.max)
+        })
+      {
+        throw InvalidStationDatabase()
+      }
+      if let current = station.current {
+        for i in 0..<current.minorConstituentsCount
+        where Int32(current.minorConstituents(at: i)?.name ?? .max) >= constituentNames {
+          throw InvalidStationDatabase()
+        }
+        try checkStrings(of: current)
+      }
+    }
+  }
+
+  private func checkStrings(of s: Slackwater_Station) throws {
+    for value: String? in [s.id, s.name, s.country, s.countryCode] { try requireText(value) }
+    try requireText(s.timezone, s.timezoneSegmentArray)
+    try requireText(s.region, s.regionSegmentArray)
+    try requireText(s.continent, s.continentSegmentArray)
+    try requireText(s.chartDatum, s.chartDatumSegmentArray)
+    try requireText(s.disclaimers, s.disclaimersSegmentArray)
+    try requireText(s.attribution, s.attributionSegmentArray)
+    try requireText(s.locality, s.localitySegmentArray)
+    try requireText(s.regionCode, s.regionCodeSegmentArray)
+    try requireText(s.context, s.contextSegmentArray)
+    for i in 0..<s.aliasesCount { try requireText(s.aliases(at: i)) }
+    for i in 0..<s.citiesCount { try requireText(s.cities(at: i)) }
+    if let offsets = s.offsets { try requireText(offsets.reference) }
+    for epoch in [s.epoch, s.datumEpoch].compactMap({ $0 }) {
+      try requireText(epoch.start, epoch.startSegmentArray)
+      try requireText(epoch.end, epoch.endSegmentArray)
+    }
+    if let quality = s.quality {
+      try requireText(quality.reason, quality.reasonSegmentArray)
+      try requireText(quality.redundant, quality.redundantSegmentArray)
+      for i in 0..<quality.issuesCount { try requireText(quality.issues(at: i)) }
+    }
+    if let source = s.source {
+      try requireText(source.name, source.nameSegmentArray)
+      try requireText(source.id, source.idSegmentArray)
+      try requireText(source.url, source.urlSegmentArray)
+    }
+    if let license = s.license {
+      try requireText(license.type, license.typeSegmentArray)
+      try requireText(license.url, license.urlSegmentArray)
+      try requireText(license.notes, license.notesSegmentArray)
+    }
+  }
+
+  private func checkStrings(of c: Slackwater_Current) throws {
+    try requireText(c.tideReference, c.tideReferenceSegmentArray)
+    try requireText(c.magnitudeNote, c.magnitudeNoteSegmentArray)
+    if let offsets = c.offsets { try requireText(offsets.reference) }
+    if let derived = c.derived { try requireText(derived.reference) }
+    if let fit = c.chsFit {
+      try requireText(fit.evidence)
+      try requireText(fit.missContext, fit.missContextSegmentArray)
+      if let miss = fit.miss { try requireText(miss.clause) }
+    }
   }
 
   /// Release tag of the database that produced the file, e.g. "0.9.20260801".
@@ -222,8 +444,7 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
 public struct Station: Identifiable, @unchecked Sendable {
   /// The project half of every station credit, and the fallback for a file
   /// written before credits were stored in it.
-  public static let projectCredit =
-    "Slackwater database (https://github.com/openwatersio/slackwater-database)"
+  public static let projectCredit = StationAttribution.projectCredit
 
   let raw: Slackwater_Station
   let root: Slackwater_Root
@@ -293,32 +514,46 @@ public struct Station: Identifiable, @unchecked Sendable {
 
   /// Source-reported analysis or datum period; TICON uses its constituent fit period.
   public var epoch: StationEpoch? {
-    (raw.epoch ?? predictionSource.raw.epoch).map {
-      StationEpoch(start: $0.start ?? "", end: $0.end ?? "")
-    }
+    storedEpoch ?? predictionSource.storedEpoch
   }
 
   /// Mean-datum reduction period, which can differ from the constituent fit.
-  public var datumEpoch: StationEpoch? {
-    predictionSource.raw.datumEpoch.map {
-      StationEpoch(start: $0.start ?? "", end: $0.end ?? "")
-    }
-  }
+  public var datumEpoch: StationEpoch? { predictionSource.storedDatumEpoch }
 
   /// Zero of the stored datum values; nil means unspecified, including older files.
-  public var datumFrame: StationDatumFrame? {
-    switch predictionSource.raw.datumFrame {
+  public var datumFrame: StationDatumFrame? { predictionSource.storedDatumFrame }
+
+  /// Hourly bins in the reference's observed reduction; nil means unspecified,
+  /// or a count too large for `Int` on a 32-bit platform.
+  public var datumCoverage: StationDatumCoverage? { predictionSource.storedDatumCoverage }
+
+  // The stored* accessors read this record alone, never a subordinate's reference.
+
+  var storedEpoch: StationEpoch? {
+    raw.epoch.map { StationEpoch(start: $0.start ?? "", end: $0.end ?? "") }
+  }
+
+  var storedDatumEpoch: StationEpoch? {
+    raw.datumEpoch.map { StationEpoch(start: $0.start ?? "", end: $0.end ?? "") }
+  }
+
+  var storedDatumFrame: StationDatumFrame? {
+    switch raw.datumFrame {
     case .gauge: return .gauge
     case .constituent: return .constituent
     default: return nil
     }
   }
 
-  /// Hourly bins in the reference's observed reduction; nil means unspecified.
-  public var datumCoverage: StationDatumCoverage? {
-    predictionSource.raw.datumCoverage.map {
-      StationDatumCoverage(months: Int($0.months), observedHours: Int($0.observedHours), inferredHours: Int($0.inferredHours))
-    }
+  // Nil when a count doesn't fit Int, which only a 32-bit Int can hit; the
+  // verifying open refuses such a file.
+  var storedDatumCoverage: StationDatumCoverage? {
+    guard let coverage = raw.datumCoverage,
+      let months = Int(exactly: coverage.months),
+      let observed = Int(exactly: coverage.observedHours),
+      let inferred = Int(exactly: coverage.inferredHours)
+    else { return nil }
+    return StationDatumCoverage(months: months, observedHours: observed, inferredHours: inferred)
   }
 
   public var tideOffsets: TideOffsets? {
@@ -408,17 +643,24 @@ public struct Station: Identifiable, @unchecked Sendable {
 
   /// Amplitude in metres (tides) or knots (currents); phase in degrees.
   public struct Constituent: Equatable, Sendable {
-    public let name: String
-    public let amplitude: Double
-    public let phase: Double
+    public var name: String
+    public var amplitude: Double
+    public var phase: Double
+
+    public init(name: String, amplitude: Double, phase: Double) {
+      self.name = name
+      self.amplitude = amplitude
+      self.phase = phase
+    }
   }
 
   /// Harmonic constituents, names resolved through the file's name table. A
   /// subordinate carries none of its own and reports its reference's, which are
   /// the ones its prediction starts from.
-  public var constituents: [Constituent] {
-    let raw = predictionSource.raw
-    return (0..<raw.constituentsCount).compactMap { index in
+  public var constituents: [Constituent] { predictionSource.storedConstituents }
+
+  var storedConstituents: [Constituent] {
+    (0..<raw.constituentsCount).compactMap { index in
       guard let c = raw.constituents(at: index),
         let name = root.constituentNames(at: Int32(c.name))
       else { return nil }
@@ -432,8 +674,9 @@ public struct Station: Identifiable, @unchecked Sendable {
   /// the reference's water: they are not reduced through `raw.offsets`, because
   /// the extreme corrections have no principled meaning for a mean level like
   /// MSL or MTL. For the pair that does reduce, see `astronomicalBounds`.
-  public var datums: [String: Double] {
-    let raw = predictionSource.raw
+  public var datums: [String: Double] { predictionSource.storedDatums }
+
+  var storedDatums: [String: Double] {
     var values: [String: Double] = [:]
     for index in 0..<raw.datumsCount {
       guard let d = raw.datums(at: index),
@@ -510,4 +753,16 @@ public struct Station: Identifiable, @unchecked Sendable {
       lat: ratio ? (lat - zero) * low : (lat - zero) + low,
       hat: ratio ? (hat - zero) * high : (hat - zero) + high)
   }
+}
+
+/// A required string or a vector element, which the runtime reads as nil when
+/// its bytes are not UTF-8.
+private func requireText(_ value: String?) throws {
+  if value == nil { throw InvalidStationDatabase() }
+}
+
+/// An optional string: `bytes` is nil when the field is absent, so present
+/// bytes that read as nil are not UTF-8.
+private func requireText(_ value: String?, _ bytes: [UInt8]?) throws {
+  if bytes != nil, value == nil { throw InvalidStationDatabase() }
 }
