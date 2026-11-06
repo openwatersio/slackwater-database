@@ -17,9 +17,9 @@ Reference stations describe their datums with:
 - **`datum_epoch`** — the mean-datum reduction period, where supplied, separate from the constituent fit. TICON supplies its selected observation period for observed means. A missing value does not imply equivalence to `epoch`.
 
 Subordinate stations carry no datums of their own in the source data, and none
-are stored for them in the database file. Both readers resolve them at load
-time: reading a subordinate's `datums` or constituents through the npm package
-or the Swift package gives its reference station's. Its frame, reduction period and coverage follow those inherited values. JS also inherits `datums_source` with the datums.
+are stored for them in the database file. The readers resolve them at load
+time: reading a subordinate's `datums` or constituents through the npm package,
+the Swift package or the Kotlin library gives its reference station's. Its frame, reduction period and coverage follow those inherited values. JS also inherits `datums_source` with the datums.
 
 Those inherited datums describe the **reference's** water, and this library
 deliberately does not reduce them through the subordinate's offsets. It is
@@ -33,9 +33,9 @@ Niue off Pago Pago) puts the subordinate's "LAT" a quarter-metre _above_ its own
 chart datum, which the datum-ordering gate rightly rejects.
 
 That number is still true about what the predictor produces — it is simply the
-floor of a prediction, not a hydrographic datum. Both readers expose it outside
+floor of a prediction, not a hydrographic datum. The readers expose it outside
 `datums`, where no datum ordering applies: `station.astronomical_bounds` in the
-npm package and `station.astronomicalBounds` in the Swift package, each `{ lat,
+npm package and `station.astronomicalBounds` in the Swift and Kotlin readers, each `{ lat,
 hat }` in metres above the station's own chart datum, absent where the station
 predicting for it has no LAT and HAT. For a subordinate that is the reference's
 range with `offsets.height` applied, at the same point the predictor applies the
