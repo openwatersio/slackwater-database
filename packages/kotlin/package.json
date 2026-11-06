@@ -1,0 +1,10 @@
+{
+  "name": "kotlin",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "./generate",
+    "pretest:kotlin": "npm run --prefix ../database generate && node --experimental-transform-types ../swift/scripts/generate-fixture.ts src/test/fixture.tcdb",
+    "test:kotlin": "./gradlew test"
+  }
+}
