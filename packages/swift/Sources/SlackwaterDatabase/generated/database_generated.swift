@@ -867,6 +867,9 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
     case ebbDirectionMissing = 20
     case meanFlowMissing = 22
     case chsFit = 24
+    case minorConstituents = 26
+    case minorMeanFlow = 28
+    case azimuth = 30
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -885,7 +888,14 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
   public var ebbDirectionMissing: Bool { let o = _accessor.offset(VTOFFSET.ebbDirectionMissing.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
   public var meanFlowMissing: Bool { let o = _accessor.offset(VTOFFSET.meanFlowMissing.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
   public var chsFit: Slackwater_ChsFit? { let o = _accessor.offset(VTOFFSET.chsFit.v); return o == 0 ? nil : Slackwater_ChsFit(_accessor.bb, o: _accessor.indirect(o + _accessor.position)) }
-  public static func startCurrent(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 11) }
+  public var hasMinorConstituents: Bool { let o = _accessor.offset(VTOFFSET.minorConstituents.v); return o == 0 ? false : true }
+  public var minorConstituentsCount: Int32 { let o = _accessor.offset(VTOFFSET.minorConstituents.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  public func minorConstituents(at index: Int32) -> Slackwater_Constituent? { let o = _accessor.offset(VTOFFSET.minorConstituents.v); return o == 0 ? nil : _accessor.directRead(of: Slackwater_Constituent.self, offset: _accessor.vector(at: o) + index * 12) }
+  public func mutableMinorConstituents(at index: Int32) -> Slackwater_Constituent_Mutable? { let o = _accessor.offset(VTOFFSET.minorConstituents.v); return o == 0 ? nil : Slackwater_Constituent_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 12) }
+  public func withUnsafePointerToMinorConstituents<T>(_ body: (UnsafeRawBufferPointer) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VTOFFSET.minorConstituents.v, body: body) }
+  public var minorMeanFlow: Float32? { let o = _accessor.offset(VTOFFSET.minorMeanFlow.v); return o == 0 ? nil : _accessor.readBuffer(of: Float32.self, at: o) }
+  public var azimuth: Float32? { let o = _accessor.offset(VTOFFSET.azimuth.v); return o == 0 ? nil : _accessor.readBuffer(of: Float32.self, at: o) }
+  public static func startCurrent(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 14) }
   public static func add(floodDirection: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: floodDirection, def: 0.0, at: VTOFFSET.floodDirection.p) }
   public static func add(ebbDirection: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: ebbDirection, def: 0.0, at: VTOFFSET.ebbDirection.p) }
   public static func add(meanFlow: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: meanFlow, def: 0.0, at: VTOFFSET.meanFlow.p) }
@@ -900,6 +910,12 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
   public static func add(meanFlowMissing: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: meanFlowMissing, def: false,
    at: VTOFFSET.meanFlowMissing.p) }
   public static func add(chsFit: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: chsFit, at: VTOFFSET.chsFit.p) }
+  public static func addVectorOf(minorConstituents: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: minorConstituents, at: VTOFFSET.minorConstituents.p) }
+  public static func startVectorOfMinorConstituents(_ size: Int, in builder: inout FlatBufferBuilder) {
+    builder.startVector(size * MemoryLayout<Slackwater_Constituent>.size, elementSize: MemoryLayout<Slackwater_Constituent>.alignment)
+  }
+  public static func add(minorMeanFlow: Float32?, _ fbb: inout FlatBufferBuilder) { fbb.add(element: minorMeanFlow, at: VTOFFSET.minorMeanFlow.p) }
+  public static func add(azimuth: Float32?, _ fbb: inout FlatBufferBuilder) { fbb.add(element: azimuth, at: VTOFFSET.azimuth.p) }
   public static func endCurrent(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createCurrent(
     _ fbb: inout FlatBufferBuilder,
@@ -913,7 +929,10 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
     floodDirectionMissing: Bool = false,
     ebbDirectionMissing: Bool = false,
     meanFlowMissing: Bool = false,
-    chsFitOffset chsFit: Offset = Offset()
+    chsFitOffset chsFit: Offset = Offset(),
+    minorConstituentsVectorOffset minorConstituents: Offset = Offset(),
+    minorMeanFlow: Float32? = nil,
+    azimuth: Float32? = nil
   ) -> Offset {
     let __start = Slackwater_Current.startCurrent(&fbb)
     Slackwater_Current.add(floodDirection: floodDirection, &fbb)
@@ -927,6 +946,9 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
     Slackwater_Current.add(ebbDirectionMissing: ebbDirectionMissing, &fbb)
     Slackwater_Current.add(meanFlowMissing: meanFlowMissing, &fbb)
     Slackwater_Current.add(chsFit: chsFit, &fbb)
+    Slackwater_Current.addVectorOf(minorConstituents: minorConstituents, &fbb)
+    Slackwater_Current.add(minorMeanFlow: minorMeanFlow, &fbb)
+    Slackwater_Current.add(azimuth: azimuth, &fbb)
     return Slackwater_Current.endCurrent(&fbb, start: __start)
   }
 
@@ -943,6 +965,9 @@ public struct Slackwater_Current: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.ebbDirectionMissing.p, fieldName: "ebbDirectionMissing", required: false, type: Bool.self)
     try _v.visit(field: VTOFFSET.meanFlowMissing.p, fieldName: "meanFlowMissing", required: false, type: Bool.self)
     try _v.visit(field: VTOFFSET.chsFit.p, fieldName: "chsFit", required: false, type: ForwardOffset<Slackwater_ChsFit>.self)
+    try _v.visit(field: VTOFFSET.minorConstituents.p, fieldName: "minorConstituents", required: false, type: ForwardOffset<Vector<Slackwater_Constituent, Slackwater_Constituent>>.self)
+    try _v.visit(field: VTOFFSET.minorMeanFlow.p, fieldName: "minorMeanFlow", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.azimuth.p, fieldName: "azimuth", required: false, type: Float32.self)
     _v.finish()
   }
 }

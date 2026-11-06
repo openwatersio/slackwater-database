@@ -12,6 +12,8 @@ const con = (
   azi = 90,
   majorMeanSpeed = -0.5,
   minorMeanSpeed = 0,
+  minorAmplitude = 0.1,
+  minorPhaseGMT = 90,
 ) => ({
   constituentName: name,
   majorAmplitude: amplitude,
@@ -19,6 +21,8 @@ const con = (
   azi,
   majorMeanSpeed,
   minorMeanSpeed,
+  minorAmplitude,
+  minorPhaseGMT,
 });
 
 // A fake NOAA built from a station list plus per-(id,bin) harcon and per-id offsets.
@@ -86,8 +90,8 @@ test("trap 1: a subordinate referencing a NON-primary bin gets that exact bin", 
       { id: "PCT0236", name: "Sub", lat: 37, lng: -122, type: "S", currbin: 1 },
     ],
     harcon: {
-      "SFB1201@26": [con("M2", 2.359, 165.5)],
-      "SFB1201@10": [con("M2", 1.935, 161.7)],
+      "SFB1201@26": [con("M2", 2.359, 165.5, 90, -0.5, 0.2, 0.15, 40)],
+      "SFB1201@10": [con("M2", 1.935, 161.7, 100, -0.4, -0.3, 0.025, 60)],
     },
     offsets: {
       PCT0236: {
@@ -115,6 +119,11 @@ test("trap 1: a subordinate referencing a NON-primary bin gets that exact bin", 
     1.935,
     "bin 10 constituents, not bin 26",
   );
+  assert.deepEqual(ref.minorConstituents, [
+    { name: "M2", amplitude: 0.025, phase: 60 },
+  ]);
+  assert.equal(ref.minorMeanFlow, -0.3);
+  assert.equal(ref.azimuth, 100);
 
   // Offsets: minutes in, seconds out; ratios pass through untouched.
   assert.equal(sub.slackBeforeFloodOffset, -720);
@@ -373,7 +382,7 @@ test("surfaces a NOAA error status rather than returning junk", async () => {
   );
 });
 
-test("records a cross-flow census on the bundle, without touching station records", async () => {
+test("records a cross-flow census alongside per-station minor-axis data", async () => {
   const fake = fakeNoaa({
     stations: [
       { id: "A", name: "A", lat: 48, lng: -123, type: "H", currbin: 1 },
@@ -395,15 +404,97 @@ test("records a cross-flow census on the bundle, without touching station record
   assert.equal(bundle.crossFlow.worstRatio.ratio, 0.5);
   assert.equal(bundle.crossFlow.worstAbsolute.id, "B");
 
-  // The whole point of #102: no minor-axis data reaches a station record.
   for (const s of bundle.stations) {
-    assert.equal(
-      JSON.stringify(s).includes("minor"),
-      false,
-      "no per-station minor field",
+    assert.deepEqual(s.minorConstituents, [
+      { name: "M2", amplitude: 0.1, phase: 90 },
+    ]);
+    assert.equal(s.azimuth, 90);
+  }
+  assert.equal(bundle.stations[0].minorMeanFlow, 0.3);
+  assert.equal(bundle.stations[1].minorMeanFlow, 0.6);
+});
+
+test("preserves small amplitudes and measured zero while excluding NOAA's undetermined marker", async () => {
+  const { bundle } = await run(
+    fakeNoaa({
+      stations: [
+        { id: "A", name: "A", lat: 48, lng: -123, type: "H", currbin: 1 },
+      ],
+      harcon: {
+        "A@1": [
+          con("M2", 2, 100, 350, -0.619, -0.507, 0.001, 12.3),
+          con("S2", 1, 50, 350, -0.619, -0.507, 0, 45.6),
+          con("K1", 1, 60, 350, -0.619, -0.507, 0, 0),
+        ],
+      },
+    }),
+  );
+  const s = bundle.stations[0];
+  assert.deepEqual(s.minorConstituents, [
+    { name: "M2", amplitude: 0.001, phase: 12.3 },
+    { name: "S2", amplitude: 0, phase: 45.6 },
+  ]);
+  assert.equal(s.minorMeanFlow, -0.507);
+  assert.equal(s.azimuth, 350);
+  assert.deepEqual(
+    s.constituents.map((c) => c.amplitude),
+    [2, 1, 1],
+  );
+});
+
+test("absent vector measurements stay absent and measured scalar zeros stay present", async () => {
+  for (const measured of [true, false]) {
+    const c = con("M2", 2, 100, 0, 0, 0);
+    delete c.minorAmplitude;
+    delete c.minorPhaseGMT;
+    if (!measured) {
+      delete c.minorMeanSpeed;
+      delete c.azi;
+    }
+    const { bundle } = await run(
+      fakeNoaa({
+        stations: [
+          { id: "A", name: "A", lat: 48, lng: -123, type: "H", currbin: 1 },
+        ],
+        harcon: { "A@1": [c] },
+      }),
     );
+    const s = bundle.stations[0];
+    assert.equal(Object.hasOwn(s, "minorConstituents"), false);
+    assert.equal(Object.hasOwn(s, "minorMeanFlow"), measured);
+    assert.equal(Object.hasOwn(s, "azimuth"), measured);
+    assert.equal(Object.hasOwn(s, "floodDirection"), measured);
+    assert.equal(Object.hasOwn(s, "ebbDirection"), measured);
+    if (measured) {
+      assert.equal(s.minorMeanFlow, 0);
+      assert.equal(s.azimuth, 0);
+    }
   }
 });
+
+for (const [field, value] of [
+  ["minorAmplitude", NaN],
+  ["minorPhaseGMT", Infinity],
+  ["minorMeanSpeed", Infinity],
+  ["azi", Infinity],
+  ["minorPhaseGMT", undefined],
+]) {
+  test(`refuses malformed vector metadata: ${field}=${value}`, async () => {
+    const c = { ...con("M2", 2, 100), [field]: value };
+    await assert.rejects(
+      () =>
+        run(
+          fakeNoaa({
+            stations: [
+              { id: "A", name: "A", lat: 48, lng: -123, type: "H", currbin: 1 },
+            ],
+            harcon: { "A@1": [c] },
+          }),
+        ),
+      /A.*(minor|azimuth)/i,
+    );
+  });
+}
 
 test("a bundle with no harmonic stations carries no census rather than an empty one", async () => {
   const fake = fakeNoaa({

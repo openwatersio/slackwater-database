@@ -15,21 +15,29 @@ seconds**, **phases degrees Greenwich**.
   "id": "PUG1717",
   "name": "Turn Point, Boundary Pass",
   "type": "harmonic",
+  "azimuth": 23.2,
   "floodDirection": 23.2,
   "ebbDirection": 203.2,
   "offset": 0.297,
+  "minorMeanFlow": -0.633,
+  "minorConstituents": [{ "name": "M2", "amplitude": 0.14, "phase": 325.6 }],
   "constituents": [{ "name": "M2", "amplitude": 1.63, "phase": 295.3 }]
 }
 ```
 
-| Field                      | From NOAA        | Notes                                                                |
-| -------------------------- | ---------------- | -------------------------------------------------------------------- |
-| `id`                       | station id       | `id` at the primary bin, **`id@bin`** for a reference at another bin |
-| `floodDirection`           | `azi`            | major-axis azimuth — the flood set                                   |
-| `ebbDirection`             | `azi + 180`      | the reciprocal                                                       |
-| `offset`                   | `majorMeanSpeed` | **Z₀**, signed net mean flow. Not optional — see below               |
-| `constituents[].amplitude` | `majorAmplitude` | knots (`units=english`)                                              |
-| `constituents[].phase`     | `majorPhaseGMT`  | Greenwich phase — pairs with a Greenwich V₀                          |
+| Field                      | From NOAA                          | Notes                                                                                |
+| -------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------ |
+| `id`                       | station id                         | `id` at the primary bin, **`id@bin`** for a reference at another bin                 |
+| `floodDirection`           | `azi`                              | major-axis azimuth — the flood set                                                   |
+| `ebbDirection`             | `azi + 180`                        | the reciprocal                                                                       |
+| `offset`                   | `majorMeanSpeed`                   | **Z₀**, signed net mean flow. Not optional — see below                               |
+| `constituents[].amplitude` | `majorAmplitude`                   | knots (`units=english`)                                                              |
+| `constituents[].phase`     | `majorPhaseGMT`                    | Greenwich phase — pairs with a Greenwich V₀                                          |
+| `minorConstituents`        | `minorAmplitude` / `minorPhaseGMT` | optional array with the same name/amplitude/phase shape; knots and Greenwich degrees |
+| `minorMeanFlow`            | `minorMeanSpeed`                   | optional signed cross-axis mean in knots; published zero is retained                 |
+| `azimuth`                  | `azi`                              | optional major-axis bearing in degrees true; missing bearings remain absent          |
+
+Minor constituents come from the same `(station, bin)` as the major constants. There is no amplitude cutoff. Only NOAA's undetermined amplitude=0, phase=0 pairs are omitted. `floodDirection` and `ebbDirection` are also absent when `azi` is missing.
 
 ### Predicting from it
 
@@ -53,6 +61,10 @@ still an ebb; NOAA labels it `maxEbb` and so should you.
 
 That `Z₀` term is why slack is where it is. Drop it and every zero crossing moves —
 measured at 15.6 min mean / 55 min worst error, versus 7.4 / 21 with it.
+
+For a vector timeline, sum `minorConstituents` with the same astronomical arguments and add `minorMeanFlow` to obtain cross-axis velocity `w(t)`. The magnitude is `hypot(v(t), w(t))`; the true bearing is `azimuth + atan2(w(t), v(t))`, with the angle converted to degrees and normalized to [0, 360). Direction requires a known axis and a nonzero vector. Continue finding slack and extrema on the signed major curve: the vector magnitude can remain positive through slack.
+
+The optional root `crossFlow` census describes the cross-axis mean omitted by a one-axis consumer. It is diagnostic; a large cross-flow does not invalidate a record carrying both axes.
 
 ## Subordinate station
 
@@ -98,11 +110,3 @@ exactly; a reference station may appear at several bins with different constitue
   emitting something misleading.
 - **Subordinates whose reference didn't resolve.** Counted in `skipped.unresolvable`. A
   healthy full-US run drops zero.
-- **Minor-axis constituents.** NOAA publishes `minorAmplitude`/`minorPhaseGMT` for a 2D
-  rotary model; a major-axis model doesn't use them, so they aren't carried per station.
-  Bundling them was measured and rejected — worth a median 4% of peak speed, and a 2D
-  magnitude series never crosses zero, which silently yields no slack events at all.
-
-  The bundle does carry a **`crossFlow` census** at the root: how much perpendicular flow
-  the major-axis model drops, and the worst station by ratio and by knots. `validate`
-  fails a bundle whose worst ratio exceeds 0.5.

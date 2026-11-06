@@ -6,8 +6,8 @@ import { find as findTimezone } from "geo-tz/all";
 import type { CurrentData, StationInput } from "@slackwater/database";
 
 type NullableDirections = {
-  floodDirection: number | null;
-  ebbDirection: number | null;
+  floodDirection?: number | null;
+  ebbDirection?: number | null;
   tideReference?: string;
 };
 type SourceStation =
@@ -34,8 +34,14 @@ export function currentInputs(bundle: CurrentBundle): CurrentStationInput[] {
     if (typeof station.ebbDirection === "number")
       current.ebb_direction = station.ebbDirection;
     if (station.tideReference) current.tide_reference = station.tideReference;
-    if (station.type === "harmonic") current.mean_flow = station.offset;
-    else
+    if (station.type === "harmonic") {
+      current.mean_flow = station.offset;
+      if (station.minorConstituents !== undefined)
+        current.minor_constituents = station.minorConstituents;
+      if (station.minorMeanFlow !== undefined)
+        current.minor_mean_flow = station.minorMeanFlow;
+      if (station.azimuth !== undefined) current.azimuth = station.azimuth;
+    } else
       current.offsets = {
         reference: `noaa/${station.reference}`,
         slack_before_flood: minutes(
@@ -84,8 +90,9 @@ export function currentInputs(bundle: CurrentBundle): CurrentStationInput[] {
         url: "https://tidesandcurrents.noaa.gov/disclaimers.html",
       },
       ...(station.id.includes("@") ||
-      typeof station.floodDirection !== "number" ||
-      typeof station.ebbDirection !== "number"
+      (station.type === "subordinate" &&
+        (typeof station.floodDirection !== "number" ||
+          typeof station.ebbDirection !== "number"))
         ? { routed: false }
         : {}),
     };

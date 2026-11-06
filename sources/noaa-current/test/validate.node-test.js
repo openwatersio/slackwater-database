@@ -114,23 +114,40 @@ const census = (extra = {}) => ({
   ...extra,
 });
 
-test("accepts a bundle whose cross-flow ratio is within the bound", () => {
+test("reports the cross-flow census alongside validation", () => {
   const v = validateBundle({ stations: [harmonic("A")], crossFlow: census() });
   assert.equal(v.ok, true);
   assert.equal(v.crossFlow.worstRatio.ratio, 0.1);
 });
 
-test("rejects a bundle where the flood axis stops describing a station", () => {
+test("keeps large cross-flow ratios diagnostic for a two-axis model", () => {
   const v = validateBundle({
-    stations: [harmonic("A")],
+    stations: [
+      harmonic("BAD", {
+        minorConstituents: [{ name: "M2", amplitude: 1, phase: 90 }],
+        minorMeanFlow: 0.9,
+        azimuth: 90,
+      }),
+    ],
     crossFlow: census({
       worstRatio: { id: "BAD", crossFlow: 0.9, alongAxisPeak: 1.0, ratio: 0.9 },
     }),
   });
-  assert.equal(v.ok, false);
-  assert.match(v.errors.join(), /BAD/);
-  assert.match(v.errors.join(), /cross-flow/i);
+  assert.equal(v.ok, true);
+  assert.equal(v.crossFlow.worstRatio.ratio, 0.9);
 });
+
+for (const extra of [
+  { minorMeanFlow: NaN },
+  { azimuth: Infinity },
+  { minorConstituents: [{ name: "M2", amplitude: 1, phase: NaN }] },
+]) {
+  test(`refuses invalid vector measurements: ${Object.keys(extra)[0]}`, () => {
+    const v = validateBundle({ stations: [harmonic("A", extra)] });
+    assert.equal(v.ok, false);
+    assert.match(v.errors.join(), /A.*(minor|azimuth)/i);
+  });
+}
 
 test("a bundle predating the census is valid, not broken", () => {
   // The vendored extract in slackwater-ios has no crossFlow block. A check that

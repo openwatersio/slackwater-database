@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { crossFlowCensus, CROSS_FLOW_RATIO_MAX } from "../src/cross-flow.js";
+import { crossFlowCensus } from "../src/cross-flow.js";
 import { validateBundle } from "../src/validate.js";
 
 const s = (id, crossFlow, alongAxisPeak) => ({ id, crossFlow, alongAxisPeak });
@@ -57,10 +57,8 @@ test("a near-tie is decided on raw values, not against an already-rounded stored
   assert.equal(c.worstRatio.id, "TRUE_WORST");
 });
 
-test("the bound rejects nothing that exists in the real data", () => {
-  // Worst measured ratio across the 2,800 bin-records across NOAA's 850 harmonic
-  // stations is 0.241 (BOS1130). Exercised through the real path, offline: the
-  // actual census function feeding the actual validator, not just two constants.
+test("passes a real NOAA cross-flow measurement through the validator", () => {
+  // BOS1130's published cross-flow gives a diagnostic ratio of 0.241.
   const census = crossFlowCensus([
     { id: "BOS1130", crossFlow: 0.178, alongAxisPeak: 0.74 },
   ]);
@@ -83,9 +81,4 @@ test("the bound rejects nothing that exists in the real data", () => {
     crossFlow: census,
   });
   assert.equal(v.ok, true);
-
-  assert.ok(
-    CROSS_FLOW_RATIO_MAX > 0.241,
-    "bound must not reject current NOAA data",
-  );
 });

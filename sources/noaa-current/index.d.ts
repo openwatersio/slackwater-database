@@ -25,11 +25,15 @@ export interface NoaaConstituent {
   /** Greenwich phase, degrees. */
   majorPhaseGMT: number;
   /** Major-axis azimuth, degrees true — the flood set. */
-  azi: number;
+  azi?: number | null;
   /** Z0: net mean flow along the major axis, signed. */
   majorMeanSpeed: number;
   /** DC cross-axis flow, knots — the minor-axis counterpart to `majorMeanSpeed`. */
-  minorMeanSpeed: number;
+  minorMeanSpeed?: number | null;
+  /** Knots under units=english. Zero with nonzero phase is a measured zero. */
+  minorAmplitude?: number | null;
+  /** Greenwich phase, degrees; amplitude=0 with phase=0 is undetermined. */
+  minorPhaseGMT?: number | null;
   binNbr: number;
 }
 
@@ -51,8 +55,13 @@ export interface HarmonicStation {
   latitude: number;
   longitude: number;
   type: "harmonic";
-  floodDirection: number;
-  ebbDirection: number;
+  floodDirection?: number;
+  ebbDirection?: number;
+  /** Published major-axis azimuth in degrees true, absent when unknown. */
+  azimuth?: number;
+  /** Minor-axis DC flow in knots, including a published zero. */
+  minorMeanFlow?: number;
+  minorConstituents?: { name: string; amplitude: number; phase: number }[];
   /** Z0 mean flow, knots. */
   offset: number;
   constituents: { name: string; amplitude: number; phase: number }[];
@@ -81,7 +90,7 @@ export interface SubordinateStation {
 export interface CrossFlowCensus {
   /** What was measured, carried inline so the number explains itself. */
   measured: string;
-  /** Harmonic records sampled, `@bin` entries included. */
+  /** Harmonic records with a published minor mean speed, including secondary bins. */
   records: number;
   gte0_25kn: number;
   gte0_50kn: number;
@@ -101,8 +110,8 @@ export interface Bundle {
   note: string;
   generated: string;
   /**
-   * How much the major-axis model drops. Null when the bundle has no harmonic
-   * stations. Never carried per station — see docs/schema.md.
+   * Cross-flow that a one-axis consumer omits. Null when no minor mean flows
+   * were published; vector-capable consumers use each station's minor axis.
    */
   crossFlow: CrossFlowCensus | null;
   stations: (HarmonicStation | SubordinateStation)[];
@@ -114,8 +123,8 @@ export interface GoldenFixture {
   bin: number;
   start: string;
   end: string;
-  floodDirection: number;
-  ebbDirection: number;
+  floodDirection?: number;
+  ebbDirection?: number;
   offset: number;
   constituents: { name: string; amplitude: number; phase: number }[];
   events: CurrentPrediction[];

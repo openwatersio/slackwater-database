@@ -32,6 +32,26 @@ const subordinate = {
 };
 
 describe("NOAA current input", () => {
+  test("carries minor-axis constants and measured scalar zeros", () => {
+    const minorConstituents = [
+      { name: "M2", amplitude: 0.001, phase: 12.3 },
+      { name: "S2", amplitude: 0, phase: 45.6 },
+    ];
+    const [reference] = currentInputs({
+      stations: [
+        { ...harmonic, minorConstituents, minorMeanFlow: 0, azimuth: 0 },
+      ],
+    });
+    expect(reference!.current).toMatchObject({
+      minor_constituents: minorConstituents,
+      minor_mean_flow: 0,
+      azimuth: 0,
+    });
+    const [legacy] = currentInputs({ stations: [harmonic] });
+    expect(legacy!.current).not.toHaveProperty("minor_constituents");
+    expect(legacy!.current).not.toHaveProperty("minor_mean_flow");
+    expect(legacy!.current).not.toHaveProperty("azimuth");
+  });
   test("converts harmonic and subordinate records", () => {
     const [reference, reduced] = currentInputs({
       stations: [harmonic, subordinate],
@@ -100,5 +120,15 @@ describe("NOAA current input", () => {
     });
     expect(result).toMatchObject({ id: "noaa/ACT3681", routed: false });
     expect(result!.current).not.toHaveProperty("ebb_direction");
+  });
+
+  test("keeps harmonic stations routed when their axis is unknown", () => {
+    const { floodDirection, ebbDirection, ...unknownAxis } = harmonic;
+    const [result] = currentInputs({ stations: [unknownAxis] });
+    expect(result!.routed).not.toBe(false);
+    expect(result!.harmonic_constituents).toEqual(harmonic.constituents);
+    expect(result!.current).not.toHaveProperty("flood_direction");
+    expect(result!.current).not.toHaveProperty("ebb_direction");
+    expect(result!.current).not.toHaveProperty("azimuth");
   });
 });

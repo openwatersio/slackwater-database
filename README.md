@@ -55,6 +55,15 @@ The module exports every tide and current station in the database, along with st
 
 `SlackwaterDatabase` reads a memory-mapped `.tcdb` in place: scan station identity, look up a station by id, read its constituents, without decoding the rest of the file. [See the package README for the full API.](./packages/swift/README.md)
 
+### Kotlin
+
+```kotlin
+includeBuild("vendor/slackwater-database/packages/kotlin") // settings.gradle.kts
+implementation("io.openwaters:slackwater-database:0.1.0") // build.gradle.kts
+```
+
+The Kotlin/JVM reader does the same for Android and other JVM apps, consumed from source through a Gradle composite build. [See the package README for setup and the full API.](./packages/kotlin/README.md)
+
 ## Data Format
 
 Tide harmonics come from the JSON files in [`data/`](./data), NOAA current data is imported during generation, each published station's identity, URL and curation is a file in [`stations/`](./stations/README.md), and reviewed reference snapshots live in [`metadata/`](./metadata). The generated FlatBuffers file is the release source consumed by every runtime. Each tide station file includes basic station information, like location and name, and harmonics or subordinate station offsets. The format is defined by the schema in [schemas/station.schema.json](schemas/station.schema.json), which includes more detailed descriptions of each field. All data is validated against this schema automatically on each change.
@@ -79,6 +88,7 @@ This repo is an npm workspace. Station data lives in [`data/`](./data), and ever
 
 - [`packages/database`](./packages/database) — the published [`@slackwater/database`](https://www.npmjs.com/package/@slackwater/database) npm module
 - [`packages/swift`](./packages/swift) — `SlackwaterDatabase`, the Swift reader for `.tcdb`, published from the [root `Package.swift`](./Package.swift)
+- [`packages/kotlin`](./packages/kotlin) — the Kotlin/JVM reader for `.tcdb`, consumed from source through a Gradle composite build
 - [`packages/tcd`](./packages/tcd) — TCD harmonics files for XTide-compatible software
 - [`packages/datums`](./packages/datums) — tidal datum computation and sea-region classification
 - [`packages/harmonic-analysis`](./packages/harmonic-analysis) — GESLA parsing and database policies around `@slackwater/engine` QR fitting; broad minimum-norm SVD fits remain local
@@ -110,11 +120,11 @@ Releases of this database use [Semantic Versioning](https://semver.org/), with t
 
 - Major version changes indicate breaking changes to the data structure or APIs. However, as long as the version is "0.x", breaking changes may occur without a major version bump.
 - Minor version changes indicate backward-compatible additions to the data structure or APIs, such as new fields.
-- Patch version changes indicate updates to station data, and will always be the current date. For example, "0.1.20260101".
+- Stable patch version changes indicate updates to station data, and will always be the current date. For example, "0.1.20260101".
 
 ## Releasing
 
-Releases are created by [running the Publish action](https://github.com/openwatersio/slackwater-database/actions/workflows/publish.yml) on GitHub Actions. The action takes the `version` in `packages/database/package.json` as a floor and replaces its last segment with the current date, so the version always names the data vintage: `1.0.0-beta.0` publishes as `1.0.0-beta.<date>` under the `beta` dist-tag (and a prerelease GitHub release), and `1.0.0` publishes as `1.0.<date>` to `latest`. Release assets are named `slackwater-<date>.*` to match.
+Releases are created by [running the Publish action](https://github.com/openwatersio/slackwater-database/actions/workflows/publish.yml) on GitHub Actions. The action takes the `version` in `packages/database/package.json` as a floor and replaces its last segment with the current date, so the version always names the data vintage: `1.0.1-beta.0` publishes as `1.0.1-beta.<date>` under the `beta` dist-tag (and a prerelease GitHub release), and `1.0.0` publishes as `1.0.<date>` to `latest`. Release assets are named `slackwater-<date>.*` to match. During prereleases, the numeric base can advance to isolate a consumer compatibility update: npm ranges such as `^1.0.0-beta.20261102` do not accept `1.0.1-beta.*`. This does not pin the floating `beta` tag or SwiftPM ranges, and old npm ranges may accept a later stable release. Use exact pins for a controlled rollout.
 
 ## License
 
@@ -141,7 +151,7 @@ console.log(db.byId("ticon/newlyn-new-gbr-bodc")?.attribution);
 // see https://github.com/openwatersio/slackwater-database#modifications-to-source-data
 ```
 
-The Swift package exposes the same string as `station.attribution`.
+The Swift and Kotlin readers expose the same string as `station.attribution`.
 
 Under a CC licence that string carries all three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.org/licenses/by/4.0/) asks a redistributor to pass on: who created the material, the licence and its URI, and an indication that it was modified. A station whose licence imposes no notice, such as a public-domain NOAA record, gets the project credit alone. The licence comes from the station rather than its source, because it varies within one source — the TICON stations relayed from CMEMS are CC BY-NC while the rest are CC BY — so `attribution` names the licence that actually applies to the station in hand. `license` still carries the same terms as structured fields if you need to filter on them.
 

@@ -1,4 +1,4 @@
-// Builds the .tcdb fixture the Swift tests read, through the same
+// Builds the .tcdb fixture the Swift and Kotlin tests read, through the same
 // buildDatabase the shipped file comes from — so the tests exercise real
 // builder output, not bytes frozen in git. Run by pretest; the output is
 // git-ignored. Imports the builder source, which needs the root's generated
@@ -42,6 +42,12 @@ const stations: StationInput[] = [
       flood_direction: 90,
       ebb_direction: 270,
       mean_flow: 0.4,
+      minor_constituents: [
+        { name: "Q1", amplitude: 0.001, phase: 12.3 },
+        { name: "K1", amplitude: 0, phase: 45.6 },
+      ],
+      minor_mean_flow: 0,
+      azimuth: 0,
       tide_reference: "test/reference",
       offsets: {
         reference: "test/reference",
@@ -105,6 +111,7 @@ const stations: StationInput[] = [
     epoch: { start: "2007-01-01", end: "2026-01-01" },
     datum_epoch: { start: "2020-01-01", end: "2021-12-31" },
     aliases: ["elliott bay", "seattle"],
+    disclaimers: "Dries out at low water.",
     harmonic_constituents: [
       { name: "M2", amplitude: 1.063, phase: 10.8 },
       { name: "S2", amplitude: 0.268, phase: 25.2 },
@@ -203,12 +210,16 @@ for (let i = 0; i < unknownFit.stationsLength(); i++) {
   const fit = station.current()!.chsFit()!;
   bytes[fit.bb_pos + fit.bb!.__offset(fit.bb_pos, 4)] = 3;
 }
-const out = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "Tests",
-  "SlackwaterDatabaseTests",
-  "fixture.tcdb",
-);
+// The Kotlin reader's pretest passes its own path; a relative one resolves
+// against the directory npm runs the script from.
+const out =
+  process.argv[2] ??
+  join(
+    dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "Tests",
+    "SlackwaterDatabaseTests",
+    "fixture.tcdb",
+  );
 writeFileSync(out, bytes);
 console.log(`generated ${out}: ${bytes.length} bytes`);

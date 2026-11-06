@@ -12,6 +12,7 @@ computed:
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
         score: 71
         factors:
           epoch: 0.268
@@ -20,6 +21,8 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.187
+        issues:
+          - "Seasonal curve peak (0.160m) exceeds the principal tide M2+S2+K1+O1 (0.152m): the yearly swing exceeds the daily one"
     ticon/moda-8775283-usa-noaa:
       position: [27.8275, -97.200833]
       coastline: unverifiable

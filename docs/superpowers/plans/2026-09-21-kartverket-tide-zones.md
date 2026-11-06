@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Complete the Kartverket Stations plan first.
+- The 33 Kartverket harmonic stations already ship. Use [the source README](../../../sources/kartverket/README.md) for their import and validation; [#251](https://github.com/openwatersio/slackwater-database/issues/251) tracks the remaining tide-zone work.
 - Work in linked worktrees for both `tide-database` and `neaps`.
 - Commit `data/kartverket/tide-zones.geojson` with all 590 polygons; TCDB contains only the 495 computable zones.
 - A supported feature has a resolvable `referenceStationId`, finite factor and delay, `MSL`, `CD`, and a valid polygon.
@@ -23,7 +23,7 @@
 - A positive zone delay produces a later local tide: evaluate the reference at `t - delay`, multiply its MSL height by the factor, then add `zone.datums.MSL - zone.datums[datum]`.
 - Position lookup treats an edge as inside; the lowest numeric zone ID wins overlaps; there is no nearest-polygon fallback.
 - Keep the linear scan. Add a spatial index only after profiling shows the roughly 5,000-edge scan is a problem.
-- Zone validation uses the same 2020-01-01 through 2040-12-31 interval and numerical thresholds as the station plan.
+- Zone validation covers 2020-01-01 through 2040-12-31: timeline RMSE ≤ 0.02 m, p95 absolute error ≤ 0.03 m, maximum absolute error ≤ 0.05 m, extreme time error ≤ 5 minutes, and extreme height error ≤ 0.05 m. The station-only release has known event-time failures documented in the source README; it does not establish that these zone gates pass.
 
 ---
 
@@ -102,7 +102,7 @@ Do not add a generation timestamp.
 Add the `tidezones` response to the staged snapshot and manifest. Run:
 
 ```sh
-rtk npm run refresh -w sources/kartverket
+rtk npm run refresh:fixtures -w sources/kartverket
 rtk npm run import -w sources/kartverket
 ```
 

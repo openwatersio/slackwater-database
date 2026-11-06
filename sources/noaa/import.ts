@@ -2,6 +2,7 @@
 
 import createFetch from "make-fetch-happen";
 import {
+  backfillLatHat,
   normalize,
   save,
   withPublishedPrecision,
@@ -52,9 +53,14 @@ async function main() {
     }
 
     const station = await buildStation(meta);
-    const newContent =
-      JSON.stringify(withPublishedPrecision("noaa", station), null, 2) + "\n";
     const existing = await readExisting(meta.id);
+    // The saved record drops any LAT/HAT synthesized last run, and the
+    // workflow's backfill step recomputes them. Compare against what that
+    // step will write, so the round trip alone isn't reported as an update.
+    const { station: backfilled } = backfillLatHat(station);
+    const newContent =
+      JSON.stringify(withPublishedPrecision("noaa", backfilled), null, 2) +
+      "\n";
 
     await save("noaa", station);
 

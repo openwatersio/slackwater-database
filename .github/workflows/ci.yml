@@ -130,6 +130,57 @@ jobs:
         env:
           SLACKWATER_TCDB: ${{ github.workspace }}/packages/database/src/generated/slackwater.tcdb
 
+  kotlin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup mise (flatc)
+        uses: jdx/mise-action@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      # gradle-wrapper.jar is a binary reviewers can't read; check it against
+      # Gradle's published checksums before anything runs it.
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+          cache-dependency-path: |
+            packages/kotlin/**/*.gradle.kts
+            packages/kotlin/gradle/wrapper/gradle-wrapper.properties
+
+      # The Kotlin tests need only the fixture generator, which imports the
+      # builder source; skip the root package's prepare build.
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+
+      # The generated Kotlin is committed (a composite build can't run flatc),
+      # so fail when it drifts from the schema.
+      - name: Check generated code matches the schema
+        run: |
+          npm run generate -w kotlin
+          git diff --exit-code -- packages/kotlin/src
+          test -z "$(git status --porcelain -- packages/kotlin/src)"
+
+      - name: Run Kotlin tests
+        run: npm run test:kotlin -w kotlin
+        env:
+          SLACKWATER_TCDB: ${{ github.workspace }}/packages/database/src/generated/slackwater.tcdb
+
+      - name: Test source consumer
+        working-directory: packages/kotlin
+        run: ./gradlew -p smoke run --args="$PWD/src/test/fixture.tcdb"
+
   lint:
     runs-on: ubuntu-latest
     steps:

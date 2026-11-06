@@ -24,19 +24,19 @@ jobs:
       - run: npm ci
 
       # The last version segment is the data vintage: the committed version is a
-      # floor (1.0.0-beta.0 while in pre mode, X.Y.0 after), and each publish
-      # replaces that segment with today's date — 1.0.0-beta.20260925 from a
+      # floor (1.0.1-beta.0 while in pre mode, X.Y.0 after), and each publish
+      # replaces that segment with today's date — 1.0.1-beta.20261103 from a
       # prerelease, 1.0.20261115 from a stable.
       - name: Set version
         run: |
           CURRENT_VERSION=$(node -p "require('./packages/database/package.json').version")
           RELEASE_VERSION="${CURRENT_VERSION%.*}.$(date +%Y%m%d)"
           # A prerelease floor must derive a prerelease — the date replaces the
-          # floor's final `.0`, so a floor like 1.0.0-beta (no .0) would derive
+          # floor's final `.0`, so a floor like 1.0.1-beta (no .0) would derive
           # a stable version and publish it to `latest`. Refuse instead.
           if [[ "$CURRENT_VERSION" == *-* && "$RELEASE_VERSION" != *-* ]]; then
             echo "Refusing to publish: $CURRENT_VERSION derived non-prerelease $RELEASE_VERSION." >&2
-            echo "A prerelease floor needs a numeric final segment, e.g. 1.0.0-beta.0." >&2
+            echo "A prerelease floor needs a numeric final segment, e.g. 1.0.1-beta.0." >&2
             exit 1
           fi
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> "$GITHUB_ENV"

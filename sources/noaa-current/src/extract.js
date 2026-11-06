@@ -77,8 +77,6 @@ export async function extractBundle(opts = {}) {
   const harmonic = new Map();
   const subs = [];
   const skipped = { typeW: 0, emptyHarcon: [], noReference: [], failed: [] };
-  // Sampled as each harmonic record is built, because the minor axis is in the
-  // harcon we already hold here and nowhere else downstream.
   const crossFlowSamples = [];
 
   // Store (id, bin) if it has a non-empty harcon. Returns whether it did.
@@ -95,29 +93,51 @@ export async function extractBundle(opts = {}) {
     // azi is the major-axis azimuth (flood set); ebb is its reciprocal.
     // majorMeanSpeed is Z0 — the station's net mean flow along that axis. Omitting
     // it shifts every slack, because slack is where the curve crosses zero.
-    const azi = cons[0].azi ?? 0;
+    const azi = cons[0].azi;
+    if (azi != null && !Number.isFinite(azi))
+      throw new Error(`${key}: azimuth must be finite when published`);
+    const minorMeanFlow = cons[0].minorMeanSpeed;
+    if (minorMeanFlow != null && !Number.isFinite(minorMeanFlow))
+      throw new Error(`${key}: minor mean flow must be finite when published`);
+    const minorConstituents = [];
+    for (const c of cons) {
+      const amplitude = c.minorAmplitude;
+      const phase = c.minorPhaseGMT;
+      if (amplitude == null && phase == null) continue;
+      if (!Number.isFinite(amplitude) || !Number.isFinite(phase))
+        throw new Error(
+          `${key}: incomplete or invalid minor constituent ${c.constituentName}`,
+        );
+      // NOAA's amplitude=0, phase=0 pair marks an undetermined constituent; a measured zero keeps its phase.
+      if (amplitude === 0 && phase === 0) continue;
+      minorConstituents.push({ name: c.constituentName, amplitude, phase });
+    }
     harmonic.set(key, {
       id: key,
       name,
       type: "harmonic",
       latitude: lat,
       longitude: lng,
-      floodDirection: azi,
-      ebbDirection: (azi + 180) % 360,
+      ...(azi != null
+        ? { azimuth: azi, floodDirection: azi, ebbDirection: (azi + 180) % 360 }
+        : {}),
       offset: cons[0].majorMeanSpeed ?? 0,
+      ...(minorConstituents.length ? { minorConstituents } : {}),
+      ...(minorMeanFlow != null ? { minorMeanFlow } : {}),
       constituents: cons.map((c) => ({
         name: c.constituentName,
         amplitude: c.majorAmplitude, // knots, because units=english
         phase: c.majorPhaseGMT, // Greenwich phase — pairs with a Greenwich V₀
       })),
     });
-    crossFlowSamples.push({
-      id: key,
-      crossFlow: Math.abs(cons[0].minorMeanSpeed ?? 0),
-      alongAxisPeak:
-        cons.reduce((sum, c) => sum + Math.abs(c.majorAmplitude ?? 0), 0) +
-        Math.abs(cons[0].majorMeanSpeed ?? 0),
-    });
+    if (minorMeanFlow != null)
+      crossFlowSamples.push({
+        id: key,
+        crossFlow: Math.abs(minorMeanFlow),
+        alongAxisPeak:
+          cons.reduce((sum, c) => sum + Math.abs(c.majorAmplitude ?? 0), 0) +
+          Math.abs(cons[0].majorMeanSpeed ?? 0),
+      });
     return true;
   }
 

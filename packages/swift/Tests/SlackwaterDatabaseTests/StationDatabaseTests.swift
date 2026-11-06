@@ -201,6 +201,34 @@ final class StationDatabaseTests: XCTestCase {
     XCTAssertEqual(online.missContext, "rapids")
   }
 
+  func testReadsMinorCurrentConstantsAndMeasuredZeros() throws {
+    let current = try XCTUnwrap(open().station(id: "test/current")?.current)
+    let minor = try XCTUnwrap(current.minorConstituents)
+    XCTAssertEqual(minor.map(\.name), ["Q1", "K1"])
+    XCTAssertEqual(minor[0].amplitude, 0.001, accuracy: 1e-8)
+    XCTAssertEqual(minor[0].phase, 12.3, accuracy: 1e-5)
+    XCTAssertEqual(minor[1].amplitude, 0)
+    XCTAssertEqual(minor[1].phase, 45.6, accuracy: 1e-5)
+    XCTAssertEqual(current.minorMeanFlow, 0)
+    XCTAssertEqual(current.azimuth, 0)
+
+    let scalar = try XCTUnwrap(open().station(id: "test/zfit-bounded")?.current)
+    XCTAssertNil(scalar.minorConstituents)
+    XCTAssertNil(scalar.minorMeanFlow)
+    XCTAssertNil(scalar.azimuth)
+  }
+
+  func testReadsAFileWrittenBeforeMinorFieldsExisted() throws {
+    let url = Self.url.deletingLastPathComponent()
+      .appendingPathComponent("../../../database/test/fixtures/pre-minor-current.tcdb")
+    let db = try StationDatabase(contentsOf: url)
+    let current = try XCTUnwrap(db.station(id: "test/current")?.current)
+    XCTAssertEqual(try XCTUnwrap(current.meanFlow), 0.4, accuracy: 1e-6)
+    XCTAssertNil(current.minorConstituents)
+    XCTAssertNil(current.minorMeanFlow)
+    XCTAssertNil(current.azimuth)
+  }
+
   func testReadsAnUnknownChsFitTierAsOnlineWithoutMeasuredNumbers() throws {
     let fit = try XCTUnwrap(open().station(id: "test/zfit-unknown")?.current?.chsFit)
     XCTAssertEqual(fit.tier, .online)
@@ -262,11 +290,5 @@ final class StationDatabaseTests: XCTestCase {
     XCTAssertEqual(current.tideReference, "test/reference")
     XCTAssertEqual(current.offsets?.slackBeforeFlood, -30)
     XCTAssertEqual(current.offsets?.floodSpeedRatio ?? .nan, 0.8, accuracy: 1e-6)
-  }
-}
-
-extension Station.Constituent: Equatable {
-  public static func == (lhs: Self, rhs: Self) -> Bool {
-    lhs.name == rhs.name && lhs.amplitude == rhs.amplitude && lhs.phase == rhs.phase
   }
 }
