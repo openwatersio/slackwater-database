@@ -68,7 +68,7 @@ Limits. HRoI predicts events, not a continuous curve, unless the 96-fit variant 
 [gezeiten.bsh.de](https://gezeiten.bsh.de) serves, without authentication:
 
 - `https://gezeiten.bsh.de/data/tides_overview.json`, a list of 172 places with BSH number, name, position and group: 142 gauges, 26 interpolated places, 4 Baltic gauges.
-- `https://gezeiten.bsh.de/data/DE_<bshnr padded to 5 with _>_tides.json`, per place: tidal base values (MHW, MLW, MHWI, MLWI, spring and neap values, PNP and chart datum relative to NHN), and every predicted HW and LW for the current and next year with time, height in cm, spring/neap phase.
+- `https://gezeiten.bsh.de/data/DE_<bshnr padded to 5 with _>_tides.json`, per place: tidal base values (MHW, MLW, MHWI, MLWI, spring and neap values, PNP and chart datum relative to NHN), the matching PEGELONLINE station's `pegelonline_uuid` (95 of 98 cached places), and every predicted HW and LW for the current and next year with time, height in cm, spring/neap phase.
 - Text files from `https://filebox.bsh.de/index.php/s/SbJ3z5NBkpOZloY/download?path=/vb_hwnw/deu<year>&files=DE__<bshnr><year>.txt` (HW/LW, with transit number and `k` per event) and `path=/vb_kurv/...` (10-minute curve). Headers name the method, the 19-year analysis window (Cuxhaven 2026: analysis year 2023, 19 years, 39 constituents), the height reference and the timezone. Times are in MEZ (UTC+1) all year.
 
 Only the current and next year are online; 2020–2025 return 404. Of the 98 places checked, 79 have a curve and heights, 17 have heights but no curve, and 2 have times only. Interpolated places have no curve.
@@ -121,7 +121,7 @@ Recommended, and what BSH advises. Each gauge's Pegelonline station page ("Stamm
 
 Fitting to BSH's 10-minute curves instead, as `sources/rws` fits RWS's astronomical series, is possible but not advised. BSH asks that such constants not acknowledge BSH, only two years are online at a time, and the curve is not a harmonic signal.
 
-26 interpolated BSH places and several gauges have no station of ours within 2 km. Interpolated places have no curve, so they could only become subordinate stations with offsets, and BSH's own offsets ("Gezeitenunterschiede") for about 700 places are only in the printed tables.
+26 interpolated BSH places and several gauges have no station of ours within 2 km. Interpolated places have no curve, so they could only become subordinate stations with offsets. For the 172 places online, each place file gives the mean high and low water intervals (MHWI, MNWI) and mean heights, so mean time differences between two places follow from them. Rechtenfleth (MHWI 12:36, MNWI 18:58) against Bremerhaven Alter Leuchtturm (12:00, 18:14) gives +36 and +44 minutes, which are the "mittlere Gezeitenunterschiede" the printed Gezeitenkalender lists for Rechtenfleth as a subordinate of Bremerhaven. Of the 98 places cached for 2026, 88 have intervals. The printed tables list differences for about 700 places, and only those 172 are online.
 
 ### HRoI inside our own pipeline
 
