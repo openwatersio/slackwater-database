@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "generate": "./generate",
-    "pretest:swift": "npm run --prefix ../database generate && node --experimental-transform-types scripts/generate-fixture.ts",
+    "pretest:swift": "npm run --prefix ../database generate && node --experimental-transform-types scripts/generate-fixture.ts && node --experimental-transform-types scripts/generate-attribution.ts",
     "test:swift": "swift test --package-path ../.."
   }
 }

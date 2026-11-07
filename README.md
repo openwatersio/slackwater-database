@@ -53,7 +53,7 @@ The module exports every tide and current station in the database, along with st
 .package(url: "https://github.com/openwatersio/slackwater-database.git", exact: "1.0.0-beta.20260929")
 ```
 
-`SlackwaterDatabase` reads a memory-mapped `.tcdb` in place: scan station identity, look up a station by id, read its constituents, without decoding the rest of the file. [See the package README for the full API.](./packages/swift/README.md)
+`SlackwaterDatabase` reads a memory-mapped `.tcdb` in place: scan station identity, look up a station by id, read its constituents, without decoding the rest of the file. `StationDatabase.build` writes one, for tests that need to edit stations. [See the package README for the full API.](./packages/swift/README.md)
 
 ### Kotlin
 
@@ -87,7 +87,7 @@ Subordinate stations have four kinds of offsets, two to correct for water level,
 This repo is an npm workspace. Station data lives in [`data/`](./data), and everything that reads or writes it is a workspace package:
 
 - [`packages/database`](./packages/database) — the published [`@slackwater/database`](https://www.npmjs.com/package/@slackwater/database) npm module
-- [`packages/swift`](./packages/swift) — `SlackwaterDatabase`, the Swift reader for `.tcdb`, published from the [root `Package.swift`](./Package.swift)
+- [`packages/swift`](./packages/swift) — `SlackwaterDatabase`, the Swift reader and writer for `.tcdb`, published from the [root `Package.swift`](./Package.swift)
 - [`packages/kotlin`](./packages/kotlin) — the Kotlin/JVM reader for `.tcdb`, consumed from source through a Gradle composite build
 - [`packages/tcd`](./packages/tcd) — TCD harmonics files for XTide-compatible software
 - [`packages/datums`](./packages/datums) — tidal datum computation and sea-region classification

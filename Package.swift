@@ -32,7 +32,7 @@ let package = Package(
       name: "SlackwaterDatabaseTests",
       dependencies: ["SlackwaterDatabase"],
       path: "packages/swift/Tests/SlackwaterDatabaseTests",
-      exclude: ["fixture.tcdb"]
+      exclude: ["fixture.tcdb", "attribution.json"]
     ),
   ]
 )

@@ -277,6 +277,134 @@ final class StationDatabaseTests: XCTestCase {
     XCTAssertEqual(subordinates.filter { $0.astronomicalBounds == nil }.count, 0)
   }
 
+  func testVerifyingOpenAcceptsTheFixture() throws {
+    let db = try StationDatabase(verifyingContentsOf: Self.url)
+    XCTAssertEqual(db.count, 7)
+    XCTAssertEqual(db.station(id: "test/reference")?.constituents.count, 2)
+  }
+
+  func testVerifyingOpenRejectsATruncatedFile() throws {
+    let data = try Data(contentsOf: Self.url)
+    for length in [8, 64, data.count / 4, data.count / 2, data.count * 3 / 4] {
+      let prefix = Data(data.prefix(length))
+      // The header check alone lets this through.
+      XCTAssertNoThrow(try StationDatabase(data: prefix))
+      XCTAssertThrowsError(try StationDatabase(verifying: prefix), "\(length) bytes") {
+        XCTAssert($0 is InvalidStationDatabase)
+      }
+    }
+  }
+
+  func testVerifyingOpenRejectsRandomBytesBehindAValidHeader() throws {
+    // A fixed-seed generator, so a failure reproduces.
+    var state: UInt64 = 0x9E37_79B9_7F4A_7C15
+    func next() -> UInt8 {
+      state = state &* 6_364_136_223_846_793_005 &+ 1_442_695_040_888_963_407
+      return UInt8(truncatingIfNeeded: state >> 56)
+    }
+    for length in [16, 256, 4096, 65536] {
+      for _ in 0..<25 {
+        var bytes = (0..<length).map { _ in next() }
+        bytes.replaceSubrange(4..<8, with: Array("TCDB".utf8))
+        XCTAssertThrowsError(try StationDatabase(verifying: Data(bytes)), "\(length) bytes")
+      }
+    }
+  }
+
+  func testVerifyingOpenRejectsANameIndexPastItsTable() throws {
+    let data = try Data(contentsOf: Self.url)
+    let station = try XCTUnwrap(StationDatabase(data: data).station(id: "test/reference"))
+    // The reader keeps the Data's storage, so the vector's address locates it in the file.
+    let vector = try XCTUnwrap(
+      station.raw.withUnsafePointerToConstituents { Int(bitPattern: $0.baseAddress) })
+    let base = data.withUnsafeBytes { Int(bitPattern: $0.baseAddress) }
+    var bytes = [UInt8](data)
+    // The first constituent's ushort name index, little-endian.
+    bytes[vector - base] = 0xFF
+    bytes[vector - base + 1] = 0xFF
+    XCTAssertNoThrow(try StationDatabase(data: Data(bytes)))
+    XCTAssertThrowsError(try StationDatabase(verifying: Data(bytes))) {
+      XCTAssert($0 is InvalidStationDatabase)
+    }
+  }
+
+  /// The fixture with one byte inside the first occurrence of `text` set to 0xFF.
+  func fixtureCorrupting(_ text: String) throws -> Data {
+    var bytes = [UInt8](try Data(contentsOf: Self.url))
+    let needle = Array(text.utf8)
+    let start = try XCTUnwrap(
+      (0...(bytes.count - needle.count)).first { bytes[$0..<($0 + needle.count)].elementsEqual(needle) },
+      "\(text) is not in the fixture")
+    bytes[start + 1] = 0xFF
+    return Data(bytes)
+  }
+
+  // The verifier checks a string's range and terminator, not its encoding, and
+  // the generated required-string accessors force-unwrap the nil that results.
+  func testVerifyingOpenRejectsAStationIdThatIsNotUTF8() throws {
+    let data = try fixtureCorrupting("test/zfit-online")
+    XCTAssertNoThrow(try StationDatabase(data: data))
+    XCTAssertThrowsError(try StationDatabase(verifying: data)) {
+      XCTAssert($0 is InvalidStationDatabase)
+    }
+  }
+
+  // An optional string reads as nil instead, which would drop a notice silently.
+  func testVerifyingOpenRejectsAnAttributionThatIsNotUTF8() throws {
+    let data = try fixtureCorrupting(Station.projectCredit)
+    let db = try StationDatabase(data: data)
+    XCTAssertNil(db.station(id: "test/reference")?.raw.attribution)
+    XCTAssertThrowsError(try StationDatabase(verifying: data)) {
+      XCTAssert($0 is InvalidStationDatabase)
+    }
+  }
+
+  func testVerifyingOpenRejectsARouteSlugThatIsNotUTF8() throws {
+    let data = try fixtureCorrupting("old-reference")
+    XCTAssertNoThrow(try StationDatabase(data: data))
+    XCTAssertThrowsError(try StationDatabase(verifying: data))
+  }
+
+  // A uint count past Int32.max would trap Int() on a watch, where Int is 32 bits.
+  func testVerifyingOpenRejectsADatumCoverageCountPastInt32() throws {
+    // The fixture's reference, rebuilt with a count no other field holds, so its bytes are unique.
+    var inputs = try open().map(StationInput.init)
+    let index = try XCTUnwrap(inputs.firstIndex { $0.id == "test/reference" })
+    let marker = 0x7A5C_3E1D
+    inputs[index].datumCoverage?.months = marker
+    var bytes = [UInt8](try StationDatabase.build(inputs))
+    let needle = withUnsafeBytes(of: UInt32(marker).littleEndian, Array.init)
+    let position = try XCTUnwrap(
+      (0...(bytes.count - 4)).first { bytes[$0..<($0 + 4)].elementsEqual(needle) })
+    bytes.replaceSubrange(position..<(position + 4), with: [0xFF, 0xFF, 0xFF, 0xFF])
+    let data = Data(bytes)
+
+    XCTAssertThrowsError(try StationDatabase(verifying: data)) {
+      XCTAssert($0 is InvalidStationDatabase)
+    }
+    // The plain reader keeps a count that fits Int and reads one that doesn't as no coverage.
+    let coverage = try StationDatabase(data: data).station(id: "test/reference")?.datumCoverage
+    if Int.bitWidth == 64 {
+      XCTAssertEqual(coverage?.months, Int(UInt32.max))
+      XCTAssertEqual(coverage?.observedHours, 17520)
+    } else {
+      XCTAssertNil(coverage)
+    }
+  }
+
+  func testVerifiesTheShippedDatabase() throws {
+    guard let path = ProcessInfo.processInfo.environment["SLACKWATER_TCDB"] else {
+      throw XCTSkip("Set SLACKWATER_TCDB to a database file to run")
+    }
+    let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+    let start = Date()
+    let db = try StationDatabase(verifying: data)
+    let seconds = Date().timeIntervalSince(start)
+    print(
+      "Verified \(data.count) bytes, \(db.count) stations, in \(String(format: "%.3f", seconds)) s")
+    XCTAssertGreaterThan(db.count, 1000)
+  }
+
   func testReachesTheFullSchemaThroughRaw() throws {
     let db = try open()
     let source = try XCTUnwrap(db.station(id: "test/reference")?.raw.source)

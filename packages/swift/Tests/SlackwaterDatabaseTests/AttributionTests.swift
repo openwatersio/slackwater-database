@@ -11,6 +11,22 @@ final class AttributionTests: XCTestCase {
     }
   }
 
+  // attribution.json is written from attribution.ts by scripts/generate-attribution.ts
+  // (pretest), so the hand-copied Swift constants can't drift from it.
+  func testSwiftConstantsMatchAttributionTS() throws {
+    struct Constants: Decodable {
+      let projectCredit: String
+      let modificationsURL: String
+      let licenseNames: [String: String]
+    }
+    let url = StationDatabaseTests.url.deletingLastPathComponent()
+      .appendingPathComponent("attribution.json")
+    let constants = try JSONDecoder().decode(Constants.self, from: Data(contentsOf: url))
+    XCTAssertEqual(StationAttribution.projectCredit, constants.projectCredit)
+    XCTAssertEqual(StationAttribution.modificationsURL, constants.modificationsURL)
+    XCTAssertEqual(StationAttribution.licenseNames, constants.licenseNames)
+  }
+
   // The fixture's source requires no credit of its own, so the project line
   // stands alone.
   func testASourceRequiringNoCreditGetsTheProjectLineAlone() throws {
