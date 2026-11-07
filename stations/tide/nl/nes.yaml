@@ -1,5 +1,9 @@
+# Same gauge: these records are RWS location `ameland.nes` (sources/rws/README.md#historical-series), with M2 within 3.5 cm and 2.0°.
 sources:
   - ticon/nes-nes-nld-rws_hist
+  - ticon/nestg-nes-nld-cmems
+redirect_from:
+  - /tides/nl/nes-friesland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -7,15 +11,27 @@ computed:
       position: [53.429936, 5.758907]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: superseded
-        score: 0
+        accepted: true
+        score: 67
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
           coverage: 0.004
-        issues:
-          - "Superseded source: rws_hist"
+    ticon/nestg-nes-nld-cmems:
+      position: [53.431099, 5.761]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/nes-nes-nld-rws_hist
+        score: 42
+        factors:
+          epoch: 0.582
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.004

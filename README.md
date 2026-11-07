@@ -23,7 +23,7 @@ Tidal currents:
 
 - [**NOAA currents**](sources/noaa-current/README.md): harmonic and subordinate current stations in US waters.
 
-[Rijkswaterstaat](sources/rws/README.md) data is used only to validate the re-fitted phases of Dutch TICON gauges; no stations come from it.
+[Rijkswaterstaat](sources/rws/README.md) data is used only to validate Dutch TICON gauges, their re-fitted phases and their historical series; no stations come from it.
 
 If you know of other public sources of harmonic constituents, please [open an issue](https://github.com/openwatersio/slackwater-database/issues/new) to discuss adding them.
 

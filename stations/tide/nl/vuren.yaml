@@ -1,5 +1,9 @@
+# Same gauge: these records are RWS location `dalem` (sources/rws/README.md#historical-series), with M2 within 0.7 cm and 1.8°.
 sources:
   - ticon/vuren-vurn-nld-rws_hist
+  - ticon/vurentg-vur-nld-cmems
+redirect_from:
+  - /tides/nl/vuren-south-holland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -7,18 +11,35 @@ computed:
       position: [51.822113, 5.016467]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: superseded
+        accepted: true
         seasonal_dominant: true
-        score: 0
+        score: 67
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
           coverage: 0.002
         issues:
           - MHWS (1.13) < MHW (1.154)
-          - "Superseded source: rws_hist"
           - "Seasonal curve peak (0.354m) exceeds the principal tide M2+S2+K1+O1 (0.201m): the yearly swing exceeds the daily one"
+    ticon/vurentg-vur-nld-cmems:
+      position: [51.823002, 5.017]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/vuren-vurn-nld-rws_hist
+        seasonal_dominant: true
+        score: 56
+        factors:
+          epoch: 0.538
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.002
+        issues:
+          - MHWS (1.064) < MHW (1.076)
+          - "Seasonal curve peak (0.443m) exceeds the principal tide M2+S2+K1+O1 (0.212m): the yearly swing exceeds the daily one"

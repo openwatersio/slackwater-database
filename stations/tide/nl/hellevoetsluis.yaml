@@ -7,15 +7,12 @@ computed:
       position: [51.819721, 4.128239]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: superseded
-        score: 0
+        accepted: true
+        score: 54
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 0
           amplitude: 1
           coverage: 0.131
-        issues:
-          - "Superseded source: rws_hist"
