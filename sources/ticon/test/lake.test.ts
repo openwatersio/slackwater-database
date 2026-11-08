@@ -161,6 +161,18 @@ describe("refitFromLake", () => {
     ).toBeUndefined();
   });
 
+  test("asks for half of a leap year's hours", async () => {
+    // 4455 hours of 2020 score 4385: half a 365-day year, not half of 2020.
+    series = synthesize(() => 0.5).filter(
+      (s) => s.t < Date.UTC(2020, 0, 1) + 4455 * 3600000,
+    );
+    expect(
+      await refitFromLake("smhi/2130", [
+        { name: "M2", amplitude: 0.5, phase: 40 },
+      ]),
+    ).toBeUndefined();
+  });
+
   test("declines without enough of the held-out year to score", async () => {
     series = synthesize(() => 0.5).filter((s) => s.t < Date.UTC(2020, 3, 1));
     expect(

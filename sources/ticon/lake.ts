@@ -35,8 +35,6 @@ export const LAKE_CONTRIBUTORS = new Map([
 
 /** Years of record a re-fit uses before its held-out year: one nodal cycle. */
 const FIT_YEARS = 19;
-/** A held-out year needs half its hours scored. */
-const MIN_HELD_OUT_HOURS = 4380;
 const HOUR_MS = 3_600_000;
 
 /** What a lake re-fit was scored on and whether it replaced TICON's constants. */
@@ -122,7 +120,9 @@ export async function refitFromLake(
     isLongPeriod(p.name) ? [p] : fitted.filter((c) => c.name === p.name),
   );
   const refit = tidalResidual(constituents, heldOut);
-  if (refit.hours < MIN_HELD_OUT_HOURS) return undefined;
+  // Half the held-out year's hours, 4392 in a leap year, must be scored.
+  if (refit.hours < (+heldOutEnd - +heldOutStart) / HOUR_MS / 2)
+    return undefined;
   const rms = {
     refit: round(refit.rms),
     published: round(tidalResidual(published, heldOut).rms),
