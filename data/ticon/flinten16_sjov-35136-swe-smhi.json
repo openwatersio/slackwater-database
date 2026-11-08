@@ -9,7 +9,24 @@
     "name": "TICON-4",
     "url": "https://www.seanoe.org/data/00980/109129/",
     "id": "flinten16_sjov-35136-swe-smhi",
-    "published_harmonics": true
+    "published_harmonics": true,
+    "lake": {
+      "series": "smhi/35136",
+      "fit": {
+        "start": "2009-04-27",
+        "end": "2024-12-31"
+      },
+      "held_out": {
+        "start": "2025-01-01",
+        "end": "2025-12-31",
+        "hours": 7221
+      },
+      "rms": {
+        "refit": 0.068481,
+        "published": 0.068441
+      },
+      "swapped": false
+    }
   },
   "license": {
     "type": "cc-by-4.0",

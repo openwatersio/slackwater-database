@@ -3,13 +3,15 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./lake": "./lake.ts"
   },
   "scripts": {
     "test": "vitest run",
     "report:score-line": "node score-line.ts"
   },
   "dependencies": {
+    "@duckdb/node-api": "1.5.6-r.2",
     "@slackwater/datums": "*",
     "@slackwater/engine": "1.0.0-beta.7",
     "ml-matrix": "^6.15.1"

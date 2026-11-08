@@ -9,7 +9,24 @@
     "name": "TICON-4",
     "url": "https://www.seanoe.org/data/00980/109129/",
     "id": "goteborg_tingstadstunneln-33093-swe-smhi",
-    "published_harmonics": true
+    "published_harmonics": true,
+    "lake": {
+      "series": "smhi/33093",
+      "fit": {
+        "start": "2013-01-01",
+        "end": "2024-12-31"
+      },
+      "held_out": {
+        "start": "2025-01-01",
+        "end": "2025-12-31",
+        "hours": 8450
+      },
+      "rms": {
+        "refit": 0.058012,
+        "published": 0.057892
+      },
+      "swapped": false
+    }
   },
   "license": {
     "type": "cc-by-4.0",

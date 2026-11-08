@@ -15,15 +15,16 @@ computed:
         score: 83
         factors:
           epoch: 1
-          recency: 0.99
+          recency: 0.98
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.158) > MLW (0.147)
-          - MHWS (0.172) < MHW (0.183)
-          - "Seasonal curve peak (0.114m) exceeds the principal tide M2+S2+K1+O1 (0.027m): the yearly swing exceeds the daily one"
+          - MLWS (0.154) > MLW (0.147)
+          - MHWS (0.174) < MHW (0.182)
+          - "Seasonal curve peak (0.114m) exceeds the principal tide M2+S2+K1+O1 (0.032m): the yearly swing exceeds the daily one"
+          - M2 here (0.008 m, 42.6°) differs from (0.005 m, 61.4°) by +3 mm and 39 min earlier in ticon/kungsholmsfort-kun-swe-cmems, a duplicate
     ticon/kungsholmsfort-kun-swe-cmems:
       position: [56.105301, 15.5894]
       coastline: unverifiable
@@ -44,3 +45,4 @@ computed:
           - MLWS (0.157) > MLW (0.146)
           - MHWS (0.171) < MHW (0.182)
           - "Seasonal curve peak (0.114m) exceeds the principal tide M2+S2+K1+O1 (0.027m): the yearly swing exceeds the daily one"
+          - M2 here (0.005 m, 61.4°) differs from (0.008 m, 42.6°) by -3 mm and 39 min later in ticon/kungsholmsfort-2088-swe-smhi, which this duplicates

@@ -16,7 +16,7 @@ computed:
         score: 0
         factors:
           epoch: 1
-          recency: 0.99
+          recency: 0.98
           source: 0.919
           quality: 1
           amplitude: 1
@@ -24,7 +24,7 @@ computed:
         issues:
           - MLWS (0.11) > MLW (0.088)
           - MHW (0.112) <= MSL (0.113)
-          - "Seasonal curve peak (0.156m) exceeds the principal tide M2+S2+K1+O1 (0.015m): the yearly swing exceeds the daily one"
+          - "Seasonal curve peak (0.156m) exceeds the principal tide M2+S2+K1+O1 (0.019m): the yearly swing exceeds the daily one"
     ticon/furuogrund-fur-swe-cmems:
       position: [64.915802, 21.2306]
       coastline: unverifiable

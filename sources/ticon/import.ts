@@ -23,6 +23,7 @@ import {
   GESLA_DIR,
 } from "@slackwater/datums";
 import { fitHarmonics, isAnalyzable } from "@slackwater/harmonic-analysis";
+import { readLakeSamples } from "@slackwater/harmonic-analysis/lake";
 import {
   parseTiconSamples,
   shiftEarlyGauge,
@@ -38,6 +39,13 @@ import {
   type TiconMetaRow,
 } from "./meta.ts";
 import { reduceTiconDatums, cachedDatumNotice } from "./datums.ts";
+import {
+  LAKE_CONTRIBUTORS,
+  lakeSeries,
+  refitFromLake,
+  type LakeRefit,
+  type LakeResult,
+} from "./lake.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const metaPath = join(__dirname, "..", "..", "tmp", "TICON-4", "meta.csv");
@@ -159,21 +167,41 @@ async function main() {
         360,
     }));
 
+    // A converted contributor's record is re-fit from its originator's lake
+    // series, and keeps TICON's constants only when the re-fit scores worse.
+    let lake: Awaited<ReturnType<typeof getLakeRefit>>;
+    try {
+      lake = await getLakeRefit(id, csvHarmonics);
+    } catch (err: any) {
+      // The record keeps the file it has; the run reports the error.
+      console.error(`\nError re-fitting ${id} from the lake: ${err.message}`);
+      errors++;
+      continue;
+    }
+    const swapped = lake?.refit.swapped ? lake : undefined;
+
     // WSV, RWS and the early Hong Kong gauges have GESLA times that are not
     // UTC, so TICON's phases are not UTC-referenced; re-fit them from the raw
     // water levels. See #96 and #360.
-    const harmonic_constituents = await getHarmonics(id, csvHarmonics);
+    const harmonic_constituents =
+      swapped?.constituents ?? (await getHarmonics(id, csvHarmonics));
 
-    const epoch = {
-      start: dayMonthYearToDate(rows[0].start_date),
-      end: dayMonthYearToDate(rows[0].end_date),
-    };
+    const epoch = swapped
+      ? {
+          start: new Date(swapped.refit.fit.start),
+          end: new Date(swapped.refit.fit.end),
+        }
+      : {
+          start: dayMonthYearToDate(rows[0].start_date),
+          end: dayMonthYearToDate(rows[0].end_date),
+        };
 
     try {
       const { datum_notice, ...datumResult } = await getDatums(
         id,
         epoch,
         harmonic_constituents,
+        swapped,
       );
       const disclaimers = [rows[0].record_quality, datum_notice]
         .filter(Boolean)
@@ -187,10 +215,15 @@ async function main() {
         type: "reference",
         disclaimers,
         source: {
-          name: "TICON-4",
-          url: "https://www.seanoe.org/data/00980/109129/",
+          ...(swapped
+            ? LAKE_CONTRIBUTORS.get(getSourceSuffix(id))!
+            : {
+                name: "TICON-4",
+                url: "https://www.seanoe.org/data/00980/109129/",
+              }),
           id,
-          published_harmonics: true,
+          published_harmonics: !swapped,
+          ...(lake ? { lake: lake.refit } : {}),
         },
         license: NON_COMMERCIAL_SOURCES.includes(getSourceSuffix(id))
           ? {
@@ -244,6 +277,7 @@ async function getDatums(
   id: string,
   obsEpoch: { start: Date; end: Date },
   harmonic_constituents: PartialStationData["harmonic_constituents"],
+  lake?: Partial<LakeResult> & { refit: LakeRefit },
 ) {
   if (!forceDatums(id)) {
     let existing: Awaited<ReturnType<typeof load>> | undefined;
@@ -286,21 +320,49 @@ async function getDatums(
   // regeneration is deterministic and annual statistics see only full years.
   const harmonic = computeDatums(harmonic_constituents, {});
 
-  // Every TICON station has a GESLA-4 file (100% join), so read it directly — a
-  // missing file is a data-prep error and should throw, not silently degrade.
-  await ensureGesla();
-  let samples = parseTiconSamples(
-    id,
-    await readFile(join(GESLA_DIR, id), "utf-8"),
-  );
+  // A re-fit from the lake reduces its datums from the same series, in that
+  // series' datum.
+  let samples = lake
+    ? (
+        lake.samples ??
+        (await readLakeSamples(lake.refit.series, {
+          start: new Date(lake.refit.fit.start),
+          end: new Date(+new Date(lake.refit.held_out.end) + 86_400_000),
+        }))
+      ).map((s) => ({ time: new Date(s.t), level: s.level }))
+    : await geslaSamples(id);
   // UHSLC research-quality records continue past their GESLA-4 copy. Where the
   // live record is longer, reduce datums from it instead (same record and
   // station zero, so the frame is unchanged). See #138.
-  if (parseRqdId(id)) {
+  if (!lake && parseRqdId(id)) {
     const rqEnd = await rqdEnd(id);
     if (rqEnd && extendsGeslaRecord(id, rqEnd, samples)) {
       samples = shiftEarlyGauge(id, await loadRqdSamples(id, rqEnd));
     }
+  }
+  let reduction = reduceTiconDatums(
+    samples,
+    harmonic_constituents,
+    harmonic.datums,
+    obsEpoch,
+  );
+  // shortcut: the lake's flatline check marks hours of one value suspect, which
+  // at 1 cm resolution drops real Baltic readings and the complete months an
+  // observed reduction needs. Until the lake stops flagging them, a record
+  // keeps its GESLA-4 reduction where that one covers more months. Both are in
+  // one datum for every contributor in LAKE_CONTRIBUTORS.
+  if (lake) {
+    const gesla = reduceTiconDatums(
+      await geslaSamples(id),
+      harmonic_constituents,
+      harmonic.datums,
+      obsEpoch,
+    );
+    if (
+      (gesla.datum_coverage?.months ?? 0) >
+      (reduction.datum_coverage?.months ?? 0)
+    )
+      reduction = gesla;
   }
   const {
     datums,
@@ -310,12 +372,7 @@ async function getDatums(
     epoch,
     datum_epoch,
     datum_notice,
-  } = reduceTiconDatums(
-    samples,
-    harmonic_constituents,
-    harmonic.datums,
-    obsEpoch,
-  );
+  } = reduction;
   return {
     datums,
     datums_source,
@@ -325,6 +382,36 @@ async function getDatums(
     ...(datum_epoch ? { datum_epoch } : {}),
     datum_notice,
   };
+}
+
+// Every TICON station has a GESLA-4 file (100% join), so read it directly — a
+// missing file is a data-prep error and should throw, not silently degrade.
+async function geslaSamples(id: string) {
+  await ensureGesla();
+  return parseTiconSamples(id, await readFile(join(GESLA_DIR, id), "utf-8"));
+}
+
+/**
+ * Re-fit a converted contributor's record from its lake series (see lake.ts).
+ * Reuses the saved re-fit and its scores, without reading the lake, unless
+ * FORCE_HARMONICS=1, so a re-fit is redone only when asked for, as the GESLA
+ * re-fits are. A reused re-fit carries no samples, so getDatums reads them
+ * again when it needs them.
+ */
+async function getLakeRefit(
+  id: string,
+  published: PartialStationData["harmonic_constituents"],
+): Promise<(Partial<LakeResult> & { refit: LakeRefit }) | undefined> {
+  if (!LAKE_CONTRIBUTORS.has(getSourceSuffix(id))) return undefined;
+  if (!forceHarmonics) {
+    const existing = await load("ticon", id).catch(() => undefined);
+    const refit = (existing?.source as { lake?: LakeRefit } | undefined)?.lake;
+    // A re-fit saved before the held-out hours were counted is scored again.
+    if (existing && refit?.held_out.hours !== undefined)
+      return { refit, constituents: existing.harmonic_constituents };
+  }
+  const series = await lakeSeries(id);
+  return series ? refitFromLake(series, published) : undefined;
 }
 
 /**

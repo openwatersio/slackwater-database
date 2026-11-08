@@ -9,7 +9,24 @@
     "name": "TICON-4",
     "url": "https://www.seanoe.org/data/00980/109129/",
     "id": "lunde_sjov-35209-swe-smhi",
-    "published_harmonics": true
+    "published_harmonics": true,
+    "lake": {
+      "series": "smhi/35209",
+      "fit": {
+        "start": "2019-03-25",
+        "end": "2024-12-31"
+      },
+      "held_out": {
+        "start": "2025-01-01",
+        "end": "2025-12-31",
+        "hours": 8513
+      },
+      "rms": {
+        "refit": 0.030755,
+        "published": 0.030642
+      },
+      "swapped": false
+    }
   },
   "license": {
     "type": "cc-by-4.0",

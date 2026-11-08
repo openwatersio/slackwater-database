@@ -12,17 +12,17 @@ computed:
       quality:
         accepted: true
         seasonal_dominant: true
-        score: 83
+        score: 82
         factors:
           epoch: 1
-          recency: 0.93
+          recency: 0.91
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0
         issues:
           - MLWS (0.111) > MLW (0.105)
-          - "Seasonal curve peak (0.134m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"
+          - "Seasonal curve peak (0.134m) exceeds the principal tide M2+S2+K1+O1 (0.026m): the yearly swing exceeds the daily one"
     ticon/marviken-mar-swe-cmems:
       position: [58.5536, 16.8372]
       coastline: unverifiable

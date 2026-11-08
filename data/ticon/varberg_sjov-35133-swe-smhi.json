@@ -9,7 +9,24 @@
     "name": "TICON-4",
     "url": "https://www.seanoe.org/data/00980/109129/",
     "id": "varberg_sjov-35133-swe-smhi",
-    "published_harmonics": true
+    "published_harmonics": true,
+    "lake": {
+      "series": "smhi/35133",
+      "fit": {
+        "start": "2009-04-27",
+        "end": "2024-12-31"
+      },
+      "held_out": {
+        "start": "2025-01-01",
+        "end": "2025-12-31",
+        "hours": 8542
+      },
+      "rms": {
+        "refit": 0.057408,
+        "published": 0.05729
+      },
+      "swapped": false
+    }
   },
   "license": {
     "type": "cc-by-4.0",

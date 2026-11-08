@@ -33,12 +33,12 @@ computed:
         score: 0
         factors:
           epoch: 1
-          recency: 0.99
+          recency: 0.98
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.104) > MLW (0.097)
+          - MLWS (0.102) > MLW (0.097)
           - Tidal range 1.90cm < 2cm threshold
-          - "Seasonal curve peak (0.132m) exceeds the principal tide M2+S2+K1+O1 (0.015m): the yearly swing exceeds the daily one"
+          - "Seasonal curve peak (0.132m) exceeds the principal tide M2+S2+K1+O1 (0.016m): the yearly swing exceeds the daily one"
