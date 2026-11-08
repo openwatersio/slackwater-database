@@ -16,15 +16,15 @@ computed:
         score: 0
         factors:
           epoch: 1
-          recency: 0.99
+          recency: 0.98
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0.514
         issues:
-          - MLWS (0.16) > MLW (0.141)
+          - MLWS (0.159) > MLW (0.141)
           - MHW (0.163) <= MSL (0.165)
-          - "Seasonal curve peak (0.139m) exceeds the principal tide M2+S2+K1+O1 (0.018m): the yearly swing exceeds the daily one"
+          - "Seasonal curve peak (0.139m) exceeds the principal tide M2+S2+K1+O1 (0.020m): the yearly swing exceeds the daily one"
     ticon/olandsnorraudde-ola-swe-cmems:
       position: [57.3661, 17.0972]
       coastline: unverifiable

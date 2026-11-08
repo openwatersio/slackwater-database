@@ -15,14 +15,14 @@ computed:
         score: 83
         factors:
           epoch: 1
-          recency: 0.99
+          recency: 0.98
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (0.208) < MHW (0.215)
-          - "Seasonal curve peak (0.093m) exceeds the principal tide M2+S2+K1+O1 (0.069m): the yearly swing exceeds the daily one"
+          - "Seasonal curve peak (0.093m) exceeds the principal tide M2+S2+K1+O1 (0.079m): the yearly swing exceeds the daily one"
+          - M2 here (0.037 m, 214.4°) differs from (0.031 m, 211.4°) by +6 mm and 6 min later in ticon/klagshamn-kla-swe-cmems, a duplicate
     ticon/klagshamn-kla-swe-cmems:
       position: [55.522202, 12.8936]
       coastline: unverifiable
@@ -42,3 +42,4 @@ computed:
         issues:
           - MHWS (0.208) < MHW (0.215)
           - "Seasonal curve peak (0.093m) exceeds the principal tide M2+S2+K1+O1 (0.069m): the yearly swing exceeds the daily one"
+          - M2 here (0.031 m, 211.4°) differs from (0.037 m, 214.4°) by -6 mm and 6 min earlier in ticon/klagshamn-2095-swe-smhi, which this duplicates

@@ -4,7 +4,9 @@ import * as engine from "@slackwater/engine";
 import {
   definitionMismatched,
   fitHarmonics,
+  isLongPeriod,
   parseGeslaSamplesInZone,
+  tidalResidual,
   type Sample,
 } from "../index.js";
 
@@ -143,6 +145,18 @@ describe("fitHarmonics", () => {
     test("leaves 3N2 to N2 when the record is shorter than a perigee cycle", () => {
       const fit = fitHarmonics(synthetic(3 * 8766, tide), ["M2", "N2", "3N2"]);
       expect(fit.map((c) => c.name)).toEqual(["M2", "N2"]);
+    });
+
+    test("leaves 3L2 to L2 when the record is shorter than a perigee cycle", () => {
+      const fit = fitHarmonics(
+        synthetic(3 * 8766, [
+          ["M2", 1, 110],
+          ["L2", 0.05, 80],
+        ]),
+        ["M2", "L2", "3L2"],
+      );
+      expect(fit.map((c) => c.name)).toEqual(["M2", "L2"]);
+      expect(fit[1]!.amplitude).toBeCloseTo(0.05, 3);
     });
 
     test("fits 3N2 on its own line when the record spans a perigee cycle", () => {
@@ -315,4 +329,40 @@ describe("parseGeslaSamplesInZone", () => {
       "2020-07-01T10:00:00.000Z",
     );
   });
+});
+
+describe("tidalResidual", () => {
+  const hours = (n: number, level: (t: number) => number): Sample[] =>
+    Array.from({ length: n }, (_, i) => {
+      const t = Date.UTC(2020, 0, 1) + i * 3600000;
+      return { t, level: level(t) };
+    });
+
+  test("takes out a steady rise entirely, as a centred filter does", () => {
+    // 1 m a day: an off-centre filter would leave a step of ~4 cm an hour.
+    const { rms, hours: scored } = tidalResidual(
+      [],
+      hours(24 * 10, (t) => t / 86_400_000),
+    );
+    expect(scored).toBe(24 * 10 - 70);
+    expect(rms).toBeLessThan(1e-9);
+  });
+
+  test("leaves a semidiurnal error whole", () => {
+    const { rms } = tidalResidual(
+      [],
+      hours(24 * 30, (t) => 0.1 * Math.cos((2 * Math.PI * t) / 43_200_000)),
+    );
+    expect(rms).toBeCloseTo(0.1 / Math.SQRT2, 2);
+  });
+
+  test("scores only hours with a full window around them", () => {
+    const samples = hours(24 * 10, () => 0).filter((_, i) => i !== 100);
+    expect(tidalResidual([], samples).hours).toBe(24 * 10 - 70 - 71);
+  });
+});
+
+test("isLongPeriod", () => {
+  expect(["SA", "SSA", "MM", "MF", "MSF"].every(isLongPeriod)).toBe(true);
+  expect(["K1", "O1", "M2", "M4"].some(isLongPeriod)).toBe(false);
 });

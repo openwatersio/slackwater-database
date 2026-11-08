@@ -167,18 +167,20 @@ function spanMs(samples: Sample[]): number {
   return samples.length ? hi - lo : 0;
 }
 
-// 3N2 and N2 are one lunar perigee cycle apart (8.85 years). A shorter record
-// can't separate them, and fitting both splits N2 between the two lines, so
-// N2 keeps the signal on its own.
-// ponytail: 3N2 only; a general Rayleigh check would also cover 3L2 against L2.
-function unresolvedFromN2(
+// 3N2 and N2, and 3L2 and L2, are one lunar perigee cycle apart (8.85 years),
+// the only pairs among TICON's names more than a year apart. A shorter record
+// can't separate them, and fitting both splits the larger line between the
+// two, so it keeps the signal on its own.
+const PERIGEE_PARTNER: Record<string, string> = { "3N2": "N2", "3L2": "L2" };
+function unresolvedFromPartner(
   name: string,
   speed: number,
   spanHours: number,
 ): boolean {
+  const partner = PERIGEE_PARTNER[name.toUpperCase()];
   return (
-    name.toUpperCase() === "3N2" &&
-    360 / Math.abs(speed - engine.constituents["N2"]!.speed) > spanHours
+    !!partner &&
+    360 / Math.abs(speed - engine.constituents[partner]!.speed) > spanHours
   );
 }
 
@@ -202,7 +204,7 @@ export function fitHarmonics(
       (x): x is { name: string; c: (typeof engine.constituents)[string] } =>
         !!x.c &&
         !definitionMismatched(x.name, x.c.speed) &&
-        !unresolvedFromN2(x.name, x.c.speed, spanHours),
+        !unresolvedFromPartner(x.name, x.c.speed, spanHours),
     );
 
   const ncol = 1 + 2 * cons.length;
@@ -255,3 +257,76 @@ export function fitHarmonics(
 }
 
 export { spreadSample, selectExtraConstituents } from "./selection.ts";
+
+/**
+ * Whether a constituent is long-period (species 0, such as SA, SSA or MM):
+ * slower than 5°/h, a period over three days, which a Godin filter removes.
+ */
+export function isLongPeriod(name: string): boolean {
+  const c = engine.constituents[constituentKey.get(name.toUpperCase())!];
+  return !!c && c.speed < 5;
+}
+
+const HOUR_MS = 3_600_000;
+
+/**
+ * A running mean of `width` hours over hours i − lead to i − lead + width − 1,
+ * NaN wherever a value is missing. An even width can't be centred, so the
+ * Godin filter's two 24-hour passes lead by 11 and 12 hours, which cancel.
+ */
+function runningMean(xs: number[], width: number, lead: number): number[] {
+  const out = new Array<number>(xs.length).fill(NaN);
+  for (let i = lead; i + width - lead <= xs.length; i++) {
+    let sum = 0;
+    for (let k = i - lead; k < i - lead + width; k++) sum += xs[k]!;
+    out[i] = sum / width;
+  }
+  return out;
+}
+
+/**
+ * How well constituents predict the tide in these samples: the RMS, in metres,
+ * of observed minus predicted levels after a Godin filter (24, 24 and 25-hour
+ * running means; Godin 1972, The Analysis of Tides) has taken out the slow
+ * part, such as weather and the datum. What is left is the diurnal and faster
+ * tidal band, where those constituents' errors show, plus seiches and noise;
+ * the filter also takes out the long-period constituents (isLongPeriod). Residuals are averaged
+ * into whole UTC hours first; an hour counts only when the 71 hours around it
+ * all have data. Constituents the engine doesn't know predict nothing.
+ */
+export function tidalResidual(
+  constituents: HarmonicConstituent[],
+  samples: Sample[],
+): { rms: number; hours: number } {
+  if (!samples.length) return { rms: NaN, hours: 0 };
+  const predictor = engine.createTidePredictor(constituents, { offset: false });
+  const first = Math.floor(samples[0]!.t / HOUR_MS);
+  const sums: number[] = [];
+  const counts: number[] = [];
+  for (const { t, level } of samples) {
+    const h = Math.floor(t / HOUR_MS) - first;
+    sums[h] =
+      (sums[h] ?? 0) +
+      level -
+      predictor.getWaterLevelAtTime({ time: new Date(t) }).level;
+    counts[h] = (counts[h] ?? 0) + 1;
+  }
+  const hourly = Array.from({ length: sums.length }, (_, h) =>
+    counts[h] ? sums[h]! / counts[h]! : NaN,
+  );
+  const slow = runningMean(
+    runningMean(runningMean(hourly, 24, 11), 24, 12),
+    25,
+    12,
+  );
+  let sum = 0;
+  let hours = 0;
+  hourly.forEach((r, h) => {
+    const fast = r - slow[h]!;
+    if (Number.isFinite(fast)) {
+      sum += fast * fast;
+      hours++;
+    }
+  });
+  return { rms: hours ? Math.sqrt(sum / hours) : NaN, hours };
+}

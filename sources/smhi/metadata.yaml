@@ -1,0 +1,9 @@
+# Must match `source.name` on every record this source writes: the TICON
+# records of SMHI's gauges that sources/ticon re-fits from SMHI's series in the
+# water-levels lake (see sources/ticon/README.md#re-fits-from-the-water-levels-lake).
+name: Swedish Meteorological and Hydrological Institute
+# Re-fits of TICON relays, so they rank as TICON's records do.
+authoritative: false
+# SMHI's open data is CC BY 4.0. The lake asks for its own credit and the
+# station's, and the record's name and position are still TICON's.
+credit: "Source: Swedish Meteorological and Hydrological Institute (SMHI), https://www.smhi.se, via Open Waters water-levels, https://github.com/openwatersio/water-levels. Harmonic constants fitted and datums derived by Open Waters. Station metadata: Hart-Davis, M., Dettmering, D., Seitz, F. (2025), TICON-4: TIdal CONstants based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129"

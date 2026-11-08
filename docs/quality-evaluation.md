@@ -16,16 +16,17 @@ This database collects tidal harmonic constants and datums for several thousand 
 
 ## Sources
 
-| Source                                    | Role                                                                                                                                                                                                            |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| NOAA CO-OPS (United States)               | Authoritative. Reference stations with harmonic constants, and subordinate stations.                                                                                                                            |
-| Toitū Te Whenua LINZ (New Zealand)        | Authoritative. Reference stations.                                                                                                                                                                              |
-| Kartverket, Hydrographic Service (Norway) | Authoritative. Reference stations.                                                                                                                                                                              |
-| Japan Coast Guard JHOD (Japan)            | Authoritative. Reference stations.                                                                                                                                                                              |
-| Japan Meteorological Agency (Japan)       | Authoritative. Published harmonic constants; published tide-table CD reference.                                                                                                                                 |
-| Danish Meteorological Institute           | Fits of astronomical predictions. No gauge-authority claim; source priority 50 (confidence 0.495), an engineering ranking independent of TICON's DMI relay priority. No original observation epoch is inferred. |
-| TICON-4                                   | Relay. Constants computed from GESLA-4 sea-level records supplied by many agencies.                                                                                                                             |
-| Canadian Hydrographic Service             | Station identity only. No harmonic constants, so not evaluated.                                                                                                                                                 |
+| Source                                            | Role                                                                                                                                                                                                            |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| NOAA CO-OPS (United States)                       | Authoritative. Reference stations with harmonic constants, and subordinate stations.                                                                                                                            |
+| Toitū Te Whenua LINZ (New Zealand)                | Authoritative. Reference stations.                                                                                                                                                                              |
+| Kartverket, Hydrographic Service (Norway)         | Authoritative. Reference stations.                                                                                                                                                                              |
+| Japan Coast Guard JHOD (Japan)                    | Authoritative. Reference stations.                                                                                                                                                                              |
+| Japan Meteorological Agency (Japan)               | Authoritative. Published harmonic constants; published tide-table CD reference.                                                                                                                                 |
+| Danish Meteorological Institute                   | Fits of astronomical predictions. No gauge-authority claim; source priority 50 (confidence 0.495), an engineering ranking independent of TICON's DMI relay priority. No original observation epoch is inferred. |
+| TICON-4                                           | Relay. Constants computed from GESLA-4 sea-level records supplied by many agencies.                                                                                                                             |
+| Swedish Meteorological and Hydrological Institute | TICON records of SMHI's gauges, re-fit from SMHI's series in the water-levels lake. Ranked as the TICON relays they replace.                                                                                    |
+| Canadian Hydrographic Service                     | Station identity only. No harmonic constants, so not evaluated.                                                                                                                                                 |
 
 TICON-4 (Hart-Davis et al., 2025) analyzes the records in GESLA-4, which collects sea-level data from national and regional agencies (Haigh et al., 2023, describes the GESLA-3 compilation that version 4 extends). Each TICON record names the agency that supplied the data, and that agency matters to several of the checks below.
 
@@ -317,33 +318,33 @@ npm run report:quality -w packages/stations
 
 ### Constants
 
-| Constant                              | Value                                                              | Used by                                             |
-| ------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------- |
-| `NULL_ISLAND_RADIUS`                  | 0.05°                                                              | Position                                            |
-| `EPSILON` (in `checkDatumOrdering`)   | 0.5 m                                                              | Low chart datums below LAT                          |
-| `MIN_TIDAL_RANGE`                     | 0.02 m                                                             | Tidal range                                         |
-| `SUPERSEDED_SOURCES`                  | `rws_hist`                                                         | Superseded relay                                    |
-| `ESSENTIAL_CONSTITUENTS`              | M2, S2, K1, O1                                                     | Essential constituents                              |
-| `SEASONAL_OUTLIER_MIN_SA`             | 0.5 m                                                              | Seasonal contamination                              |
-| `SEASONAL_OUTLIER_RADIUS`             | 25 km                                                              | Seasonal contamination                              |
-| `SEASONAL_OUTLIER_RATIO`              | 5                                                                  | Seasonal contamination                              |
-| `OBSERVED_BOUND_ALLOWANCE`            | 0.05 m                                                             | Cross-period observed means against harmonic bounds |
-| `AMPLITUDE_TOLERANCE`                 | 0.003 m                                                            | Every amplitude comparison                          |
-| `RESOLVED_P1`                         | 0.01 m                                                             | Essential constituents                              |
-| `MIN_AMPLITUDE_RATIO`                 | 0.9                                                                | Seasonal contamination, duplicates                  |
-| `PRINCIPAL_TIDAL_CONSTITUENTS`        | M2, S2, K1, O1                                                     | Seasonal label, amplitudes                          |
-| `SEASONAL_DOMINANCE_RATIO`            | 1                                                                  | Seasonal label                                      |
-| `WEIGHTS`                             | 20, 10, 20, 15, 20, 15                                             | Score                                               |
-| `SOURCE_PRIORITY`, `DEFAULT_PRIORITY` | 0–99 per TICON source suffix; DMI fits and unlisted sources use 50 | Source factor, as 1 − priority/99                   |
-| `MIN_DEDUP_DISTANCE`                  | 50 m                                                               | Duplicates                                          |
-| `FALLBACK_DEDUP_DISTANCE`             | 100 m                                                              | Duplicates                                          |
-| `MAX_DEDUP_DISTANCE`                  | 500 m                                                              | Duplicates                                          |
-| `MAX_OFFSET_HEIGHT_DELTA`             | 0.1                                                                | Duplicate subordinates                              |
-| `MAX_OFFSET_TIME_DELTA`               | 10 min                                                             | Duplicate subordinates                              |
-| `MAX_PROVENANCE_KM`                   | 10 km                                                              | Superseded relay, merge report                      |
-| `CLOCK_ERROR_SOURCES`                 | `hct`                                                              | Clock error                                         |
-| `jurisdiction` (in `metadata.yaml`)   | NOAA: US and its territories                                       | Choosing the record to keep                         |
-| `SAME_GAUGE_M2_DIFFERENCE`            | 0.15                                                               | Disagreeing duplicates                              |
+| Constant                              | Value                                                              | Used by                                              |
+| ------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------- |
+| `NULL_ISLAND_RADIUS`                  | 0.05°                                                              | Position                                             |
+| `EPSILON` (in `checkDatumOrdering`)   | 0.5 m                                                              | Low chart datums below LAT                           |
+| `MIN_TIDAL_RANGE`                     | 0.02 m                                                             | Tidal range                                          |
+| `SUPERSEDED_SOURCES`                  | `rws_hist`                                                         | Superseded relay                                     |
+| `ESSENTIAL_CONSTITUENTS`              | M2, S2, K1, O1                                                     | Essential constituents                               |
+| `SEASONAL_OUTLIER_MIN_SA`             | 0.5 m                                                              | Seasonal contamination                               |
+| `SEASONAL_OUTLIER_RADIUS`             | 25 km                                                              | Seasonal contamination                               |
+| `SEASONAL_OUTLIER_RATIO`              | 5                                                                  | Seasonal contamination                               |
+| `OBSERVED_BOUND_ALLOWANCE`            | 0.05 m                                                             | Cross-period observed means against harmonic bounds  |
+| `AMPLITUDE_TOLERANCE`                 | 0.003 m                                                            | Every amplitude comparison, and the lake re-fit gate |
+| `RESOLVED_P1`                         | 0.01 m                                                             | Essential constituents                               |
+| `MIN_AMPLITUDE_RATIO`                 | 0.9                                                                | Seasonal contamination, duplicates                   |
+| `PRINCIPAL_TIDAL_CONSTITUENTS`        | M2, S2, K1, O1                                                     | Seasonal label, amplitudes                           |
+| `SEASONAL_DOMINANCE_RATIO`            | 1                                                                  | Seasonal label                                       |
+| `WEIGHTS`                             | 20, 10, 20, 15, 20, 15                                             | Score                                                |
+| `SOURCE_PRIORITY`, `DEFAULT_PRIORITY` | 0–99 per TICON source suffix; DMI fits and unlisted sources use 50 | Source factor, as 1 − priority/99                    |
+| `MIN_DEDUP_DISTANCE`                  | 50 m                                                               | Duplicates                                           |
+| `FALLBACK_DEDUP_DISTANCE`             | 100 m                                                              | Duplicates                                           |
+| `MAX_DEDUP_DISTANCE`                  | 500 m                                                              | Duplicates                                           |
+| `MAX_OFFSET_HEIGHT_DELTA`             | 0.1                                                                | Duplicate subordinates                               |
+| `MAX_OFFSET_TIME_DELTA`               | 10 min                                                             | Duplicate subordinates                               |
+| `MAX_PROVENANCE_KM`                   | 10 km                                                              | Superseded relay, merge report                       |
+| `CLOCK_ERROR_SOURCES`                 | `hct`                                                              | Clock error                                          |
+| `jurisdiction` (in `metadata.yaml`)   | NOAA: US and its territories                                       | Choosing the record to keep                          |
+| `SAME_GAUGE_M2_DIFFERENCE`            | 0.15                                                               | Disagreeing duplicates                               |
 
 The recency reference year, `RECENCY_YEAR`, is the UTC year of `DATUM_EPOCH.end`, 2026. Distances use the haversine formula on a sphere of radius 6371 km (Sinnott, 1984). Position precision is the smaller of the decimal-place counts of latitude and longitude. The quality factor matches the text "quality control issues" in a record's `disclaimers`, which the TICON import fills from TICON's `record_quality` field.
 

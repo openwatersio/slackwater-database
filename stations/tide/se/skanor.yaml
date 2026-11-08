@@ -14,13 +14,13 @@ computed:
         score: 83
         factors:
           epoch: 1
-          recency: 0.99
+          recency: 0.98
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (0.229) < MHW (0.23)
+          - M2 here (0.033 m, 182.9°) differs from (0.031 m, 173.5°) by +2 mm and 19 min later in ticon/skanor-ska-swe-cmems, a duplicate
     ticon/skanor-ska-swe-cmems:
       position: [55.416698, 12.8294]
       coastline: unverifiable
@@ -38,3 +38,4 @@ computed:
           coverage: 0
         issues:
           - MHWS (0.229) < MHW (0.23)
+          - M2 here (0.031 m, 173.5°) differs from (0.033 m, 182.9°) by -2 mm and 19 min earlier in ticon/skanor-30488-swe-smhi, which this duplicates

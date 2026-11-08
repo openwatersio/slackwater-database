@@ -16,15 +16,15 @@ computed:
         score: 0
         factors:
           epoch: 1
-          recency: 0.99
+          recency: 0.98
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0.875
         issues:
-          - MLWS (0.103) > MLW (0.082)
-          - MHW (0.105) <= MSL (0.107)
-          - "Seasonal curve peak (0.156m) exceeds the principal tide M2+S2+K1+O1 (0.018m): the yearly swing exceeds the daily one"
+          - MLWS (0.106) > MLW (0.087)
+          - MHW (0.11) <= MSL (0.111)
+          - "Seasonal curve peak (0.156m) exceeds the principal tide M2+S2+K1+O1 (0.021m): the yearly swing exceeds the daily one"
     ticon/ratan-rat-swe-cmems:
       position: [63.986099, 20.895]
       coastline: unverifiable

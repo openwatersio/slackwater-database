@@ -9,7 +9,24 @@
     "name": "TICON-4",
     "url": "https://www.seanoe.org/data/00980/109129/",
     "id": "skagsudde-2321-swe-smhi",
-    "published_harmonics": true
+    "published_harmonics": true,
+    "lake": {
+      "series": "smhi/2321",
+      "fit": {
+        "start": "1998-01-01",
+        "end": "2016-12-31"
+      },
+      "held_out": {
+        "start": "2017-01-01",
+        "end": "2017-12-31",
+        "hours": 8690
+      },
+      "rms": {
+        "refit": 0.034232,
+        "published": 0.034116
+      },
+      "swapped": false
+    }
   },
   "license": {
     "type": "cc-by-4.0",

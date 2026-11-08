@@ -6,10 +6,27 @@
   "longitude": 20.895,
   "timezone": "Europe/Stockholm",
   "source": {
-    "name": "TICON-4",
-    "url": "https://www.seanoe.org/data/00980/109129/",
+    "name": "Swedish Meteorological and Hydrological Institute",
+    "url": "https://github.com/openwatersio/water-levels",
     "id": "ratan-2056-swe-smhi",
-    "published_harmonics": true
+    "published_harmonics": false,
+    "lake": {
+      "series": "smhi/2056",
+      "fit": {
+        "start": "2006-01-01",
+        "end": "2024-12-31"
+      },
+      "held_out": {
+        "start": "2025-01-01",
+        "end": "2025-12-31",
+        "hours": 8690
+      },
+      "rms": {
+        "refit": 0.042745,
+        "published": 0.042837
+      },
+      "swapped": true
+    }
   },
   "license": {
     "type": "cc-by-4.0",
@@ -18,22 +35,22 @@
   },
   "disclaimers": "No obvious issues Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering.",
   "datums": {
-    "MSL": 0.107,
-    "MHHW": 0.159,
-    "MHW": 0.105,
-    "MTL": 0.094,
-    "MLW": 0.082,
-    "MLLW": 0.056,
-    "HAT": 0.244,
-    "LAT": -0.071,
-    "MHWS": 0.111,
-    "MLWS": 0.103
+    "MSL": 0.111,
+    "MHHW": 0.163,
+    "MHW": 0.11,
+    "MTL": 0.098,
+    "MLW": 0.087,
+    "MLLW": 0.061,
+    "HAT": 0.249,
+    "LAT": -0.07,
+    "MHWS": 0.116,
+    "MLWS": 0.106
   },
   "datums_source": "observed",
   "datum_frame": "gauge",
   "datum_coverage": {
-    "months": 216,
-    "observed_hours": 157800,
+    "months": 228,
+    "observed_hours": 166560,
     "inferred_hours": 0
   },
   "chart_datum": "MSL",
@@ -41,63 +58,63 @@
   "harmonic_constituents": [
     {
       "name": "M2",
-      "amplitude": 0.00263345,
-      "phase": 12.085372
+      "amplitude": 0.003,
+      "phase": 5.11
     },
     {
       "name": "N2",
-      "amplitude": 0.0003473,
-      "phase": 16.435232
+      "amplitude": 0,
+      "phase": 0.43
     },
     {
       "name": "S2",
-      "amplitude": 0.00172534,
-      "phase": 8.921095
+      "amplitude": 0.002,
+      "phase": 3.07
     },
     {
       "name": "K2",
-      "amplitude": 0.00040194,
-      "phase": 14.971497
+      "amplitude": 0.001,
+      "phase": 17.83
     },
     {
       "name": "2N2",
-      "amplitude": 0.00009665,
-      "phase": 48.793079
+      "amplitude": 0,
+      "phase": 82.58
     },
     {
       "name": "S1",
-      "amplitude": 0.00199981,
-      "phase": 182.797008
+      "amplitude": 0.003,
+      "phase": 205.42
     },
     {
       "name": "K1",
-      "amplitude": 0.00856329,
-      "phase": 324.058125
+      "amplitude": 0.01,
+      "phase": 321.12
     },
     {
       "name": "P1",
-      "amplitude": 0.00212511,
-      "phase": 322.014153
+      "amplitude": 0.003,
+      "phase": 323.17
     },
     {
       "name": "O1",
-      "amplitude": 0.00500498,
-      "phase": 307.677263
+      "amplitude": 0.006,
+      "phase": 302.73
     },
     {
       "name": "Q1",
-      "amplitude": 0.0009444,
-      "phase": 301.219908
+      "amplitude": 0.001,
+      "phase": 318.92
     },
     {
       "name": "M1",
-      "amplitude": 0.00042786,
-      "phase": 228.603168
+      "amplitude": 0,
+      "phase": 39.53
     },
     {
       "name": "M4",
-      "amplitude": 0.00000453,
-      "phase": 210.561658
+      "amplitude": 0,
+      "phase": 314.88
     },
     {
       "name": "MM",
@@ -121,28 +138,28 @@
     },
     {
       "name": "T2",
-      "amplitude": 0.00016965,
-      "phase": 76.338715
+      "amplitude": 0,
+      "phase": 78.31
     },
     {
       "name": "J1",
-      "amplitude": 0.00036379,
-      "phase": 333.733157
+      "amplitude": 0,
+      "phase": 318.94
     },
     {
       "name": "L2",
-      "amplitude": 0.0001031,
-      "phase": 30.305434
+      "amplitude": 0,
+      "phase": 3.5
     },
     {
       "name": "R2",
-      "amplitude": 0.00023964,
-      "phase": 295.063357
+      "amplitude": 0,
+      "phase": 260.12
     },
     {
       "name": "2Q1",
-      "amplitude": 0.00022695,
-      "phase": 297.3962
+      "amplitude": 0.001,
+      "phase": 295.57
     },
     {
       "name": "MSF",
@@ -156,18 +173,18 @@
     },
     {
       "name": "EP2",
-      "amplitude": 0.00003537,
-      "phase": 296.657132
+      "amplitude": 0,
+      "phase": 281.8
     },
     {
       "name": "M3",
-      "amplitude": 0.00003784,
-      "phase": 196.850061
+      "amplitude": 0,
+      "phase": 191.33
     },
     {
       "name": "MU2",
-      "amplitude": 0.00014344,
-      "phase": 78.363834
+      "amplitude": 0,
+      "phase": 88.24
     },
     {
       "name": "MTM",
@@ -176,126 +193,126 @@
     },
     {
       "name": "NU2",
-      "amplitude": 0.00012298,
-      "phase": 21.297942
+      "amplitude": 0,
+      "phase": 16.93
     },
     {
       "name": "LAMBDA2",
-      "amplitude": 0.00004256,
-      "phase": 69.841464
+      "amplitude": 0,
+      "phase": 22.87
     },
     {
       "name": "MN4",
-      "amplitude": 0.00002006,
-      "phase": 170.7494
+      "amplitude": 0,
+      "phase": 211.43
     },
     {
       "name": "MS4",
-      "amplitude": 0.0000154,
-      "phase": 320.20401
+      "amplitude": 0,
+      "phase": 323.49
     },
     {
       "name": "MKS2",
-      "amplitude": 0.00003088,
-      "phase": 121.509723
+      "amplitude": 0,
+      "phase": 269.62
     },
     {
       "name": "N4",
-      "amplitude": 0.00001373,
-      "phase": 26.416217
+      "amplitude": 0,
+      "phase": 217.57
     },
     {
       "name": "M6",
-      "amplitude": 0.00001133,
-      "phase": 16.46833
+      "amplitude": 0,
+      "phase": 114.55
     },
     {
       "name": "M8",
-      "amplitude": 0.00000863,
-      "phase": 29.762035
+      "amplitude": 0,
+      "phase": 17.53
     },
     {
       "name": "S4",
-      "amplitude": 0.0002275,
-      "phase": 209.206537
+      "amplitude": 0,
+      "phase": 81.19
     },
     {
       "name": "OO1",
-      "amplitude": 0.00034074,
-      "phase": 327.857497
+      "amplitude": 0.001,
+      "phase": 334.71
     },
     {
       "name": "S3",
-      "amplitude": 0.00012579,
-      "phase": 82.896806
+      "amplitude": 0,
+      "phase": 294.78
     },
     {
       "name": "MA2",
-      "amplitude": 0.00001477,
-      "phase": 122.523294
+      "amplitude": 0,
+      "phase": 325.93
     },
     {
       "name": "MB2",
-      "amplitude": 0.00008919,
-      "phase": 189.561558
+      "amplitude": 0,
+      "phase": 199.08
     },
     {
       "name": "T3",
-      "amplitude": 0.00004132,
-      "phase": 20.824592
+      "amplitude": 0,
+      "phase": 138.28
     },
     {
       "name": "R3",
-      "amplitude": 0.00003314,
-      "phase": 159.977926
+      "amplitude": 0,
+      "phase": 179.54
     },
     {
       "name": "RHO1",
-      "amplitude": 0.00019045,
-      "phase": 270.994427
+      "amplitude": 0.001,
+      "phase": 274.74
     },
     {
       "name": "SGM",
-      "amplitude": 0.00021552,
-      "phase": 253.808221
+      "amplitude": 0.001,
+      "phase": 131.23
     },
     {
       "name": "3L2",
-      "amplitude": 0.000071,
-      "phase": 178.021163
+      "amplitude": 0,
+      "phase": 131.96
     },
     {
       "name": "3N2",
-      "amplitude": 0.00003339,
-      "phase": 348.897429
+      "amplitude": 0,
+      "phase": 162.55
     },
     {
       "name": "2SM2",
-      "amplitude": 0.00002601,
-      "phase": 136.191697
+      "amplitude": 0,
+      "phase": 104.13
     },
     {
       "name": "2MS6",
-      "amplitude": 0.00002138,
-      "phase": 107.324958
+      "amplitude": 0,
+      "phase": 59.83
     },
     {
       "name": "2MK5",
-      "amplitude": 0.00000912,
-      "phase": 309.910779
+      "amplitude": 0,
+      "phase": 335.31
     },
     {
       "name": "2MO5",
-      "amplitude": 0.00002225,
-      "phase": 20.040639
+      "amplitude": 0,
+      "phase": 66.47
     }
   ],
   "datum_epoch": {
-    "start": "2007-07-01",
-    "end": "2025-06-30"
+    "start": "2007-01-01",
+    "end": "2025-12-31"
   },
   "epoch": {
-    "start": "1891-10-26",
-    "end": "2025-07-02"
+    "start": "2006-01-01",
+    "end": "2024-12-31"
   }
 }
