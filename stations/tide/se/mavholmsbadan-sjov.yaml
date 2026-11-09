@@ -1,13 +1,32 @@
 sources:
+  - smhi/35171
   - ticon/mavholmsbadan_sjov-35171-swe-smhi
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/mavholmsbadan_sjov-35171-swe-smhi:
+    smhi/35171:
       position: [57.6723, 11.7075]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 74
+        factors:
+          epoch: 0.474
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.087
+        issues:
+          - "Seasonal curve peak (0.122m) exceeds the principal tide M2+S2+K1+O1 (0.112m): the yearly swing exceeds the daily one"
+    ticon/mavholmsbadan_sjov-35171-swe-smhi:
+      position: [57.6723, 11.7075]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35171
         seasonal_dominant: true
         score: 74
         factors:

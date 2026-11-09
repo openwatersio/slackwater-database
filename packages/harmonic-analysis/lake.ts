@@ -24,8 +24,12 @@ export const LAKE_DIR =
   join(import.meta.dirname, "..", "..", "tmp", "water-levels");
 
 // The lake's flags: 0 good, 1 interpolated, 2 preliminary, 3 suspect, 4 bad.
-// A fit takes measured values only, so interpolated ones are left out too.
-const MEASURED_FLAGS = [0, 2];
+/** Values the agency has verified: what a harmonic fit takes, as NOAA computes
+ *  an epoch only from data it has evaluated. The default. */
+export const VERIFIED_FLAGS = [0];
+/** Every measured value, verified or not yet: interpolated, suspect and bad
+ *  ones are left out. */
+export const MEASURED_FLAGS = [0, 2];
 
 export interface LakeEpoch {
   id: number;
@@ -72,7 +76,7 @@ export async function cachedLakeFile(
   }
   if (!res.ok) throw new Error(`${LAKE_URL}/${path}: HTTP ${res.status}`);
   await mkdir(dirname(local), { recursive: true });
-  // The TICON import runs one process per core; rename so no reader sees half a file.
+  // Rename, so a reader in another process never sees half a file.
   const partial = `${local}.${process.pid}`;
   await writeFile(partial, Buffer.from(await res.arrayBuffer()));
   await rename(partial, local);
@@ -139,7 +143,7 @@ export async function lakeStation(
 }
 
 /**
- * A lake series' measured levels in [start, end), in metres in the station's
+ * A lake series' levels with the given flags, verified ones by default, in [start, end), in metres in the station's
  * current datum. Each datum epoch's levels are moved by its `to_current`; an
  * epoch that can't be converted is left out. Where a rejected epoch and the
  * one before it share a time, the latter wins, as data.md's query does.
@@ -147,6 +151,7 @@ export async function lakeStation(
 export async function readLakeSamples(
   id: string,
   period: { start: Date; end: Date },
+  flags = VERIFIED_FLAGS,
 ): Promise<Sample[]> {
   const station = await lakeStation(id);
   if (!station) throw new Error(`${id} is not in the public water-levels lake`);
@@ -188,7 +193,7 @@ export async function readLakeSamples(
     ).runAndReadAll(`
       SELECT epoch_ms(time) AS t, CAST(level_m AS DOUBLE) AS level
       FROM read_parquet([${files.map(sqlString).join(", ")}], union_by_name = true)
-      WHERE flag IN (${MEASURED_FLAGS.join(", ")}) AND level_m IS NOT NULL
+      WHERE flag IN (${flags.join(", ")}) AND level_m IS NOT NULL
         AND time >= make_timestamptz(${start}::BIGINT * 1000)
         AND time < make_timestamptz(${end}::BIGINT * 1000)`);
     const rejected = epoch.state === "rejected";

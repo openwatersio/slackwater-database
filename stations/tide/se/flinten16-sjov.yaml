@@ -1,13 +1,29 @@
 sources:
+  - smhi/35136
   - ticon/flinten16_sjov-35136-swe-smhi
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/flinten16_sjov-35136-swe-smhi:
+    smhi/35136:
       position: [55.561, 12.8095]
       coastline: unverifiable
       quality:
         accepted: true
+        score: 82
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.077
+    ticon/flinten16_sjov-35136-swe-smhi:
+      position: [55.561, 12.8095]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35136
         score: 82
         factors:
           epoch: 0.869

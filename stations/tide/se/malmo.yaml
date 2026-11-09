@@ -1,6 +1,5 @@
-# SMHI: https://www.smhi.se/kunskapsbanken/oceanografi/matningar-i-havet/stationslista-vattenstand
-name: Malmö
 sources:
+  - smhi/2098
   - ticon/malmo-2098-swe-smhi
   - ticon/malmo-mal-swe-cmems
 redirect_from:
@@ -8,7 +7,7 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/malmo-2098-swe-smhi:
+    smhi/2098:
       position: [55.6167, 13]
       coastline: unverifiable
       quality:
@@ -23,14 +22,32 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - "Seasonal curve peak (0.106m) exceeds the principal tide M2+S2+K1+O1 (0.087m): the yearly swing exceeds the daily one"
+          - "Seasonal curve peak (0.107m) exceeds the principal tide M2+S2+K1+O1 (0.087m): the yearly swing exceeds the daily one"
+    ticon/malmo-2098-swe-smhi:
+      position: [55.6167, 13]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2098
+        seasonal_dominant: true
+        score: 77
+        factors:
+          epoch: 1
+          recency: 0.37
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.106m) exceeds the principal tide M2+S2+K1+O1 (0.088m): the yearly swing exceeds the daily one"
     ticon/malmo-mal-swe-cmems:
       position: [55.616699, 13]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/malmo-2098-swe-smhi
+        redundant: smhi/2098
         seasonal_dominant: true
         score: 59
         factors:

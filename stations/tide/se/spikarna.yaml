@@ -1,4 +1,5 @@
 sources:
+  - smhi/2061
   - ticon/spikarna-2061-swe-smhi
   - ticon/spikarna-spi-swe-cmems
 redirect_from:
@@ -6,6 +7,23 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/2061:
+      position: [62.3633, 17.5311]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 85
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.094
+        issues:
+          - MLWS (0.036) > MLW (0.032)
+          - "Seasonal curve peak (0.155m) exceeds the principal tide M2+S2+K1+O1 (0.021m): the yearly swing exceeds the daily one"
     ticon/spikarna-2061-swe-smhi:
       position: [62.3633, 17.5311]
       coastline: unverifiable
@@ -39,7 +57,7 @@ computed:
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0.094
+          coverage: 0
         issues:
           - MLWS (0.093) > MLW (0.077)
           - MHW (0.099) <= MSL (0.101)

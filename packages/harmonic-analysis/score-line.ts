@@ -111,13 +111,7 @@ export async function ticonConstituents(
       new URL(`../../data/ticon/${id}.json`, import.meta.url),
       "utf8",
     ),
-  ) as {
-    harmonic_constituents: HarmonicConstituent[];
-    source: { published_harmonics: boolean };
-  };
-  // A lake re-fit (sources/ticon/lake.ts) replaced TICON's constants.
-  if (!station.source.published_harmonics)
-    throw new Error(`${id} stores a re-fit, not TICON's constants`);
+  ) as { harmonic_constituents: HarmonicConstituent[] };
   return station.harmonic_constituents;
 }
 

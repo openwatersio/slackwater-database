@@ -1,0 +1,321 @@
+{
+  "name": "Kungsholmsfort",
+  "country": "Sweden",
+  "continent": "Europe",
+  "latitude": 56.1053,
+  "longitude": 15.5894,
+  "timezone": "Europe/Stockholm",
+  "source": {
+    "name": "Swedish Meteorological and Hydrological Institute",
+    "url": "https://github.com/openwatersio/water-levels",
+    "id": "2088",
+    "published_harmonics": false,
+    "series": "smhi/2088",
+    "gauge": "kungsholmsfort-2088-swe-smhi",
+    "held_out": {
+      "start": "2025-07-02",
+      "end": "2026-07-01",
+      "hours": 8690,
+      "rms": 0.044355,
+      "ticon": {
+        "kungsholmsfort-2088-swe-smhi": {
+          "rms": 0.044534,
+          "se": 0.000013841914,
+          "digest": "0744cfa5bcbabdce"
+        },
+        "kungsholmsfort-kun-swe-cmems": {
+          "rms": 0.044534,
+          "se": 0.000013819705,
+          "digest": "f2f88c28a36cf7dc"
+        }
+      }
+    }
+  },
+  "license": {
+    "type": "cc-by-4.0",
+    "commercial_use": true,
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "disclaimers": "Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering.",
+  "datums": {
+    "MSL": 0.16,
+    "MHHW": 0.23,
+    "MHW": 0.177,
+    "MTL": 0.159,
+    "MLW": 0.142,
+    "MLLW": 0.087,
+    "HAT": 0.254,
+    "LAT": 0.007,
+    "MHWS": 0.17,
+    "MLWS": 0.15
+  },
+  "datums_source": "observed",
+  "datum_frame": "gauge",
+  "datum_coverage": {
+    "months": 156,
+    "observed_hours": 113950,
+    "inferred_hours": 2
+  },
+  "chart_datum": "MSL",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "M2",
+      "amplitude": 0.008,
+      "phase": 42.83
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.001,
+      "phase": 254.72
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.002,
+      "phase": 52.78
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.001,
+      "phase": 46.81
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0,
+      "phase": 224.64
+    },
+    {
+      "name": "S1",
+      "amplitude": 0.006,
+      "phase": 344.93
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.011,
+      "phase": 114.74
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.004,
+      "phase": 112.49
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.011,
+      "phase": 113.43
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.002,
+      "phase": 130.1
+    },
+    {
+      "name": "M1",
+      "amplitude": 0,
+      "phase": 26.63
+    },
+    {
+      "name": "M4",
+      "amplitude": 0,
+      "phase": 76.69
+    },
+    {
+      "name": "MM",
+      "amplitude": 0.004,
+      "phase": 288.78
+    },
+    {
+      "name": "MF",
+      "amplitude": 0.006,
+      "phase": 301.66
+    },
+    {
+      "name": "SA",
+      "amplitude": 0.076,
+      "phase": 207.82
+    },
+    {
+      "name": "SSA",
+      "amplitude": 0.039,
+      "phase": 240.63
+    },
+    {
+      "name": "T2",
+      "amplitude": 0,
+      "phase": 208.59
+    },
+    {
+      "name": "J1",
+      "amplitude": 0,
+      "phase": 138.62
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.001,
+      "phase": 107.91
+    },
+    {
+      "name": "R2",
+      "amplitude": 0,
+      "phase": 358.94
+    },
+    {
+      "name": "2Q1",
+      "amplitude": 0.001,
+      "phase": 86.52
+    },
+    {
+      "name": "MSF",
+      "amplitude": 0.001,
+      "phase": 156.27
+    },
+    {
+      "name": "MSQM",
+      "amplitude": 0.001,
+      "phase": 313.66
+    },
+    {
+      "name": "EP2",
+      "amplitude": 0.001,
+      "phase": 88.73
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.001,
+      "phase": 309.38
+    },
+    {
+      "name": "MU2",
+      "amplitude": 0.002,
+      "phase": 127.49
+    },
+    {
+      "name": "MTM",
+      "amplitude": 0.002,
+      "phase": 36.57
+    },
+    {
+      "name": "NU2",
+      "amplitude": 0.001,
+      "phase": 335.48
+    },
+    {
+      "name": "LAMBDA2",
+      "amplitude": 0,
+      "phase": 103.68
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0,
+      "phase": 16.22
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0,
+      "phase": 237.64
+    },
+    {
+      "name": "MKS2",
+      "amplitude": 0,
+      "phase": 206.51
+    },
+    {
+      "name": "N4",
+      "amplitude": 0,
+      "phase": 301.37
+    },
+    {
+      "name": "M6",
+      "amplitude": 0,
+      "phase": 45.86
+    },
+    {
+      "name": "M8",
+      "amplitude": 0,
+      "phase": 119.67
+    },
+    {
+      "name": "S4",
+      "amplitude": 0,
+      "phase": 167.54
+    },
+    {
+      "name": "OO1",
+      "amplitude": 0.001,
+      "phase": 70.03
+    },
+    {
+      "name": "S3",
+      "amplitude": 0,
+      "phase": 85.24
+    },
+    {
+      "name": "MA2",
+      "amplitude": 0.001,
+      "phase": 324.67
+    },
+    {
+      "name": "MB2",
+      "amplitude": 0.001,
+      "phase": 114.59
+    },
+    {
+      "name": "T3",
+      "amplitude": 0.001,
+      "phase": 316.5
+    },
+    {
+      "name": "R3",
+      "amplitude": 0.001,
+      "phase": 65.49
+    },
+    {
+      "name": "RHO1",
+      "amplitude": 0.001,
+      "phase": 22.43
+    },
+    {
+      "name": "SGM",
+      "amplitude": 0.002,
+      "phase": 213.3
+    },
+    {
+      "name": "3L2",
+      "amplitude": 0,
+      "phase": 296.13
+    },
+    {
+      "name": "3N2",
+      "amplitude": 0,
+      "phase": 116
+    },
+    {
+      "name": "2SM2",
+      "amplitude": 0,
+      "phase": 130.44
+    },
+    {
+      "name": "2MS6",
+      "amplitude": 0,
+      "phase": 143.16
+    },
+    {
+      "name": "2MK5",
+      "amplitude": 0,
+      "phase": 89.67
+    },
+    {
+      "name": "2MO5",
+      "amplitude": 0,
+      "phase": 49.28
+    }
+  ],
+  "datum_epoch": {
+    "start": "2008-07-01",
+    "end": "2021-06-30"
+  },
+  "epoch": {
+    "start": "2006-07-02",
+    "end": "2025-07-01"
+  }
+}

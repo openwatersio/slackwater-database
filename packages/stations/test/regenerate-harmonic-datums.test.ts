@@ -310,3 +310,23 @@ test("regenerates JMA's derived NLLW and preserves MSL zero", async () => {
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("keeps a water-levels lake fit's observed means, as TICON's", async () => {
+  const root = await mkdtemp(join(tmpdir(), "smhi-datums-"));
+  try {
+    await mkdir(join(root, "smhi"));
+    const input = station({
+      disclaimers: `${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE}`,
+    });
+    await writeFile(join(root, "smhi", "2130.json"), JSON.stringify(input));
+    await regenerateDirectory(root);
+    const result = JSON.parse(
+      await readFile(join(root, "smhi", "2130.json"), "utf8"),
+    ) as StationData;
+    expect(result.datums["MSL"]).toBe(2.1234);
+    expect(result.datums["MHW"]).toBe(3.5);
+    expect(result.datums["HAT"]).toBeDefined();
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

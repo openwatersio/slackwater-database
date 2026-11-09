@@ -1,4 +1,5 @@
 sources:
+  - smhi/2157
   - ticon/kalix_storon-2157-swe-smhi
   - ticon/kalixstoron-kal-swe-cmems
 redirect_from:
@@ -6,7 +7,7 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/kalix_storon-2157-swe-smhi:
+    smhi/2157:
       position: [65.6969, 23.0961]
       coastline: unverifiable
       quality:
@@ -15,21 +16,42 @@ computed:
         score: 83
         factors:
           epoch: 1
-          recency: 0.98
+          recency: 0.99
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.164) > MLW (0.134)
-          - "Seasonal curve peak (0.173m) exceeds the principal tide M2+S2+K1+O1 (0.022m): the yearly swing exceeds the daily one"
+          - MLWS (0.123) > MLW (0.102)
+          - MHWS (0.129) < MHW (0.14)
+          - "Seasonal curve peak (0.174m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"
+    ticon/kalix_storon-2157-swe-smhi:
+      position: [65.6969, 23.0961]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2157
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.165) > MLW (0.134)
+          - MHWS (0.169) < MHW (0.17)
+          - "Seasonal curve peak (0.173m) exceeds the principal tide M2+S2+K1+O1 (0.020m): the yearly swing exceeds the daily one"
     ticon/kalixstoron-kal-swe-cmems:
       position: [65.696899, 23.0961]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/kalix_storon-2157-swe-smhi
+        redundant: smhi/2157
         seasonal_dominant: true
         score: 65
         factors:

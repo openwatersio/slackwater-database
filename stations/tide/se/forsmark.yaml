@@ -1,4 +1,5 @@
 sources:
+  - smhi/2179
   - ticon/forsmark-2179-swe-smhi
   - ticon/forsmark-for-swe-cmems
 redirect_from:
@@ -6,11 +7,30 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/forsmark-2179-swe-smhi:
+    smhi/2179:
       position: [60.4086, 18.2108]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.095) > MLW (0.084)
+          - "Seasonal curve peak (0.151m) exceeds the principal tide M2+S2+K1+O1 (0.018m): the yearly swing exceeds the daily one"
+    ticon/forsmark-2179-swe-smhi:
+      position: [60.4086, 18.2108]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2179
         seasonal_dominant: true
         score: 83
         factors:
@@ -29,7 +49,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/forsmark-2179-swe-smhi
+        redundant: smhi/2179
         seasonal_dominant: true
         score: 65
         factors:

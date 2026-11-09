@@ -1,8 +1,48 @@
 sources:
+  - ticon/simpevarp_sjov-35200-swe-smhi
+  - smhi/35200
   - ticon/simpevarp-sim-swe-cmems
+redirect_from:
+  - /tides/se/simpevarp-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    ticon/simpevarp_sjov-35200-swe-smhi:
+      position: [57.4092, 16.6759]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 73
+        factors:
+          epoch: 0.493
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.115) > MLW (0.108)
+          - "Seasonal curve peak (0.122m) exceeds the principal tide M2+S2+K1+O1 (0.024m): the yearly swing exceeds the daily one"
+    smhi/35200:
+      position: [57.4092, 16.6759]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: datum
+        seasonal_dominant: true
+        score: 0
+        factors:
+          epoch: 0.492
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.113) > MLW (0.099)
+          - MHW (0.121) <= MSL (0.121)
+          - "Seasonal curve peak (0.123m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"
     ticon/simpevarp-sim-swe-cmems:
       position: [57.409199, 16.6759]
       coastline: unverifiable

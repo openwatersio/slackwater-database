@@ -57,6 +57,24 @@ export interface StationData {
     id: string;
     published_harmonics: boolean;
     url: string;
+    /** For a fit from the water-levels lake: the lake series it was fit to. */
+    series?: string;
+    /** For a fit from the water-levels lake: the TICON record of the same gauge. */
+    gauge?: string;
+    /** For a fit from the water-levels lake: the year after its fit, on which
+     *  it and each TICON record of its gauge were scored by tidal-band
+     *  residual (m), each with a digest of the constants scored. These fields
+     *  are in the data files only; the database doesn't carry them. */
+    held_out?: {
+      start: string;
+      end: string;
+      hours: number;
+      rms: number;
+      /** By TICON id: its residual (m), the standard error (m²) of the
+       *  fit's residual variance minus its own, and a digest of its
+       *  constants as scored. */
+      ticon: Record<string, { rms: number; se: number; digest: string }>;
+    };
   };
 
   // License information

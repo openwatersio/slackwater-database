@@ -1,4 +1,5 @@
 sources:
+  - smhi/2545
   - ticon/arko-2545-swe-smhi
   - ticon/arko-ark-swe-cmems
 redirect_from:
@@ -6,7 +7,7 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/arko-2545-swe-smhi:
+    smhi/2545:
       position: [58.4843, 16.9607]
       coastline: unverifiable
       quality:
@@ -14,22 +15,41 @@ computed:
         seasonal_dominant: true
         score: 75
         factors:
-          epoch: 0.577
-          recency: 0.98
+          epoch: 0.604
+          recency: 0.99
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0
         issues:
           - MLWS (0.097) > MLW (0.093)
-          - "Seasonal curve peak (0.116m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"
+          - "Seasonal curve peak (0.115m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"
+    ticon/arko-2545-swe-smhi:
+      position: [58.4843, 16.9607]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2545
+        seasonal_dominant: true
+        score: 75
+        factors:
+          epoch: 0.604
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.096) > MLW (0.093)
+          - "Seasonal curve peak (0.116m) exceeds the principal tide M2+S2+K1+O1 (0.026m): the yearly swing exceeds the daily one"
     ticon/arko-ark-swe-cmems:
       position: [58.484299, 16.960699]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/arko-2545-swe-smhi
+        redundant: smhi/2545
         seasonal_dominant: true
         score: 57
         factors:

@@ -1,20 +1,52 @@
 sources:
+  - smhi/35110
   - ticon/helsingborg-hel-swe-cmems
+  - ticon/helsingborg_sjov-35110-swe-smhi
+redirect_from:
+  - /tides/se/helsingborg-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35110:
+      position: [56.0446, 12.6874]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.008
     ticon/helsingborg-hel-swe-cmems:
       position: [56.041199, 12.6845]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/helsingborg_sjov-35110-swe-smhi
+        redundant: smhi/35110
         score: 52
         factors:
           epoch: 0.322
           recency: 0.99
           source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.008
+    ticon/helsingborg_sjov-35110-swe-smhi:
+      position: [56.0446, 12.6874]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35110
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0.008

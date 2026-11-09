@@ -687,6 +687,13 @@ test("Does not have duplicate source IDs", () => {
   });
 });
 
+test("rejects a TICON record fitted from another gauge's data", () => {
+  // GESLA-4.1 files Arkö's Baltic data under Uddevalla (MISFILED_RECORDS).
+  expect(
+    quality.find((q) => q.id === "ticon/uddevalla-2541-swe-smhi"),
+  ).toMatchObject({ accepted: false, reason: "misfiled" });
+});
+
 describe("seasonal dominance", () => {
   const labelled = quality.filter(
     (q) => (q as { seasonal_dominant?: boolean }).seasonal_dominant,
@@ -697,12 +704,12 @@ describe("seasonal dominance", () => {
     // than a floor so that a release which quietly moves the rule has to say so:
     // the whole point of the label is that two consumers describe the same water
     // the same way, which a drifting population defeats.
-    expect(labelled.length).toBe(1001);
+    expect(labelled.length).toBe(1057);
   });
 
   test("labels independently of the rejection verdict", () => {
     expect(labelled.filter((q) => q.accepted)).toHaveLength(506);
-    expect(labelled.filter((q) => !q.accepted)).toHaveLength(495);
+    expect(labelled.filter((q) => !q.accepted)).toHaveLength(551);
   });
 
   test("is a different question from the contamination gate", () => {

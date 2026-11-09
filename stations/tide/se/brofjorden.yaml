@@ -1,20 +1,52 @@
 sources:
+  - smhi/35109
   - ticon/brofjorden-bro-swe-cmems
+  - ticon/brofjorden_sjov-35109-swe-smhi
+redirect_from:
+  - /tides/se/brofjorden-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35109:
+      position: [58.3361, 11.4047]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
     ticon/brofjorden-bro-swe-cmems:
       position: [58.335999, 11.4046]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/brofjorden_sjov-35109-swe-smhi
+        redundant: smhi/35109
         score: 52
         factors:
           epoch: 0.322
           recency: 0.99
           source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/brofjorden_sjov-35109-swe-smhi:
+      position: [58.3361, 11.4047]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35109
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0

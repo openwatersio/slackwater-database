@@ -2,9 +2,9 @@ import { describe, test, expect } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
 import * as engine from "@slackwater/engine";
 import {
+  isLongPeriod,
   definitionMismatched,
   fitHarmonics,
-  isLongPeriod,
   parseGeslaSamplesInZone,
   tidalResidual,
   type Sample,
@@ -365,4 +365,14 @@ describe("tidalResidual", () => {
 test("isLongPeriod", () => {
   expect(["SA", "SSA", "MM", "MF", "MSF"].every(isLongPeriod)).toBe(true);
   expect(["K1", "O1", "M2", "M4"].some(isLongPeriod)).toBe(false);
+});
+
+test("tidalResidual takes samples in any order", () => {
+  const samples = Array.from({ length: 24 * 10 }, (_, i) => ({
+    t: Date.UTC(2020, 0, 1) + i * 3_600_000,
+    level: 0,
+  }));
+  expect(tidalResidual([], [...samples].reverse())).toEqual(
+    tidalResidual([], samples),
+  );
 });

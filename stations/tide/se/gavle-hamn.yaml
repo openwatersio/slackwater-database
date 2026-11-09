@@ -2,6 +2,7 @@
 name: Gävle Hamn
 sources:
   - ticon/gavle_hamn-35236-swe-smhi
+  - smhi/35236
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -22,3 +23,21 @@ computed:
         issues:
           - MLWS (-0.011) > MLW (-0.015)
           - "Seasonal curve peak (0.199m) exceeds the principal tide M2+S2+K1+O1 (0.024m): the yearly swing exceeds the daily one"
+    smhi/35236:
+      position: [60.6967, 17.2314]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: range
+        seasonal_dominant: true
+        score: 0
+        factors:
+          epoch: 0.082
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.129
+        issues:
+          - Tidal range 1.20cm < 2cm threshold
+          - "Seasonal curve peak (0.199m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"

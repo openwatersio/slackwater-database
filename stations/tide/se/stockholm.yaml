@@ -1,37 +1,98 @@
 sources:
+  - smhi/2069
   - ticon/stockholm-2069-swe-smhi
+  - ticon/stockholm-826-swe-uhslc_fd
+  - ticon/stockholm-826a-swe-uhslc_rq
   - ticon/stockholm-sto-swe-cmems
 redirect_from:
+  - /tides/se/stockholm-soedermalm-stockholm/
+  - /tides/se/stockholm-stockholm/
+  - /tides/se/stockholm-ticon-stockholm-826a-swe-uhslc-rq/
   - /tides/se/stockholm-ticon-stockholm-sto-swe-cmems/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/2069:
+      position: [59.3242, 18.0817]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.109) > MLW (0.101)
+          - "Seasonal curve peak (0.136m) exceeds the principal tide M2+S2+K1+O1 (0.026m): the yearly swing exceeds the daily one"
     ticon/stockholm-2069-swe-smhi:
       position: [59.3242, 18.0817]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/stockholm-826-swe-uhslc_fd
+        redundant: smhi/2069
         seasonal_dominant: true
         score: 83
         factors:
           epoch: 1
-          recency: 0.98
+          recency: 0.99
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.136) > MLW (0.127)
+          - MLWS (0.137) > MLW (0.127)
           - "Seasonal curve peak (0.136m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"
+    ticon/stockholm-826-swe-uhslc_fd:
+      position: [59.317, 18.083]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2069
+        seasonal_dominant: true
+        score: 85
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.99
+          quality: 1
+          amplitude: 1
+          coverage: 0.016
+        issues:
+          - MLWS (6.922) > MLW (6.909)
+          - "Seasonal curve peak (0.138m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"
+    ticon/stockholm-826a-swe-uhslc_rq:
+      position: [59.325, 18.082]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2069
+        seasonal_dominant: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.88
+          source: 0.99
+          quality: 1
+          amplitude: 1
+          coverage: 0.002
+        issues:
+          - MLWS (6.947) > MLW (6.939)
+          - "Seasonal curve peak (0.138m) exceeds the principal tide M2+S2+K1+O1 (0.024m): the yearly swing exceeds the daily one"
     ticon/stockholm-sto-swe-cmems:
       position: [59.3242, 18.081699]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/stockholm-826-swe-uhslc_fd
+        redundant: smhi/2069
         seasonal_dominant: true
         score: 65
         factors:

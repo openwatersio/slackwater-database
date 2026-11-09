@@ -1,15 +1,37 @@
 sources:
+  - smhi/35131
   - ticon/karlshamn-kar-swe-cmems
+  - ticon/karlshamn_sjov-35131-swe-smhi
+redirect_from:
+  - /tides/se/karlshamn-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35131:
+      position: [56.1542, 14.8213]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.163) > MLW (0.155)
+          - MHWS (0.187) < MHW (0.192)
+          - "Seasonal curve peak (0.093m) exceeds the principal tide M2+S2+K1+O1 (0.037m): the yearly swing exceeds the daily one"
     ticon/karlshamn-kar-swe-cmems:
       position: [56.154202, 14.8212]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/karlshamn_sjov-35131-swe-smhi
+        redundant: smhi/35131
         seasonal_dominant: true
         score: 52
         factors:
@@ -23,3 +45,23 @@ computed:
           - MLWS (0.186) > MLW (0.177)
           - MHWS (0.21) < MHW (0.216)
           - "Seasonal curve peak (0.093m) exceeds the principal tide M2+S2+K1+O1 (0.035m): the yearly swing exceeds the daily one"
+    ticon/karlshamn_sjov-35131-swe-smhi:
+      position: [56.1542, 14.8213]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35131
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.164) > MLW (0.155)
+          - MHWS (0.186) < MHW (0.192)
+          - "Seasonal curve peak (0.092m) exceeds the principal tide M2+S2+K1+O1 (0.036m): the yearly swing exceeds the daily one"

@@ -11,7 +11,7 @@ const lake = mkdtempSync(join(tmpdir(), "lake-"));
 const cache = mkdtempSync(join(tmpdir(), "lake-cache-"));
 process.env["WATER_LEVELS_URL"] = "https://lake.test";
 process.env["WATER_LEVELS_CACHE"] = cache;
-const { cachedLakeFile, readLakeSamples, lakeStation } =
+const { cachedLakeFile, readLakeSamples, lakeStation, MEASURED_FLAGS } =
   await import("../lake.ts");
 const fetched: string[] = [];
 
@@ -82,16 +82,24 @@ describe("readLakeSamples", () => {
     expect(station?.last).toEqual(new Date("2021-12-31T23:00:00Z"));
   });
 
-  test("puts every epoch in the current datum and keeps measured values only", async () => {
+  test("puts every epoch in the current datum and keeps verified values only", async () => {
     const samples = await readLakeSamples("src/a b", {
       start: new Date("2019-01-01"),
       end: new Date("2022-01-01"),
     });
     expect(samples).toEqual([
-      { t: at("2020-03-01T02:00:00Z"), level: 1.75 }, // preliminary
       { t: at("2020-05-31T23:00:00Z"), level: 1.5 },
       { t: at("2020-06-01T00:00:00Z"), level: 2 },
     ]);
+  });
+
+  test("reads preliminary values when asked for every measured value", async () => {
+    const samples = await readLakeSamples(
+      "src/a b",
+      { start: new Date("2020-03-01"), end: new Date("2020-03-02") },
+      MEASURED_FLAGS,
+    );
+    expect(samples).toEqual([{ t: at("2020-03-01T02:00:00Z"), level: 1.75 }]);
   });
 
   test("keeps to the period asked for", async () => {

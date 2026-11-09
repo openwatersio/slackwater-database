@@ -54,8 +54,6 @@ describe("ticonConstituents", () => {
     "hong_kong-329-hkg-uhslc_fd",
     "hong_kong-329a-hkg-uhslc_rq",
     "hong_kong-329b-hkg-uhslc_rq",
-    // re-fit from the water-levels lake
-    "stockholm-2069-swe-smhi",
   ])("rejects the re-fit %s", async (id) => {
     await expect(ticonConstituents(id)).rejects.toThrow("stores a re-fit");
   });

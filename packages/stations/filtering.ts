@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 /**
  * Shared utilities for station filtering and deduplication
  */
@@ -107,6 +108,16 @@ export const CLOCK_ERROR_SOURCES: Record<string, string> = {
   // run within a minute by the same comparison. Every one of its records has
   // a NOAA harmonic station within 15 km.
   hct: "runs 23 to 71 minutes behind every NOAA and USGS gauge near it",
+};
+
+/** TICON records fitted from another gauge's data, with the evidence. A record
+ *  here is rejected: its constants and datums describe different water. */
+export const MISFILED_RECORDS: Record<string, string> = {
+  // GESLA-4.1's file is byte-identical to Arkö's (2545). SMHI's own Uddevalla
+  // series (lake smhi/2541) and GESLA's CMEMS copy (uddevalla-udd-swe-cmems)
+  // agree to 0 mm and have an M2 of 0.141 m, against this record's 0.008 m.
+  "uddevalla-2541-swe-smhi":
+    "GESLA-4.1 files Arkö's (2545) Baltic data under Uddevalla",
 };
 
 /** GESLA sources that restrict commercial/consultancy use */
@@ -278,6 +289,33 @@ export const MIN_DEDUP_DISTANCE = 0.05; // 50 meters
  *  source is held to the noisy-site figure. Stored digits follow the publisher
  *  (see PUBLISHED_PRECISION) and say nothing about this. */
 export const AMPLITUDE_TOLERANCE = 0.003;
+
+/** A short digest of a record's constants, so a score taken against them can
+ *  tell when they have since changed. */
+export function constituentsDigest(
+  constituents: { name: string; amplitude: number; phase: number }[],
+): string {
+  return createHash("sha256")
+    .update(
+      JSON.stringify(constituents.map((c) => [c.name, c.amplitude, c.phase])),
+    )
+    .digest("hex")
+    .slice(0, 16);
+}
+
+/** Whether constants with tidal-band residual `rms` (m) on a year neither
+ *  set was fit to predict that year worse than constants with `other`. Their
+ *  residual variances must differ by more than the data can resolve: more
+ *  than a constituent error of AMPLITUDE_TOLERANCE would add (A²/2), and more
+ *  than twice `se`, the standard error of the difference over that year, so
+ *  that chance in one year's weather doesn't decide it. The difference is
+ *  rounded first, so the stored scores decide it. */
+export function scoresWorse(rms: number, other: number, se = 0): boolean {
+  return (
+    Number((rms ** 2 - other ** 2).toFixed(12)) >
+    Math.max(AMPLITUDE_TOLERANCE ** 2 / 2, 2 * se)
+  );
+}
 
 /** Project screening allowance for observed means versus harmonic bounds from
  * different periods, including weather. Masked-record changes and NOAA paired

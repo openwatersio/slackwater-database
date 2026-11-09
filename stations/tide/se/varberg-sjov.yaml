@@ -1,13 +1,53 @@
 sources:
+  - smhi/35133
+  - ticon/varberg2-var-swe-cmems
   - ticon/varberg_sjov-35133-swe-smhi
+redirect_from:
+  - /tides/se/varberg-ticon-varberg2-var-swe-cmems/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/varberg_sjov-35133-swe-smhi:
+    smhi/35133:
       position: [57.1095, 12.2416]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.113m) exceeds the principal tide M2+S2+K1+O1 (0.085m): the yearly swing exceeds the daily one"
+    ticon/varberg2-var-swe-cmems:
+      position: [57.1096, 12.2415]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35133
+        seasonal_dominant: true
+        score: 52
+        factors:
+          epoch: 0.322
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.114m) exceeds the principal tide M2+S2+K1+O1 (0.085m): the yearly swing exceeds the daily one"
+    ticon/varberg_sjov-35133-swe-smhi:
+      position: [57.1095, 12.2416]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35133
         seasonal_dominant: true
         score: 81
         factors:

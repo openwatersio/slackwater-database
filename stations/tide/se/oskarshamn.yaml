@@ -1,4 +1,5 @@
 sources:
+  - smhi/2085
   - ticon/oskarshamn-2085-swe-smhi
   - ticon/oskarshamn-osk-swe-cmems
 redirect_from:
@@ -6,7 +7,7 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/oskarshamn-2085-swe-smhi:
+    smhi/2085:
       position: [57.275, 16.4781]
       coastline: unverifiable
       quality:
@@ -15,22 +16,42 @@ computed:
         score: 83
         factors:
           epoch: 1
-          recency: 0.98
+          recency: 0.99
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.145) > MLW (0.134)
-          - MHWS (0.163) < MHW (0.165)
-          - "Seasonal curve peak (0.126m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"
+          - MLWS (0.135) > MLW (0.124)
+          - MHWS (0.153) < MHW (0.154)
+          - "Seasonal curve peak (0.126m) exceeds the principal tide M2+S2+K1+O1 (0.026m): the yearly swing exceeds the daily one"
+    ticon/oskarshamn-2085-swe-smhi:
+      position: [57.275, 16.4781]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2085
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.142) > MLW (0.13)
+          - MHWS (0.158) < MHW (0.161)
+          - "Seasonal curve peak (0.126m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"
     ticon/oskarshamn-osk-swe-cmems:
       position: [57.275002, 16.4781]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/oskarshamn-2085-swe-smhi
+        redundant: smhi/2085
         seasonal_dominant: true
         score: 65
         factors:

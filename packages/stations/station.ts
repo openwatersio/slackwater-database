@@ -189,6 +189,8 @@ export const PUBLISHED_PRECISION: Record<
   jma: { amplitude: 4, phase: 11 },
   // Our fits of DMI's 0.1 cm predictions, published as mm and 0.01 degrees.
   dmi: { amplitude: 3, phase: 2 },
+  // Our fits of the water-levels lake's 1 cm series, as mm and 0.01 degrees.
+  smhi: { amplitude: 3, phase: 2 },
 };
 
 /** Round constituents to the source's published precision. Phases stay as

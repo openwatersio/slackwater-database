@@ -1,15 +1,37 @@
 # SMHI: https://www.smhi.se/kunskapsbanken/oceanografi/matningar-i-havet/stationslista-vattenstand
 name: Göteborg-Agnesberg
 sources:
+  - smhi/33095
   - ticon/goteborg_agnesberg-33095-swe-smhi
+  - ticon/goteborgagnesberg-got-swe-cmems
+redirect_from:
+  - /tides/se/goteborg-agnesberg-vaestra-goetaland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/goteborg_agnesberg-33095-swe-smhi:
+    smhi/33095:
       position: [57.7889, 12.0076]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 77
+        factors:
+          epoch: 0.671
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.003
+        issues:
+          - "Seasonal curve peak (0.115m) exceeds the principal tide M2+S2+K1+O1 (0.101m): the yearly swing exceeds the daily one"
+    ticon/goteborg_agnesberg-33095-swe-smhi:
+      position: [57.7889, 12.0076]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/33095
         seasonal_dominant: true
         score: 62
         factors:
@@ -21,3 +43,21 @@ computed:
           coverage: 0.003
         issues:
           - "Seasonal curve peak (0.115m) exceeds the principal tide M2+S2+K1+O1 (0.100m): the yearly swing exceeds the daily one"
+    ticon/goteborgagnesberg-got-swe-cmems:
+      position: [57.7897, 12.01]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/33095
+        seasonal_dominant: true
+        score: 59
+        factors:
+          epoch: 0.671
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.003
+        issues:
+          - "Seasonal curve peak (0.129m) exceeds the principal tide M2+S2+K1+O1 (0.101m): the yearly swing exceeds the daily one"

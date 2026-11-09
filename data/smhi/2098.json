@@ -1,0 +1,321 @@
+{
+  "name": "Malmo",
+  "country": "Sweden",
+  "continent": "Europe",
+  "latitude": 55.6167,
+  "longitude": 13,
+  "timezone": "Europe/Stockholm",
+  "source": {
+    "name": "Swedish Meteorological and Hydrological Institute",
+    "url": "https://github.com/openwatersio/water-levels",
+    "id": "2098",
+    "published_harmonics": false,
+    "series": "smhi/2098",
+    "gauge": "malmo-2098-swe-smhi",
+    "held_out": {
+      "start": "1962-01-01",
+      "end": "1962-12-31",
+      "hours": 8474,
+      "rms": 0.068201,
+      "ticon": {
+        "malmo-2098-swe-smhi": {
+          "rms": 0.068226,
+          "se": 0.000008810774,
+          "digest": "69010c1a0716f5eb"
+        },
+        "malmo-mal-swe-cmems": {
+          "rms": 0.068226,
+          "se": 0.000008865219,
+          "digest": "0160e2b4070a93f6"
+        }
+      }
+    }
+  },
+  "license": {
+    "type": "cc-by-4.0",
+    "commercial_use": true,
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "disclaimers": "Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering.",
+  "datums": {
+    "MSL": 0.116,
+    "MHHW": 0.233,
+    "MHW": 0.162,
+    "MTL": 0.107,
+    "MLW": 0.052,
+    "MLLW": -0.01,
+    "HAT": 0.303,
+    "LAT": -0.097,
+    "MHWS": 0.186,
+    "MLWS": 0.046
+  },
+  "datums_source": "observed",
+  "datum_frame": "gauge",
+  "datum_coverage": {
+    "months": 36,
+    "observed_hours": 26304,
+    "inferred_hours": 0
+  },
+  "chart_datum": "MSL",
+  "type": "reference",
+  "harmonic_constituents": [
+    {
+      "name": "M2",
+      "amplitude": 0.049,
+      "phase": 260.87
+    },
+    {
+      "name": "N2",
+      "amplitude": 0.015,
+      "phase": 220.98
+    },
+    {
+      "name": "S2",
+      "amplitude": 0.021,
+      "phase": 223.9
+    },
+    {
+      "name": "K2",
+      "amplitude": 0.004,
+      "phase": 211.36
+    },
+    {
+      "name": "2N2",
+      "amplitude": 0.003,
+      "phase": 190.43
+    },
+    {
+      "name": "S1",
+      "amplitude": 0.002,
+      "phase": 187.65
+    },
+    {
+      "name": "K1",
+      "amplitude": 0.004,
+      "phase": 83.92
+    },
+    {
+      "name": "P1",
+      "amplitude": 0.001,
+      "phase": 169.72
+    },
+    {
+      "name": "O1",
+      "amplitude": 0.013,
+      "phase": 8.53
+    },
+    {
+      "name": "Q1",
+      "amplitude": 0.003,
+      "phase": 282.19
+    },
+    {
+      "name": "M1",
+      "amplitude": 0.001,
+      "phase": 242.48
+    },
+    {
+      "name": "M4",
+      "amplitude": 0.003,
+      "phase": 9.83
+    },
+    {
+      "name": "MM",
+      "amplitude": 0.001,
+      "phase": 310.02
+    },
+    {
+      "name": "MF",
+      "amplitude": 0.011,
+      "phase": 222.15
+    },
+    {
+      "name": "SA",
+      "amplitude": 0.09,
+      "phase": 181.33
+    },
+    {
+      "name": "SSA",
+      "amplitude": 0.023,
+      "phase": 244.3
+    },
+    {
+      "name": "T2",
+      "amplitude": 0.004,
+      "phase": 262.22
+    },
+    {
+      "name": "J1",
+      "amplitude": 0.001,
+      "phase": 338.23
+    },
+    {
+      "name": "L2",
+      "amplitude": 0.004,
+      "phase": 14.41
+    },
+    {
+      "name": "R2",
+      "amplitude": 0.001,
+      "phase": 93.25
+    },
+    {
+      "name": "2Q1",
+      "amplitude": 0.002,
+      "phase": 207.81
+    },
+    {
+      "name": "MSF",
+      "amplitude": 0.002,
+      "phase": 101.67
+    },
+    {
+      "name": "MSQM",
+      "amplitude": 0.001,
+      "phase": 299.65
+    },
+    {
+      "name": "EP2",
+      "amplitude": 0.002,
+      "phase": 53.07
+    },
+    {
+      "name": "M3",
+      "amplitude": 0.002,
+      "phase": 129.88
+    },
+    {
+      "name": "MU2",
+      "amplitude": 0.01,
+      "phase": 98.09
+    },
+    {
+      "name": "MTM",
+      "amplitude": 0.001,
+      "phase": 14.03
+    },
+    {
+      "name": "NU2",
+      "amplitude": 0.004,
+      "phase": 264.88
+    },
+    {
+      "name": "LAMBDA2",
+      "amplitude": 0.002,
+      "phase": 27.83
+    },
+    {
+      "name": "MN4",
+      "amplitude": 0.001,
+      "phase": 311.31
+    },
+    {
+      "name": "MS4",
+      "amplitude": 0,
+      "phase": 108.91
+    },
+    {
+      "name": "MKS2",
+      "amplitude": 0.001,
+      "phase": 233.43
+    },
+    {
+      "name": "N4",
+      "amplitude": 0,
+      "phase": 251.25
+    },
+    {
+      "name": "M6",
+      "amplitude": 0.001,
+      "phase": 62.28
+    },
+    {
+      "name": "M8",
+      "amplitude": 0,
+      "phase": 181.58
+    },
+    {
+      "name": "S4",
+      "amplitude": 0,
+      "phase": 6.25
+    },
+    {
+      "name": "OO1",
+      "amplitude": 0.001,
+      "phase": 35.42
+    },
+    {
+      "name": "S3",
+      "amplitude": 0.001,
+      "phase": 329.55
+    },
+    {
+      "name": "MA2",
+      "amplitude": 0.006,
+      "phase": 336.44
+    },
+    {
+      "name": "MB2",
+      "amplitude": 0.001,
+      "phase": 188.85
+    },
+    {
+      "name": "T3",
+      "amplitude": 0.001,
+      "phase": 170.2
+    },
+    {
+      "name": "R3",
+      "amplitude": 0.001,
+      "phase": 247.01
+    },
+    {
+      "name": "RHO1",
+      "amplitude": 0.001,
+      "phase": 273.62
+    },
+    {
+      "name": "SGM",
+      "amplitude": 0.002,
+      "phase": 146.94
+    },
+    {
+      "name": "3L2",
+      "amplitude": 0.001,
+      "phase": 170.64
+    },
+    {
+      "name": "3N2",
+      "amplitude": 0.001,
+      "phase": 142.58
+    },
+    {
+      "name": "2SM2",
+      "amplitude": 0.002,
+      "phase": 316.51
+    },
+    {
+      "name": "2MS6",
+      "amplitude": 0.001,
+      "phase": 133.91
+    },
+    {
+      "name": "2MK5",
+      "amplitude": 0,
+      "phase": 312.29
+    },
+    {
+      "name": "2MO5",
+      "amplitude": 0,
+      "phase": 184.14
+    }
+  ],
+  "datum_epoch": {
+    "start": "1949-06-01",
+    "end": "1952-05-31"
+  },
+  "epoch": {
+    "start": "1943-01-01",
+    "end": "1961-12-12"
+  }
+}

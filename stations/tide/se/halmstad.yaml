@@ -1,20 +1,52 @@
 sources:
+  - smhi/35115
   - ticon/halmstad-hal-swe-cmems
+  - ticon/halmstad_sjov-35115-swe-smhi
+redirect_from:
+  - /tides/se/halmstad-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35115:
+      position: [56.6488, 12.8358]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
     ticon/halmstad-hal-swe-cmems:
       position: [56.6488, 12.8358]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/halmstad_sjov-35115-swe-smhi
+        redundant: smhi/35115
         score: 52
         factors:
           epoch: 0.322
           recency: 0.99
           source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/halmstad_sjov-35115-swe-smhi:
+      position: [56.6488, 12.8358]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35115
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0

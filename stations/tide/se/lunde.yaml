@@ -1,8 +1,29 @@
 sources:
+  - smhi/35209
   - ticon/lunde-lun-swe-cmems
+  - ticon/lunde_sjov-35209-swe-smhi
+redirect_from:
+  - /tides/se/lunde-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35209:
+      position: [62.8865, 17.8764]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 85
+        factors:
+          epoch: 0.337
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 1
+        issues:
+          - MLWS (0.187) > MLW (0.174)
+          - "Seasonal curve peak (0.156m) exceeds the principal tide M2+S2+K1+O1 (0.021m): the yearly swing exceeds the daily one"
     ticon/lunde-lun-swe-cmems:
       position: [62.8806, 17.8764]
       coastline: unverifiable
@@ -22,3 +43,22 @@ computed:
           - MLWS (0.111) > MLW (0.107)
           - Tidal range 1.60cm < 2cm threshold
           - "Seasonal curve peak (0.137m) exceeds the principal tide M2+S2+K1+O1 (0.021m): the yearly swing exceeds the daily one"
+    ticon/lunde_sjov-35209-swe-smhi:
+      position: [62.8865, 17.8764]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35209
+        seasonal_dominant: true
+        score: 85
+        factors:
+          epoch: 0.337
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 1
+        issues:
+          - MLWS (0.187) > MLW (0.174)
+          - "Seasonal curve peak (0.155m) exceeds the principal tide M2+S2+K1+O1 (0.021m): the yearly swing exceeds the daily one"

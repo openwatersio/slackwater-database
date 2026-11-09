@@ -1,15 +1,36 @@
 sources:
+  - smhi/35151
   - ticon/vastervik-vas-swe-cmems
+  - ticon/vastervik_sjov-35151-swe-smhi
+redirect_from:
+  - /tides/se/vastervik-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35151:
+      position: [57.7482, 16.6747]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.142) > MLW (0.134)
+          - "Seasonal curve peak (0.117m) exceeds the principal tide M2+S2+K1+O1 (0.024m): the yearly swing exceeds the daily one"
     ticon/vastervik-vas-swe-cmems:
       position: [57.748199, 16.6747]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/vastervik_sjov-35151-swe-smhi
+        redundant: smhi/35151
         seasonal_dominant: true
         score: 52
         factors:
@@ -22,3 +43,22 @@ computed:
         issues:
           - MLWS (0.142) > MLW (0.133)
           - "Seasonal curve peak (0.114m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"
+    ticon/vastervik_sjov-35151-swe-smhi:
+      position: [57.7482, 16.6747]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35151
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.142) > MLW (0.134)
+          - "Seasonal curve peak (0.117m) exceeds the principal tide M2+S2+K1+O1 (0.024m): the yearly swing exceeds the daily one"

@@ -1,15 +1,35 @@
 sources:
+  - smhi/35213
   - ticon/falkenberg-fal-swe-cmems
+  - ticon/falkenberg_2_sjov-35213-swe-smhi
+redirect_from:
+  - /tides/se/falkenberg-2-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35213:
+      position: [56.892, 12.4895]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 75
+        factors:
+          epoch: 0.57
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.118m) exceeds the principal tide M2+S2+K1+O1 (0.096m): the yearly swing exceeds the daily one"
     ticon/falkenberg-fal-swe-cmems:
       position: [56.891998, 12.4895]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/falkenberg_2_sjov-35213-swe-smhi
+        redundant: smhi/35213
         seasonal_dominant: true
         score: 52
         factors:
@@ -21,3 +41,21 @@ computed:
           coverage: 0
         issues:
           - "Seasonal curve peak (0.127m) exceeds the principal tide M2+S2+K1+O1 (0.097m): the yearly swing exceeds the daily one"
+    ticon/falkenberg_2_sjov-35213-swe-smhi:
+      position: [56.892, 12.4895]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35213
+        seasonal_dominant: true
+        score: 75
+        factors:
+          epoch: 0.571
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.119m) exceeds the principal tide M2+S2+K1+O1 (0.096m): the yearly swing exceeds the daily one"

@@ -25,7 +25,7 @@ This database collects tidal harmonic constants and datums for several thousand 
 | Japan Meteorological Agency (Japan)       | Authoritative. Published harmonic constants; published tide-table CD reference.                                                                                                                                 |
 | Danish Meteorological Institute           | Fits of astronomical predictions. No gauge-authority claim; source priority 50 (confidence 0.495), an engineering ranking independent of TICON's DMI relay priority. No original observation epoch is inferred. |
 | TICON-4                                   | Relay. Constants computed from GESLA-4 sea-level records supplied by many agencies.                                                                                                                             |
-| SMHI (Sweden)                             | Re-fits of TICON's records of SMHI's gauges from SMHI's series in the water-levels lake. Ranked as the TICON relays they replace.                                                                               |
+| SMHI (Sweden)                             | Open Waters' fits of SMHI's series in the water-levels lake, at the gauges of TICON's SMHI records. Ranked as those relays, and joined to them as one gauge.                                                    |
 | Canadian Hydrographic Service             | Station identity only. No harmonic constants, so not evaluated.                                                                                                                                                 |
 
 TICON-4 (Hart-Davis et al., 2025) analyzes the records in GESLA-4, which collects sea-level data from national and regional agencies (Haigh et al., 2023, describes the GESLA-3 compilation that version 4 extends). Each TICON record names the agency that supplied the data, and that agency matters to several of the checks below.
@@ -46,6 +46,7 @@ These checks are pass or fail. A record that fails any of them is rejected and g
 | ---------------------- | ------------------------------------------------------------ | ------------------------ |
 | Position               | it sits at the (0°, 0°) placeholder                          | Engineering choice       |
 | Clock error            | its source's times are off by a measured amount              | Measured on this data    |
+| Misfiled data          | it was fitted from another gauge's data                      | Measured on this data    |
 | Datum consistency      | its datums contradict their definitions                      | NOAA and IHO definitions |
 | Tidal range            | its mean range is under 2 cm                                 | Engineering choice       |
 | Superseded relay       | it relays a gauge whose operator publishes its own constants | Editorial choice         |
@@ -71,6 +72,18 @@ These checks are pass or fail. A record that fails any of them is rejected and g
 **Basis.** A comparison against independent gauges on this data. A source is listed by hand, from evidence such as the flags described under [Disagreeing duplicates](#disagreeing-duplicates).
 
 **Limitations.** A clock error in a single record, rather than a whole source, is caught only when it is merged with a record that has the right time, and the flag does not say which of the two is wrong.
+
+### Misfiled data
+
+**What it catches.** A TICON record whose GESLA-4 series is another gauge's data under this gauge's name. Its constants and datums describe different water, however well they pass every other check.
+
+**Rejected** when a TICON record is listed in `MISFILED_RECORDS`, with the evidence that put it there:
+
+- Uddevalla (`uddevalla-2541-swe-smhi`). GESLA-4.1's file is byte-identical to Arkö's (2545), a Baltic gauge about 300 km away, and its M2 is Arkö's 8 mm. SMHI's own Uddevalla series in the water-levels lake and GESLA's CMEMS copy of the gauge agree to the millimetre, with an M2 of 141 mm.
+
+**Basis.** A comparison of the record's series with the gauge's own on this data. A record is listed by hand.
+
+**Limitations.** Only records someone has compared are caught. A held-out comparison against a water-levels lake fit of the same gauge is what found this one.
 
 ### Datum consistency
 
@@ -134,7 +147,7 @@ The one record rejected on P1 alone with K1 above 1 cm is TICON's analysis of RE
 
 **What it catches.** A harmonic fit that absorbed spurious energy into the annual constituent, SA. The seasonal cycle in sea level is driven by heating and cooling of the water column, wind, air pressure and river runoff. It varies smoothly along a coast, with typical amplitudes of a few centimeters to a few decimeters (Tsimplis & Woodworth, 1994; Pugh & Woodworth, 2014). NOAA derives SA and SSA from several years of monthly mean sea levels, and a stable estimate may need on the order of ten years (Gill & Schultz, 2001). A short, gappy or datum-shifted record pushes spurious low-frequency energy into it. An inflated SA inflates the predicted extremes, including LAT and HAT, and so the chart datum.
 
-**Threshold.** A TICON reference station is rejected when its SA amplitude is at least 0.5 m and at least five times the median SA of nearby reference stations in the same tidal regime. Nearby means within 25 km. The same regime means similar M2 amplitudes (see Duplicates), which keeps a river-influenced station, with a large real SA on a small tide, from being compared with the open coast. The annual term is read under each provider's name for it: SA, Sa, or Kartverket's SA_KV. The 0.5 m floor, 25 km radius and factor of five are engineering choices of this project.
+**Threshold.** A TICON reference station, or a water-levels lake fit of a TICON gauge, is rejected when its SA amplitude is at least 0.5 m and at least five times the median SA of nearby reference stations in the same tidal regime. Nearby means within 25 km. The same regime means similar M2 amplitudes (see Duplicates), which keeps a river-influenced station, with a large real SA on a small tide, from being compared with the open coast. A lake fit and the TICON record of its gauge carry the same SA, so neither counts as the other's neighbor. The annual term is read under each provider's name for it: SA, Sa, or Kartverket's SA_KV. The 0.5 m floor, 25 km radius and factor of five are engineering choices of this project.
 
 **Limitations.** The check is silent where no comparable neighbor exists within 25 km, which is true of most isolated gauges. Neighbors are not themselves vetted, and a single neighbor sets the median. Only the annual term is tested; a contaminated semiannual term (SSA) passes. Records from authoritative sources are never tested, though they serve as neighbors.
 
@@ -236,6 +249,8 @@ TICON names each record by place, the supplying agency's station code, and count
 
 **Limitations.** Merging at any distance trusts the identifier over the coordinates, and the two can disagree a lot. The three Port Stanley (Falkland Islands) records from UHSLC share an identifier, but the 1964–1974 segment is placed at 52.70° S and the other two at 51.75° S, about 105 km apart. One record is kept and the others are discarded without checking which position is right or whether the old segment was at a different site. A gauge moved and kept its code is treated as one gauge. Records of one gauge whose place names differ are not matched here and fall to the position rule.
 
+A fit from the water-levels lake (see [sources/water-levels](../sources/water-levels/README.md)) names the TICON record of its gauge in `source.gauge` and joins that record's group. It was scored against that record's constants on a year neither was fit to, by the residual left in the tidal band once a Godin filter has removed weather. When that TICON record is accepted, the fit wins it unless the fit scores worse by more than a 3 mm constituent error would add to the residual's variance (`AMPLITUDE_TOLERANCE`, A²/2). The loser is a duplicate of the record the group keeps. A fit no worse wins because it comes from the agency's own series, ends where TICON's record ends, and can be refitted; TICON's can't. The fit then ranks against the group's other records with the source priority of its TICON record. The comparison is this project's: held-out skill decides only where it can tell the two apart, and the scores sit in each record's `source.held_out`.
+
 An accepted segment without its own UHSLC metadata follows a superseded sibling to the gauge’s operator, regardless of its distance from the operator or disagreement in M2. The quality result retains the disagreement as an issue. A segment with its own UHSLC metadata keeps its own declaration. Conflicting operator targets stop evaluation. This applies to every TICON gauge group with a superseded sibling, including LINZ and Kartverket matches, not just JMA.
 
 ### Position and tide
@@ -298,7 +313,7 @@ npm run report:quality -w packages/stations
 | Field               | Meaning                                                                                                                                        |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `accepted`          | Whether the record is published.                                                                                                               |
-| `reason`            | `coordinates`, `timing`, `datum`, `range`, `superseded`, `constituents`, `seasonal`, or `duplicate`. Absent when accepted.                     |
+| `reason`            | `coordinates`, `timing`, `misfiled`, `datum`, `range`, `superseded`, `constituents`, `seasonal`, or `duplicate`. Absent when accepted.         |
 | `redundant`         | For a duplicate, or a relay superseded by its operator's record, the id of the record published for its gauge.                                 |
 | `seasonal_dominant` | `true` for the seasonal label.                                                                                                                 |
 | `score`             | The composite score. 0 for a record rejected by a check; a duplicate keeps the score it was compared on.                                       |
@@ -329,7 +344,7 @@ npm run report:quality -w packages/stations
 | `SEASONAL_OUTLIER_RADIUS`             | 25 km                                                              | Seasonal contamination                              |
 | `SEASONAL_OUTLIER_RATIO`              | 5                                                                  | Seasonal contamination                              |
 | `OBSERVED_BOUND_ALLOWANCE`            | 0.05 m                                                             | Cross-period observed means against harmonic bounds |
-| `AMPLITUDE_TOLERANCE`                 | 0.003 m                                                            | Every amplitude comparison; the lake re-fit gate    |
+| `AMPLITUDE_TOLERANCE`                 | 0.003 m                                                            | Every amplitude comparison; held-out scores         |
 | `RESOLVED_P1`                         | 0.01 m                                                             | Essential constituents                              |
 | `MIN_AMPLITUDE_RATIO`                 | 0.9                                                                | Seasonal contamination, duplicates                  |
 | `PRINCIPAL_TIDAL_CONSTITUENTS`        | M2, S2, K1, O1                                                     | Seasonal label, amplitudes                          |
@@ -343,6 +358,7 @@ npm run report:quality -w packages/stations
 | `MAX_OFFSET_TIME_DELTA`               | 10 min                                                             | Duplicate subordinates                              |
 | `MAX_PROVENANCE_KM`                   | 10 km                                                              | Superseded relay, merge report                      |
 | `CLOCK_ERROR_SOURCES`                 | `hct`                                                              | Clock error                                         |
+| `MISFILED_RECORDS`                    | `uddevalla-2541-swe-smhi`                                          | Misfiled data                                       |
 | `jurisdiction` (in `metadata.yaml`)   | NOAA: US and its territories                                       | Choosing the record to keep                         |
 | `SAME_GAUGE_M2_DIFFERENCE`            | 0.15                                                               | Disagreeing duplicates                              |
 

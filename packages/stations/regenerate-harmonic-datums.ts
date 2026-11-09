@@ -12,8 +12,18 @@ import {
 } from "../../sources/ticon/datums.ts";
 import { DATA_DIR, pruneDatums } from "./station.ts";
 
-export type HarmonicDatumSource = "ticon" | "dmi" | "linz" | "jhod" | "jma";
-const SOURCES: HarmonicDatumSource[] = ["dmi", "jhod", "jma", "linz", "ticon"];
+export type HarmonicDatumSource =
+  "ticon" | "smhi" | "dmi" | "linz" | "jhod" | "jma";
+const SOURCES: HarmonicDatumSource[] = [
+  "dmi",
+  "jhod",
+  "jma",
+  "linz",
+  "smhi",
+  "ticon",
+];
+// Water-levels lake fits reduce their datums as TICON's records do.
+const TICON_DATUMS: HarmonicDatumSource[] = ["smhi", "ticon"];
 
 export function mergeHarmonicDatums(
   source: HarmonicDatumSource,
@@ -31,13 +41,13 @@ export function mergeHarmonicDatums(
   const msl = requireDatum("MSL");
   if (source === "jma" && msl !== 0)
     throw new Error(`jma/${station.source.id}: expected MSL = 0`);
-  if (source === "ticon") {
+  if (TICON_DATUMS.includes(source)) {
     if (
       !storedDatumNotice(station) ||
       (station.datum_frame === "constituent" && msl !== 0)
     )
       throw new Error(
-        `ticon/${station.source.id}: unsupported datum provenance`,
+        `${source}/${station.source.id}: unsupported datum provenance`,
       );
     if (station.datums_source === "observed") {
       const means = Object.fromEntries(
@@ -104,7 +114,13 @@ export async function regenerateDirectory(
   const files = (
     await Promise.all(
       SOURCES.map(async (source) =>
-        (await readdir(join(root, source)))
+        // A source with no records yet has no directory.
+        (
+          await readdir(join(root, source)).catch((err) => {
+            if (err.code === "ENOENT") return [];
+            throw err;
+          })
+        )
           .filter((name) => name.endsWith(".json"))
           .sort()
           .map((name) => ({ source, path: join(root, source, name) })),
@@ -136,7 +152,7 @@ export async function regenerateDirectory(
     );
     const datums = mergeHarmonicDatums(source, station, computed);
     const disclaimers =
-      source === "ticon" &&
+      TICON_DATUMS.includes(source) &&
       !station.disclaimers?.includes(HARMONIC_REDUCTION_NOTICE)
         ? `${station.disclaimers} ${HARMONIC_REDUCTION_NOTICE}`
         : station.disclaimers;

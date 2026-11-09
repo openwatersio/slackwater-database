@@ -1,4 +1,5 @@
 sources:
+  - smhi/2110
   - ticon/stenungsund-2110-swe-smhi
   - ticon/stenungsund-ste-swe-cmems
 redirect_from:
@@ -6,7 +7,7 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/stenungsund-2110-swe-smhi:
+    smhi/2110:
       position: [58.0933, 11.8325]
       coastline: unverifiable
       quality:
@@ -14,18 +15,35 @@ computed:
         score: 83
         factors:
           epoch: 1
-          recency: 0.98
+          recency: 0.99
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0
+    ticon/stenungsund-2110-swe-smhi:
+      position: [58.0933, 11.8325]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2110
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MHWS (0.152) < MHW (0.159)
     ticon/stenungsund-ste-swe-cmems:
       position: [58.0933, 11.8325]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/stenungsund-2110-swe-smhi
+        redundant: smhi/2110
         score: 65
         factors:
           epoch: 1

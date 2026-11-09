@@ -1,15 +1,55 @@
 sources:
+  - smhi/35118
+  - ticon/oxelosund_vinterklasen_sjov-35118-swe-smhi
   - ticon/oxelosundvinterklasen-oxe-swe-cmems
+redirect_from:
+  - /tides/se/oxelosund-vinterklasen-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35118:
+      position: [58.6617, 17.1247]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.098) > MLW (0.096)
+          - "Seasonal curve peak (0.100m) exceeds the principal tide M2+S2+K1+O1 (0.026m): the yearly swing exceeds the daily one"
+    ticon/oxelosund_vinterklasen_sjov-35118-swe-smhi:
+      position: [58.6617, 17.1247]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35118
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.112) > MLW (0.108)
+          - "Seasonal curve peak (0.100m) exceeds the principal tide M2+S2+K1+O1 (0.026m): the yearly swing exceeds the daily one"
     ticon/oxelosundvinterklasen-oxe-swe-cmems:
       position: [58.661701, 17.1248]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/oxelosund_vinterklasen_sjov-35118-swe-smhi
+        redundant: smhi/35118
         seasonal_dominant: true
         score: 52
         factors:

@@ -1,22 +1,63 @@
 sources:
+  - smhi/35127
   - ticon/ljusne_sjov-35127-swe-smhi
+  - ticon/ljusnelotsstation-lju-swe-cmems
+redirect_from:
+  - /tides/se/ljusne-lotsstation/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/ljusne_sjov-35127-swe-smhi:
+    smhi/35127:
       position: [61.2067, 17.1452]
       coastline: unverifiable
       quality:
         accepted: true
         seasonal_dominant: true
-        score: 95
+        score: 96
         factors:
-          epoch: 0.842
-          recency: 0.98
+          epoch: 0.869
+          recency: 0.99
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 1
         issues:
           - MHWS (0.125) < MHW (0.134)
-          - "Seasonal curve peak (0.137m) exceeds the principal tide M2+S2+K1+O1 (0.022m): the yearly swing exceeds the daily one"
+          - "Seasonal curve peak (0.138m) exceeds the principal tide M2+S2+K1+O1 (0.022m): the yearly swing exceeds the daily one"
+    ticon/ljusne_sjov-35127-swe-smhi:
+      position: [61.2067, 17.1452]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35127
+        seasonal_dominant: true
+        score: 96
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 1
+        issues:
+          - MHWS (0.126) < MHW (0.134)
+          - "Seasonal curve peak (0.137m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"
+    ticon/ljusnelotsstation-lju-swe-cmems:
+      position: [61.206699, 17.145201]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: range
+        seasonal_dominant: true
+        score: 0
+        factors:
+          epoch: 0.322
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - Tidal range 1.80cm < 2cm threshold
+          - "Seasonal curve peak (0.140m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"

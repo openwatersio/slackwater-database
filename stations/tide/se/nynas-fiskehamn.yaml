@@ -1,24 +1,65 @@
 # SMHI: https://www.smhi.se/kunskapsbanken/oceanografi/matningar-i-havet/stationslista-vattenstand
 name: Nynäs Fiskehamn
 sources:
+  - smhi/35112
   - ticon/nynas_fiskehamn-35112-swe-smhi
+  - ticon/nynasfiskehamn-nyn-swe-cmems
+redirect_from:
+  - /tides/se/nynas-fiskehamn-stockholm/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/nynas_fiskehamn-35112-swe-smhi:
+    smhi/35112:
       position: [58.9, 17.95]
       coastline: unverifiable
       quality:
         accepted: true
         seasonal_dominant: true
-        score: 69
+        score: 70
         factors:
-          epoch: 0.31
-          recency: 0.98
+          epoch: 0.337
+          recency: 0.99
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0.004
         issues:
           - MLWS (0.092) > MLW (0.09)
-          - "Seasonal curve peak (0.128m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"
+          - "Seasonal curve peak (0.127m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"
+    ticon/nynas_fiskehamn-35112-swe-smhi:
+      position: [58.9, 17.95]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35112
+        seasonal_dominant: true
+        score: 70
+        factors:
+          epoch: 0.337
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.004
+        issues:
+          - MLWS (0.092) > MLW (0.09)
+          - "Seasonal curve peak (0.128m) exceeds the principal tide M2+S2+K1+O1 (0.024m): the yearly swing exceeds the daily one"
+    ticon/nynasfiskehamn-nyn-swe-cmems:
+      position: [58.9006, 17.9536]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35112
+        seasonal_dominant: true
+        score: 52
+        factors:
+          epoch: 0.322
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.004
+        issues:
+          - "Seasonal curve peak (0.120m) exceeds the principal tide M2+S2+K1+O1 (0.024m): the yearly swing exceeds the daily one"

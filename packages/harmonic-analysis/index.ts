@@ -298,9 +298,26 @@ export function tidalResidual(
   constituents: HarmonicConstituent[],
   samples: Sample[],
 ): { rms: number; hours: number } {
-  if (!samples.length) return { rms: NaN, hours: 0 };
+  const residuals = tidalResiduals(constituents, samples);
+  let sum = 0;
+  for (const r of residuals.values()) sum += r * r;
+  const hours = residuals.size;
+  return { rms: hours ? Math.sqrt(sum / hours) : NaN, hours };
+}
+
+/** The filtered residual tidalResidual squares, by UTC hour (ms since the
+ *  epoch / 3600000), for the hours it scores. */
+export function tidalResiduals(
+  constituents: HarmonicConstituent[],
+  samples: Sample[],
+): Map<number, number> {
+  const out = new Map<number, number>();
+  if (!samples.length) return out;
   const predictor = engine.createTidePredictor(constituents, { offset: false });
-  const first = Math.floor(samples[0]!.t / HOUR_MS);
+  // Samples in any order: the earliest anchors the hourly bins.
+  const first = Math.floor(
+    samples.reduce((m, s) => Math.min(m, s.t), Infinity) / HOUR_MS,
+  );
   const sums: number[] = [];
   const counts: number[] = [];
   for (const { t, level } of samples) {
@@ -319,14 +336,9 @@ export function tidalResidual(
     25,
     12,
   );
-  let sum = 0;
-  let hours = 0;
   hourly.forEach((r, h) => {
     const fast = r - slow[h]!;
-    if (Number.isFinite(fast)) {
-      sum += fast * fast;
-      hours++;
-    }
+    if (Number.isFinite(fast)) out.set(first + h, fast);
   });
-  return { rms: hours ? Math.sqrt(sum / hours) : NaN, hours };
+  return out;
 }

@@ -25,6 +25,9 @@ import {
   authoritativeDuplicateWinner,
   getSourceSuffix,
   getSourcePriority,
+  MISFILED_RECORDS,
+  constituentsDigest,
+  scoresWorse,
   gaugeKey,
   coordinatePrecision,
   isAuthoritative,
@@ -262,6 +265,13 @@ function checkTiming(station: Station): string | null {
   return error ? `Clock error in source ${suffix}: ${error}` : null;
 }
 
+/** Reject a TICON record fitted from another gauge's data. */
+function checkMisfiled(station: Station): string | null {
+  if (!station.id.startsWith("ticon/")) return null;
+  const error = MISFILED_RECORDS[station.source.id];
+  return error ? `Misfiled data: ${error}` : null;
+}
+
 /** Each TICON gauge's declared originator, for the records of the gauge that
  *  have no UHSLC metadata of their own: UHSLC's metadata covers only its
  *  research-quality series, so its fast-delivery series follows a
@@ -351,6 +361,7 @@ function checkGates(
   };
   fail("coordinates", checkCoordinates(station));
   fail("timing", checkTiming(station));
+  fail("misfiled", checkMisfiled(station));
   const datum = checkDatumOrdering(station, stationMap);
   if (datum.fatal.length > 0)
     failures.push({ reason: "datum", issues: datum.fatal });
@@ -438,8 +449,10 @@ function checkSeasonalContamination(
   station: Station,
   allStations: Station[],
 ): string | null {
-  // Authoritative sources (NOAA) are trusted; this targets TICON harmonic fits.
-  if (!station.id.startsWith("ticon/")) return null;
+  // Authoritative sources (NOAA) are trusted; this targets TICON harmonic fits
+  // and the water-levels lake fits of TICON's gauges.
+  const gauge = ticonGauge(station);
+  if (!gauge) return null;
   if (station.type === "subordinate") return null;
 
   const sa =
@@ -451,6 +464,11 @@ function checkSeasonalContamination(
   for (const other of allStations) {
     if (other.id === station.id) continue;
     if (other.type === "subordinate") continue;
+    // A lake fit carries its TICON record's SA, so it can't vouch for that
+    // record, and its record already votes for it anywhere else.
+    if (!other.id.startsWith("ticon/") && other.source?.gauge) continue;
+    if (!station.id.startsWith("ticon/") && ticonGauge(other) === gauge)
+      continue;
     // Only neighbours with a genuine (positive) SA term can vouch. Treating an
     // SA=0 placeholder as a valid comparator would drag the median toward zero
     // and silently disable the gate where such placeholders are common.
@@ -596,7 +614,8 @@ export function scoreSource(station: Station): number {
     ? 0
     : station.id.startsWith("dmi/")
       ? 50
-      : getSourcePriority(station.source.id);
+      : // A fit from the water-levels lake ranks as the relay of its gauge.
+        getSourcePriority(station.source.gauge ?? station.source.id);
   return toFixed(Math.max(0, 1 - priority / 99));
 }
 
@@ -662,22 +681,24 @@ export function scoreAmplitude(station: Station): {
   return { score: toFixed(Math.max(0, score)), issues };
 }
 
+/** The TICON gauge a record describes: a TICON record's own, or the one a
+ *  fit from the water-levels lake names. */
+function ticonGauge(station: Station): string | undefined {
+  const id = station.id.startsWith("ticon/")
+    ? station.source.id
+    : station.source?.gauge;
+  return id ? gaugeKey(id) : undefined;
+}
+
 /** Coverage: distance to the nearest other gauge that passed every check.
  *  A record of the same TICON gauge is not another gauge, and a rejected
  *  record adds nothing to the map, so neither counts. */
-function scoreCoverage(station: Station, neighbors: Station[]): number {
-  const gauge = station.id.startsWith("ticon/")
-    ? gaugeKey(station.source.id)
-    : undefined;
+export function scoreCoverage(station: Station, neighbors: Station[]): number {
+  const gauge = ticonGauge(station);
   let minDist = Infinity;
   for (const other of neighbors) {
     if (other.id === station.id) continue;
-    if (
-      gauge &&
-      other.id.startsWith("ticon/") &&
-      gaugeKey(other.source.id) === gauge
-    )
-      continue;
+    if (gauge && ticonGauge(other) === gauge) continue;
     const d = distance(
       station.latitude,
       station.longitude,
@@ -1000,9 +1021,8 @@ export function deduplicateByGauge(
 ): void {
   const groups = new Map<string, string[]>();
   for (const id of stationIds) {
-    const station = stationMap.get(id)!;
     if (!id.startsWith("ticon/")) continue;
-    const key = gaugeKey(station.source.id);
+    const key = gaugeKey(stationMap.get(id)!.source.id);
     (groups.get(key) ?? groups.set(key, []).get(key)!).push(id);
   }
 
@@ -1039,6 +1059,43 @@ export function deduplicateByGauge(
       .sort(order);
     if (!winner) continue;
     for (const id of losers) markDuplicate(resultsMap, stationMap, id, winner);
+  }
+}
+
+/** A fit from the water-levels lake against the TICON records of its gauge,
+ *  as the lake files them, on its held-out year. A fit worse than an
+ *  accepted record beyond the tolerance is a duplicate of the best of them.
+ *  Otherwise every accepted one is a duplicate of the fit: it comes from the
+ *  agency's own series and can be refitted, and TICON's can't. Scores taken
+ *  against constants that have since changed decide nothing. */
+export function decideHeldOut(
+  stationIds: string[],
+  stationMap: Map<string, Station>,
+  resultsMap: Map<string, QualityResult>,
+): void {
+  for (const id of stationIds) {
+    const held_out = stationMap.get(id)!.source?.held_out;
+    if (!held_out || !resultsMap.get(id)!.accepted) continue;
+    const scored = Object.entries(held_out.ticon).flatMap(([ticon, score]) => {
+      const relay = stationMap.get(`ticon/${ticon}`);
+      if (!relay || !resultsMap.get(relay.id)!.accepted) return [];
+      if (score.digest !== constituentsDigest(relay.harmonic_constituents)) {
+        resultsMap
+          .get(id)!
+          .issues.push(
+            `Held-out scores were taken against ${relay.id}'s constants as they were before; re-run the water-levels import with FORCE_HARMONICS=1`,
+          );
+        return [];
+      }
+      return [{ id: relay.id, rms: score.rms, se: score.se ?? 0 }];
+    });
+    const best = scored
+      .filter((s) => scoresWorse(held_out.rms, s.rms, s.se))
+      .sort((a, b) => a.rms - b.rms)[0];
+    if (best) markDuplicate(resultsMap, stationMap, id, best.id);
+    else
+      for (const { id: relay } of scored)
+        markDuplicate(resultsMap, stationMap, relay, id);
   }
 }
 
@@ -1166,7 +1223,18 @@ export async function evaluateQuality(): Promise<QualityResult[]> {
       return result.accepted || result.reason === "superseded";
     })
     .map((s) => s.id);
-  deduplicateByGauge(gaugeIds, stationMap, resultsMap, subordinateCounts);
+  // A lake fit settles its gauge's TICON records on its held-out year first.
+  decideHeldOut(acceptedIds, stationMap, resultsMap);
+  deduplicateByGauge(
+    gaugeIds.filter(
+      (id) =>
+        resultsMap.get(id)!.accepted ||
+        resultsMap.get(id)!.reason === "superseded",
+    ),
+    stationMap,
+    resultsMap,
+    subordinateCounts,
+  );
 
   // 4b: Deduplicate the survivors by proximity and harmonic similarity.
   const survivingIds = acceptedIds.filter((id) => resultsMap.get(id)!.accepted);
