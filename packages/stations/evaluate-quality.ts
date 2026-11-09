@@ -464,7 +464,7 @@ function checkSeasonalContamination(
   for (const other of allStations) {
     if (other.id === station.id) continue;
     if (other.type === "subordinate") continue;
-    // A lake fit carries its TICON record's SA, so it can't vouch for that
+    // A lake fit usually carries its TICON record's SA, so it can't vouch for that
     // record, and its record already votes for it anywhere else.
     if (!other.id.startsWith("ticon/") && other.source?.gauge) continue;
     if (!station.id.startsWith("ticon/") && ticonGauge(other) === gauge)

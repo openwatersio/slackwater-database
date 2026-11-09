@@ -590,6 +590,13 @@ describe("a fit from the water-levels lake", () => {
     expect(wins.get(cmems.id)!.redundant).toBe("smhi/2130");
   });
 
+  test("never loses on a difference whose standard error couldn't be measured", () => {
+    const fit = lake({ fit: 0.06, ticon: 0.05 });
+    // JSON stores an unmeasured (infinite) standard error as null.
+    fit.source.held_out!.ticon["kungsvik-2130-swe-smhi"]!.se = null as any;
+    expect(evaluate(fit).get("smhi/2130")!.accepted).toBe(true);
+  });
+
   test("doesn't compare a relay the lake files more than 10 km away", () => {
     const fit = {
       ...lake({ fit: 0.051, ticon: 0.05 }),

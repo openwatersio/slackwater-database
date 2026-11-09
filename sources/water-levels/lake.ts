@@ -65,7 +65,7 @@ export interface Relay {
 
 export interface LakeFit {
   constituents: HarmonicConstituent[];
-  /** The span of samples the fit used, and how many hours it had. */
+  /** The span of samples the fit used, and how many samples it had. */
   fit: { start: string; end: string; hours: number };
   held_out: HeldOut;
   /** The fit years and the held-out year, from which datums are reduced. */

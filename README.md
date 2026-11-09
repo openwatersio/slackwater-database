@@ -180,7 +180,7 @@ For TICON-4 stations:
 - Datums use supported GESLA-4 observation windows or a labeled harmonic fallback, since TICON does not publish them. See [sources/ticon/README.md](./sources/ticon/README.md) for the method and its uncertainties.
 - Four UHSLC research-quality records, Ammassalik (297A), Langkawi (142A), Macaé (719A) and Alotau (069A), take UHSLC's position for the gauge instead of TICON's, which sits 17 to 49 km away. See [sources/ticon/README.md](./sources/ticon/README.md#positions) and [#371](https://github.com/openwatersio/slackwater-database/issues/371).
 
-For SMHI stations, harmonic constants are fitted and datums reduced by Open Waters from SMHI's observations in the water-levels lake. Each station takes the name, position and long-period constituents (SA, SSA, MM and the like) of TICON-4's record of the same gauge. See [sources/water-levels/README.md](./sources/water-levels/README.md).
+For SMHI stations, harmonic constants are fitted and datums reduced by Open Waters from SMHI's observations in the water-levels lake. Each station takes the name and position of TICON-4's record of the same gauge, and its long-period constituents (SA, SSA, MM and the like) except at Uddevalla, whose TICON record is another gauge's data; there the fit's own are used. See [sources/water-levels/README.md](./sources/water-levels/README.md).
 
 For Kartverket stations, published harmonic phases are converted from UTC+1 to UTC and centimetres are converted to metres. The original responses and comparison results are pinned under [sources/kartverket](./sources/kartverket/README.md).
 

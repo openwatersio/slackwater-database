@@ -79,7 +79,7 @@ These checks are pass or fail. A record that fails any of them is rejected and g
 
 **Rejected** when a TICON record is listed in `MISFILED_RECORDS`, with the evidence that put it there:
 
-- Uddevalla (`uddevalla-2541-swe-smhi`). GESLA-4.1's file is byte-identical to Arkö's (2545), a Baltic gauge about 300 km away, and its M2 is Arkö's 8 mm. SMHI's own Uddevalla series in the water-levels lake and GESLA's CMEMS copy of the gauge agree to the millimetre, with an M2 of 141 mm.
+- Uddevalla (`uddevalla-2541-swe-smhi`). GESLA-4.1's file is byte-identical to Arkö's (2545), a Baltic gauge about 300 km away, and its M2 is Arkö's 8 mm. SMHI's own Uddevalla series in the water-levels lake and GESLA's CMEMS copy of the gauge agree to the millimetre, with an M2 of 141 to 142 mm.
 
 **Basis.** A comparison of the record's series with the gauge's own on this data. A record is listed by hand.
 
@@ -147,7 +147,7 @@ The one record rejected on P1 alone with K1 above 1 cm is TICON's analysis of RE
 
 **What it catches.** A harmonic fit that absorbed spurious energy into the annual constituent, SA. The seasonal cycle in sea level is driven by heating and cooling of the water column, wind, air pressure and river runoff. It varies smoothly along a coast, with typical amplitudes of a few centimeters to a few decimeters (Tsimplis & Woodworth, 1994; Pugh & Woodworth, 2014). NOAA derives SA and SSA from several years of monthly mean sea levels, and a stable estimate may need on the order of ten years (Gill & Schultz, 2001). A short, gappy or datum-shifted record pushes spurious low-frequency energy into it. An inflated SA inflates the predicted extremes, including LAT and HAT, and so the chart datum.
 
-**Threshold.** A TICON reference station, or a water-levels lake fit of a TICON gauge, is rejected when its SA amplitude is at least 0.5 m and at least five times the median SA of nearby reference stations in the same tidal regime. Nearby means within 25 km. The same regime means similar M2 amplitudes (see Duplicates), which keeps a river-influenced station, with a large real SA on a small tide, from being compared with the open coast. A lake fit and the TICON record of its gauge carry the same SA, so neither counts as the other's neighbor. The annual term is read under each provider's name for it: SA, Sa, or Kartverket's SA_KV. The 0.5 m floor, 25 km radius and factor of five are engineering choices of this project.
+**Threshold.** A TICON reference station, or a water-levels lake fit of a TICON gauge, is rejected when its SA amplitude is at least 0.5 m and at least five times the median SA of nearby reference stations in the same tidal regime. Nearby means within 25 km. The same regime means similar M2 amplitudes (see Duplicates), which keeps a river-influenced station, with a large real SA on a small tide, from being compared with the open coast. A lake fit usually carries the SA of its gauge's TICON record, so a lake fit doesn't count as a neighbor. The annual term is read under each provider's name for it: SA, Sa, or Kartverket's SA_KV. The 0.5 m floor, 25 km radius and factor of five are engineering choices of this project.
 
 **Limitations.** The check is silent where no comparable neighbor exists within 25 km, which is true of most isolated gauges. Neighbors are not themselves vetted, and a single neighbor sets the median. Only the annual term is tested; a contaminated semiannual term (SSA) passes. Records from authoritative sources are never tested, though they serve as neighbors.
 
@@ -356,7 +356,7 @@ npm run report:quality -w packages/stations
 | `MAX_DEDUP_DISTANCE`                  | 500 m                                                              | Duplicates                                          |
 | `MAX_OFFSET_HEIGHT_DELTA`             | 0.1                                                                | Duplicate subordinates                              |
 | `MAX_OFFSET_TIME_DELTA`               | 10 min                                                             | Duplicate subordinates                              |
-| `MAX_PROVENANCE_KM`                   | 10 km                                                              | Superseded relay, merge report                      |
+| `MAX_PROVENANCE_KM`                   | 10 km                                                              | Superseded relay, merge report, lake fits           |
 | `CLOCK_ERROR_SOURCES`                 | `hct`                                                              | Clock error                                         |
 | `MISFILED_RECORDS`                    | `uddevalla-2541-swe-smhi`                                          | Misfiled data                                       |
 | `jurisdiction` (in `metadata.yaml`)   | NOAA: US and its territories                                       | Choosing the record to keep                         |

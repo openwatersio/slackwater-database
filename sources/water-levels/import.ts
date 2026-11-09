@@ -14,6 +14,7 @@ import {
   getSourceSuffix,
   load,
   MISFILED_RECORDS,
+  NON_COMMERCIAL_SOURCES,
   normalize,
   save,
   type PartialStationData,
@@ -40,6 +41,7 @@ if (!ticonIds.length)
 // FORCE_HARMONICS=1. Removing a record is a decision made by hand.
 const force = process.env["FORCE_HARMONICS"] === "1";
 let errors = 0;
+const claims = new Map<string, string>();
 for (const id of ticonIds) {
   const contributor = getSourceSuffix(id);
   try {
@@ -48,6 +50,10 @@ for (const id of ticonIds) {
       console.log(`${id}: no ${contributor} series in the lake`);
       continue;
     }
+    // Two TICON records filed under one series would write one file.
+    const claimed = claims.get(series);
+    if (claimed) throw new Error(`${claimed} and ${id} both map to ${series}`);
+    claims.set(series, id);
     const sourceId = series.slice(contributor.length + 1);
     const saved = await load(contributor, sourceId).catch(() => undefined);
     const ticon = await load("ticon", id);
@@ -63,9 +69,14 @@ for (const id of ticonIds) {
       r.constituents ? [{ id: r.id, constituents: r.constituents }] : [],
     );
     // The long-period constituents come from a TICON record of the gauge
-    // that isn't another gauge's data, or from the fit where none is.
+    // that isn't another gauge's data and is licensed as this record is, or
+    // from the fit where none is.
     const longPeriod = MISFILED_RECORDS[id]
-      ? (scored.find((r) => !MISFILED_RECORDS[r.id])?.constituents ?? null)
+      ? (scored.find(
+          (r) =>
+            !MISFILED_RECORDS[r.id] &&
+            !NON_COMMERCIAL_SOURCES.includes(getSourceSuffix(r.id)),
+        )?.constituents ?? null)
       : ticon.harmonic_constituents;
     const lake = await fitFromLake(
       series,
