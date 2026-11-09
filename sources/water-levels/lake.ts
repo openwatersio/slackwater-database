@@ -65,8 +65,8 @@ export interface Relay {
 
 export interface LakeFit {
   constituents: HarmonicConstituent[];
-  /** The span of samples the fit used. */
-  fit: { start: string; end: string };
+  /** The span of samples the fit used, and how many hours it had. */
+  fit: { start: string; end: string; hours: number };
   held_out: HeldOut;
   /** The fit years and the held-out year, from which datums are reduced. */
   window: { start: Date; end: Date };
@@ -103,6 +103,8 @@ export async function lakeRelays(series: string): Promise<string[]> {
 const isoDate = (t: number) => new Date(t).toISOString().slice(0, 10);
 const yearStart = (year: number) => new Date(Date.UTC(year, 0, 1));
 
+const DAY_MS = 86_400_000;
+
 /** `date` moved by `years` whole years. */
 const addYears = (date: Date, years: number) => {
   const d = new Date(date);
@@ -113,13 +115,15 @@ const addYears = (date: Date, years: number) => {
 /**
  * Fit TICON's constituent names to a lake series over the FIT_YEARS before a
  * held-out year, and score the fit and each relay's constants on that year by
- * their tidal-band residuals. The held-out year is the year after `ticonEnd`, where
- * TICON's record ends, so neither set of constants was fitted on it. A series
+ * their tidal-band residuals. The held-out year starts the day after
+ * `ticonEnd`, the last day of TICON's record, so neither set of constants was
+ * fitted on it. A series
  * with too little of that year to score, such as one TICON covers to its last
  * reading, holds out its last calendar year, or the one before, which TICON's
  * constants may have been fitted on. A year needs half its hours scored. The
- * fit keeps TICON's long-period constituents, which the score can't see, and
- * is scored as it is published, rounded. Returns undefined when the series is
+ * fit keeps the long-period constituents of `longPeriod`, a TICON record of
+ * the gauge, since the score can't see them, or its own where that is null.
+ * It is scored as it is published, rounded. Returns undefined when the series is
  * too short to fit or score.
  */
 export async function fitFromLake(
@@ -127,13 +131,21 @@ export async function fitFromLake(
   ticon: HarmonicConstituent[],
   ticonEnd?: Date,
   relays: Relay[] = [],
+  longPeriod: HarmonicConstituent[] | null = ticon,
 ): Promise<LakeFit | undefined> {
   const station = await lakeStation(series);
   if (!station) throw new Error(`${series} is not in the public lake`);
   if (!station.last) return undefined;
   const lastYear = station.last.getUTCFullYear();
   const windows = [
-    ...(ticonEnd ? [{ start: ticonEnd, end: addYears(ticonEnd, 1) }] : []),
+    ...(ticonEnd
+      ? [
+          {
+            start: new Date(+ticonEnd + DAY_MS),
+            end: addYears(new Date(+ticonEnd + DAY_MS), 1),
+          },
+        ]
+      : []),
     { start: yearStart(lastYear), end: yearStart(lastYear + 1) },
     { start: yearStart(lastYear - 1), end: yearStart(lastYear) },
   ];
@@ -154,6 +166,7 @@ export async function fitFromLake(
       samples,
       window,
       ticon,
+      longPeriod,
       relays,
       series.split("/")[0]!,
     );
@@ -169,6 +182,7 @@ function scoreYear(
   samples: Sample[],
   { start: heldOutStart, end: heldOutEnd }: { start: Date; end: Date },
   ticon: HarmonicConstituent[],
+  longPeriod: HarmonicConstituent[] | null,
   relays: Relay[],
   contributor: string,
 ): LakeFit | undefined {
@@ -187,7 +201,9 @@ function scoreYear(
   const constituents = roundConstituents(
     contributor,
     ticon.flatMap((t) =>
-      isLongPeriod(t.name) ? [t] : fitted.filter((c) => c.name === t.name),
+      isLongPeriod(t.name) && longPeriod
+        ? longPeriod.filter((c) => c.name === t.name)
+        : fitted.filter((c) => c.name === t.name),
     ),
   );
   const residuals = tidalResiduals(constituents, heldOut);
@@ -200,10 +216,11 @@ function scoreYear(
     fit: {
       start: isoDate(fitSamples[0]!.t),
       end: isoDate(fitSamples.at(-1)!.t),
+      hours: fitSamples.length,
     },
     held_out: {
       start: isoDate(+heldOutStart),
-      end: isoDate(+heldOutEnd - 86_400_000),
+      end: isoDate(+heldOutEnd - DAY_MS),
       hours: scored.hours,
       rms: round(scored.rms),
       ticon: Object.fromEntries(

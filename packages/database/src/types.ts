@@ -61,6 +61,8 @@ export interface StationData {
     series?: string;
     /** For a fit from the water-levels lake: the TICON record of the same gauge. */
     gauge?: string;
+    /** For a fit from the water-levels lake: how many hours it was fit on. */
+    fit_hours?: number;
     /** For a fit from the water-levels lake: the year after its fit, on which
      *  it and each TICON record of its gauge were scored by tidal-band
      *  residual (m), each with a digest of the constants scored. These fields

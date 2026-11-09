@@ -1079,6 +1079,22 @@ export function decideHeldOut(
     const scored = Object.entries(held_out.ticon).flatMap(([ticon, score]) => {
       const relay = stationMap.get(`ticon/${ticon}`);
       if (!relay || !resultsMap.get(relay.id)!.accepted) return [];
+      // The lake's filing is trusted only as far as a declared originator is.
+      const fit = stationMap.get(id)!;
+      const apart = distance(
+        fit.latitude,
+        fit.longitude,
+        relay.latitude,
+        relay.longitude,
+      );
+      if (apart > MAX_PROVENANCE_KM) {
+        resultsMap
+          .get(id)!
+          .issues.push(
+            `The lake files ${relay.id} under this series, ${apart.toFixed(1)} km away; not compared`,
+          );
+        return [];
+      }
       if (score.digest !== constituentsDigest(relay.harmonic_constituents)) {
         resultsMap
           .get(id)!
@@ -1087,7 +1103,9 @@ export function decideHeldOut(
           );
         return [];
       }
-      return [{ id: relay.id, rms: score.rms, se: score.se ?? 0 }];
+      // A standard error that couldn't be measured is stored as null; such a
+      // difference is never resolved.
+      return [{ id: relay.id, rms: score.rms, se: score.se ?? Infinity }];
     });
     const best = scored
       .filter((s) => scoresWorse(held_out.rms, s.rms, s.se))

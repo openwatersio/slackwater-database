@@ -13,6 +13,7 @@ import {
   DATA_DIR,
   getSourceSuffix,
   load,
+  MISFILED_RECORDS,
   normalize,
   save,
   type PartialStationData,
@@ -35,11 +36,9 @@ if (!ticonIds.length)
 
 // A year file that 404s mid-backfill reads as a gap, so a run can see less of
 // a series than an earlier one did. A gauge the lake can't fit keeps any record
-// it has, and so does one whose new fit spans less than its saved one, unless
+// it has, and so does one whose new fit has fewer hours than its saved one, unless
 // FORCE_HARMONICS=1. Removing a record is a decision made by hand.
 const force = process.env["FORCE_HARMONICS"] === "1";
-const days = (e: { start: string | Date; end: string | Date }) =>
-  (+new Date(e.end) - +new Date(e.start)) / 86_400_000;
 let errors = 0;
 for (const id of ticonIds) {
   const contributor = getSourceSuffix(id);
@@ -60,22 +59,30 @@ for (const id of ticonIds) {
           ?.harmonic_constituents,
       })),
     );
+    const scored = relays.flatMap((r) =>
+      r.constituents ? [{ id: r.id, constituents: r.constituents }] : [],
+    );
+    // The long-period constituents come from a TICON record of the gauge
+    // that isn't another gauge's data, or from the fit where none is.
+    const longPeriod = MISFILED_RECORDS[id]
+      ? (scored.find((r) => !MISFILED_RECORDS[r.id])?.constituents ?? null)
+      : ticon.harmonic_constituents;
     const lake = await fitFromLake(
       series,
       ticon.harmonic_constituents,
       ticon.epoch && new Date(ticon.epoch.end),
-      relays.flatMap((r) =>
-        r.constituents ? [{ id: r.id, constituents: r.constituents }] : [],
-      ),
+      scored,
+      longPeriod,
     );
     if (!lake) {
       console.log(`${series} (${id}): too short to fit and score`);
       if (saved) console.log(`  keeps ${contributor}/${sourceId}.json`);
       continue;
     }
-    if (!force && saved?.epoch && days(lake.fit) < days(saved.epoch) - 1) {
+    const savedHours = saved?.source.fit_hours;
+    if (!force && savedHours && lake.fit.hours < savedHours) {
       console.log(
-        `${series} (${id}): fits ${lake.fit.start} to ${lake.fit.end}, less than the saved ${saved.epoch.start} to ${saved.epoch.end}; keeps it`,
+        `${series} (${id}): fits ${lake.fit.hours} hours, fewer than the saved ${savedHours}; keeps it`,
       );
       continue;
     }
@@ -107,6 +114,7 @@ for (const id of ticonIds) {
         published_harmonics: false,
         series,
         gauge: id,
+        fit_hours: lake.fit.hours,
         held_out: lake.held_out,
       },
       license: CONTRIBUTORS.get(contributor)!.license,

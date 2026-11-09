@@ -590,7 +590,30 @@ describe("a fit from the water-levels lake", () => {
     expect(wins.get(cmems.id)!.redundant).toBe("smhi/2130");
   });
 
-  test("decides nothing on a difference within twice its standard error", () => {
+  test("doesn't compare a relay the lake files more than 10 km away", () => {
+    const fit = {
+      ...lake({ fit: 0.051, ticon: 0.05 }),
+      latitude: 58,
+      longitude: 11,
+    } as Station;
+    const far = { ...ticon, latitude: 58.2, longitude: 11 } as Station;
+    const results = new Map(
+      [fit, far].map((s) => [
+        s.id,
+        { id: s.id, accepted: true, score: 70, issues: [] as string[] },
+      ]),
+    );
+    decideHeldOut(
+      [fit.id, far.id],
+      new Map([fit, far].map((s) => [s.id, s])),
+      results as any,
+    );
+    expect(results.get(fit.id)!.accepted).toBe(true);
+    expect(results.get(far.id)!.accepted).toBe(true);
+    expect(results.get(fit.id)!.issues[0]).toMatch(/km away; not compared/);
+  });
+
+  test("wins on a difference within twice its standard error", () => {
     const fit = lake({ fit: 0.051, ticon: 0.05 });
     // 1.01e-4 m² more variance, against a standard error of 6e-5 m².
     fit.source.held_out!.ticon["kungsvik-2130-swe-smhi"]!.se = 6e-5;

@@ -2,8 +2,9 @@
  * Which tide routes publish the same physical gauge, and so should become one
  * station with one URL.
  *
- * Four kinds of evidence join routes. A fit from the water-levels lake joins
- * the TICON records of its gauge, as the lake files them. A TICON relay that declares its
+ * Five kinds of evidence join routes. A fit from the water-levels lake joins
+ * the TICON records of its gauge, as the lake files them, within
+ * MAX_PROVENANCE_KM. A TICON relay that declares its
  * originator (see sources/ticon/provenance.ts) joins the originator's route
  * when the two sit within MAX_PROVENANCE_KM and their M2 does not contradict
  * it; an unambiguous declaration skips the M2 check within MAX_GAUGE_CODE_KM.
@@ -341,9 +342,18 @@ export function planMerges(
       ...(source?.gauge ? [source.gauge] : []),
       ...Object.keys(source?.held_out?.ticon ?? {}),
     ]);
-    for (const relay of relays)
-      if (byId.has(`ticon/${relay}`))
-        join(station.id, `ticon/${relay}`, "provenance");
+    for (const relay of relays) {
+      const target = byId.get(`ticon/${relay}`);
+      if (!target) continue;
+      const apart = km(station, target);
+      if (apart > MAX_PROVENANCE_KM)
+        refused.push({
+          id: station.id,
+          target: target.id,
+          reason: `${apart.toFixed(1)} km apart`,
+        });
+      else join(station.id, target.id, "provenance");
+    }
   }
 
   // A declared originator outranks an inferred duplicate: UHSLC 259B names

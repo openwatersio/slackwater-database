@@ -119,14 +119,18 @@ describe("fitFromLake", () => {
     stations.get("smhi/2130")!.last = new Date("2021-12-31T23:00:00Z");
     const result = await fit(
       [{ name: "M2", amplitude: 0.5, phase: 40 }],
-      new Date("2020-07-01"),
+      // TICON's last day.
+      new Date("2020-06-30"),
     );
     stations.get("smhi/2130")!.last = new Date("2021-03-01");
     expect(result?.held_out).toMatchObject({
       start: "2020-07-01",
       end: "2021-06-30",
     });
-    expect(result?.fit).toEqual({ start: "2018-01-01", end: "2020-06-30" });
+    expect(result?.fit).toMatchObject({
+      start: "2018-01-01",
+      end: "2020-06-30",
+    });
   });
 
   test("falls back to the last calendar year without a year after TICON's end", async () => {
@@ -211,7 +215,10 @@ describe("fitFromLake's held-out year and published constants", () => {
     const result = await fit([{ name: "M2", amplitude: 0.5, phase: 40 }]);
     stations.get("smhi/2130")!.last = new Date("2021-03-01");
     expect(result?.held_out.start).toBe("2020-01-01");
-    expect(result?.fit).toEqual({ start: "2018-01-01", end: "2019-12-31" });
+    expect(result?.fit).toMatchObject({
+      start: "2018-01-01",
+      end: "2019-12-31",
+    });
   });
 
   test("keeps TICON's long-period constituents, which the score can't see", async () => {
@@ -224,6 +231,43 @@ describe("fitFromLake's held-out year and published constants", () => {
       { name: "M2", amplitude: 0.5, phase: 40 },
       { name: "SA", amplitude: 0.1, phase: 200 },
     ]);
+  });
+
+  test("takes its long-period constituents from the record it is given", async () => {
+    series = synthesize(() => 0.5);
+    const result = await fitFromLake(
+      "smhi/2130",
+      [
+        { name: "M2", amplitude: 0.5, phase: 60 },
+        { name: "SA", amplitude: 0.1, phase: 200 },
+      ],
+      undefined,
+      [],
+      [{ name: "SA", amplitude: 0.09, phase: 217 }],
+    );
+    expect(result!.constituents).toContainEqual({
+      name: "SA",
+      amplitude: 0.09,
+      phase: 217,
+    });
+  });
+
+  test("fits its own long-period constituents where it is given none", async () => {
+    series = synthesize(() => 0.5);
+    const result = await fitFromLake(
+      "smhi/2130",
+      [
+        { name: "M2", amplitude: 0.5, phase: 40 },
+        { name: "SA", amplitude: 0.1, phase: 200 },
+      ],
+      undefined,
+      [],
+      null,
+    );
+    // The series has no annual term, so the fit's SA is about zero.
+    expect(
+      result!.constituents.find((c) => c.name === "SA")!.amplitude,
+    ).toBeLessThan(0.002);
   });
 
   test("scores the constants as they are published", async () => {
