@@ -194,11 +194,13 @@ function scoreYear(
   // Rounded as published, so the score and the datums see what is saved.
   const constituents = roundConstituents(
     contributor,
-    ticon.flatMap((t) =>
-      isLongPeriod(t.name) && longPeriod
-        ? longPeriod.filter((c) => c.name === t.name)
-        : fitted.filter((c) => c.name === t.name),
-    ),
+    ticon.flatMap((t) => {
+      const kept = isLongPeriod(t.name)
+        ? longPeriod?.filter((c) => c.name === t.name)
+        : undefined;
+      // A term the long-period record lacks keeps the fit's own value.
+      return kept?.length ? kept : fitted.filter((c) => c.name === t.name);
+    }),
   );
   const residuals = tidalResiduals(constituents, heldOut);
   const scored = tidalResidual(constituents, heldOut);

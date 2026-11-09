@@ -314,7 +314,8 @@ test("regenerates JMA's derived NLLW and preserves MSL zero", async () => {
 test("keeps a water-levels lake fit's observed means, as TICON's", async () => {
   const root = await mkdtemp(join(tmpdir(), "smhi-datums-"));
   try {
-    await mkdir(join(root, "smhi"));
+    for (const source of ["dmi", "jhod", "jma", "linz", "smhi", "ticon"])
+      await mkdir(join(root, source));
     const input = station({
       disclaimers: `${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE}`,
     });

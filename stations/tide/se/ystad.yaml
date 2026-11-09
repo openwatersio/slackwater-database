@@ -1,5 +1,4 @@
 sources:
-  - smhi/2093
   - ticon/ystad-2093-swe-smhi
   - ticon/ystad-yst-swe-cmems
 redirect_from:
@@ -7,31 +6,11 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    smhi/2093:
-      position: [55.4167, 13.8167]
-      coastline: unverifiable
-      quality:
-        accepted: true
-        seasonal_dominant: true
-        score: 79
-        factors:
-          epoch: 1
-          recency: 0.59
-          source: 0.919
-          quality: 1
-          amplitude: 1
-          coverage: 0
-        issues:
-          - MLWS (0.103) > MLW (0.085)
-          - MHWS (0.135) < MHW (0.136)
-          - "Seasonal curve peak (0.104m) exceeds the principal tide M2+S2+K1+O1 (0.047m): the yearly swing exceeds the daily one"
     ticon/ystad-2093-swe-smhi:
       position: [55.4167, 13.8167]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: duplicate
-        redundant: smhi/2093
+        accepted: true
         seasonal_dominant: true
         score: 79
         factors:
@@ -50,7 +29,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: smhi/2093
+        redundant: ticon/ystad-2093-swe-smhi
         seasonal_dominant: true
         score: 62
         factors:

@@ -1,5 +1,4 @@
 sources:
-  - smhi/2098
   - ticon/malmo-2098-swe-smhi
   - ticon/malmo-mal-swe-cmems
 redirect_from:
@@ -7,29 +6,11 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    smhi/2098:
-      position: [55.6167, 13]
-      coastline: unverifiable
-      quality:
-        accepted: true
-        seasonal_dominant: true
-        score: 77
-        factors:
-          epoch: 1
-          recency: 0.35
-          source: 0.919
-          quality: 1
-          amplitude: 1
-          coverage: 0
-        issues:
-          - "Seasonal curve peak (0.107m) exceeds the principal tide M2+S2+K1+O1 (0.087m): the yearly swing exceeds the daily one"
     ticon/malmo-2098-swe-smhi:
       position: [55.6167, 13]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: duplicate
-        redundant: smhi/2098
+        accepted: true
         seasonal_dominant: true
         score: 77
         factors:
@@ -47,7 +28,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: smhi/2098
+        redundant: ticon/malmo-2098-swe-smhi
         seasonal_dominant: true
         score: 59
         factors:

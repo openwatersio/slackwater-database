@@ -275,6 +275,29 @@ describe("fitFromLake's held-out year and published constants", () => {
     ).toBeLessThan(0.002);
   });
 
+  test("fits a long-period constituent the record it is given lacks", async () => {
+    series = synthesize(() => 0.5);
+    const result = await fitFromLake(
+      "smhi/2130",
+      [
+        { name: "M2", amplitude: 0.5, phase: 40 },
+        { name: "SA", amplitude: 0.1, phase: 200 },
+        { name: "SSA", amplitude: 0.05, phase: 100 },
+      ],
+      undefined,
+      [],
+      [{ name: "SA", amplitude: 0.09, phase: 217 }],
+    );
+    expect(result!.constituents.map((c) => c.name)).toEqual([
+      "M2",
+      "SA",
+      "SSA",
+    ]);
+    expect(
+      result!.constituents.find((c) => c.name === "SSA")!.amplitude,
+    ).toBeLessThan(0.002);
+  });
+
   test("scores the constants as they are published", async () => {
     // An M2 of 0.5004 m is published as 0.5 m, and scored as 0.5 m.
     series = synthesize(() => 0.5004);

@@ -114,10 +114,11 @@ export async function regenerateDirectory(
   const files = (
     await Promise.all(
       SOURCES.map(async (source) =>
-        // A source with no records yet has no directory.
+        // SMHI's fits are written by the water-levels import, so a checkout
+        // that hasn't run it has no directory.
         (
           await readdir(join(root, source)).catch((err) => {
-            if (err.code === "ENOENT") return [];
+            if (err.code === "ENOENT" && source === "smhi") return [];
             throw err;
           })
         )

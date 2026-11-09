@@ -7,7 +7,7 @@
  *
  * Usage: npm run import -w sources/water-levels
  */
-import { readdir } from "node:fs/promises";
+import { readdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import {
   DATA_DIR,
@@ -58,7 +58,8 @@ if (!bases.size)
 // A year file that 404s mid-backfill reads as a gap, so a run can see less of
 // a series than an earlier one did. A gauge the lake can't fit keeps any record
 // it has, and so does one whose new fit has fewer hours than its saved one, unless
-// FORCE_HARMONICS=1. Removing a record is a decision made by hand.
+// FORCE_HARMONICS=1, which replaces the thinner fit and removes the record of
+// a gauge the lake can't fit: a forced run is the decision made by hand.
 const force = process.env["FORCE_HARMONICS"] === "1";
 let errors = 0;
 for (const [series, id] of [...bases].sort()) {
@@ -98,7 +99,10 @@ for (const [series, id] of [...bases].sort()) {
     );
     if (!lake) {
       console.log(`${series} (${id}): too short to fit and score`);
-      if (saved) console.log(`  keeps ${contributor}/${sourceId}.json`);
+      if (saved && force) {
+        await rm(join(DATA_DIR, contributor, `${sourceId}.json`));
+        console.log(`  removes ${contributor}/${sourceId}.json`);
+      } else if (saved) console.log(`  keeps ${contributor}/${sourceId}.json`);
       continue;
     }
     const savedHours = saved?.source.fit_hours;
