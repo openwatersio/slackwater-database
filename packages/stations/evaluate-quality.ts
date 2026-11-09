@@ -614,8 +614,11 @@ export function scoreSource(station: Station): number {
     ? 0
     : station.id.startsWith("dmi/")
       ? 50
-      : // A fit from the water-levels lake ranks as the relay of its gauge.
-        getSourcePriority(station.source.gauge ?? station.source.id);
+      : // A fit from the water-levels lake ranks as its agency's relay, whichever
+        // agency's copy of the gauge it was built on.
+        getSourcePriority(
+          station.source.gauge ? station.id.split("/")[0]! : station.source.id,
+        );
   return toFixed(Math.max(0, 1 - priority / 99));
 }
 

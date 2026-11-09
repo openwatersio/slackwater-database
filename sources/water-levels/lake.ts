@@ -1,8 +1,4 @@
-import {
-  constituentsDigest,
-  getSourceSuffix,
-  roundConstituents,
-} from "@slackwater/stations";
+import { constituentsDigest, roundConstituents } from "@slackwater/stations";
 import {
   fitHarmonics,
   isAnalyzable,
@@ -74,15 +70,13 @@ export interface LakeFit {
 
 /**
  * The lake series for a TICON record's gauge: the series the lake prefers
- * for its GESLA record, which GESLA and TICON name alike. A record whose
- * gauge has no series of the contributor's own in the lake has none.
+ * for its GESLA record, which GESLA and TICON name alike, when a contributor
+ * publishes it. Any agency's copy of a gauge can lead to the series.
  */
 export async function lakeSeries(ticonId: string): Promise<string | undefined> {
-  const contributor = getSourceSuffix(ticonId);
-  if (!CONTRIBUTORS.has(contributor)) return undefined;
   const gesla = await lakeStation(`gesla/${ticonId}`);
-  // A gauge the lake prefers another agency's series for isn't this one's.
-  if (!gesla?.preferred.startsWith(`${contributor}/`)) return undefined;
+  if (!gesla || !CONTRIBUTORS.has(gesla.preferred.split("/")[0]!))
+    return undefined;
   if (!(await lakeStation(gesla.preferred)))
     throw new Error(
       `${gesla.id} prefers ${gesla.preferred}, which the lake doesn't list`,

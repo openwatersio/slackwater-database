@@ -673,7 +673,13 @@ describe("a fit from the water-levels lake", () => {
     expect(scoreCoverage(twin, [fit])).toBe(1);
   });
 
-  test("ranks as its gauge's TICON relay", () => {
+  test("ranks as its agency's TICON relay", () => {
     expect(scoreSource(lake({ fit: 0, ticon: 0 }))).toBe(scoreSource(ticon));
+  });
+
+  test("ranks as its agency's relay when built on another agency's copy", () => {
+    const fit = lake({ fit: 0, ticon: 0 });
+    fit.source.gauge = "kungsvik-k-swe-cmems";
+    expect(scoreSource(fit)).toBe(scoreSource(ticon));
   });
 });

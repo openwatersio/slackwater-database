@@ -30,9 +30,29 @@ import { CONTRIBUTORS, fitFromLake, lakeRelays, lakeSeries } from "./lake.ts";
 const ticonIds = (await readdir(join(DATA_DIR, "ticon")))
   .filter((f) => f.endsWith(".json"))
   .map((f) => f.slice(0, -".json".length))
-  .filter((id) => CONTRIBUTORS.has(getSourceSuffix(id)))
   .sort();
-if (!ticonIds.length)
+
+// Each contributor series the lake files a TICON record under, built on the
+// contributor's own record of the gauge, or on another agency's copy where
+// the lake files none of its own: GESLA's SMHI record for Uddevalla holds
+// another gauge's data, so the lake links only CMEMS's copy to smhi/2541.
+const own = (id: string, series: string) =>
+  getSourceSuffix(id) === series.split("/")[0];
+const bases = new Map<string, string>();
+for (const id of ticonIds) {
+  const series = await lakeSeries(id);
+  if (!series) {
+    if (CONTRIBUTORS.has(getSourceSuffix(id)))
+      console.log(`${id}: no ${getSourceSuffix(id)} series in the lake`);
+    continue;
+  }
+  const base = bases.get(series);
+  // Two of the contributor's records filed under one series would write one file.
+  if (base && own(base, series) && own(id, series))
+    throw new Error(`${base} and ${id} both map to ${series}`);
+  if (!base || (!own(base, series) && own(id, series))) bases.set(series, id);
+}
+if (!bases.size)
   throw new Error("No TICON records of a contributor; run the TICON import");
 
 // A year file that 404s mid-backfill reads as a gap, so a run can see less of
@@ -41,19 +61,9 @@ if (!ticonIds.length)
 // FORCE_HARMONICS=1. Removing a record is a decision made by hand.
 const force = process.env["FORCE_HARMONICS"] === "1";
 let errors = 0;
-const claims = new Map<string, string>();
-for (const id of ticonIds) {
-  const contributor = getSourceSuffix(id);
+for (const [series, id] of [...bases].sort()) {
+  const contributor = series.split("/")[0]!;
   try {
-    const series = await lakeSeries(id);
-    if (!series) {
-      console.log(`${id}: no ${contributor} series in the lake`);
-      continue;
-    }
-    // Two TICON records filed under one series would write one file.
-    const claimed = claims.get(series);
-    if (claimed) throw new Error(`${claimed} and ${id} both map to ${series}`);
-    claims.set(series, id);
     const sourceId = series.slice(contributor.length + 1);
     const saved = await load(contributor, sourceId).catch(() => undefined);
     const ticon = await load("ticon", id);
@@ -71,13 +81,14 @@ for (const id of ticonIds) {
     // The long-period constituents come from a TICON record of the gauge
     // that isn't another gauge's data and is licensed as this record is, or
     // from the fit where none is.
-    const longPeriod = MISFILED_RECORDS[id]
-      ? (scored.find(
-          (r) =>
-            !MISFILED_RECORDS[r.id] &&
-            !NON_COMMERCIAL_SOURCES.includes(getSourceSuffix(r.id)),
-        )?.constituents ?? null)
-      : ticon.harmonic_constituents;
+    const longPeriod =
+      MISFILED_RECORDS[id] || !own(id, series)
+        ? (scored.find(
+            (r) =>
+              !MISFILED_RECORDS[r.id] &&
+              !NON_COMMERCIAL_SOURCES.includes(getSourceSuffix(r.id)),
+          )?.constituents ?? null)
+        : ticon.harmonic_constituents;
     const lake = await fitFromLake(
       series,
       ticon.harmonic_constituents,

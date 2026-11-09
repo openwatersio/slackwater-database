@@ -29,6 +29,7 @@ const stations = new Map([
   ["gesla/x-1-swe-smhi", station("gesla/x-1-swe-smhi", "smhi/1")],
   ["gesla/y-2-swe-smhi", station("gesla/y-2-swe-smhi", "dmi/2")],
   ["dmi/2", station("dmi/2")],
+  ["gesla/k-k-swe-cmems", station("gesla/k-k-swe-cmems", "smhi/2130")],
 ]);
 
 vi.mock("@slackwater/harmonic-analysis/lake", async (original) => ({
@@ -77,6 +78,9 @@ function synthesize(
 describe("lakeSeries", () => {
   test("takes the series the lake prefers for a converted contributor's gauge", async () => {
     expect(await lakeSeries("kungsvik-2130-swe-smhi")).toBe("smhi/2130");
+  });
+  test("takes it from another agency's copy of the gauge", async () => {
+    expect(await lakeSeries("k-k-swe-cmems")).toBe("smhi/2130");
   });
   test("has none where the lake prefers GESLA's own record", async () => {
     expect(await lakeSeries("viken-2228-swe-smhi")).toBeUndefined();
