@@ -616,7 +616,7 @@ describe("a fit from the water-levels lake", () => {
   test("never loses on a difference whose standard error couldn't be measured", () => {
     const fit = lake({ fit: 0.06, ticon: 0.05 });
     // JSON stores an unmeasured (infinite) standard error as null.
-    fit.source.held_out!.ticon["kungsvik-2130-swe-smhi"]!.se = null as any;
+    fit.source.held_out!.ticon["kungsvik-2130-swe-smhi"]!.se = null;
     expect(evaluate(fit).get("smhi/2130")!.accepted).toBe(true);
   });
 

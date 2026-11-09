@@ -50,7 +50,8 @@ export interface HeldOut {
   /** The fit's tidal-band residual over the year, in metres (see tidalResidual). */
   rms: number;
   /** Each TICON record of the gauge, by id: its residual; the standard error, in m², of the fit's residual variance minus its own; and a digest of the constants scored (constituentsDigest). */
-  ticon: Record<string, { rms: number; se: number; digest: string }>;
+  /** `se` is null when the year has too few blocks to measure it. */
+  ticon: Record<string, { rms: number; se: number | null; digest: string }>;
 }
 
 /** A TICON record of the gauge, to score against the fit. */
@@ -98,6 +99,10 @@ const isoDate = (t: number) => new Date(t).toISOString().slice(0, 10);
 const yearStart = (year: number) => new Date(Date.UTC(year, 0, 1));
 
 const DAY_MS = 86_400_000;
+
+// JSON writes Infinity as null; say so in the type rather than let it happen.
+const finiteOrNull = (x: number) =>
+  Number.isFinite(x) ? Number(x.toFixed(12)) : null;
 
 /** `date` moved by `years` whole years. */
 const addYears = (date: Date, years: number) => {
@@ -224,11 +229,11 @@ function scoreYear(
           r.id,
           {
             rms: round(tidalResidual(r.constituents, heldOut).rms),
-            se: Number(
+            se: finiteOrNull(
               varianceDifferenceSE(
                 residuals,
                 tidalResiduals(r.constituents, heldOut),
-              ).toFixed(12),
+              ),
             ),
             digest: constituentsDigest(r.constituents),
           },

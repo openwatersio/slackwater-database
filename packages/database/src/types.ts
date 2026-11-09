@@ -75,7 +75,8 @@ export interface StationData {
       /** By TICON id: its residual (m), the standard error (m²) of the
        *  fit's residual variance minus its own, and a digest of its
        *  constants as scored. */
-      ticon: Record<string, { rms: number; se: number; digest: string }>;
+      /** `se` is null when the year has too few blocks to measure it. */
+      ticon: Record<string, { rms: number; se: number | null; digest: string }>;
     };
   };
 
