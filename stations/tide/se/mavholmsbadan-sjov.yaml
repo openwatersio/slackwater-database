@@ -10,15 +10,16 @@ computed:
       quality:
         accepted: true
         seasonal_dominant: true
-        score: 74
+        score: 71
         factors:
-          epoch: 0.475
+          epoch: 0.332
           recency: 0.99
           source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0.087
         issues:
+          - MHWS (0.174) < MHW (0.176)
           - "Seasonal curve peak (0.122m) exceeds the principal tide M2+S2+K1+O1 (0.112m): the yearly swing exceeds the daily one"
     ticon/mavholmsbadan_sjov-35171-swe-smhi:
       position: [57.6723, 11.7075]

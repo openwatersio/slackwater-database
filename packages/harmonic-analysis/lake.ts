@@ -30,6 +30,10 @@ export const VERIFIED_FLAGS = [0];
 /** Every measured value, verified or not yet: interpolated, suspect and bad
  *  ones are left out. */
 export const MEASURED_FLAGS = [0, 2];
+/** Verified values, and preliminary ones from before the station's
+ *  `source_qc_start`: the agency will never check those, so they are as final
+ *  as they get. Without a known start, preliminary values stay out. */
+export const FINAL_FLAGS = "final";
 
 export interface LakeEpoch {
   id: number;
@@ -49,6 +53,8 @@ export interface LakeStation {
   last: Date | null;
   preferred: string;
   same_as: string[];
+  /** Preliminary values before this are final; null when the lake doesn't know such a point. */
+  source_qc_start: Date | null;
   epochs: LakeEpoch[];
 }
 
@@ -103,6 +109,7 @@ export function lakeStations(): Promise<Map<string, LakeStation>> {
     ).runAndReadAll(`
       SELECT id, source, source_id, datum, preferred, same_as,
         epoch_ms(first) AS first, epoch_ms(last) AS last,
+        epoch_ms(source_qc_start) AS source_qc_start,
         [{id: e.id, since: epoch_ms(e.since), until: epoch_ms(e.until),
           to_current: e.to_current, state: e.state}
          FOR e IN coalesce(epochs, [])] AS epochs
@@ -117,6 +124,7 @@ export function lakeStations(): Promise<Map<string, LakeStation>> {
           datum: row.datum,
           preferred: row.preferred ?? row.id,
           same_as: row.same_as ?? [],
+          source_qc_start: toDate(row.source_qc_start),
           first: toDate(row.first),
           last: toDate(row.last),
           epochs: (row.epochs as any[]).map((e) => ({
@@ -143,7 +151,7 @@ export async function lakeStation(
 }
 
 /**
- * A lake series' levels with the given flags, verified ones by default, in [start, end), in metres in the station's
+ * A lake series' levels with the given flags (or FINAL_FLAGS), verified ones by default, in [start, end), in metres in the station's
  * current datum. Each datum epoch's levels are moved by its `to_current`; an
  * epoch that can't be converted is left out. Where a rejected epoch and the
  * one before it share a time, the latter wins, as data.md's query does.
@@ -151,13 +159,21 @@ export async function lakeStation(
 export async function readLakeSamples(
   id: string,
   period: { start: Date; end: Date },
-  flags = VERIFIED_FLAGS,
+  flags: number[] | typeof FINAL_FLAGS = VERIFIED_FLAGS,
 ): Promise<Sample[]> {
   const station = await lakeStation(id);
   if (!station) throw new Error(`${id} is not in the public water-levels lake`);
   const epochs = station.epochs.length
     ? station.epochs
     : [{ id: 1, since: null, until: null, to_current: 0, state: "open" }];
+
+  const qcStart = station.source_qc_start;
+  const where =
+    flags !== FINAL_FLAGS
+      ? `flag IN (${flags.join(", ")})`
+      : qcStart
+        ? `(flag IN (${VERIFIED_FLAGS.join(", ")}) OR (flag = 2 AND time < make_timestamptz(${+qcStart}::BIGINT * 1000)))`
+        : `flag IN (${VERIFIED_FLAGS.join(", ")})`;
 
   const byTime = new Map<number, { level: number; rejected: boolean }>();
   for (const epoch of epochs) {
@@ -193,7 +209,7 @@ export async function readLakeSamples(
     ).runAndReadAll(`
       SELECT epoch_ms(time) AS t, CAST(level_m AS DOUBLE) AS level
       FROM read_parquet([${files.map(sqlString).join(", ")}], union_by_name = true)
-      WHERE flag IN (${flags.join(", ")}) AND level_m IS NOT NULL
+      WHERE ${where} AND level_m IS NOT NULL
         AND time >= make_timestamptz(${start}::BIGINT * 1000)
         AND time < make_timestamptz(${end}::BIGINT * 1000)`);
     const rejected = epoch.state === "rejected";

@@ -15,6 +15,7 @@ const station = (id: string, preferred = id): LakeStation => ({
   last: new Date("2021-03-01"),
   preferred,
   same_as: [],
+  source_qc_start: null,
   epochs: [],
 });
 const stations = new Map([

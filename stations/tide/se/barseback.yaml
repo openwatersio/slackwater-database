@@ -1,32 +1,18 @@
 sources:
-  - smhi/2099
   - ticon/barseback-2099-swe-smhi
   - ticon/barseback-bar-swe-cmems
+retired_sources:
+  - smhi/2099
 redirect_from:
   - /tides/se/barseback-skane/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    smhi/2099:
-      position: [55.7564, 12.9033]
-      coastline: unverifiable
-      quality:
-        accepted: true
-        score: 83
-        factors:
-          epoch: 1
-          recency: 0.99
-          source: 0.919
-          quality: 1
-          amplitude: 1
-          coverage: 0
     ticon/barseback-2099-swe-smhi:
       position: [55.7564, 12.9033]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: duplicate
-        redundant: smhi/2099
+        accepted: true
         score: 83
         factors:
           epoch: 1
@@ -41,7 +27,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: smhi/2099
+        redundant: ticon/barseback-2099-swe-smhi
         score: 65
         factors:
           epoch: 1

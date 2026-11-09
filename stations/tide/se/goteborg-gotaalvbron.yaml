@@ -1,37 +1,20 @@
 # SMHI: https://www.smhi.se/kunskapsbanken/oceanografi/matningar-i-havet/stationslista-vattenstand
 name: Göteborg-Götaälvbron
 sources:
-  - smhi/33092
   - ticon/goteborg_gotaalvbron-33092-swe-smhi
   - ticon/goteborggotaalvbron-got-swe-cmems
+retired_sources:
+  - smhi/33092
 redirect_from:
   - /tides/se/goteborg-gotaalvbron-vaestra-goetaland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    smhi/33092:
-      position: [57.7138, 11.9644]
-      coastline: unverifiable
-      quality:
-        accepted: true
-        seasonal_dominant: true
-        score: 63
-        factors:
-          epoch: 0.064
-          recency: 0.85
-          source: 0.919
-          quality: 1
-          amplitude: 1
-          coverage: 0.004
-        issues:
-          - "Seasonal curve peak (0.107m) exceeds the principal tide M2+S2+K1+O1 (0.087m): the yearly swing exceeds the daily one"
     ticon/goteborg_gotaalvbron-33092-swe-smhi:
       position: [57.7138, 11.9644]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: duplicate
-        redundant: smhi/33092
+        accepted: true
         seasonal_dominant: true
         score: 50
         factors:
@@ -49,7 +32,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: smhi/33092
+        redundant: ticon/goteborg_gotaalvbron-33092-swe-smhi
         seasonal_dominant: true
         score: 47
         factors:

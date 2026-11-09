@@ -1,36 +1,18 @@
 sources:
-  - smhi/2067
   - ticon/bjorn-2067-swe-smhi
   - ticon/bjorn-bjo-swe-cmems
+retired_sources:
+  - smhi/2067
 redirect_from:
   - /tides/se/bjorn-uppsala/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    smhi/2067:
-      position: [60.6333, 17.9667]
-      coastline: unverifiable
-      quality:
-        accepted: true
-        seasonal_dominant: true
-        score: 78
-        factors:
-          epoch: 1
-          recency: 0.51
-          source: 0.919
-          quality: 1
-          amplitude: 1
-          coverage: 0
-        issues:
-          - MLWS (0.347) > MLW (0.336)
-          - "Seasonal curve peak (0.151m) exceeds the principal tide M2+S2+K1+O1 (0.017m): the yearly swing exceeds the daily one"
     ticon/bjorn-2067-swe-smhi:
       position: [60.6333, 17.9667]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: duplicate
-        redundant: smhi/2067
+        accepted: true
         seasonal_dominant: true
         score: 79
         factors:
@@ -49,7 +31,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: smhi/2067
+        redundant: ticon/bjorn-2067-swe-smhi
         seasonal_dominant: true
         score: 61
         factors:

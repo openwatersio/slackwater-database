@@ -11,8 +11,13 @@ const lake = mkdtempSync(join(tmpdir(), "lake-"));
 const cache = mkdtempSync(join(tmpdir(), "lake-cache-"));
 process.env["WATER_LEVELS_URL"] = "https://lake.test";
 process.env["WATER_LEVELS_CACHE"] = cache;
-const { cachedLakeFile, readLakeSamples, lakeStation, MEASURED_FLAGS } =
-  await import("../lake.ts");
+const {
+  cachedLakeFile,
+  readLakeSamples,
+  lakeStation,
+  MEASURED_FLAGS,
+  FINAL_FLAGS,
+} = await import("../lake.ts");
 const fetched: string[] = [];
 
 const at = (iso: string) => Date.parse(iso);
@@ -24,6 +29,7 @@ beforeAll(async () => {
       'NAP' AS datum, 'src/a b' AS preferred, ['gesla/x'] AS same_as,
       '2019-01-01 00:00:00+00'::TIMESTAMPTZ AS first,
       '2021-12-31 23:00:00+00'::TIMESTAMPTZ AS last,
+      '2020-03-01 02:30:00+00'::TIMESTAMPTZ AS source_qc_start,
       [{id: 1, since: NULL::TIMESTAMPTZ, until: '2020-06-01 00:00:00+00'::TIMESTAMPTZ, to_current: 0.5, state: 'closed'},
        {id: 2, since: '2020-06-01 00:00:00+00'::TIMESTAMPTZ, until: NULL::TIMESTAMPTZ, to_current: 0.0, state: 'open'}] AS epochs)
     TO ${q("stations.parquet")}`);
@@ -100,6 +106,18 @@ describe("readLakeSamples", () => {
       MEASURED_FLAGS,
     );
     expect(samples).toEqual([{ t: at("2020-03-01T02:00:00Z"), level: 1.75 }]);
+  });
+
+  test("reads preliminary values only from before the QC start when asked for final ones", async () => {
+    const period = {
+      start: new Date("2020-03-01"),
+      end: new Date("2020-06-02"),
+    };
+    expect(await readLakeSamples("src/a b", period, FINAL_FLAGS)).toEqual([
+      { t: at("2020-03-01T02:00:00Z"), level: 1.75 },
+      { t: at("2020-05-31T23:00:00Z"), level: 1.5 },
+      { t: at("2020-06-01T00:00:00Z"), level: 2 },
+    ]);
   });
 
   test("keeps to the period asked for", async () => {

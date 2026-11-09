@@ -15,7 +15,7 @@ import {
 import {
   lakeStation,
   lakeStations,
-  MEASURED_FLAGS,
+  FINAL_FLAGS,
   readLakeSamples,
 } from "@slackwater/harmonic-analysis/lake";
 
@@ -159,7 +159,7 @@ export async function fitFromLake(
       ),
       end: new Date(Math.max(...windows.map((w) => +w.end))),
     },
-    MEASURED_FLAGS,
+    FINAL_FLAGS,
   );
   for (const window of windows) {
     const fit = scoreYear(
