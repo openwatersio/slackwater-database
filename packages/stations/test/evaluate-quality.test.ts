@@ -580,14 +580,37 @@ describe("a fit from the water-levels lake", () => {
       );
       return results as Map<string, any>;
     };
-    expect(run(0.05, 0.049).get("smhi/2130")).toMatchObject({
+    const loses = run(0.05, 0.049);
+    expect(loses.get("smhi/2130")).toMatchObject({
       reason: "duplicate",
       redundant: cmems.id,
     });
+    // TICON's own record scored worse than CMEMS's, so it goes to CMEMS too.
+    expect(loses.get(ticon.id)!.redundant).toBe(cmems.id);
     const wins = run(0.05, 0.05);
     expect(wins.get("smhi/2130")!.accepted).toBe(true);
     expect(wins.get(ticon.id)!.redundant).toBe("smhi/2130");
     expect(wins.get(cmems.id)!.redundant).toBe("smhi/2130");
+  });
+
+  test("can't lose to a record fitted on its held-out year", () => {
+    const fit = lake({ fit: 0.06, ticon: 0.05 });
+    const seen = {
+      ...ticon,
+      epoch: { start: "2010-01-01", end: "2025-06-30" },
+    } as Station;
+    const results = new Map(
+      [fit, seen].map((s) => [
+        s.id,
+        { id: s.id, accepted: true, score: 70, issues: [] },
+      ]),
+    );
+    decideHeldOut(
+      [fit.id, seen.id],
+      new Map([fit, seen].map((s) => [s.id, s])),
+      results as any,
+    );
+    expect(results.get(fit.id)!.accepted).toBe(true);
   });
 
   test("never loses on a difference whose standard error couldn't be measured", () => {

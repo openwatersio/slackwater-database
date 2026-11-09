@@ -1064,7 +1064,9 @@ export function deduplicateByGauge(
 
 /** A fit from the water-levels lake against the TICON records of its gauge,
  *  as the lake files them, on its held-out year. A fit worse than an
- *  accepted record beyond the tolerance is a duplicate of the best of them.
+ *  accepted record beyond the tolerance, one not fitted on that year, is a
+ *  duplicate of the best of them, and so is every record that scored no
+ *  better than that one.
  *  Otherwise every accepted one is a duplicate of the fit: it comes from the
  *  agency's own series and can be refitted, and TICON's can't. Scores taken
  *  against constants that have since changed decide nothing. */
@@ -1105,12 +1107,25 @@ export function decideHeldOut(
       }
       // A standard error that couldn't be measured is stored as null; such a
       // difference is never resolved.
-      return [{ id: relay.id, rms: score.rms, se: score.se ?? Infinity }];
+      // A record fitted on the held-out year can lose to the fit but can't
+      // beat it there.
+      const seen =
+        !!relay.epoch?.end &&
+        relay.epoch.end >= held_out.start &&
+        (relay.epoch.start ?? "") <= held_out.end;
+      return [{ id: relay.id, rms: score.rms, se: score.se ?? Infinity, seen }];
     });
     const best = scored
-      .filter((s) => scoresWorse(held_out.rms, s.rms, s.se))
+      .filter((s) => !s.seen && scoresWorse(held_out.rms, s.rms, s.se))
       .sort((a, b) => a.rms - b.rms)[0];
-    if (best) markDuplicate(resultsMap, stationMap, id, best.id);
+    // The loser and every record that scored no better than the winner go
+    // to it, so ordinary ranking can't publish a worse predictor.
+    if (best)
+      for (const loser of [
+        { id },
+        ...scored.filter((s) => s.id !== best.id && s.rms >= best.rms),
+      ])
+        markDuplicate(resultsMap, stationMap, loser.id, best.id);
     else
       for (const { id: relay } of scored)
         markDuplicate(resultsMap, stationMap, relay, id);
