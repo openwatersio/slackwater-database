@@ -122,12 +122,25 @@ const toDate = (ms: unknown) =>
   ms === null || ms === undefined ? null : new Date(Number(ms));
 
 let stations: Promise<Map<string, LakeStation>> | undefined;
+let stationsMd5: string | undefined;
+const fileMd5 = async (file: string) =>
+  createHash("md5")
+    .update(await readFile(file))
+    .digest("hex");
+
+/** Revalidate the station list, and parse it again if the lake changed it. */
+export async function refreshStations() {
+  const file = await cachedLakeFile("stations.parquet");
+  if (file && stationsMd5 && (await fileMd5(file)) !== stationsMd5)
+    stations = undefined;
+}
 
 /** Every station in the lake's public list, by id. */
 export function lakeStations(): Promise<Map<string, LakeStation>> {
   return (stations ??= (async () => {
     const file = await cachedLakeFile("stations.parquet");
     if (!file) throw new Error(`${LAKE_URL}/stations.parquet is missing`);
+    stationsMd5 = await fileMd5(file);
     const reader = await (
       await db()
     ).runAndReadAll(`
@@ -186,28 +199,28 @@ export async function lakeYears(source: string): Promise<LakeYears> {
     throw new Error(
       `${LAKE_URL}/${path} is missing: the lake hasn't listed ${source}'s years yet`,
     );
-  const md5 = createHash("md5")
-    .update(await readFile(file))
-    .digest("hex");
+  const md5 = await fileMd5(file);
   const memo = yearLists.get(source);
   if (memo?.md5 === md5) return memo.years;
   const rows = (
     await (
       await db()
     ).runAndReadAll(
-      `SELECT id, epoch, year, coalesce(version, '') AS version FROM read_parquet(${sqlString(file)})`,
+      `SELECT id, epoch, year, version FROM read_parquet(${sqlString(file)})`,
     )
   ).getRowObjectsJS() as {
     id: string;
     epoch: number | null;
     year: number | null;
-    version: string;
+    version: string | null;
   }[];
   const years: LakeYears = new Map();
   for (const r of rows) {
     const station = years.get(r.id) ?? new Map<string, string>();
     if (station === "marked") continue;
-    if (r.epoch === null || r.year === null) years.set(r.id, "marked");
+    // A listed year without a version can't be checked, so it counts as unsettled too.
+    if (r.epoch === null || r.year === null || r.version === null)
+      years.set(r.id, "marked");
     else years.set(r.id, station.set(`${r.epoch} ${r.year}`, r.version));
   }
   yearLists.set(source, { md5, years });
@@ -225,7 +238,9 @@ async function stationYears(station: LakeStation) {
     throw new Error(
       `${station.id} has observations but no years in stations/years/${station.source}.parquet`,
     );
-  const known = new Set(station.epochs.map((e) => String(e.id)).concat("1"));
+  const known = new Set(
+    station.epochs.length ? station.epochs.map((e) => String(e.id)) : ["1"],
+  );
   for (const key of years?.keys() ?? [])
     if (!known.has(key.split(" ")[0]!))
       throw new Error(
@@ -251,6 +266,7 @@ export async function readLakeSamples(
   period: { start: Date; end: Date },
   flags: number[] | typeof FINAL_FLAGS = VERIFIED_FLAGS,
 ): Promise<Sample[]> {
+  await refreshStations();
   const station = await lakeStation(id);
   if (!station) throw new Error(`${id} is not in the public water-levels lake`);
   const epochs = station.epochs.length
@@ -267,18 +283,13 @@ export async function readLakeSamples(
         : `flag IN (${VERIFIED_FLAGS.join(", ")})`;
 
   const byTime = new Map<number, { level: number; rejected: boolean }>();
+  const read: string[] = [];
   for (const epoch of epochs) {
     if (epoch.to_current === null) continue;
-    const start = Math.max(
-      +period.start,
-      +(epoch.since ?? -Infinity),
-      +(station.first ?? -Infinity),
-    );
-    const end = Math.min(
-      +period.end,
-      +(epoch.until ?? Infinity),
-      +(station.last ?? Infinity) + 1,
-    );
+    // The year list, not stations.parquet's first and last, which lag it,
+    // says which years have values.
+    const start = Math.max(+period.start, +(epoch.since ?? -Infinity));
+    const end = Math.min(+period.end, +(epoch.until ?? Infinity));
     if (!(start < end)) continue;
 
     const dir = [
@@ -291,6 +302,7 @@ export async function readLakeSamples(
     const lastYear = new Date(end - 1).getUTCFullYear();
     for (let y = new Date(start).getUTCFullYear(); y <= lastYear; y++) {
       // A year the list doesn't have has no values.
+      read.push(`${epoch.id} ${y}`);
       const version = years.get(`${epoch.id} ${y}`);
       if (version === undefined) continue;
       const path = `${dir}/${y}.parquet`;
@@ -321,11 +333,9 @@ export async function readLakeSamples(
     }
   }
   // A run that wrote the station's files while they were read marks it or
-  // changes their versions.
-  if (
-    [...years].sort().join() !==
-    [...(await stationYears(station))].sort().join()
-  )
+  // changes the years read.
+  const after = await stationYears(station);
+  if (read.some((key) => years.get(key) !== after.get(key)))
     throw new Error(
       `${station.id}: the lake changed its year files while they were read; read again`,
     );

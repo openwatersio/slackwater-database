@@ -103,6 +103,11 @@ for (const [series, id] of [...bases].sort()) {
       } else if (saved) console.log(`  keeps ${contributor}/${sourceId}.json`);
       continue;
     }
+    const savedHours = saved?.source.fit_hours;
+    if (savedHours && lake.fit.hours < savedHours)
+      console.log(
+        `${series} (${id}): fits ${lake.fit.hours} hours, fewer than the saved ${savedHours}`,
+      );
     const epoch = {
       start: new Date(lake.fit.start),
       end: new Date(lake.fit.end),

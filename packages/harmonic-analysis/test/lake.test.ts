@@ -54,7 +54,7 @@ beforeAll(async () => {
   const { mkdirSync } = await import("node:fs");
   mkdirSync(join(lake, "stations/years"), { recursive: true });
   await db.run(`COPY (SELECT * FROM (VALUES
-      ('src/a b', 1, 2020, 'v1'), ('src/a b', 2, 2020, 'v2'),
+      ('src/a b', 1, 2020, 'v1'), ('src/a b', 2, 2020, 'v2'), ('src/a b', 2, 2022, 'v5'),
       ('src/lost', 1, 2020, 'v3'), ('src/busy', NULL, NULL, NULL),
       ('src/moved', 2, 2020, 'v4'))
       v(id, epoch, year, version))
@@ -76,6 +76,11 @@ beforeAll(async () => {
   await year(
     "obs/src/a%20b/2/2020.parquet",
     `('2020-06-01 00:00:00+00', 2.0, 0), ('2020-06-01 01:00:00+00', 2.1, 4)`,
+  );
+  // A year backfilled after stations.parquet's `last` was written.
+  await year(
+    "obs/src/a%20b/2/2022.parquet",
+    `('2022-01-01 00:00:00+00', 3.0, 0)`,
   );
   // 2019 and 2021 have no files and aren't listed: a gap, not an error.
   // Answers as R2 does: an ETag that is the body's MD5, and 304 when it matches.
@@ -166,6 +171,37 @@ describe("readLakeSamples", () => {
     expect(fetched.filter((f) => f.includes("/obs/"))).toEqual([]);
   });
 
+  test("reads a listed year past the station list's last observation", async () => {
+    expect(
+      await readLakeSamples("src/a b", {
+        start: new Date("2022-01-01"),
+        end: new Date("2023-01-01"),
+      }),
+    ).toEqual([{ t: at("2022-01-01T00:00:00Z"), level: 3 }]);
+  });
+
+  test("picks up a change to the station list between reads", async () => {
+    const list = join(lake, "stations.parquet");
+    const before = readFileSync(list);
+    const db = await (await DuckDBInstance.create()).connect();
+    await db.run(`COPY (SELECT * REPLACE (CASE WHEN id = 'src/a b' THEN
+        [{id: 1, since: NULL::TIMESTAMPTZ, until: '2020-06-01 00:00:00+00'::TIMESTAMPTZ, to_current: 0.75, state: 'closed'},
+         {id: 2, since: '2020-06-01 00:00:00+00'::TIMESTAMPTZ, until: NULL::TIMESTAMPTZ, to_current: 0.0, state: 'open'}]
+        ELSE epochs END AS epochs) FROM read_parquet('${list}'))
+      TO '${list}.new' (FORMAT parquet)`);
+    renameSync(`${list}.new`, list);
+    try {
+      expect(
+        await readLakeSamples("src/a b", {
+          start: new Date("2020-05-31T23:00:00Z"),
+          end: new Date("2020-06-01T00:00:00Z"),
+        }),
+      ).toEqual([{ t: at("2020-05-31T23:00:00Z"), level: 1.75 }]);
+    } finally {
+      writeFileSync(list, before);
+    }
+  });
+
   test("fails when the lake writes a year file while it is read", async () => {
     const manifest = join(lake, "stations/years/src.parquet");
     const before = readFileSync(manifest);
@@ -187,6 +223,32 @@ describe("readLakeSamples", () => {
           end: new Date("2021-01-01"),
         }),
       ).rejects.toThrow("changed its year files while they were read");
+    } finally {
+      beforeFetch = undefined;
+      writeFileSync(manifest, before);
+    }
+  });
+
+  test("reads on when the lake writes a year outside the read", async () => {
+    const manifest = join(lake, "stations/years/src.parquet");
+    const before = readFileSync(manifest);
+    let requests = 0;
+    beforeFetch = async (url) => {
+      if (url.endsWith("years/src.parquet") && ++requests === 2) {
+        const db = await (await DuckDBInstance.create()).connect();
+        await db.run(`COPY (SELECT id, epoch, year,
+            CASE WHEN version = 'v5' THEN 'v5b' ELSE version END AS version
+          FROM read_parquet('${manifest}')) TO '${manifest}.new' (FORMAT parquet)`);
+        renameSync(`${manifest}.new`, manifest);
+      }
+    };
+    try {
+      expect(
+        await readLakeSamples("src/a b", {
+          start: new Date("2020-01-01"),
+          end: new Date("2021-01-01"),
+        }),
+      ).toHaveLength(2);
     } finally {
       beforeFetch = undefined;
       writeFileSync(manifest, before);

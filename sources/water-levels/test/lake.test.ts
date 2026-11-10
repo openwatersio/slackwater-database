@@ -35,6 +35,7 @@ const stations = new Map([
 vi.mock("@slackwater/harmonic-analysis/lake", async (original) => ({
   ...(await original<object>()),
   lakeStation: async (id: string) => stations.get(id),
+  refreshStations: async () => {},
   readLakeSamples: async (
     _: string,
     { start, end }: { start: Date; end: Date },

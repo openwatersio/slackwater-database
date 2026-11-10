@@ -11,6 +11,7 @@ import {
 import {
   lakeStation,
   lakeStations,
+  refreshStations,
   FINAL_FLAGS,
   readLakeSamples,
 } from "@slackwater/harmonic-analysis/lake";
@@ -132,6 +133,8 @@ export async function fitFromLake(
   relays: Relay[] = [],
   longPeriod: HarmonicConstituent[] | null = ticon,
 ): Promise<LakeFit | undefined> {
+  // The windows follow the station's current `last`.
+  await refreshStations();
   const station = await lakeStation(series);
   if (!station) throw new Error(`${series} is not in the public lake`);
   if (!station.last) return undefined;
