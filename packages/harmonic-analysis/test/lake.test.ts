@@ -1,12 +1,21 @@
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { createHash } from "node:crypto";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdtempSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DuckDBInstance } from "@duckdb/node-api";
 
 // A lake with one station whose datum moved on 2020-06-01: epoch 1's levels
-// are 0.5 m below the current datum.
+// are 0.5 m below the current datum. The others: one whose listed year has no
+// file, one the year list marks as being written, one whose year list is ahead
+// of the station list, one with observations but no listed years, and one from
+// a source with no year list.
 const lake = mkdtempSync(join(tmpdir(), "lake-"));
 const cache = mkdtempSync(join(tmpdir(), "lake-cache-"));
 process.env["WATER_LEVELS_URL"] = "https://lake.test";
@@ -19,6 +28,8 @@ const {
   FINAL_FLAGS,
 } = await import("../lake.ts");
 const fetched: string[] = [];
+// Runs before the fake lake answers a request, as a lake run writing meanwhile would.
+let beforeFetch: ((url: string) => unknown) | undefined;
 
 const at = (iso: string) => Date.parse(iso);
 
@@ -31,8 +42,23 @@ beforeAll(async () => {
       '2021-12-31 23:00:00+00'::TIMESTAMPTZ AS last,
       '2020-03-01 02:30:00+00'::TIMESTAMPTZ AS source_qc_start,
       [{id: 1, since: NULL::TIMESTAMPTZ, until: '2020-06-01 00:00:00+00'::TIMESTAMPTZ, to_current: 0.5, state: 'closed'},
-       {id: 2, since: '2020-06-01 00:00:00+00'::TIMESTAMPTZ, until: NULL::TIMESTAMPTZ, to_current: 0.0, state: 'open'}] AS epochs)
+       {id: 2, since: '2020-06-01 00:00:00+00'::TIMESTAMPTZ, until: NULL::TIMESTAMPTZ, to_current: 0.0, state: 'open'}] AS epochs
+    UNION ALL BY NAME
+    SELECT id, split_part(id, '/', 1) AS source, split_part(id, '/', 2) AS source_id,
+      'NAP' AS datum, id AS preferred
+    FROM (VALUES ('src/lost'), ('src/busy'), ('src/moved'), ('unlisted/x')) v(id)
+    UNION ALL BY NAME
+    SELECT 'src/new' AS id, 'src' AS source, 'new' AS source_id, 'NAP' AS datum,
+      'src/new' AS preferred, '2024-01-01 00:00:00+00'::TIMESTAMPTZ AS first)
     TO ${q("stations.parquet")}`);
+  const { mkdirSync } = await import("node:fs");
+  mkdirSync(join(lake, "stations/years"), { recursive: true });
+  await db.run(`COPY (SELECT * FROM (VALUES
+      ('src/a b', 1, 2020, 'v1'), ('src/a b', 2, 2020, 'v2'),
+      ('src/lost', 1, 2020, 'v3'), ('src/busy', NULL, NULL, NULL),
+      ('src/moved', 2, 2020, 'v4'))
+      v(id, epoch, year, version))
+    TO ${q("stations/years/src.parquet")}`);
   const year = async (path: string, rows: string) => {
     const { mkdirSync } = await import("node:fs");
     mkdirSync(join(lake, path, ".."), { recursive: true });
@@ -51,11 +77,12 @@ beforeAll(async () => {
     "obs/src/a%20b/2/2020.parquet",
     `('2020-06-01 00:00:00+00', 2.0, 0), ('2020-06-01 01:00:00+00', 2.1, 4)`,
   );
-  // 2019 and 2021 have no files: a gap, not an error.
+  // 2019 and 2021 have no files and aren't listed: a gap, not an error.
   // Answers as R2 does: an ETag that is the body's MD5, and 304 when it matches.
   vi.stubGlobal(
     "fetch",
     async (url: string, init: { headers: Record<string, string> }) => {
+      await beforeFetch?.(url);
       let body: Buffer;
       try {
         body = readFileSync(join(lake, url.replace("https://lake.test/", "")));
@@ -128,6 +155,89 @@ describe("readLakeSamples", () => {
     expect(samples).toEqual([{ t: at("2020-05-31T23:00:00Z"), level: 1.5 }]);
   });
 
+  test("reads a listed year from the cache while its version is unchanged", async () => {
+    const period = {
+      start: new Date("2020-01-01"),
+      end: new Date("2021-01-01"),
+    };
+    await readLakeSamples("src/a b", period);
+    fetched.length = 0;
+    await readLakeSamples("src/a b", period);
+    expect(fetched.filter((f) => f.includes("/obs/"))).toEqual([]);
+  });
+
+  test("fails when the lake writes a year file while it is read", async () => {
+    const manifest = join(lake, "stations/years/src.parquet");
+    const before = readFileSync(manifest);
+    let requests = 0;
+    beforeFetch = async (url) => {
+      // The second request for the list is the check after the read.
+      if (url.endsWith("years/src.parquet") && ++requests === 2) {
+        const db = await (await DuckDBInstance.create()).connect();
+        await db.run(`COPY (SELECT id, epoch, year,
+            CASE WHEN version = 'v2' THEN 'v2b' ELSE version END AS version
+          FROM read_parquet('${manifest}')) TO '${manifest}.new' (FORMAT parquet)`);
+        renameSync(`${manifest}.new`, manifest);
+      }
+    };
+    try {
+      await expect(
+        readLakeSamples("src/a b", {
+          start: new Date("2020-01-01"),
+          end: new Date("2021-01-01"),
+        }),
+      ).rejects.toThrow("changed its year files while they were read");
+    } finally {
+      beforeFetch = undefined;
+      writeFileSync(manifest, before);
+    }
+  });
+
+  test("refuses a year list with an epoch the station list doesn't have yet", async () => {
+    await expect(
+      readLakeSamples("src/moved", {
+        start: new Date("2020-01-01"),
+        end: new Date("2021-01-01"),
+      }),
+    ).rejects.toThrow("has epoch 2, which stations.parquet doesn't");
+  });
+
+  test("refuses a station with observations but no listed years", async () => {
+    await expect(
+      readLakeSamples("src/new", {
+        start: new Date("2024-01-01"),
+        end: new Date("2025-01-01"),
+      }),
+    ).rejects.toThrow("has observations but no years");
+  });
+
+  test("fails on a year the lake lists but can't serve", async () => {
+    await expect(
+      readLakeSamples("src/lost", {
+        start: new Date("2020-01-01"),
+        end: new Date("2021-01-01"),
+      }),
+    ).rejects.toThrow("src/lost/2020.parquet is listed but missing");
+  });
+
+  test("refuses a station the year list marks as being written", async () => {
+    await expect(
+      readLakeSamples("src/busy", {
+        start: new Date("2020-01-01"),
+        end: new Date("2021-01-01"),
+      }),
+    ).rejects.toThrow("writing its year files");
+  });
+
+  test("refuses a source without a year list", async () => {
+    await expect(
+      readLakeSamples("unlisted/x", {
+        start: new Date("2020-01-01"),
+        end: new Date("2021-01-01"),
+      }),
+    ).rejects.toThrow("hasn't listed unlisted's years yet");
+  });
+
   test("refuses a series the public lake doesn't list", async () => {
     await expect(
       readLakeSamples("src/missing", {
@@ -153,6 +263,30 @@ describe("cachedLakeFile", () => {
       "https://lake.test/note.txt 304",
       "https://lake.test/note.txt 200",
     ]);
+  });
+
+  test("asks the lake again only when the version changes", async () => {
+    writeFileSync(join(lake, "year.txt"), "one");
+    fetched.length = 0;
+    const local = await cachedLakeFile("year.txt", "a");
+    expect(await cachedLakeFile("year.txt", "a")).toBe(local);
+    writeFileSync(join(lake, "year.txt"), "two");
+    await cachedLakeFile("year.txt", "b");
+    expect(readFileSync(local!, "utf8")).toBe("two");
+    expect(fetched).toEqual([
+      "https://lake.test/year.txt 200",
+      "https://lake.test/year.txt 200",
+    ]);
+  });
+
+  test("fetches again a cached file another process replaced", async () => {
+    writeFileSync(join(lake, "raced.txt"), "new");
+    const local = await cachedLakeFile("raced.txt", "a");
+    writeFileSync(local!, "old");
+    fetched.length = 0;
+    await cachedLakeFile("raced.txt", "a");
+    expect(readFileSync(local!, "utf8")).toBe("new");
+    expect(fetched).toEqual(["https://lake.test/raced.txt 200"]);
   });
 
   test("drops a cached file the lake no longer has", async () => {

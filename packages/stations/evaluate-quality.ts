@@ -1104,7 +1104,7 @@ export function decideHeldOut(
         resultsMap
           .get(id)!
           .issues.push(
-            `Held-out scores were taken against ${relay.id}'s constants as they were before; re-run the water-levels import with FORCE_HARMONICS=1`,
+            `Held-out scores were taken against ${relay.id}'s constants as they were before; re-run the water-levels import, with FORCE_HARMONICS=1 to remove the record if the lake can no longer fit it`,
           );
         return [];
       }

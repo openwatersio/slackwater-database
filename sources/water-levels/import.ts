@@ -55,11 +55,9 @@ for (const id of ticonIds) {
 if (!bases.size)
   throw new Error("No TICON records of a contributor; run the TICON import");
 
-// A year file that 404s mid-backfill reads as a gap, so a run can see less of
-// a series than an earlier one did. A gauge the lake can't fit keeps any record
-// it has, and so does one whose new fit has fewer hours than its saved one, unless
-// FORCE_HARMONICS=1, which replaces the thinner fit and removes the record of
-// a gauge the lake can't fit: a forced run is the decision made by hand.
+// The reader fails on a year the lake lists but can't serve, so every fit is
+// of the whole series. A gauge the lake can't fit keeps any record it has
+// unless FORCE_HARMONICS=1: removing a record is a decision made by hand.
 const force = process.env["FORCE_HARMONICS"] === "1";
 let errors = 0;
 for (const [series, id] of [...bases].sort()) {
@@ -103,13 +101,6 @@ for (const [series, id] of [...bases].sort()) {
         await rm(join(DATA_DIR, contributor, `${sourceId}.json`));
         console.log(`  removes ${contributor}/${sourceId}.json`);
       } else if (saved) console.log(`  keeps ${contributor}/${sourceId}.json`);
-      continue;
-    }
-    const savedHours = saved?.source.fit_hours;
-    if (!force && savedHours && lake.fit.hours < savedHours) {
-      console.log(
-        `${series} (${id}): fits ${lake.fit.hours} hours, fewer than the saved ${savedHours}; keeps it`,
-      );
       continue;
     }
     const epoch = {

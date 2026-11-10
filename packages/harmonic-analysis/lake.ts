@@ -8,8 +8,11 @@ import type { Sample } from "./index.ts";
  * Read observed water levels from the water-levels lake
  * (https://github.com/openwatersio/water-levels, docs/data.md): Parquet at
  * `obs/<source>/<source_id>[/<epoch>]/<year>.parquet`, listed in
- * `stations.parquet`. Files are cached in tmp/water-levels/ and revalidated by
- * ETag, so a backfill that rewrites a year is picked up on the next read.
+ * `stations.parquet`. Which year files exist comes from the source's year list,
+ * `stations/years/<source>.parquet`, so a listed year that can't be read is an
+ * error, not a gap. Files are cached in tmp/water-levels/; a year file is fetched
+ * again only when the list gives it a new version, and other files are
+ * revalidated by ETag.
  * Import with `@slackwater/harmonic-analysis/lake`, so the fitting code alone
  * doesn't load DuckDB.
  *
@@ -60,32 +63,53 @@ export interface LakeStation {
 
 /**
  * Fetch `path` from the lake into the cache, returning its local path, or
- * undefined when the lake has no such file (a year with no data).
+ * undefined when the lake has no such file. With a `version` from the year
+ * list, a cached copy stored with that version is used without asking the lake.
  */
 export async function cachedLakeFile(
   path: string,
+  version?: string,
 ): Promise<string | undefined> {
   const local = join(LAKE_DIR, path);
-  // R2's ETag is the body's MD5, so the cached file is its own validator and
-  // no sidecar can fall out of step with it. An ETag that isn't an MD5, as a
-  // multipart upload's isn't, never matches and the file is fetched again.
+  const stamp = `${local}.version`;
+  const md5 = (body: Buffer) => createHash("md5").update(body).digest("hex");
   const cached = await readFile(local).catch(() => undefined);
-  const etag = cached && `"${createHash("md5").update(cached).digest("hex")}"`;
+  // The stamp names the body it was written for, so a file another process
+  // replaced since doesn't match it.
+  if (
+    version &&
+    cached &&
+    (await readFile(stamp, "utf8").catch(() => undefined)) ===
+      `${version} ${md5(cached)}`
+  )
+    return local;
+  // R2's ETag is the body's MD5, so the cached file is its own validator. An
+  // ETag that isn't an MD5, as a multipart upload's isn't, never matches and
+  // the file is fetched again.
+  const etag = cached && `"${md5(cached)}"`;
   const res = await fetch(`${LAKE_URL}/${path}`, {
     headers: etag ? { "If-None-Match": etag } : {},
     signal: AbortSignal.timeout(120_000),
   });
-  if (res.status === 304) return local;
   if (res.status === 404) {
     await rm(local, { force: true });
+    await rm(stamp, { force: true });
     return undefined;
   }
-  if (!res.ok) throw new Error(`${LAKE_URL}/${path}: HTTP ${res.status}`);
-  await mkdir(dirname(local), { recursive: true });
-  // Rename, so a reader in another process never sees half a file.
-  const partial = `${local}.${process.pid}`;
-  await writeFile(partial, Buffer.from(await res.arrayBuffer()));
-  await rename(partial, local);
+  let body = cached!;
+  if (res.status !== 304 || !cached) {
+    if (!res.ok) throw new Error(`${LAKE_URL}/${path}: HTTP ${res.status}`);
+    await mkdir(dirname(local), { recursive: true });
+    // Rename, so a reader in another process never sees half a file.
+    const partial = `${local}.${process.pid}`;
+    body = Buffer.from(await res.arrayBuffer());
+    await writeFile(partial, body);
+    await rename(partial, local);
+  }
+  // The version was read from the year list before this download, so a file
+  // rewritten in between holds newer rows than its stamp: one more download
+  // next time, never a stale copy.
+  if (version) await writeFile(stamp, `${version} ${md5(body)}`);
   return local;
 }
 
@@ -144,6 +168,72 @@ export function lakeStations(): Promise<Map<string, LakeStation>> {
   }));
 }
 
+/** A station's year files, each one's version by `<epoch> <year>`, or "marked"
+ *  when a run may be writing them and they can't be trusted. */
+export type LakeYears = Map<string, Map<string, string> | "marked">;
+
+const yearLists = new Map<string, { md5: string; years: LakeYears }>();
+
+/**
+ * A source's year files by station, from `stations/years/<source>.parquet`,
+ * revalidated on every call. Throws when the lake hasn't listed the source's
+ * years yet.
+ */
+export async function lakeYears(source: string): Promise<LakeYears> {
+  const path = `stations/years/${source}.parquet`;
+  const file = await cachedLakeFile(path);
+  if (!file)
+    throw new Error(
+      `${LAKE_URL}/${path} is missing: the lake hasn't listed ${source}'s years yet`,
+    );
+  const md5 = createHash("md5")
+    .update(await readFile(file))
+    .digest("hex");
+  const memo = yearLists.get(source);
+  if (memo?.md5 === md5) return memo.years;
+  const rows = (
+    await (
+      await db()
+    ).runAndReadAll(
+      `SELECT id, epoch, year, coalesce(version, '') AS version FROM read_parquet(${sqlString(file)})`,
+    )
+  ).getRowObjectsJS() as {
+    id: string;
+    epoch: number | null;
+    year: number | null;
+    version: string;
+  }[];
+  const years: LakeYears = new Map();
+  for (const r of rows) {
+    const station = years.get(r.id) ?? new Map<string, string>();
+    if (station === "marked") continue;
+    if (r.epoch === null || r.year === null) years.set(r.id, "marked");
+    else years.set(r.id, station.set(`${r.epoch} ${r.year}`, r.version));
+  }
+  yearLists.set(source, { md5, years });
+  return years;
+}
+
+/** A station's listed year files; throws when they can't be trusted. */
+async function stationYears(station: LakeStation) {
+  const years = (await lakeYears(station.source)).get(station.id);
+  if (years === "marked")
+    throw new Error(
+      `${station.id}: the lake is writing its year files; read again later`,
+    );
+  if (!years && station.first)
+    throw new Error(
+      `${station.id} has observations but no years in stations/years/${station.source}.parquet`,
+    );
+  const known = new Set(station.epochs.map((e) => String(e.id)).concat("1"));
+  for (const key of years?.keys() ?? [])
+    if (!known.has(key.split(" ")[0]!))
+      throw new Error(
+        `${station.id}: the year list has epoch ${key.split(" ")[0]}, which stations.parquet doesn't; read again later`,
+      );
+  return years ?? new Map<string, string>();
+}
+
 export async function lakeStation(
   id: string,
 ): Promise<LakeStation | undefined> {
@@ -167,6 +257,7 @@ export async function readLakeSamples(
     ? station.epochs
     : [{ id: 1, since: null, until: null, to_current: 0, state: "open" }];
 
+  const years = await stationYears(station);
   const qcStart = station.source_qc_start;
   const where =
     flags !== FINAL_FLAGS
@@ -199,8 +290,13 @@ export async function readLakeSamples(
     const files: string[] = [];
     const lastYear = new Date(end - 1).getUTCFullYear();
     for (let y = new Date(start).getUTCFullYear(); y <= lastYear; y++) {
-      const file = await cachedLakeFile(`${dir}/${y}.parquet`);
-      if (file) files.push(file);
+      // A year the list doesn't have has no values.
+      const version = years.get(`${epoch.id} ${y}`);
+      if (version === undefined) continue;
+      const path = `${dir}/${y}.parquet`;
+      const file = await cachedLakeFile(path, version);
+      if (!file) throw new Error(`${LAKE_URL}/${path} is listed but missing`);
+      files.push(file);
     }
     if (!files.length) continue;
 
@@ -224,6 +320,15 @@ export async function readLakeSamples(
       byTime.set(t, { level, rejected });
     }
   }
+  // A run that wrote the station's files while they were read marks it or
+  // changes their versions.
+  if (
+    [...years].sort().join() !==
+    [...(await stationYears(station))].sort().join()
+  )
+    throw new Error(
+      `${station.id}: the lake changed its year files while they were read; read again`,
+    );
   return [...byTime]
     .map(([t, { level }]) => ({ t, level }))
     .sort((a, b) => a.t - b.t);
