@@ -1,5 +1,9 @@
+# Same gauge: these records are RWS location `haringvliet.10` (sources/rws/README.md#historical-series), with M2 within 1.2 cm and 0.8°.
 sources:
   - ticon/haringvliet_10-harvt10-nld-rws_hist
+  - ticon/haringvliet10tg-har-nld-cmems
+redirect_from:
+  - /tides/nl/haringvliet10/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -7,15 +11,27 @@ computed:
       position: [51.863131, 3.860766]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: superseded
-        score: 0
+        accepted: true
+        score: 67
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
           coverage: 0.002
-        issues:
-          - "Superseded source: rws_hist"
+    ticon/haringvliet10tg-har-nld-cmems:
+      position: [51.864082, 3.86]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/haringvliet_10-harvt10-nld-rws_hist
+        score: 42
+        factors:
+          epoch: 0.587
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.002

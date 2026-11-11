@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest run",
-    "validate": "node harmonics.ts"
+    "validate": "node harmonics.ts",
+    "report:historical": "node historical.ts"
   },
   "dependencies": {
     "@slackwater/harmonic-analysis": "*",
