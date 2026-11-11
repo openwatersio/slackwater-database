@@ -1,13 +1,57 @@
 sources:
+  - smhi/35159
+  - ticon/ystad2-yst-swe-cmems
   - ticon/ystad_sjov-35159-swe-smhi
+redirect_from:
+  - /tides/se/ystad-ticon-ystad2-yst-swe-cmems/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/ystad_sjov-35159-swe-smhi:
+    smhi/35159:
       position: [55.4227, 13.8257]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 75
+        factors:
+          epoch: 0.571
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.228) > MLW (0.221)
+          - MHWS (0.258) < MHW (0.267)
+          - "Seasonal curve peak (0.080m) exceeds the principal tide M2+S2+K1+O1 (0.044m): the yearly swing exceeds the daily one"
+    ticon/ystad2-yst-swe-cmems:
+      position: [55.422699, 13.8255]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35159
+        seasonal_dominant: true
+        score: 52
+        factors:
+          epoch: 0.322
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.227) > MLW (0.22)
+          - MHWS (0.259) < MHW (0.267)
+          - "Seasonal curve peak (0.089m) exceeds the principal tide M2+S2+K1+O1 (0.044m): the yearly swing exceeds the daily one"
+    ticon/ystad_sjov-35159-swe-smhi:
+      position: [55.4227, 13.8257]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35159
         seasonal_dominant: true
         score: 75
         factors:

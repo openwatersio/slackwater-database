@@ -1,15 +1,33 @@
 sources:
+  - smhi/2541
   - ticon/uddevalla-2541-swe-smhi
+  - ticon/uddevalla-udd-swe-cmems
+redirect_from:
+  - /tides/se/uddevalla-vaestra-goetaland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/uddevalla-2541-swe-smhi:
+    smhi/2541:
       position: [58.3475, 11.8948]
       coastline: unverifiable
       quality:
         accepted: true
+        score: 87
+        factors:
+          epoch: 0.781
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.563
+    ticon/uddevalla-2541-swe-smhi:
+      position: [58.3475, 11.8948]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: misfiled
         seasonal_dominant: true
-        score: 75
+        score: 0
         factors:
           epoch: 0.604
           recency: 0.99
@@ -19,5 +37,20 @@ computed:
           coverage: 0
         issues:
           - MLWS (0.096) > MLW (0.093)
+          - "Misfiled data: GESLA-4.1 files Arkö's (2545) Baltic data under Uddevalla"
           - "Seasonal curve peak (0.116m) exceeds the principal tide M2+S2+K1+O1 (0.026m): the yearly swing exceeds the daily one"
-          - M2 here (0.008 m, 133.0°) differs from (0.141 m, 140.1°) by -133 mm and 15 min earlier in ticon/uddevalla-udd-swe-cmems, a duplicate
+    ticon/uddevalla-udd-swe-cmems:
+      position: [58.3475, 11.8948]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2541
+        score: 69
+        factors:
+          epoch: 0.781
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.563

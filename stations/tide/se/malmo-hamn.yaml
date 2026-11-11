@@ -1,13 +1,49 @@
+name: Malmö Hamn
+context: Sjöfartsverket
 sources:
+  - smhi/35152
+  - ticon/malmo_hamn_sjov-35152-swe-smhi
   - ticon/malmohamn-mal-swe-cmems
+redirect_from:
+  - /tides/se/malmo-hamn-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35152:
+      position: [55.6136, 12.9973]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.008
+    ticon/malmo_hamn_sjov-35152-swe-smhi:
+      position: [55.6136, 12.9973]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35152
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.008
     ticon/malmohamn-mal-swe-cmems:
       position: [55.625702, 12.9845]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35152
         score: 37
         factors:
           epoch: 0.322

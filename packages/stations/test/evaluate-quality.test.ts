@@ -12,8 +12,10 @@ import {
   scoreSource,
   tideConflict,
   deduplicateByGauge,
+  decideHeldOut,
+  scoreCoverage,
 } from "../evaluate-quality.ts";
-import { exceeds, seasonalTerms } from "../filtering.ts";
+import { constituentsDigest, exceeds, seasonalTerms } from "../filtering.ts";
 
 type Station = Parameters<typeof checkConstituents>[0];
 type Constituent = { amplitude: number; phase?: number };
@@ -479,4 +481,205 @@ test("refuses a gauge group with conflicting superseded operator targets", () =>
       new Map(),
     ),
   ).toThrow(/operator/i);
+});
+
+describe("a fit from the water-levels lake", () => {
+  const SMHI = "Swedish Meteorological and Hydrological Institute";
+  const ticon = {
+    ...station(BASE, "ticon/kungsvik-2130-swe-smhi"),
+    source: { id: "kungsvik-2130-swe-smhi", name: "TICON-4" },
+  } as Station;
+  const lake = (rms: { fit: number; ticon: number }) =>
+    ({
+      ...station(BASE, "smhi/2130"),
+      source: {
+        id: "2130",
+        name: SMHI,
+        gauge: "kungsvik-2130-swe-smhi",
+        held_out: {
+          start: "2025-01-01",
+          end: "2025-12-31",
+          hours: 8700,
+          rms: rms.fit,
+          ticon: {
+            "kungsvik-2130-swe-smhi": {
+              rms: rms.ticon,
+              se: 0,
+              digest: constituentsDigest(ticon.harmonic_constituents),
+            },
+          },
+        },
+      },
+    }) as unknown as Station;
+  function evaluate(fit: Station, ticonAccepted = true, score = 80) {
+    const results = new Map([
+      [fit.id, { id: fit.id, accepted: true, score, issues: [] }],
+      [
+        ticon.id,
+        { id: ticon.id, accepted: ticonAccepted, score: 70, issues: [] },
+      ],
+    ]);
+    decideHeldOut(
+      [fit.id, ticon.id],
+      new Map([fit, ticon].map((s) => [s.id, s])),
+      results as any,
+    );
+    return results;
+  }
+
+  test("wins its TICON gauge when it scores no worse, whatever its score", () => {
+    // 4.0e-6 m² more residual variance is within a 3 mm error's 4.5e-6.
+    const results = evaluate(lake({ fit: 0.05004, ticon: 0.05 }), true, 60);
+    expect(results.get("smhi/2130")!.accepted).toBe(true);
+    expect(results.get(ticon.id)).toMatchObject({
+      reason: "duplicate",
+      redundant: "smhi/2130",
+    });
+  });
+
+  test("loses to the TICON record it scored worse than, whatever its score", () => {
+    const results = evaluate(lake({ fit: 0.051, ticon: 0.05 }));
+    expect(results.get(ticon.id)!.accepted).toBe(true);
+    expect(results.get("smhi/2130")).toMatchObject({
+      reason: "duplicate",
+      redundant: ticon.id,
+    });
+  });
+
+  test("beats the TICON record that scored worse, whatever its score", () => {
+    const results = evaluate(lake({ fit: 0.05, ticon: 0.051 }), true, 60);
+    expect(results.get("smhi/2130")!.accepted).toBe(true);
+    expect(results.get(ticon.id)).toMatchObject({
+      reason: "duplicate",
+      redundant: "smhi/2130",
+    });
+  });
+
+  test("loses to the best of its gauge's relays when worse than one, and beats them all otherwise", () => {
+    const cmems = {
+      ...station(BASE, "ticon/kungsvik-kun-swe-cmems"),
+      source: { id: "kungsvik-kun-swe-cmems", name: "TICON-4" },
+    } as Station;
+    const run = (rms: number, cmemsRms: number) => {
+      const fit = lake({ fit: rms, ticon: 0.05 });
+      fit.source.held_out!.ticon["kungsvik-kun-swe-cmems"] = {
+        rms: cmemsRms,
+        se: 0,
+        digest: constituentsDigest(cmems.harmonic_constituents),
+      };
+      const results = new Map(
+        [fit, ticon, cmems].map((s) => [
+          s.id,
+          { id: s.id, accepted: true, score: 70, issues: [] },
+        ]),
+      );
+      decideHeldOut(
+        [fit.id, ticon.id, cmems.id],
+        new Map([fit, ticon, cmems].map((s) => [s.id, s])),
+        results as any,
+      );
+      return results as Map<string, any>;
+    };
+    const loses = run(0.05, 0.049);
+    expect(loses.get("smhi/2130")).toMatchObject({
+      reason: "duplicate",
+      redundant: cmems.id,
+    });
+    // TICON's own record scored worse than CMEMS's, so it goes to CMEMS too.
+    expect(loses.get(ticon.id)!.redundant).toBe(cmems.id);
+    const wins = run(0.05, 0.05);
+    expect(wins.get("smhi/2130")!.accepted).toBe(true);
+    expect(wins.get(ticon.id)!.redundant).toBe("smhi/2130");
+    expect(wins.get(cmems.id)!.redundant).toBe("smhi/2130");
+  });
+
+  test("can't lose to a record fitted on its held-out year", () => {
+    const fit = lake({ fit: 0.06, ticon: 0.05 });
+    const seen = {
+      ...ticon,
+      epoch: { start: "2010-01-01", end: "2025-06-30" },
+    } as Station;
+    const results = new Map(
+      [fit, seen].map((s) => [
+        s.id,
+        { id: s.id, accepted: true, score: 70, issues: [] },
+      ]),
+    );
+    decideHeldOut(
+      [fit.id, seen.id],
+      new Map([fit, seen].map((s) => [s.id, s])),
+      results as any,
+    );
+    expect(results.get(fit.id)!.accepted).toBe(true);
+  });
+
+  test("never loses on a difference whose standard error couldn't be measured", () => {
+    const fit = lake({ fit: 0.06, ticon: 0.05 });
+    // JSON stores an unmeasured (infinite) standard error as null.
+    fit.source.held_out!.ticon["kungsvik-2130-swe-smhi"]!.se = null;
+    expect(evaluate(fit).get("smhi/2130")!.accepted).toBe(true);
+  });
+
+  test("doesn't compare a relay the lake files more than 10 km away", () => {
+    const fit = {
+      ...lake({ fit: 0.051, ticon: 0.05 }),
+      latitude: 58,
+      longitude: 11,
+    } as Station;
+    const far = { ...ticon, latitude: 58.2, longitude: 11 } as Station;
+    const results = new Map(
+      [fit, far].map((s) => [
+        s.id,
+        { id: s.id, accepted: true, score: 70, issues: [] as string[] },
+      ]),
+    );
+    decideHeldOut(
+      [fit.id, far.id],
+      new Map([fit, far].map((s) => [s.id, s])),
+      results as any,
+    );
+    expect(results.get(fit.id)!.accepted).toBe(true);
+    expect(results.get(far.id)!.accepted).toBe(true);
+    expect(results.get(fit.id)!.issues[0]).toMatch(/km away; not compared/);
+  });
+
+  test("wins on a difference within twice its standard error", () => {
+    const fit = lake({ fit: 0.051, ticon: 0.05 });
+    // 1.01e-4 m² more variance, against a standard error of 6e-5 m².
+    fit.source.held_out!.ticon["kungsvik-2130-swe-smhi"]!.se = 6e-5;
+    expect(evaluate(fit).get("smhi/2130")!.accepted).toBe(true);
+  });
+
+  test("decides nothing on scores taken against TICON constants that have changed", () => {
+    const fit = lake({ fit: 0.05, ticon: 0.051 });
+    fit.source.held_out!.ticon["kungsvik-2130-swe-smhi"]!.digest =
+      "0000000000000000";
+    const results = evaluate(fit, true, 60);
+    expect(results.get(ticon.id)!.accepted).toBe(true);
+    expect(results.get("smhi/2130")!.issues[0]).toMatch(
+      /re-run the water-levels import/,
+    );
+  });
+
+  test("stands for the gauge when that TICON record is rejected", () => {
+    const results = evaluate(lake({ fit: 0.051, ticon: 0.05 }), false);
+    expect(results.get("smhi/2130")!.accepted).toBe(true);
+  });
+
+  test("is not another gauge to its TICON record when scoring coverage", () => {
+    const fit = { ...lake({ fit: 0, ticon: 0 }), latitude: 58, longitude: 11 };
+    const twin = { ...ticon, latitude: 58, longitude: 11 } as Station;
+    expect(scoreCoverage(fit, [twin])).toBe(1);
+    expect(scoreCoverage(twin, [fit])).toBe(1);
+  });
+
+  test("ranks as its agency's TICON relay", () => {
+    expect(scoreSource(lake({ fit: 0, ticon: 0 }))).toBe(scoreSource(ticon));
+  });
+
+  test("ranks as its agency's relay when built on another agency's copy", () => {
+    const fit = lake({ fit: 0, ticon: 0 });
+    fit.source.gauge = "kungsvik-k-swe-cmems";
+    expect(scoreSource(fit)).toBe(scoreSource(ticon));
+  });
 });

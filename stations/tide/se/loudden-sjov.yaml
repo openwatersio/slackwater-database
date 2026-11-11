@@ -1,13 +1,33 @@
 sources:
+  - smhi/35154
   - ticon/loudden_sjov-35154-swe-smhi
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/loudden_sjov-35154-swe-smhi:
+    smhi/35154:
       position: [59.3413, 18.1373]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 73
+        factors:
+          epoch: 0.52
+          recency: 0.92
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.016
+        issues:
+          - MLWS (0.067) > MLW (0.063)
+          - "Seasonal curve peak (0.115m) exceeds the principal tide M2+S2+K1+O1 (0.027m): the yearly swing exceeds the daily one"
+    ticon/loudden_sjov-35154-swe-smhi:
+      position: [59.3413, 18.1373]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35154
         seasonal_dominant: true
         score: 75
         factors:

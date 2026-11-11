@@ -1,4 +1,5 @@
 sources:
+  - smhi/2105
   - ticon/ringhals-2105-swe-smhi
   - ticon/ringhals-rin-swe-cmems
 redirect_from:
@@ -6,7 +7,7 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/ringhals-2105-swe-smhi:
+    smhi/2105:
       position: [57.2497, 12.1125]
       coastline: unverifiable
       quality:
@@ -21,15 +22,36 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - "Seasonal curve peak (0.117m) exceeds the principal tide M2+S2+K1+O1 (0.082m): the yearly swing exceeds the daily one"
+          - M2 here (0.047 m, 179.4°) differs from (0.041 m, 185.6°) by +6 mm and 13 min earlier in ticon/ringhals-2105-swe-smhi, a duplicate
+          - M2 here (0.047 m, 179.4°) differs from (0.041 m, 185.1°) by +6 mm and 12 min earlier in ticon/ringhals-rin-swe-cmems, a duplicate
+    ticon/ringhals-2105-swe-smhi:
+      position: [57.2497, 12.1125]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2105
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
           - MHWS (0.114) < MHW (0.116)
           - "Seasonal curve peak (0.117m) exceeds the principal tide M2+S2+K1+O1 (0.073m): the yearly swing exceeds the daily one"
+          - M2 here (0.041 m, 185.6°) differs from (0.047 m, 179.4°) by -6 mm and 13 min later in smhi/2105, which this duplicates
     ticon/ringhals-rin-swe-cmems:
       position: [57.249699, 12.1125]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/ringhals-2105-swe-smhi
+        redundant: smhi/2105
         seasonal_dominant: true
         score: 65
         factors:
@@ -42,3 +64,4 @@ computed:
         issues:
           - MHWS (0.115) < MHW (0.118)
           - "Seasonal curve peak (0.118m) exceeds the principal tide M2+S2+K1+O1 (0.073m): the yearly swing exceeds the daily one"
+          - M2 here (0.041 m, 185.1°) differs from (0.047 m, 179.4°) by -6 mm and 12 min later in smhi/2105, which this duplicates

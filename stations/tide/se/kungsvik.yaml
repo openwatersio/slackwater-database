@@ -1,4 +1,5 @@
 sources:
+  - smhi/2130
   - ticon/kungsvik-2130-swe-smhi
   - ticon/kungsvik-kun-swe-cmems
 redirect_from:
@@ -6,11 +7,26 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/kungsvik-2130-swe-smhi:
+    smhi/2130:
       position: [58.9967, 11.1272]
       coastline: unverifiable
       quality:
         accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/kungsvik-2130-swe-smhi:
+      position: [58.9967, 11.1272]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2130
         score: 83
         factors:
           epoch: 1
@@ -25,7 +41,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/kungsvik-2130-swe-smhi
+        redundant: smhi/2130
         score: 65
         factors:
           epoch: 1

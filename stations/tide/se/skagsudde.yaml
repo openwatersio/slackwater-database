@@ -1,4 +1,5 @@
 sources:
+  - smhi/2321
   - ticon/skagsudde-2321-swe-smhi
   - ticon/skagsudde-ska-swe-cmems
 redirect_from:
@@ -6,11 +7,31 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/skagsudde-2321-swe-smhi:
+    smhi/2321:
       position: [63.1906, 19.0125]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.9
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.143) > MLW (0.133)
+          - MHWS (0.149) < MHW (0.153)
+          - "Seasonal curve peak (0.134m) exceeds the principal tide M2+S2+K1+O1 (0.009m): the yearly swing exceeds the daily one"
+    ticon/skagsudde-2321-swe-smhi:
+      position: [63.1906, 19.0125]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2321
         seasonal_dominant: true
         score: 83
         factors:
@@ -30,7 +51,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/skagsudde-2321-swe-smhi
+        redundant: smhi/2321
         seasonal_dominant: true
         score: 65
         factors:

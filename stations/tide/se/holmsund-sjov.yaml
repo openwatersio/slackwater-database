@@ -1,13 +1,34 @@
 sources:
+  - smhi/35124
   - ticon/holmsund_sjov-35124-swe-smhi
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/holmsund_sjov-35124-swe-smhi:
+    smhi/35124:
       position: [63.6803, 20.3331]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 82
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.056
+        issues:
+          - MLWS (0.067) > MLW (0.056)
+          - MHWS (0.075) < MHW (0.077)
+          - "Seasonal curve peak (0.140m) exceeds the principal tide M2+S2+K1+O1 (0.009m): the yearly swing exceeds the daily one"
+    ticon/holmsund_sjov-35124-swe-smhi:
+      position: [63.6803, 20.3331]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35124
         seasonal_dominant: true
         score: 82
         factors:

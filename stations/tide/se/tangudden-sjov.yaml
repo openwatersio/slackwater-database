@@ -1,9 +1,13 @@
 sources:
+  - smhi/35120
   - ticon/tangudden_sjov-35120-swe-smhi
+  - ticon/tanguddengbghamn-tan-swe-cmems
+redirect_from:
+  - /tides/se/tangudden-gbg-hamn/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/tangudden_sjov-35120-swe-smhi:
+    smhi/35120:
       position: [57.6821, 11.8722]
       coastline: unverifiable
       quality:
@@ -19,3 +23,39 @@ computed:
           coverage: 0
         issues:
           - "Seasonal curve peak (0.128m) exceeds the principal tide M2+S2+K1+O1 (0.112m): the yearly swing exceeds the daily one"
+    ticon/tangudden_sjov-35120-swe-smhi:
+      position: [57.6821, 11.8722]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35120
+        seasonal_dominant: true
+        score: 70
+        factors:
+          epoch: 0.337
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.128m) exceeds the principal tide M2+S2+K1+O1 (0.112m): the yearly swing exceeds the daily one"
+    ticon/tanguddengbghamn-tan-swe-cmems:
+      position: [57.6819, 11.8721]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35120
+        seasonal_dominant: true
+        score: 52
+        factors:
+          epoch: 0.322
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.126m) exceeds the principal tide M2+S2+K1+O1 (0.112m): the yearly swing exceeds the daily one"

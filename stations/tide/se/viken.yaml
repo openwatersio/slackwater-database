@@ -1,4 +1,5 @@
 sources:
+  - smhi/2228
   - ticon/viken-2228-swe-smhi
   - ticon/viken-vik-swe-cmems
 redirect_from:
@@ -6,11 +7,26 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/viken-2228-swe-smhi:
+    smhi/2228:
       position: [56.1422, 12.5792]
       coastline: unverifiable
       quality:
         accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/viken-2228-swe-smhi:
+      position: [56.1422, 12.5792]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2228
         score: 83
         factors:
           epoch: 1
@@ -25,7 +41,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/viken-2228-swe-smhi
+        redundant: smhi/2228
         score: 65
         factors:
           epoch: 1

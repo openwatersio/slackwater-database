@@ -1,13 +1,33 @@
 sources:
+  - smhi/35233
   - ticon/stockholm_frihamnen-35233-swe-smhi
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/stockholm_frihamnen-35233-swe-smhi:
+    smhi/35233:
       position: [59.3463, 18.1271]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 66
+        factors:
+          epoch: 0.103
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.016
+        issues:
+          - MLWS (0.118) > MLW (0.117)
+          - "Seasonal curve peak (0.180m) exceeds the principal tide M2+S2+K1+O1 (0.028m): the yearly swing exceeds the daily one"
+    ticon/stockholm_frihamnen-35233-swe-smhi:
+      position: [59.3463, 18.1271]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35233
         seasonal_dominant: true
         score: 66
         factors:

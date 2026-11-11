@@ -1,4 +1,5 @@
 sources:
+  - smhi/30488
   - ticon/skanor-30488-swe-smhi
   - ticon/skanor-ska-swe-cmems
 redirect_from:
@@ -6,7 +7,7 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/skanor-30488-swe-smhi:
+    smhi/30488:
       position: [55.4167, 12.8294]
       coastline: unverifiable
       quality:
@@ -20,14 +21,33 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - M2 here (0.033 m, 182.8°) differs from (0.031 m, 173.5°) by +2 mm and 19 min later in ticon/skanor-30488-swe-smhi, a duplicate
+          - M2 here (0.033 m, 182.8°) differs from (0.031 m, 173.5°) by +2 mm and 19 min later in ticon/skanor-ska-swe-cmems, a duplicate
+    ticon/skanor-30488-swe-smhi:
+      position: [55.4167, 12.8294]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/30488
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
           - MHWS (0.229) < MHW (0.23)
+          - M2 here (0.031 m, 173.5°) differs from (0.033 m, 182.8°) by -2 mm and 19 min earlier in smhi/30488, which this duplicates
     ticon/skanor-ska-swe-cmems:
       position: [55.416698, 12.8294]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/skanor-30488-swe-smhi
+        redundant: smhi/30488
         score: 65
         factors:
           epoch: 1
@@ -38,3 +58,4 @@ computed:
           coverage: 0
         issues:
           - MHWS (0.229) < MHW (0.23)
+          - M2 here (0.031 m, 173.5°) differs from (0.033 m, 182.8°) by -2 mm and 19 min earlier in smhi/30488, which this duplicates

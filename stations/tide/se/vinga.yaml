@@ -1,15 +1,32 @@
 sources:
+  - smhi/35144
   - ticon/vinga2-vin-swe-cmems
+  - ticon/vinga_sjov-35144-swe-smhi
+redirect_from:
+  - /tides/se/vinga-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35144:
+      position: [57.6317, 11.6076]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
     ticon/vinga2-vin-swe-cmems:
       position: [57.631699, 11.6076]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/vinga_sjov-35144-swe-smhi
+        redundant: smhi/35144
         score: 52
         factors:
           epoch: 0.322
@@ -20,3 +37,18 @@ computed:
           coverage: 0
         issues:
           - MHWS (0.143) < MHW (0.145)
+    ticon/vinga_sjov-35144-swe-smhi:
+      position: [57.6317, 11.6076]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35144
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0

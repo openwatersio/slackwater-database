@@ -1,13 +1,36 @@
 sources:
+  - smhi/35119
   - ticon/bonan-bon-swe-cmems
+  - ticon/bonan_sjov-35119-swe-smhi
+redirect_from:
+  - /tides/se/bonan-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35119:
+      position: [60.7384, 17.3186]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.017
+        issues:
+          - MLWS (0.06) > MLW (0.056)
+          - "Seasonal curve peak (0.131m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"
     ticon/bonan-bon-swe-cmems:
       position: [60.731499, 17.3258]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35119
         seasonal_dominant: true
         score: 52
         factors:
@@ -20,3 +43,22 @@ computed:
         issues:
           - MLWS (0.069) > MLW (0.065)
           - "Seasonal curve peak (0.139m) exceeds the principal tide M2+S2+K1+O1 (0.022m): the yearly swing exceeds the daily one"
+    ticon/bonan_sjov-35119-swe-smhi:
+      position: [60.7384, 17.3186]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35119
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.017
+        issues:
+          - MLWS (0.077) > MLW (0.074)
+          - "Seasonal curve peak (0.131m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"

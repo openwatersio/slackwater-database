@@ -1,4 +1,5 @@
 sources:
+  - smhi/2320
   - ticon/simrishamn-2320-swe-smhi
   - ticon/simrishamn-sim-swe-cmems
 redirect_from:
@@ -6,11 +7,31 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/simrishamn-2320-swe-smhi:
+    smhi/2320:
       position: [55.5575, 14.3578]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.161) > MLW (0.152)
+          - MHWS (0.181) < MHW (0.189)
+          - "Seasonal curve peak (0.099m) exceeds the principal tide M2+S2+K1+O1 (0.035m): the yearly swing exceeds the daily one"
+    ticon/simrishamn-2320-swe-smhi:
+      position: [55.5575, 14.3578]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2320
         seasonal_dominant: true
         score: 83
         factors:
@@ -30,7 +51,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/simrishamn-2320-swe-smhi
+        redundant: smhi/2320
         seasonal_dominant: true
         score: 65
         factors:

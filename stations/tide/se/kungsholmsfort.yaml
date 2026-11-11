@@ -1,4 +1,5 @@
 sources:
+  - smhi/2088
   - ticon/kungsholmsfort-2088-swe-smhi
   - ticon/kungsholmsfort-kun-swe-cmems
 redirect_from:
@@ -6,7 +7,7 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/kungsholmsfort-2088-swe-smhi:
+    smhi/2088:
       position: [56.1053, 15.5894]
       coastline: unverifiable
       quality:
@@ -21,16 +22,39 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (0.15) > MLW (0.142)
+          - MHWS (0.17) < MHW (0.177)
+          - "Seasonal curve peak (0.115m) exceeds the principal tide M2+S2+K1+O1 (0.032m): the yearly swing exceeds the daily one"
+          - M2 here (0.008 m, 42.8°) differs from (0.005 m, 61.4°) by +3 mm and 38 min earlier in ticon/kungsholmsfort-2088-swe-smhi, a duplicate
+          - M2 here (0.008 m, 42.8°) differs from (0.005 m, 61.4°) by +3 mm and 38 min earlier in ticon/kungsholmsfort-kun-swe-cmems, a duplicate
+    ticon/kungsholmsfort-2088-swe-smhi:
+      position: [56.1053, 15.5894]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2088
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
           - MLWS (0.158) > MLW (0.147)
           - MHWS (0.172) < MHW (0.183)
           - "Seasonal curve peak (0.114m) exceeds the principal tide M2+S2+K1+O1 (0.027m): the yearly swing exceeds the daily one"
+          - M2 here (0.005 m, 61.4°) differs from (0.008 m, 42.8°) by -3 mm and 38 min later in smhi/2088, which this duplicates
     ticon/kungsholmsfort-kun-swe-cmems:
       position: [56.105301, 15.5894]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/kungsholmsfort-2088-swe-smhi
+        redundant: smhi/2088
         seasonal_dominant: true
         score: 65
         factors:
@@ -44,3 +68,4 @@ computed:
           - MLWS (0.157) > MLW (0.146)
           - MHWS (0.171) < MHW (0.182)
           - "Seasonal curve peak (0.114m) exceeds the principal tide M2+S2+K1+O1 (0.027m): the yearly swing exceeds the daily one"
+          - M2 here (0.005 m, 61.4°) differs from (0.008 m, 42.8°) by -3 mm and 38 min later in smhi/2088, which this duplicates

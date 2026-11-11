@@ -1086,3 +1086,35 @@ describe("staleSeparations", () => {
     ).toEqual(["chs-b noaa/2", "chs-c ticon/c-3-can-meds"]);
   });
 });
+
+test("a lake fit joins the TICON record of the gauge it names, whatever their M2", () => {
+  // Uddevalla: TICON's record has an M2 of 8 mm, the lake fit 141 mm.
+  const ticon = station("ticon/uddevalla-2541-swe-smhi", 58.35, 0.008);
+  const fit = {
+    ...station("smhi/2541", 58.35, 0.141),
+    source: {
+      name: "Swedish Meteorological and Hydrological Institute",
+      id: "2541",
+      gauge: "uddevalla-2541-swe-smhi",
+    },
+  } as ResolvedStation;
+  const plan = planMerges(
+    [ticon, fit],
+    {
+      tide: [
+        { slug: "uddevalla", station_ids: [ticon.id] },
+        { slug: "uddevalla-smhi-2541", station_ids: [fit.id] },
+      ],
+      current: [],
+    },
+    new Map([
+      [fit.id, accepted(fit.id)],
+      [ticon.id, duplicate(ticon.id, fit.id)],
+    ]),
+    { confident: true },
+  );
+  expect(plan.groups).toHaveLength(1);
+  expect(
+    plan.groups[0]!.members.find(({ id }) => id === fit.id)?.evidence,
+  ).toBe("provenance");
+});

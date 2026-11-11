@@ -1,9 +1,13 @@
 sources:
+  - smhi/35185
   - ticon/e4_bron_sjov-35185-swe-smhi
+  - ticon/e4bronsodertalje-e4b-swe-cmems
+redirect_from:
+  - /tides/se/e4bron-sodertalje/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/e4_bron_sjov-35185-swe-smhi:
+    smhi/35185:
       position: [59.1848, 17.6428]
       coastline: unverifiable
       quality:
@@ -21,3 +25,43 @@ computed:
           - MLWS (0.074) > MLW (0.068)
           - MHWS (0.104) < MHW (0.109)
           - "Seasonal curve peak (0.130m) exceeds the principal tide M2+S2+K1+O1 (0.029m): the yearly swing exceeds the daily one"
+    ticon/e4_bron_sjov-35185-swe-smhi:
+      position: [59.1848, 17.6428]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35185
+        seasonal_dominant: true
+        score: 78
+        factors:
+          epoch: 0.735
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.074) > MLW (0.068)
+          - MHWS (0.104) < MHW (0.109)
+          - "Seasonal curve peak (0.130m) exceeds the principal tide M2+S2+K1+O1 (0.029m): the yearly swing exceeds the daily one"
+    ticon/e4bronsodertalje-e4b-swe-cmems:
+      position: [59.184799, 17.642799]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35185
+        seasonal_dominant: true
+        score: 52
+        factors:
+          epoch: 0.322
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (0.074) > MLW (0.068)
+          - MHWS (0.104) < MHW (0.109)
+          - "Seasonal curve peak (0.124m) exceeds the principal tide M2+S2+K1+O1 (0.029m): the yearly swing exceeds the daily one"

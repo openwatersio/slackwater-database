@@ -1,4 +1,5 @@
 sources:
+  - smhi/33084
   - ticon/onsala-33084-swe-smhi
   - ticon/onsala-ons-swe-cmems
 redirect_from:
@@ -6,11 +7,29 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/onsala-33084-swe-smhi:
+    smhi/33084:
       position: [57.392, 11.919]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 74
+        factors:
+          epoch: 0.538
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.115m) exceeds the principal tide M2+S2+K1+O1 (0.093m): the yearly swing exceeds the daily one"
+    ticon/onsala-33084-swe-smhi:
+      position: [57.392, 11.919]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/33084
         seasonal_dominant: true
         score: 74
         factors:
@@ -28,7 +47,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/onsala-33084-swe-smhi
+        redundant: smhi/33084
         seasonal_dominant: true
         score: 56
         factors:

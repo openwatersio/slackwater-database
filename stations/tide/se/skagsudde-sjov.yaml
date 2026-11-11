@@ -1,15 +1,58 @@
 sources:
+  - smhi/35138
+  - ticon/skagsudde2-ska-swe-cmems
   - ticon/skagsudde_sjov-35138-swe-smhi
+redirect_from:
+  - /tides/se/skagsudde-ticon-skagsudde2-ska-swe-cmems/
+  - /tides/se/skagsudde-vaesternorrland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35138:
+      position: [63.1906, 19.0119]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2321
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+        issues:
+          - MLWS (0.062) > MLW (0.052)
+          - "Seasonal curve peak (0.143m) exceeds the principal tide M2+S2+K1+O1 (0.016m): the yearly swing exceeds the daily one"
+    ticon/skagsudde2-ska-swe-cmems:
+      position: [63.188099, 19.0161]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: range
+        seasonal_dominant: true
+        score: 0
+        factors:
+          epoch: 0.322
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.007
+        issues:
+          - MLWS (0.046) > MLW (0.041)
+          - Tidal range 1.30cm < 2cm threshold
+          - "Seasonal curve peak (0.145m) exceeds the principal tide M2+S2+K1+O1 (0.017m): the yearly swing exceeds the daily one"
     ticon/skagsudde_sjov-35138-swe-smhi:
       position: [63.1906, 19.0119]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/skagsudde-2321-swe-smhi
+        redundant: smhi/2321
         seasonal_dominant: true
         score: 81
         factors:

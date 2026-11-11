@@ -1,6 +1,7 @@
 # SMHI: https://www.smhi.se/kunskapsbanken/oceanografi/matningar-i-havet/stationslista-vattenstand
 name: Göteborg-Hisingsbron
 sources:
+  - smhi/33097
   - ticon/goteborg_hisingsbron-33097-swe-smhi
   - ticon/goteborghisingsbron-got-swe-cmems
 redirect_from:
@@ -8,11 +9,29 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/goteborg_hisingsbron-33097-swe-smhi:
+    smhi/33097:
       position: [57.7149, 11.9687]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 66
+        factors:
+          epoch: 0.119
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.150m) exceeds the principal tide M2+S2+K1+O1 (0.112m): the yearly swing exceeds the daily one"
+    ticon/goteborg_hisingsbron-33097-swe-smhi:
+      position: [57.7149, 11.9687]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/33097
         seasonal_dominant: true
         score: 51
         factors:
@@ -30,7 +49,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/goteborg_hisingsbron-33097-swe-smhi
+        redundant: smhi/33097
         seasonal_dominant: true
         score: 48
         factors:

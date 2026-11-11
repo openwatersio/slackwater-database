@@ -1,20 +1,52 @@
 sources:
+  - smhi/35104
   - ticon/marstrand-mar-swe-cmems
+  - ticon/marstrand_sjov-35104-swe-smhi
+redirect_from:
+  - /tides/se/marstrand-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35104:
+      position: [57.888, 11.5732]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
     ticon/marstrand-mar-swe-cmems:
       position: [57.888, 11.5732]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/marstrand_sjov-35104-swe-smhi
+        redundant: smhi/35104
         score: 52
         factors:
           epoch: 0.322
           recency: 0.99
           source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/marstrand_sjov-35104-swe-smhi:
+      position: [57.888, 11.5732]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35104
+        score: 81
+        factors:
+          epoch: 0.869
+          recency: 0.99
+          source: 0.919
           quality: 1
           amplitude: 1
           coverage: 0

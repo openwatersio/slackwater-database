@@ -1,13 +1,37 @@
 sources:
+  - smhi/35101
   - ticon/juten-jut-swe-cmems
+  - ticon/juten_sjov-35101-swe-smhi
+redirect_from:
+  - /tides/se/juten-sjov/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/35101:
+      position: [58.6328, 16.3336]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 0.87
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.011
+        issues:
+          - MLWS (0.101) > MLW (0.087)
+          - MHWS (0.129) < MHW (0.142)
+          - "Seasonal curve peak (0.106m) exceeds the principal tide M2+S2+K1+O1 (0.031m): the yearly swing exceeds the daily one"
     ticon/juten-jut-swe-cmems:
       position: [58.634201, 16.3248]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35101
         seasonal_dominant: true
         score: 52
         factors:
@@ -19,3 +43,23 @@ computed:
           coverage: 0.011
         issues:
           - "Seasonal curve peak (0.140m) exceeds the principal tide M2+S2+K1+O1 (0.033m): the yearly swing exceeds the daily one"
+    ticon/juten_sjov-35101-swe-smhi:
+      position: [58.6328, 16.3336]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/35101
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.011
+        issues:
+          - MLWS (0.101) > MLW (0.087)
+          - MHWS (0.129) < MHW (0.142)
+          - "Seasonal curve peak (0.106m) exceeds the principal tide M2+S2+K1+O1 (0.031m): the yearly swing exceeds the daily one"

@@ -2,6 +2,9 @@
   "name": "@slackwater/ticon",
   "private": true,
   "type": "module",
+  "exports": {
+    "./datums": "./datums.ts"
+  },
   "scripts": {
     "import": "./import",
     "test": "vitest run",

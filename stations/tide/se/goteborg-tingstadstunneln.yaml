@@ -1,6 +1,7 @@
 # SMHI: https://www.smhi.se/kunskapsbanken/oceanografi/matningar-i-havet/stationslista-vattenstand
 name: Göteborg-Tingstadstunneln
 sources:
+  - smhi/33093
   - ticon/goteborg_tingstadstunneln-33093-swe-smhi
   - ticon/goteborgtingstadstunneln-got-swe-cmems
 redirect_from:
@@ -8,11 +9,29 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/goteborg_tingstadstunneln-33093-swe-smhi:
+    smhi/33093:
       position: [57.7231, 11.987]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 77
+        factors:
+          epoch: 0.671
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.114m) exceeds the principal tide M2+S2+K1+O1 (0.108m): the yearly swing exceeds the daily one"
+    ticon/goteborg_tingstadstunneln-33093-swe-smhi:
+      position: [57.7231, 11.987]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/33093
         seasonal_dominant: true
         score: 62
         factors:
@@ -30,7 +49,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/goteborg_tingstadstunneln-33093-swe-smhi
+        redundant: smhi/33093
         seasonal_dominant: true
         score: 44
         factors:

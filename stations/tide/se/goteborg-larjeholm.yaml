@@ -1,15 +1,35 @@
-# SMHI: https://www.smhi.se/kunskapsbanken/oceanografi/matningar-i-havet/stationslista-vattenstand
-name: Göteborg-Lärjeholm
 sources:
+  - smhi/33094
   - ticon/goteborg_larjeholm-33094-swe-smhi
+  - ticon/goteborglarjeholm-got-swe-cmems
+redirect_from:
+  - /tides/se/goteborg-larjeholm-vaestra-goetaland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/goteborg_larjeholm-33094-swe-smhi:
+    smhi/33094:
       position: [57.7649, 12.003]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 79
+        factors:
+          epoch: 0.798
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0.004
+        issues:
+          - "Seasonal curve peak (0.118m) exceeds the principal tide M2+S2+K1+O1 (0.104m): the yearly swing exceeds the daily one"
+    ticon/goteborg_larjeholm-33094-swe-smhi:
+      position: [57.7649, 12.003]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/33094
         seasonal_dominant: true
         score: 64
         factors:
@@ -21,3 +41,21 @@ computed:
           coverage: 0.004
         issues:
           - "Seasonal curve peak (0.119m) exceeds the principal tide M2+S2+K1+O1 (0.098m): the yearly swing exceeds the daily one"
+    ticon/goteborglarjeholm-got-swe-cmems:
+      position: [57.7658, 12.0056]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/33094
+        seasonal_dominant: true
+        score: 46
+        factors:
+          epoch: 0.798
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.004
+        issues:
+          - "Seasonal curve peak (0.120m) exceeds the principal tide M2+S2+K1+O1 (0.105m): the yearly swing exceeds the daily one"

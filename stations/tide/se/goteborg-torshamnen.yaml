@@ -1,20 +1,41 @@
 # SMHI: https://www.smhi.se/kunskapsbanken/oceanografi/matningar-i-havet/stationslista-vattenstand
 name: Göteborg-Torshamnen
 sources:
+  - smhi/2109
   - ticon/goteborg_torshamnen-2109-swe-smhi
+  - ticon/goteborgorsh-819-swe-uhslc_fd
+  - ticon/goteborgorsh-819a-swe-uhslc_rq
   - ticon/goteborgtorshamnen-got-swe-cmems
 redirect_from:
   - /tides/se/goteborg-torshamnen-vaestra-goetaland/
+  - /tides/se/goteborgorsh-vaestra-goetaland/
+  - /tides/se/goteborgorsh/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    smhi/2109:
+      position: [57.6847, 11.7906]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.95
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.120m) exceeds the principal tide M2+S2+K1+O1 (0.109m): the yearly swing exceeds the daily one"
     ticon/goteborg_torshamnen-2109-swe-smhi:
       position: [57.6847, 11.7906]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/goteborgorsh-819-swe-uhslc_fd
+        redundant: smhi/2109
         seasonal_dominant: true
         score: 83
         factors:
@@ -26,13 +47,49 @@ computed:
           coverage: 0
         issues:
           - "Seasonal curve peak (0.119m) exceeds the principal tide M2+S2+K1+O1 (0.103m): the yearly swing exceeds the daily one"
+    ticon/goteborgorsh-819-swe-uhslc_fd:
+      position: [57.683, 11.8]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2109
+        seasonal_dominant: true
+        score: 85
+        factors:
+          epoch: 1
+          recency: 0.97
+          source: 0.99
+          quality: 1
+          amplitude: 1
+          coverage: 0.012
+        issues:
+          - "Seasonal curve peak (0.121m) exceeds the principal tide M2+S2+K1+O1 (0.103m): the yearly swing exceeds the daily one"
+    ticon/goteborgorsh-819a-swe-uhslc_rq:
+      position: [57.685, 11.79]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/2109
+        seasonal_dominant: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.88
+          source: 0.99
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+        issues:
+          - "Seasonal curve peak (0.121m) exceeds the principal tide M2+S2+K1+O1 (0.102m): the yearly swing exceeds the daily one"
     ticon/goteborgtorshamnen-got-swe-cmems:
       position: [57.6847, 11.7906]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/goteborgorsh-819-swe-uhslc_fd
+        redundant: smhi/2109
         seasonal_dominant: true
         score: 65
         factors:

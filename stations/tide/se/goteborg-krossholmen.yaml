@@ -1,6 +1,7 @@
 # SMHI: https://www.smhi.se/kunskapsbanken/oceanografi/matningar-i-havet/stationslista-vattenstand
 name: Göteborg-Krossholmen
 sources:
+  - smhi/33089
   - ticon/goteborg_krossholmen-33089-swe-smhi
   - ticon/goteborgkrossholmen-got-swe-cmems
 redirect_from:
@@ -8,11 +9,29 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/goteborg_krossholmen-33089-swe-smhi:
+    smhi/33089:
       position: [57.6913, 11.7712]
       coastline: unverifiable
       quality:
         accepted: true
+        seasonal_dominant: true
+        score: 67
+        factors:
+          epoch: 0.207
+          recency: 0.99
+          source: 0.919
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - "Seasonal curve peak (0.127m) exceeds the principal tide M2+S2+K1+O1 (0.110m): the yearly swing exceeds the daily one"
+    ticon/goteborg_krossholmen-33089-swe-smhi:
+      position: [57.6913, 11.7712]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: smhi/33089
         seasonal_dominant: true
         score: 67
         factors:
@@ -30,7 +49,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/goteborg_krossholmen-33089-swe-smhi
+        redundant: smhi/33089
         seasonal_dominant: true
         score: 49
         factors:
