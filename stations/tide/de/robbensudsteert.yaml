@@ -1,0 +1,36 @@
+sources:
+  - wsv/9460010
+  - ticon/robbensdsteert-9460010-deu-wsv
+redirect_from:
+  - /tides/de/robbensdsteert/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9460010:
+      position: [53.639224, 8.445202]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 85
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.253
+    ticon/robbensdsteert-9460010-deu-wsv:
+      position: [53.64079, 8.446187]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9460010
+        score: 85
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.252

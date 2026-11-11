@@ -1,10 +1,11 @@
 sources:
+  - wsv/4950010
   - ticon/vegesack-4950010-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/vegesack-4950010-deu-wsv:
-      position: [53.17091, 8.62054]
+    wsv/4950010:
+      position: [53.169406, 8.619533]
       coastline: unverifiable
       quality:
         accepted: true
@@ -16,3 +17,18 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.132
+    ticon/vegesack-4950010-deu-wsv:
+      position: [53.17091, 8.62054]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4950010
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.131

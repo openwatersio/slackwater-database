@@ -1,0 +1,36 @@
+sources:
+  - wsv/9550021
+  - ticon/pellwormanleger-9550021-deu-wsv
+redirect_from:
+  - /tides/de/pellwormanleger/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9550021:
+      position: [54.500919, 8.702016]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 87
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.422
+    ticon/pellwormanleger-9550021-deu-wsv:
+      position: [54.502583, 8.70305]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9550021
+        score: 87
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.421

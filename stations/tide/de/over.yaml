@@ -1,13 +1,29 @@
 sources:
+  - wsv/5950010
   - ticon/over-5950010-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/5950010:
+      position: [53.428692, 10.10112]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.129
     ticon/over-5950010-deu-wsv:
       position: [53.428689, 10.101116]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5950010
         score: 83
         factors:
           epoch: 1

@@ -1,13 +1,29 @@
 sources:
+  - wsv/4970020
   - ticon/brake-4970020-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/4970020:
+      position: [53.315979, 8.486546]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.112
     ticon/brake-4970020-deu-wsv:
       position: [53.317505, 8.487524]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4970020
         score: 83
         factors:
           epoch: 1

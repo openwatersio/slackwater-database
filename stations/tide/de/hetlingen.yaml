@@ -1,13 +1,31 @@
 sources:
+  - wsv/5970010
   - ticon/hetlingen-5970010-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/5970010:
+      position: [53.609411, 9.584318]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.089
+        issues:
+          - MLWS (3.717) > MLW (3.693)
     ticon/hetlingen-5970010-deu-wsv:
       position: [53.609405, 9.584315]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5970010
         score: 82
         factors:
           epoch: 1

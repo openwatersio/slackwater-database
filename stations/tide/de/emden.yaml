@@ -1,15 +1,51 @@
 sources:
+  - wsv/3970010
+  - ticon/emdenneueseeschleuse-3970010-deu-wsv
   - ticon/emdentg-emd-deu-cmems
+redirect_from:
+  - /tides/de/emdenneueseeschleuse/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/3970010:
+      position: [53.336781, 7.186348]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (3.33) > MLW (3.289)
+    ticon/emdenneueseeschleuse-3970010-deu-wsv:
+      position: [53.338312, 7.187131]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/3970010
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.004
+        issues:
+          - MLWS (3.329) > MLW (3.288)
     ticon/emdentg-emd-deu-cmems:
       position: [53.3367, 7.1864]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/emdenneueseeschleuse-3970010-deu-wsv
+        redundant: wsv/3970010
         score: 43
         factors:
           epoch: 0.617
@@ -17,6 +53,6 @@ computed:
           source: 0.02
           quality: 0
           amplitude: 1
-          coverage: 0.004
+          coverage: 0
         issues:
           - MLWS (-1.617) > MLW (-1.639)

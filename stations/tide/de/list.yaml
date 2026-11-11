@@ -1,15 +1,49 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=9570070
+name: List auf Sylt
 sources:
+  - wsv/9570070
+  - ticon/listaufsylt-9570070-deu-wsv
   - ticon/listtg-lis-deu-cmems
+redirect_from:
+  - /tides/de/listaufsylt/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9570070:
+      position: [55.016544, 8.440409]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+    ticon/listaufsylt-9570070-deu-wsv:
+      position: [55.018268, 8.441405]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9570070
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.003
     ticon/listtg-lis-deu-cmems:
       position: [55.016998, 8.441]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/listaufsylt-9570070-deu-wsv
+        redundant: wsv/9570070
         score: 43
         factors:
           epoch: 0.614
@@ -17,4 +51,4 @@ computed:
           source: 0.02
           quality: 0
           amplitude: 1
-          coverage: 0.003
+          coverage: 0.001

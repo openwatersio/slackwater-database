@@ -1,17 +1,38 @@
 # PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=9610025
 name: Schleimünde SP
 sources:
+  - wsv/9610025
   - ticon/schleimndesp-9610025-deu-wsv
+  - ticon/schleimuendetg-sch-deu-cmems
 redirect_from:
   - /tides/de/schleimndesp/
+  - /tides/de/schleimuende/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9610025:
+      position: [54.672736, 10.036689]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.98
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.004
+        issues:
+          - MLWS (4.998) > MLW (4.993)
+          - MHWS (5.116) < MHW (5.121)
     ticon/schleimndesp-9610025-deu-wsv:
       position: [54.672734, 10.036674]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610025
         score: 81
         factors:
           epoch: 1
@@ -23,3 +44,21 @@ computed:
         issues:
           - MLWS (4.997) > MLW (4.992)
           - MHWS (5.115) < MHW (5.121)
+    ticon/schleimuendetg-sch-deu-cmems:
+      position: [54.673, 10.034]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610025
+        score: 43
+        factors:
+          epoch: 0.612
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.003
+        issues:
+          - MLWS (0.05) > MLW (0.03)
+          - MHWS (0.172) < MHW (0.191)

@@ -1,0 +1,36 @@
+sources:
+  - wsv/9520050
+  - ticon/nordfeldunterwasser-9520050-deu-wsv
+redirect_from:
+  - /tides/de/nordfeldunterwasser/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9520050:
+      position: [54.339462, 9.138247]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.002
+    ticon/nordfeldunterwasser-9520050-deu-wsv:
+      position: [54.341106, 9.13935]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9520050
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.002

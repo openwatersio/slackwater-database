@@ -1,10 +1,28 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=5970023
+name: Krückau-Sperrwerk BP
 sources:
   - ticon/krckausperrwerkbp-5970023-deu-wsv
+  - wsv/5970023
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
     ticon/krckausperrwerkbp-5970023-deu-wsv:
       position: [53.716258, 9.526955]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/krckausperrwerkap-5970024-deu-wsv
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+    wsv/5970023:
+      position: [53.716258, 9.526956]
       coastline: unverifiable
       quality:
         accepted: false

@@ -1,14 +1,15 @@
-# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=9510095
-name: Büsum
 sources:
+  - wsv/9510095
   - ticon/bsum-9510095-deu-wsv
+  - ticon/buesumtg-bue-deu-cmems
 redirect_from:
   - /tides/de/bsum/
+  - /tides/de/buesum/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/bsum-9510095-deu-wsv:
-      position: [54.123381, 8.860158]
+    wsv/9510095:
+      position: [54.121761, 8.859102]
       coastline: unverifiable
       quality:
         accepted: true
@@ -19,4 +20,34 @@ computed:
           source: 0.798
           quality: 1
           amplitude: 1
+          coverage: 0.001
+    ticon/bsum-9510095-deu-wsv:
+      position: [54.123381, 8.860158]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9510095
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
           coverage: 0.003
+    ticon/buesumtg-bue-deu-cmems:
+      position: [54.1222, 8.8592]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9510095
+        score: 43
+        factors:
+          epoch: 0.612
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.001

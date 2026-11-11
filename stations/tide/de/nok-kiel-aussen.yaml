@@ -1,0 +1,38 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=5650068
+name: NOK Kiel Außen
+sources:
+  - wsv/5650068
+  - ticon/nokkielaussen-5650068-deu-wsv
+redirect_from:
+  - /tides/de/nokkielaussen/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5650068:
+      position: [54.364856, 10.144527]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 72
+        factors:
+          epoch: 0.539
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.008
+    ticon/nokkielaussen-5650068-deu-wsv:
+      position: [54.366495, 10.145793]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5650068
+        score: 57
+        factors:
+          epoch: 0.539
+          recency: 0.99
+          source: 0.798
+          quality: 0
+          amplitude: 1
+          coverage: 0.008

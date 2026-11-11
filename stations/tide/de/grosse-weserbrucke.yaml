@@ -1,0 +1,36 @@
+sources:
+  - wsv/4910050
+  - ticon/grosseweserbrcke-4910050-deu-wsv
+redirect_from:
+  - /tides/de/grosseweserbrcke/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/4910050:
+      position: [53.073097, 8.803636]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.074
+    ticon/grosseweserbrcke-4910050-deu-wsv:
+      position: [53.074594, 8.804665]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4910050
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.074

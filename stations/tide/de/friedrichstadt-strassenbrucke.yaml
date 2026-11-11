@@ -1,0 +1,36 @@
+sources:
+  - wsv/9520060
+  - ticon/friedrichstadtstrassenbrcke-9520060-deu-wsv
+redirect_from:
+  - /tides/de/friedrichstadtstrassenbrcke/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9520060:
+      position: [54.368469, 9.094603]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.084
+    ticon/friedrichstadtstrassenbrcke-9520060-deu-wsv:
+      position: [54.370116, 9.095699]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9520060
+        score: 67
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 0
+          amplitude: 1
+          coverage: 0.086

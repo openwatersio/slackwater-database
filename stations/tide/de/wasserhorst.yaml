@@ -1,10 +1,11 @@
 sources:
+  - wsv/4930010
   - ticon/wasserhorst-4930010-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/wasserhorst-4930010-deu-wsv:
-      position: [53.164336, 8.719232]
+    wsv/4930010:
+      position: [53.162825, 8.718208]
       coastline: unverifiable
       quality:
         accepted: true
@@ -16,3 +17,18 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.074
+    ticon/wasserhorst-4930010-deu-wsv:
+      position: [53.164336, 8.719232]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4930010
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.071

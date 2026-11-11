@@ -1,13 +1,29 @@
 sources:
+  - wsv/9510010
   - ticon/zehnerloch-9510010-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9510010:
+      position: [53.955509, 8.65823]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.038
     ticon/zehnerloch-9510010-deu-wsv:
       position: [53.95711, 8.659252]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9510010
         score: 81
         factors:
           epoch: 1

@@ -1,5 +1,6 @@
 sources:
   - ticon/stahlbrode-9650070-deu-wsv
+  - wsv/9650070
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -20,4 +21,24 @@ computed:
         issues:
           - MLWS (5.087) > MLW (5.077)
           - MHWS (5.123) < MHW (5.14)
+          - "Seasonal curve peak (0.067m) exceeds the principal tide M2+S2+K1+O1 (0.040m): the yearly swing exceeds the daily one"
+    wsv/9650070:
+      position: [54.234461, 13.289714]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/stahlbrode-9650070-deu-wsv
+        seasonal_dominant: true
+        score: 85
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.272
+        issues:
+          - MLWS (5.088) > MLW (5.079)
+          - MHWS (5.124) < MHW (5.141)
           - "Seasonal curve peak (0.067m) exceeds the principal tide M2+S2+K1+O1 (0.040m): the yearly swing exceeds the daily one"

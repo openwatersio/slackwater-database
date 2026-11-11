@@ -1,17 +1,36 @@
-# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=9690088
-name: Ueckermünde
 sources:
+  - wsv/9690088
   - ticon/ueckermnde-9690088-deu-wsv
 redirect_from:
   - /tides/de/ueckermnde/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9690088:
+      position: [53.75031, 14.066478]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 86
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.343
+        issues:
+          - MLWS (5.169) > MLW (5.156)
+          - MHWS (5.175) < MHW (5.183)
+          - "Seasonal curve peak (0.058m) exceeds the principal tide M2+S2+K1+O1 (0.007m): the yearly swing exceeds the daily one"
     ticon/ueckermnde-9690088-deu-wsv:
       position: [53.75031, 14.066474]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9690088
         seasonal_dominant: true
         score: 86
         factors:

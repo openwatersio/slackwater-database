@@ -103,9 +103,9 @@ describe("bbox", () => {
 
 describe("search", () => {
   test.each([
-    ["Busu", "ticon/bsum-9510095-deu-wsv"],
-    ["Horn", "ticon/hrnum-9570050-deu-wsv"],
-    ["Lub", "ticon/lbeckbauhof-9620090-deu-wsv"],
+    ["Busu", "wsv/9510095"],
+    ["Horn", "wsv/9570050"],
+    ["Lub", "wsv/9620090"],
   ])("finds accented names with prefix %s", (query, id) => {
     expect(
       search(query, { maxResults: Infinity }).map((station) => station.id),

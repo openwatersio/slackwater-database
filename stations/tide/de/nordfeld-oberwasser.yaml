@@ -1,0 +1,40 @@
+sources:
+  - wsv/9520040
+  - ticon/nordfeldoberwasser-9520040-deu-wsv
+redirect_from:
+  - /tides/de/nordfeldoberwasser/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9520040:
+      position: [54.338733, 9.139643]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.002
+        issues:
+          - MLWS (4.542) > MLW (4.537)
+    ticon/nordfeldoberwasser-9520040-deu-wsv:
+      position: [54.340377, 9.140747]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9520040
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.002
+        issues:
+          - MLWS (4.541) > MLW (4.537)

@@ -1,13 +1,29 @@
 sources:
+  - wsv/4940010
   - ticon/borgfeld-4940010-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/4940010:
+      position: [53.133971, 8.894403]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.109
     ticon/borgfeld-4940010-deu-wsv:
       position: [53.135477, 8.895455]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4940010
         score: 82
         factors:
           epoch: 1

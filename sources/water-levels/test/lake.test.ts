@@ -10,6 +10,9 @@ const station = (id: string, preferred = id): LakeStation => ({
   id,
   source: id.split("/")[0]!,
   source_id: id.split("/")[1]!,
+  name: id,
+  lat: 0,
+  lon: 0,
   datum: "RH2000",
   first: new Date("2018-01-01"),
   last: new Date("2021-03-01"),
@@ -30,6 +33,13 @@ const stations = new Map([
   ["gesla/y-2-swe-smhi", station("gesla/y-2-swe-smhi", "dmi/2")],
   ["dmi/2", station("dmi/2")],
   ["gesla/k-k-swe-cmems", station("gesla/k-k-swe-cmems", "smhi/2130")],
+  // A contributor whose lake source isn't its agency: PEGELONLINE's series
+  // are the WSV's.
+  [
+    "gesla/herbrum-3770030-deu-wsv",
+    station("gesla/herbrum-3770030-deu-wsv", "pegelonline/3770030"),
+  ],
+  ["pegelonline/3770030", station("pegelonline/3770030")],
 ]);
 
 vi.mock("@slackwater/harmonic-analysis/lake", async (original) => ({
@@ -93,6 +103,11 @@ describe("lakeSeries", () => {
   });
   test("has none where the lake prefers another agency's series", async () => {
     expect(await lakeSeries("y-2-swe-smhi")).toBeUndefined();
+  });
+  test("takes a series whose lake source differs from its agency", async () => {
+    expect(await lakeSeries("herbrum-3770030-deu-wsv")).toBe(
+      "pegelonline/3770030",
+    );
   });
   test("has none for a contributor not yet converted", async () => {
     expect(await lakeSeries("a-b-nld-rws")).toBeUndefined();
@@ -297,6 +312,16 @@ describe("fitFromLake's held-out year and published constants", () => {
     expect(
       result!.constituents.find((c) => c.name === "SSA")!.amplitude,
     ).toBeLessThan(0.002);
+  });
+
+  test("rounds a PEGELONLINE fit as its agency's records", async () => {
+    series = synthesize(() => 0.5004);
+    const result = await fitFromLake("pegelonline/3770030", [
+      { name: "M2", amplitude: 0.5, phase: 60 },
+    ]);
+    expect(result!.constituents).toEqual([
+      { name: "M2", amplitude: 0.5, phase: 40 },
+    ]);
   });
 
   test("scores the constants as they are published", async () => {

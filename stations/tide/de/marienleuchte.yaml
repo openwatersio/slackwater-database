@@ -1,6 +1,7 @@
 sources:
   - ticon/marienleuchte-9610075-deu-wsv
   - ticon/marienleuchtetg-mar-deu-cmems
+  - wsv/9610075
 redirect_from:
   - /tides/de/marienleuchte-schleswig-holstein/
 # Written by `npm run stations`. Do not edit.
@@ -36,3 +37,18 @@ computed:
           coverage: 0.001
         issues:
           - MLWS (0.021) > MLW (0)
+    wsv/9610075:
+      position: [54.49663, 11.238874]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/marienleuchte-9610075-deu-wsv
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.001

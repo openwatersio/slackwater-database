@@ -1,4 +1,5 @@
 sources:
+  - wsv/9610035
   - ticon/kappeln-9610035-deu-wsv
   - ticon/kappelntg-kap-deu-cmems
 redirect_from:
@@ -6,11 +7,29 @@ redirect_from:
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9610035:
+      position: [54.664384, 9.937938]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0
+        issues:
+          - MLWS (5.032) > MLW (5.013)
+          - MHWS (5.102) < MHW (5.122)
     ticon/kappeln-9610035-deu-wsv:
       position: [54.66438, 9.937932]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610035
         score: 81
         factors:
           epoch: 1
@@ -28,7 +47,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/kappeln-9610035-deu-wsv
+        redundant: wsv/9610035
         score: 50
         factors:
           epoch: 0.244

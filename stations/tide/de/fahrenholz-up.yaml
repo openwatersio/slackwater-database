@@ -1,0 +1,42 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=5940060
+name: Fahrenholz UP
+sources:
+  - wsv/5940060
+  - ticon/fahrenholzup-5940060-deu-wsv
+redirect_from:
+  - /tides/de/fahrenholzup/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5940060:
+      position: [53.360317, 10.315493]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.142
+        issues:
+          - MHWS (7.43) < MHW (7.439)
+    ticon/fahrenholzup-5940060-deu-wsv:
+      position: [53.360313, 10.315488]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5940060
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.142
+        issues:
+          - MHWS (7.421) < MHW (7.444)

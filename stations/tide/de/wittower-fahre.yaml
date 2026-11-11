@@ -1,17 +1,36 @@
-# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=9670055
-name: Wittower Fähre
 sources:
+  - wsv/9670055
   - ticon/wittowerfhre-9670055-deu-wsv
 redirect_from:
   - /tides/de/wittowerfhre/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9670055:
+      position: [54.557594, 13.245135]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.183
+        issues:
+          - MLWS (5.109) > MLW (5.097)
+          - MHWS (5.125) < MHW (5.13)
+          - "Seasonal curve peak (0.083m) exceeds the principal tide M2+S2+K1+O1 (0.021m): the yearly swing exceeds the daily one"
     ticon/wittowerfhre-9670055-deu-wsv:
       position: [54.557587, 13.245121]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9670055
         seasonal_dominant: true
         score: 84
         factors:

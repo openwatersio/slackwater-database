@@ -1,16 +1,38 @@
 sources:
+  - wsv/5990020
   - ticon/cuxhaven-825-deu-uhslc_fd
   - ticon/cuxhaven-825a-deu-uhslc_rq
+  - ticon/cuxhaven_steubenhoft-cux-deu-bfg
+  - ticon/cuxhavensteubenhft-5990020-deu-wsv
+  - ticon/cuxhaventg-cux-deu-cmems
 redirect_from:
   - /tides/de/cuxhaven-lower-saxony/
+  - /tides/de/cuxhaven-steubenhoft/
+  - /tides/de/cuxhaven-ticon-cuxhaventg-cux-deu-cmems/
+  - /tides/de/cuxhavensteubenhft/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/5990020:
+      position: [53.867686, 8.717425]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0
     ticon/cuxhaven-825-deu-uhslc_fd:
       position: [53.867, 8.717]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5990020
         score: 85
         factors:
           epoch: 1
@@ -25,7 +47,7 @@ computed:
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/cuxhaven-825-deu-uhslc_fd
+        redundant: wsv/5990020
         score: 85
         factors:
           epoch: 1
@@ -34,3 +56,48 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.002
+    ticon/cuxhaven_steubenhoft-cux-deu-bfg:
+      position: [53.867699, 8.717343]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5990020
+        score: 79
+        factors:
+          epoch: 1
+          recency: 0.98
+          source: 0.717
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/cuxhavensteubenhft-5990020-deu-wsv:
+      position: [53.869277, 8.718455]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5990020
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.004
+    ticon/cuxhaventg-cux-deu-cmems:
+      position: [53.867802, 8.7175]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5990020
+        score: 57
+        factors:
+          epoch: 0.599
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0

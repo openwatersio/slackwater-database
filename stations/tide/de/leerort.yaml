@@ -1,10 +1,11 @@
 sources:
+  - wsv/3910010
   - ticon/leerort-3910010-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/leerort-3910010-deu-wsv:
-      position: [53.216855, 7.427005]
+    wsv/3910010:
+      position: [53.215335, 7.426191]
       coastline: unverifiable
       quality:
         accepted: true
@@ -16,5 +17,22 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.063
+        issues:
+          - MLWS (3.422) > MLW (3.414)
+    ticon/leerort-3910010-deu-wsv:
+      position: [53.216855, 7.427005]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/3910010
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.062
         issues:
           - MLWS (3.434) > MLW (3.414)

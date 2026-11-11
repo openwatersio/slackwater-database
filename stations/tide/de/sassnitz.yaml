@@ -1,10 +1,15 @@
 sources:
+  - wsv/9670065
   - ticon/sassnitz-9670065-deu-wsv
+  - ticon/sassnitztg-sas-deu-cmems
+redirect_from:
+  - /tides/de/sassnitz-mecklenburg-vorpommern/
+  - /tides/de/sassnitz-ticon-sassnitztg-sas-deu-cmems/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/sassnitz-9670065-deu-wsv:
-      position: [54.508292, 13.636651]
+    wsv/9670065:
+      position: [54.508293, 13.636651]
       coastline: unverifiable
       quality:
         accepted: true
@@ -18,6 +23,44 @@ computed:
           amplitude: 1
           coverage: 0.011
         issues:
+          - MLWS (5.08) > MLW (5.075)
+          - MHWS (5.108) < MHW (5.113)
+          - "Seasonal curve peak (0.085m) exceeds the principal tide M2+S2+K1+O1 (0.035m): the yearly swing exceeds the daily one"
+    ticon/sassnitz-9670065-deu-wsv:
+      position: [54.508292, 13.636651]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9670065
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.011
+        issues:
           - MLWS (5.083) > MLW (5.078)
           - MHWS (5.111) < MHW (5.116)
           - "Seasonal curve peak (0.085m) exceeds the principal tide M2+S2+K1+O1 (0.035m): the yearly swing exceeds the daily one"
+    ticon/sassnitztg-sas-deu-cmems:
+      position: [54.511169, 13.64333]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9670065
+        seasonal_dominant: true
+        score: 43
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.011
+        issues:
+          - "Seasonal curve peak (0.077m) exceeds the principal tide M2+S2+K1+O1 (0.036m): the yearly swing exceeds the daily one"

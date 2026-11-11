@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /**
  * Fit harmonic constants and reduce datums for each contributor's gauges
- * from their series in the water-levels lake, writing data/<contributor>/.
+ * from their series in the water-levels lake, writing data/<agency>/.
  * The gauges are the contributor's TICON records, so run the TICON import
- * first. A record's name and position are its TICON record's.
+ * first. A record's name and position are its TICON record's, or the lake's
+ * where its contributor sets `lakeMetadata`.
  *
  * Usage: npm run import -w sources/water-levels
  */
@@ -22,6 +23,7 @@ import {
 import { computeDatums } from "@slackwater/datums";
 import { reduceTiconDatums } from "@slackwater/ticon/datums";
 import {
+  lakeStation,
   MEASURED_FLAGS,
   readLakeSamples,
 } from "@slackwater/harmonic-analysis/lake";
@@ -36,13 +38,16 @@ const ticonIds = (await readdir(join(DATA_DIR, "ticon")))
 // contributor's own record of the gauge, or on another agency's copy where
 // the lake files none of its own: GESLA's SMHI record for Uddevalla holds
 // another gauge's data, so the lake links only CMEMS's copy to smhi/2541.
+const agencyOf = (series: string) =>
+  CONTRIBUTORS.get(series.split("/")[0]!)!.agency;
 const own = (id: string, series: string) =>
-  getSourceSuffix(id) === series.split("/")[0];
+  getSourceSuffix(id) === agencyOf(series);
+const agencies = new Set([...CONTRIBUTORS.values()].map((c) => c.agency));
 const bases = new Map<string, string>();
 for (const id of ticonIds) {
   const series = await lakeSeries(id);
   if (!series) {
-    if (CONTRIBUTORS.has(getSourceSuffix(id)))
+    if (agencies.has(getSourceSuffix(id)))
       console.log(`${id}: no ${getSourceSuffix(id)} series in the lake`);
     continue;
   }
@@ -61,10 +66,12 @@ if (!bases.size)
 const force = process.env["FORCE_HARMONICS"] === "1";
 let errors = 0;
 for (const [series, id] of [...bases].sort()) {
-  const contributor = series.split("/")[0]!;
+  const lakeSource = series.split("/")[0]!;
+  const contributor = CONTRIBUTORS.get(lakeSource)!;
+  const agency = contributor.agency;
   try {
-    const sourceId = series.slice(contributor.length + 1);
-    const saved = await load(contributor, sourceId).catch(() => undefined);
+    const sourceId = series.slice(lakeSource.length + 1);
+    const saved = await load(agency, sourceId).catch(() => undefined);
     const ticon = await load("ticon", id);
     // Every TICON record of the gauge, as the lake files them, is scored.
     const relays = await Promise.all(
@@ -98,9 +105,9 @@ for (const [series, id] of [...bases].sort()) {
     if (!lake) {
       console.log(`${series} (${id}): too short to fit and score`);
       if (saved && force) {
-        await rm(join(DATA_DIR, contributor, `${sourceId}.json`));
-        console.log(`  removes ${contributor}/${sourceId}.json`);
-      } else if (saved) console.log(`  keeps ${contributor}/${sourceId}.json`);
+        await rm(join(DATA_DIR, agency, `${sourceId}.json`));
+        console.log(`  removes ${agency}/${sourceId}.json`);
+      } else if (saved) console.log(`  keeps ${agency}/${sourceId}.json`);
       continue;
     }
     const savedHours = saved?.source.fit_hours;
@@ -122,15 +129,23 @@ for (const [series, id] of [...bases].sort()) {
       computeDatums(lake.constituents, {}).datums,
       epoch,
     );
+    const gauge =
+      "lakeMetadata" in contributor ? await lakeStation(series) : undefined;
+    // The fallback would be the base TICON record's, which may be CMEMS's.
+    if (
+      gauge &&
+      !(gauge.name && Number.isFinite(gauge.lat) && Number.isFinite(gauge.lon))
+    )
+      throw new Error(`${series} has no name or position in the lake`);
     const record: PartialStationData = {
-      name: ticon.name,
+      name: gauge?.name ?? ticon.name,
       country: ticon.country,
-      latitude: ticon.latitude,
-      longitude: ticon.longitude,
+      latitude: gauge?.lat ?? ticon.latitude,
+      longitude: gauge?.lon ?? ticon.longitude,
       type: "reference",
       disclaimers: datum_notice,
       source: {
-        name: CONTRIBUTORS.get(contributor)!.name,
+        name: contributor.name,
         url: "https://github.com/openwatersio/water-levels",
         id: sourceId,
         published_harmonics: false,
@@ -139,11 +154,11 @@ for (const [series, id] of [...bases].sort()) {
         fit_hours: lake.fit.hours,
         held_out: lake.held_out,
       },
-      license: CONTRIBUTORS.get(contributor)!.license,
+      license: contributor.license,
       harmonic_constituents: lake.constituents,
       ...datums,
     };
-    await save(contributor, normalize(record));
+    await save(agency, normalize(record));
     console.log(
       `${series} (${id}): held-out rms ${lake.held_out.rms} m; ${Object.entries(
         lake.held_out.ticon,

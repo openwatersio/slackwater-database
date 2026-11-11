@@ -1,0 +1,45 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=5979020
+name: NOK Kiel Binnen
+sources:
+  - wsv/5979020
+  - ticon/nokkielbinnen-5979020-deu-wsv
+redirect_from:
+  - /tides/de/nokkielbinnen/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5979020:
+      position: [54.365693, 10.13887]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 72
+        factors:
+          epoch: 0.54
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.008
+        issues:
+          - MLWS (4.858) > MLW (4.854)
+          - MHWS (4.938) < MHW (4.947)
+    ticon/nokkielbinnen-5979020-deu-wsv:
+      position: [54.367331, 10.140122]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5979020
+        score: 57
+        factors:
+          epoch: 0.54
+          recency: 0.99
+          source: 0.798
+          quality: 0
+          amplitude: 1
+          coverage: 0.008
+        issues:
+          - HAT (4.989) < MHHW (4.991)
+          - MLWS (4.85) > MLW (4.842)
+          - MHWS (4.93) < MHW (4.941)

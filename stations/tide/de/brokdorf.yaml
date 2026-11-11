@@ -1,13 +1,29 @@
 sources:
+  - wsv/5970050
   - ticon/brokdorf-5970050-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/5970050:
+      position: [53.862704, 9.31603]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.211
     ticon/brokdorf-5970050-deu-wsv:
       position: [53.8627, 9.316019]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5970050
         score: 84
         factors:
           epoch: 1

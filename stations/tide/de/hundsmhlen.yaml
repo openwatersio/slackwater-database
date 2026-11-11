@@ -1,5 +1,6 @@
 sources:
   - ticon/hundsmhlen-4960020-deu-wsv
+  - wsv/4960020
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -17,10 +18,31 @@ computed:
           source: 0.798
           quality: 1
           amplitude: 1
-          coverage: 0.107
+          coverage: 0.104
         issues:
           - HAT (5.052) < MHHW (5.061)
           - MLWS (5.028) > MLW (5.021)
           - MHWS (5.034) < MHW (5.04)
           - Tidal range 1.90cm < 2cm threshold
           - "Seasonal curve peak (0.013m) exceeds the principal tide M2+S2+K1+O1 (0.005m): the yearly swing exceeds the daily one"
+    wsv/4960020:
+      position: [53.108847, 8.17307]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: range
+        seasonal_dominant: true
+        score: 0
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.107
+        issues:
+          - HAT (5.045) < MHHW (5.055)
+          - MLWS (5.022) > MLW (5.015)
+          - MHWS (5.028) < MHW (5.034)
+          - Tidal range 1.90cm < 2cm threshold
+          - "Seasonal curve peak (0.013m) exceeds the principal tide M2+S2+K1+O1 (0.004m): the yearly swing exceeds the daily one"

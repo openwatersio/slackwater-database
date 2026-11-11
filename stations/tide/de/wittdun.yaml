@@ -1,0 +1,53 @@
+sources:
+  - wsv/9570010
+  - ticon/wittdn-9570010-deu-wsv
+  - ticon/wittduentg-wit-deu-cmems
+redirect_from:
+  - /tides/de/wittdn/
+  - /tides/de/wittduen/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9570010:
+      position: [54.63176, 8.383943]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+    ticon/wittdn-9570010-deu-wsv:
+      position: [54.63344, 8.384926]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9570010
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.003
+    ticon/wittduentg-wit-deu-cmems:
+      position: [54.632, 8.384]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9570010
+        score: 58
+        factors:
+          epoch: 0.617
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.001

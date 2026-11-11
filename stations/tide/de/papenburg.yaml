@@ -1,13 +1,29 @@
 sources:
+  - wsv/3790010
   - ticon/papenburg-3790010-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/3790010:
+      position: [53.108191, 7.365595]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.118
     ticon/papenburg-3790010-deu-wsv:
       position: [53.10969, 7.3664]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/3790010
         score: 68
         factors:
           epoch: 1
@@ -15,4 +31,4 @@ computed:
           source: 0.798
           quality: 0
           amplitude: 1
-          coverage: 0.118
+          coverage: 0.115

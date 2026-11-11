@@ -1,13 +1,47 @@
 sources:
+  - wsv/4910060
+  - ticon/brementg-bre-deu-cmems
   - ticon/oslebshausen-4910060-deu-wsv
+redirect_from:
+  - /tides/de/bremen/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/4910060:
+      position: [53.119797, 8.712215]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+    ticon/brementg-bre-deu-cmems:
+      position: [53.119999, 8.712]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4910060
+        score: 58
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
     ticon/oslebshausen-4910060-deu-wsv:
       position: [53.121302, 8.713238]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4910060
         score: 81
         factors:
           epoch: 1

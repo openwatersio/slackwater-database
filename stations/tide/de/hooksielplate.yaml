@@ -1,13 +1,29 @@
 sources:
+  - wsv/9430020
   - ticon/hooksielplate-9430020-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9430020:
+      position: [53.669165, 8.14859]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.146
     ticon/hooksielplate-9430020-deu-wsv:
       position: [53.670735, 8.149528]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9430020
         score: 83
         factors:
           epoch: 1

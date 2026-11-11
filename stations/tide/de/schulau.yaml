@@ -1,13 +1,29 @@
 sources:
+  - wsv/5950090
   - ticon/schulau-5950090-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/5950090:
+      position: [53.567911, 9.702887]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.092
     ticon/schulau-5950090-deu-wsv:
       position: [53.567905, 9.702881]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5950090
         score: 82
         factors:
           epoch: 1

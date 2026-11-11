@@ -1,0 +1,38 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=9520081
+name: Eider-Sperrwerk BP
+sources:
+  - wsv/9520081
+  - ticon/eidersperrwerkbp-9520081-deu-wsv
+redirect_from:
+  - /tides/de/eidersperrwerkbp/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9520081:
+      position: [54.265866, 8.849594]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.01
+    ticon/eidersperrwerkbp-9520081-deu-wsv:
+      position: [54.265865, 8.84958]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9520081
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.01

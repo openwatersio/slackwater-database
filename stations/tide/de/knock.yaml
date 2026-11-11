@@ -1,13 +1,31 @@
 sources:
+  - wsv/3990010
   - ticon/knock-3990010-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/3990010:
+      position: [53.327173, 7.030674]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.129
+        issues:
+          - MLWS (3.556) > MLW (3.525)
     ticon/knock-3990010-deu-wsv:
       position: [53.328705, 7.031433]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/3990010
         score: 83
         factors:
           epoch: 1

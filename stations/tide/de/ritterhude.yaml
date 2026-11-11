@@ -1,13 +1,29 @@
 sources:
+  - wsv/4940030
   - ticon/ritterhude-4940030-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/4940030:
+      position: [53.181928, 8.763345]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.071
     ticon/ritterhude-4940030-deu-wsv:
       position: [53.18344, 8.764377]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4940030
         score: 82
         factors:
           epoch: 1

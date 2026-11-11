@@ -1,13 +1,31 @@
 sources:
+  - wsv/5970025
   - ticon/kollmar-5970025-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/5970025:
+      position: [53.731123, 9.459762]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.094
+        issues:
+          - MLWS (3.816) > MLW (3.782)
     ticon/kollmar-5970025-deu-wsv:
       position: [53.731123, 9.459747]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5970025
         score: 82
         factors:
           epoch: 1

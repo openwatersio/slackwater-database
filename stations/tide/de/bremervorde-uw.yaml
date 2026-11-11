@@ -1,0 +1,41 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=5980010
+name: Bremervörde UW
+sources:
+  - wsv/5980010
+  - ticon/bremervrdeuw-5980010-deu-wsv
+redirect_from:
+  - /tides/de/bremervrdeuw/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5980010:
+      position: [53.484121, 9.15478]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 86
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.371
+        issues:
+          - MLWS (5.338) > MLW (5.325)
+          - MHWS (6.096) < MHW (6.129)
+    ticon/bremervrdeuw-5980010-deu-wsv:
+      position: [53.485666, 9.155876]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5980010
+        score: 86
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.367

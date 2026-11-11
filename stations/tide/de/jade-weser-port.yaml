@@ -1,0 +1,36 @@
+sources:
+  - wsv/9430050
+  - ticon/jadeweserport-9430050-deu-wsv
+redirect_from:
+  - /tides/de/jadeweserport/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9430050:
+      position: [53.602044, 8.149052]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 72
+        factors:
+          epoch: 0.424
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.149
+    ticon/jadeweserport-9430050-deu-wsv:
+      position: [53.603602, 8.149986]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9430050
+        score: 72
+        factors:
+          epoch: 0.424
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.146

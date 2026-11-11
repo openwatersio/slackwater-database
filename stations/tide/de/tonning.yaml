@@ -1,0 +1,36 @@
+sources:
+  - wsv/9520070
+  - ticon/tnning-9520070-deu-wsv
+redirect_from:
+  - /tides/de/tnning/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9520070:
+      position: [54.314683, 8.950149]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.17
+    ticon/tnning-9520070-deu-wsv:
+      position: [54.316325, 8.951221]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9520070
+        score: 68
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 0
+          amplitude: 1
+          coverage: 0.173

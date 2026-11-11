@@ -1,10 +1,14 @@
 sources:
+  - wsv/9610010
   - ticon/flensburg-9610010-deu-wsv
+  - ticon/flensburgtg-fle-deu-cmems
+redirect_from:
+  - /tides/de/flensburg-schleswig-holstein/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/flensburg-9610010-deu-wsv:
-      position: [54.795049, 9.433011]
+    wsv/9610010:
+      position: [54.795057, 9.433018]
       coastline: unverifiable
       quality:
         accepted: true
@@ -16,3 +20,35 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.002
+    ticon/flensburg-9610010-deu-wsv:
+      position: [54.795049, 9.433011]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610010
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.002
+    ticon/flensburgtg-fle-deu-cmems:
+      position: [54.796001, 9.434]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610010
+        score: 43
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.002
+        issues:
+          - MLWS (0.032) > MLW (0.023)

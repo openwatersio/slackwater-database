@@ -1,13 +1,29 @@
 sources:
+  - wsv/3990020
   - ticon/dukegat-3990020-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/3990020:
+      position: [53.433602, 6.926207]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.133
     ticon/dukegat-3990020-deu-wsv:
       position: [53.435147, 6.92695]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/3990020
         score: 83
         factors:
           epoch: 1

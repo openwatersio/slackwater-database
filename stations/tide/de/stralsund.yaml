@@ -1,10 +1,15 @@
 sources:
+  - wsv/9650043
   - ticon/stralsund-9650043-deu-wsv
+  - ticon/stralsundtg-str-deu-cmems
+redirect_from:
+  - /tides/de/stralsund-mecklenburg-vorpommern/
+  - /tides/de/stralsund-ticon-stralsundtg-str-deu-cmems/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/stralsund-9650043-deu-wsv:
-      position: [54.305676, 13.11901]
+    wsv/9650043:
+      position: [54.305682, 13.119015]
       coastline: unverifiable
       quality:
         accepted: true
@@ -18,6 +23,45 @@ computed:
           amplitude: 1
           coverage: 0.034
         issues:
+          - MLWS (5.091) > MLW (5.084)
+          - MHWS (5.123) < MHW (5.144)
+          - "Seasonal curve peak (0.068m) exceeds the principal tide M2+S2+K1+O1 (0.041m): the yearly swing exceeds the daily one"
+    ticon/stralsund-9650043-deu-wsv:
+      position: [54.305676, 13.11901]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9650043
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.034
+        issues:
           - MLWS (5.092) > MLW (5.085)
           - MHWS (5.124) < MHW (5.146)
           - "Seasonal curve peak (0.068m) exceeds the principal tide M2+S2+K1+O1 (0.041m): the yearly swing exceeds the daily one"
+    ticon/stralsundtg-str-deu-cmems:
+      position: [54.315331, 13.099]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9650043
+        seasonal_dominant: true
+        score: 43
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.034
+        issues:
+          - MLWS (0.129) > MLW (0.127)
+          - "Seasonal curve peak (0.071m) exceeds the principal tide M2+S2+K1+O1 (0.041m): the yearly swing exceeds the daily one"

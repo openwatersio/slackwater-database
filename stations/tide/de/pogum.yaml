@@ -1,13 +1,31 @@
 sources:
+  - wsv/3950020
   - ticon/pogum-3950020-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/3950020:
+      position: [53.321351, 7.259801]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.103
+        issues:
+          - MLWS (3.355) > MLW (3.309)
     ticon/pogum-3950020-deu-wsv:
       position: [53.322882, 7.260597]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/3950020
         score: 82
         factors:
           epoch: 1

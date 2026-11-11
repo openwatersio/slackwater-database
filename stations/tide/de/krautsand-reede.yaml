@@ -1,0 +1,36 @@
+sources:
+  - wsv/5970031
+  - ticon/krautsandreede-5970031-deu-wsv
+redirect_from:
+  - /tides/de/krautsandreede/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5970031:
+      position: [53.754705, 9.391187]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 67
+        factors:
+          epoch: 0.274
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.07
+    ticon/krautsandreede-5970031-deu-wsv:
+      position: [53.756276, 9.392312]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5970031
+        score: 67
+        factors:
+          epoch: 0.274
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.066

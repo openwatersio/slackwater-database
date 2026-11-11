@@ -1,10 +1,14 @@
 sources:
+  - wsv/9610015
   - ticon/langballigau-9610015-deu-wsv
+  - ticon/langballigautg-lan-deu-cmems
+redirect_from:
+  - /tides/de/langballigau-schleswig-holstein/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/langballigau-9610015-deu-wsv:
-      position: [54.823266, 9.654128]
+    wsv/9610015:
+      position: [54.823267, 9.654141]
       coastline: unverifiable
       quality:
         accepted: true
@@ -17,5 +21,41 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
+          - MLWS (5.023) > MLW (5.019)
+          - MHWS (5.155) < MHW (5.156)
+    ticon/langballigau-9610015-deu-wsv:
+      position: [54.823266, 9.654128]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610015
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+        issues:
           - MLWS (5.023) > MLW (5.017)
           - MHWS (5.153) < MHW (5.156)
+    ticon/langballigautg-lan-deu-cmems:
+      position: [54.82333, 9.655]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610015
+        score: 43
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.001
+        issues:
+          - MLWS (0.032) > MLW (0.009)
+          - MHWS (0.164) < MHW (0.169)

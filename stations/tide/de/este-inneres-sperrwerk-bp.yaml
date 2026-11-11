@@ -1,0 +1,38 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=5950081
+name: Este Inneres Sperrwerk BP
+sources:
+  - wsv/5950081
+  - ticon/esteinneressperrwerkbp-5950081-deu-wsv
+redirect_from:
+  - /tides/de/esteinneressperrwerkbp/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5950081:
+      position: [53.532827, 9.776502]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 80
+        factors:
+          epoch: 0.931
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.021
+    ticon/esteinneressperrwerkbp-5950081-deu-wsv:
+      position: [53.532825, 9.776501]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5950081
+        score: 80
+        factors:
+          epoch: 0.931
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.021

@@ -1,13 +1,31 @@
 sources:
+  - wsv/5970013
   - ticon/stadersand-5970013-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/5970013:
+      position: [53.629729, 9.526602]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.089
+        issues:
+          - MLWS (3.76) > MLW (3.731)
     ticon/stadersand-5970013-deu-wsv:
       position: [53.629727, 9.526587]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5970013
         score: 82
         factors:
           epoch: 1

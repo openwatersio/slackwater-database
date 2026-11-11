@@ -1,13 +1,34 @@
 sources:
+  - wsv/9670063
   - ticon/lauterbach-9670063-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9670063:
+      position: [54.341603, 13.499696]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 85
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.304
+        issues:
+          - MLWS (5.087) > MLW (5.076)
+          - MHWS (5.125) < MHW (5.136)
+          - "Seasonal curve peak (0.075m) exceeds the principal tide M2+S2+K1+O1 (0.041m): the yearly swing exceeds the daily one"
     ticon/lauterbach-9670063-deu-wsv:
       position: [54.3416, 13.499693]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9670063
         seasonal_dominant: true
         score: 85
         factors:

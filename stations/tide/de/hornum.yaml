@@ -1,17 +1,48 @@
-# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=9570050
-name: Hörnum
 sources:
+  - wsv/9570050
+  - ticon/hoernumtg-hoe-deu-cmems
   - ticon/hrnum-9570050-deu-wsv
 redirect_from:
+  - /tides/de/hoernum/
   - /tides/de/hrnum/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9570050:
+      position: [54.758093, 8.296035]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/hoernumtg-hoe-deu-cmems:
+      position: [54.757999, 8.296]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9570050
+        score: 58
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0
     ticon/hrnum-9570050-deu-wsv:
       position: [54.759788, 8.297005]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9570050
         score: 81
         factors:
           epoch: 1

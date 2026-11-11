@@ -1,13 +1,34 @@
 sources:
+  - wsv/9670067
   - ticon/thiessow-9670067-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9670067:
+      position: [54.280667, 13.709757]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.188
+        issues:
+          - MLWS (5.096) > MLW (5.086)
+          - MHWS (5.134) < MHW (5.143)
+          - "Seasonal curve peak (0.077m) exceeds the principal tide M2+S2+K1+O1 (0.040m): the yearly swing exceeds the daily one"
     ticon/thiessow-9670067-deu-wsv:
       position: [54.280663, 13.709752]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9670067
         seasonal_dominant: true
         score: 84
         factors:

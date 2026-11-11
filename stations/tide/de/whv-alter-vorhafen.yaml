@@ -1,0 +1,55 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=9440020
+name: Wilhelmshaven Alter Vorhafen
+sources:
+  - wsv/9440020
+  - ticon/whvaltervorhafen-9440020-deu-wsv
+  - ticon/wilhelmshaventg-wil-deu-cmems
+redirect_from:
+  - /tides/de/whvaltervorhafen/
+  - /tides/de/wilhelmshaven/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9440020:
+      position: [53.514496, 8.145134]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/whvaltervorhafen-9440020-deu-wsv:
+      position: [53.516048, 8.146071]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9440020
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.004
+    ticon/wilhelmshaventg-wil-deu-cmems:
+      position: [53.5144, 8.145001]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9440020
+        score: 43
+        factors:
+          epoch: 0.617
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0

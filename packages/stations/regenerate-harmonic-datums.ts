@@ -13,7 +13,7 @@ import {
 import { DATA_DIR, pruneDatums } from "./station.ts";
 
 export type HarmonicDatumSource =
-  "ticon" | "smhi" | "dmi" | "linz" | "jhod" | "jma";
+  "ticon" | "smhi" | "wsv" | "dmi" | "linz" | "jhod" | "jma";
 const SOURCES: HarmonicDatumSource[] = [
   "dmi",
   "jhod",
@@ -21,9 +21,13 @@ const SOURCES: HarmonicDatumSource[] = [
   "linz",
   "smhi",
   "ticon",
+  "wsv",
 ];
 // Water-levels lake fits reduce their datums as TICON's records do.
-const TICON_DATUMS: HarmonicDatumSource[] = ["smhi", "ticon"];
+const TICON_DATUMS: HarmonicDatumSource[] = ["smhi", "ticon", "wsv"];
+// Written by the water-levels import, so a checkout that hasn't run it has no
+// directory.
+const LAKE_FITS: HarmonicDatumSource[] = ["smhi", "wsv"];
 
 export function mergeHarmonicDatums(
   source: HarmonicDatumSource,
@@ -114,11 +118,9 @@ export async function regenerateDirectory(
   const files = (
     await Promise.all(
       SOURCES.map(async (source) =>
-        // SMHI's fits are written by the water-levels import, so a checkout
-        // that hasn't run it has no directory.
         (
           await readdir(join(root, source)).catch((err) => {
-            if (err.code === "ENOENT" && source === "smhi") return [];
+            if (err.code === "ENOENT" && LAKE_FITS.includes(source)) return [];
             throw err;
           })
         )

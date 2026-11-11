@@ -1,17 +1,31 @@
-# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=9510060
-name: Scharhörn
 sources:
+  - wsv/9510060
   - ticon/scharhrn-9510060-deu-wsv
 redirect_from:
   - /tides/de/scharhrn/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9510060:
+      position: [53.96704, 8.462561]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.196
     ticon/scharhrn-9510060-deu-wsv:
       position: [53.968643, 8.463551]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9510060
         score: 84
         factors:
           epoch: 1

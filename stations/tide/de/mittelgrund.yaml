@@ -1,10 +1,11 @@
 sources:
+  - wsv/9510132
   - ticon/mittelgrund-9510132-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/mittelgrund-9510132-deu-wsv:
-      position: [53.943675, 8.637216]
+    wsv/9510132:
+      position: [53.942075, 8.636197]
       coastline: unverifiable
       quality:
         accepted: true
@@ -16,3 +17,18 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.042
+    ticon/mittelgrund-9510132-deu-wsv:
+      position: [53.943675, 8.637216]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9510132
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.038

@@ -1,13 +1,29 @@
 sources:
+  - wsv/9410010
   - ticon/spiekeroog-9410010-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9410010:
+      position: [53.749237, 7.681935]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.242
     ticon/spiekeroog-9410010-deu-wsv:
       position: [53.750813, 7.682792]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9410010
         score: 85
         factors:
           epoch: 1

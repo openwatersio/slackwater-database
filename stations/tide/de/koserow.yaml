@@ -1,13 +1,34 @@
 sources:
+  - wsv/9690093
   - ticon/koserow-9690093-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9690093:
+      position: [54.060378, 14.000823]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 85
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.273
+        issues:
+          - MLWS (5.111) > MLW (5.103)
+          - MHWS (5.141) < MHW (5.147)
+          - "Seasonal curve peak (0.076m) exceeds the principal tide M2+S2+K1+O1 (0.034m): the yearly swing exceeds the daily one"
     ticon/koserow-9690093-deu-wsv:
       position: [54.060377, 14.000819]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9690093
         seasonal_dominant: true
         score: 85
         factors:

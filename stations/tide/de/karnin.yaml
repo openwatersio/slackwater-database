@@ -1,13 +1,34 @@
 sources:
+  - wsv/9690084
   - ticon/karnin-9690084-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9690084:
+      position: [53.843665, 13.858494]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.207
+        issues:
+          - MLWS (5.149) > MLW (5.139)
+          - MHWS (5.159) < MHW (5.165)
+          - "Seasonal curve peak (0.058m) exceeds the principal tide M2+S2+K1+O1 (0.009m): the yearly swing exceeds the daily one"
     ticon/karnin-9690084-deu-wsv:
       position: [53.843664, 13.85849]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9690084
         seasonal_dominant: true
         score: 84
         factors:

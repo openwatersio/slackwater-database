@@ -1,13 +1,34 @@
 sources:
+  - wsv/9660001
   - ticon/anklam-9660001-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9660001:
+      position: [53.862755, 13.704278]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.207
+        issues:
+          - MLWS (5.187) > MLW (5.177)
+          - MHWS (5.193) < MHW (5.204)
+          - "Seasonal curve peak (0.057m) exceeds the principal tide M2+S2+K1+O1 (0.007m): the yearly swing exceeds the daily one"
     ticon/anklam-9660001-deu-wsv:
       position: [53.862754, 13.704277]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9660001
         seasonal_dominant: true
         score: 84
         factors:

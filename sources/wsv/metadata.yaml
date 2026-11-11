@@ -1,0 +1,14 @@
+# Must match `source.name` on every record this source writes: Open Waters'
+# fits of the WSV's PEGELONLINE series in the water-levels lake
+# (sources/water-levels).
+name: Wasserstraßen- und Schifffahrtsverwaltung des Bundes
+# Our fits of the WSV's data, not its own analysis, so they rank as the TICON
+# relays of the same gauges do.
+authoritative: false
+# PEGELONLINE's data is DL-DE-Zero-2.0, which asks for no credit; the lake asks
+# for its own, and Hamburg's six Elbe gauges come from HPA via kuestendaten.de.
+# Each record's name and position are PEGELONLINE's, and its long-period
+# constituents those of this repo's re-fit of TICON's WSV record (GESLA-4)
+# where that is licensed for commercial use. kuestendaten.de's files carry
+# PEGELONLINE's DL-DE-Zero-2.0 (water-levels#105).
+credit: "Source: Wasserstraßen- und Schifffahrtsverwaltung des Bundes (WSV), PEGELONLINE, https://www.pegelonline.wsv.de; Hamburg's Elbe gauges: Hamburg Port Authority, via WSV, https://www.kuestendaten.de; via Open Waters water-levels, https://github.com/openwatersio/water-levels. Harmonic constants fitted and datums derived by Open Waters; long-period constituents fitted by Open Waters from the GESLA-4 records behind TICON-4: Hart-Davis, M., Dettmering, D., Seitz, F. (2025), TICON-4: TIdal CONstants based on GESLA-4 sea-level records, SEANOE, https://doi.org/10.17882/109129"

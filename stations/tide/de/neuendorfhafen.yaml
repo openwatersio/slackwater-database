@@ -1,5 +1,6 @@
 sources:
   - ticon/neuendorfhafen-9670046-deu-wsv
+  - wsv/9670046
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -21,3 +22,23 @@ computed:
           - MLWS (5.108) > MLW (5.086)
           - MHWS (5.12) < MHW (5.144)
           - "Seasonal curve peak (0.078m) exceeds the principal tide M2+S2+K1+O1 (0.026m): the yearly swing exceeds the daily one"
+    wsv/9670046:
+      position: [54.524494, 13.093555]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/neuendorfhafen-9670046-deu-wsv
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.136
+        issues:
+          - MLWS (5.107) > MLW (5.086)
+          - MHWS (5.119) < MHW (5.142)
+          - "Seasonal curve peak (0.078m) exceeds the principal tide M2+S2+K1+O1 (0.027m): the yearly swing exceeds the daily one"

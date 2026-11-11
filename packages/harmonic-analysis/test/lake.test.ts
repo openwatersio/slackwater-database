@@ -15,7 +15,8 @@ import { DuckDBInstance } from "@duckdb/node-api";
 // are 0.5 m below the current datum. The others: one whose listed year has no
 // file, one the year list marks as being written, one whose year list is ahead
 // of the station list, one with observations but no listed years, and one from
-// a source with no year list.
+// a source with no year list. Source `raw` never finalizes its values, as
+// PEGELONLINE doesn't.
 const lake = mkdtempSync(join(tmpdir(), "lake-"));
 const cache = mkdtempSync(join(tmpdir(), "lake-cache-"));
 process.env["WATER_LEVELS_URL"] = "https://lake.test";
@@ -26,6 +27,7 @@ const {
   lakeStation,
   MEASURED_FLAGS,
   FINAL_FLAGS,
+  sourceFinalizes,
 } = await import("../lake.ts");
 const fetched: string[] = [];
 // Runs before the fake lake answers a request, as a lake run writing meanwhile would.
@@ -36,7 +38,7 @@ const at = (iso: string) => Date.parse(iso);
 beforeAll(async () => {
   const db = await (await DuckDBInstance.create()).connect();
   const q = (path: string) => `'${join(lake, path)}'`;
-  await db.run(`COPY (SELECT 'src/a b' AS id, 'src' AS source, 'a b' AS source_id,
+  await db.run(`COPY (SELECT 'src/a b' AS id, 'src' AS source, 'a b' AS source_id, 'A B' AS name, 1.5 AS lat, 2.5 AS lon,
       'NAP' AS datum, 'src/a b' AS preferred, ['gesla/x'] AS same_as,
       '2019-01-01 00:00:00+00'::TIMESTAMPTZ AS first,
       '2021-12-31 23:00:00+00'::TIMESTAMPTZ AS last,
@@ -47,6 +49,9 @@ beforeAll(async () => {
     SELECT id, split_part(id, '/', 1) AS source, split_part(id, '/', 2) AS source_id,
       'NAP' AS datum, id AS preferred
     FROM (VALUES ('src/lost'), ('src/busy'), ('src/moved'), ('unlisted/x')) v(id)
+    UNION ALL BY NAME
+    SELECT 'raw/x' AS id, 'raw' AS source, 'x' AS source_id, 'PNP' AS datum,
+      'raw/x' AS preferred, '2020-01-01 00:00:00+00'::TIMESTAMPTZ AS first
     UNION ALL BY NAME
     SELECT 'src/new' AS id, 'src' AS source, 'new' AS source_id, 'NAP' AS datum,
       'src/new' AS preferred, '2024-01-01 00:00:00+00'::TIMESTAMPTZ AS first)
@@ -59,6 +64,15 @@ beforeAll(async () => {
       ('src/moved', 2, 2020, 'v4'))
       v(id, epoch, year, version))
     TO ${q("stations/years/src.parquet")}`);
+  await db.run(`COPY (SELECT 'raw/x' AS id, 1 AS epoch, 2020 AS year, 'r1' AS version)
+    TO ${q("stations/years/raw.parquet")}`);
+  writeFileSync(
+    join(lake, "sources.json"),
+    JSON.stringify([
+      { id: "src", finalizes: true },
+      { id: "raw", finalizes: false },
+    ]),
+  );
   const year = async (path: string, rows: string) => {
     const { mkdirSync } = await import("node:fs");
     mkdirSync(join(lake, path, ".."), { recursive: true });
@@ -66,6 +80,12 @@ beforeAll(async () => {
         flag::UTINYINT AS flag, 'NAP' AS datum FROM (VALUES ${rows}) v(time, level_m, flag))
       TO ${q(path)}`);
   };
+  // One-minute values: only those on the hour are read.
+  await year(
+    "obs/raw/x/2020.parquet",
+    `('2020-01-01 00:00:00+00', 1.0, 2), ('2020-01-01 00:01:00+00', 1.1, 2),
+     ('2020-01-01 01:00:00+00', 1.2, 3), ('2020-01-01 02:00:00+00', 1.3, 0)`,
+  );
   // Epoch 1 also holds rows past its `until`, which aren't part of the series.
   await year(
     "obs/src/a%20b/2020.parquet",
@@ -150,6 +170,41 @@ describe("readLakeSamples", () => {
       { t: at("2020-05-31T23:00:00Z"), level: 1.5 },
       { t: at("2020-06-01T00:00:00Z"), level: 2 },
     ]);
+  });
+
+  test("reads every preliminary value as final from a source that never finalizes, on the hour only", async () => {
+    const period = {
+      start: new Date("2020-01-01"),
+      end: new Date("2020-01-02"),
+    };
+    expect(await readLakeSamples("raw/x", period, FINAL_FLAGS)).toEqual([
+      { t: at("2020-01-01T00:00:00Z"), level: 1 },
+      { t: at("2020-01-01T02:00:00Z"), level: 1.3 },
+    ]);
+    expect(await readLakeSamples("raw/x", period)).toEqual([
+      { t: at("2020-01-01T02:00:00Z"), level: 1.3 },
+    ]);
+  });
+
+  test("refuses a period with values but none on the hour", async () => {
+    await expect(
+      readLakeSamples(
+        "raw/x",
+        {
+          start: new Date("2020-01-01T00:01:00Z"),
+          end: new Date("2020-01-01T00:02:00Z"),
+        },
+        MEASURED_FLAGS,
+      ),
+    ).rejects.toThrow("none on the hour");
+  });
+
+  test("says which sources finalize, and refuses one sources.json doesn't describe", async () => {
+    expect(await sourceFinalizes("src")).toBe(true);
+    expect(await sourceFinalizes("raw")).toBe(false);
+    await expect(sourceFinalizes("unlisted")).rejects.toThrow(
+      "doesn't say whether unlisted finalizes",
+    );
   });
 
   test("keeps to the period asked for", async () => {

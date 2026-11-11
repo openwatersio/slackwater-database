@@ -1,5 +1,6 @@
 sources:
   - ticon/friedrichstadttreene-9520061-deu-wsv
+  - wsv/9520061
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -22,3 +23,22 @@ computed:
           - MLWS (4.421) > MLW (4.393)
           - MHW (4.451) <= MSL (4.47)
           - "Seasonal curve peak (0.150m) exceeds the principal tide M2+S2+K1+O1 (0.059m): the yearly swing exceeds the daily one"
+    wsv/9520061:
+      position: [54.373651, 9.083813]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: datum
+        seasonal_dominant: true
+        score: 0
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.017
+        issues:
+          - MLWS (4.408) > MLW (4.386)
+          - MHW (4.44) <= MSL (4.459)
+          - "Seasonal curve peak (0.150m) exceeds the principal tide M2+S2+K1+O1 (0.061m): the yearly swing exceeds the daily one"

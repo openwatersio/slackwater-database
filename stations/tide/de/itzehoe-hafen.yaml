@@ -1,0 +1,36 @@
+sources:
+  - wsv/5970042
+  - ticon/itzehoehafen-5970042-deu-wsv
+redirect_from:
+  - /tides/de/itzehoehafen/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5970042:
+      position: [53.924459, 9.500605]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 74
+        factors:
+          epoch: 0.528
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.173
+    ticon/itzehoehafen-5970042-deu-wsv:
+      position: [53.924459, 9.500595]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5970042
+        score: 74
+        factors:
+          epoch: 0.528
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.173

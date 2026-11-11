@@ -1,13 +1,29 @@
 sources:
+  - wsv/9420010
   - ticon/mellumplate-9420010-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9420010:
+      position: [53.771714, 8.092507]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.169
     ticon/mellumplate-9420010-deu-wsv:
       position: [53.773295, 8.093437]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9420010
         score: 83
         factors:
           epoch: 1

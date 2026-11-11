@@ -1,0 +1,66 @@
+sources:
+  - wsv/9650040
+  - ticon/barhft-9650040-deu-wsv
+  - ticon/barhoefttg-bar-deu-cmems
+redirect_from:
+  - /tides/de/barhft/
+  - /tides/de/barhoeft/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9650040:
+      position: [54.434539, 13.032221]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.012
+        issues:
+          - MLWS (5.102) > MLW (5.076)
+          - "Seasonal curve peak (0.071m) exceeds the principal tide M2+S2+K1+O1 (0.032m): the yearly swing exceeds the daily one"
+    ticon/barhft-9650040-deu-wsv:
+      position: [54.434534, 13.032219]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9650040
+        seasonal_dominant: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.012
+        issues:
+          - MLWS (5.104) > MLW (5.078)
+          - "Seasonal curve peak (0.071m) exceeds the principal tide M2+S2+K1+O1 (0.032m): the yearly swing exceeds the daily one"
+    ticon/barhoefttg-bar-deu-cmems:
+      position: [54.439701, 13.0328]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9650040
+        seasonal_dominant: true
+        score: 50
+        factors:
+          epoch: 0.244
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.012
+        issues:
+          - MLWS (-0.008) > MLW (-0.014)
+          - MHWS (0.008) < MHW (0.011)
+          - "Seasonal curve peak (0.075m) exceeds the principal tide M2+S2+K1+O1 (0.032m): the yearly swing exceeds the daily one"

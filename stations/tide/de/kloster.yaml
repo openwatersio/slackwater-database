@@ -1,13 +1,34 @@
 sources:
+  - wsv/9670050
   - ticon/kloster-9670050-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9670050:
+      position: [54.584766, 13.111362]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.136
+        issues:
+          - MLWS (5.095) > MLW (5.088)
+          - MHWS (5.119) < MHW (5.131)
+          - "Seasonal curve peak (0.079m) exceeds the principal tide M2+S2+K1+O1 (0.030m): the yearly swing exceeds the daily one"
     ticon/kloster-9670050-deu-wsv:
       position: [54.584759, 13.111356]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9670050
         seasonal_dominant: true
         score: 83
         factors:

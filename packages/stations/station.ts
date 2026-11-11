@@ -191,6 +191,7 @@ export const PUBLISHED_PRECISION: Record<
   dmi: { amplitude: 3, phase: 2 },
   // Our fits of the water-levels lake's 1 cm series, as mm and 0.01 degrees.
   smhi: { amplitude: 3, phase: 2 },
+  wsv: { amplitude: 3, phase: 2 },
 };
 
 /** Round constituents to the source's published precision. Phases stay as

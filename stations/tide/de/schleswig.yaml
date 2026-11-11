@@ -1,13 +1,32 @@
 sources:
+  - wsv/9610040
   - ticon/schleswigtg-sch-deu-cmems
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9610040:
+      position: [54.511432, 9.569059]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 86
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.354
+        issues:
+          - MLWS (5.061) > MLW (5.029)
+          - MHWS (5.117) < MHW (5.143)
     ticon/schleswigtg-sch-deu-cmems:
       position: [54.511398, 9.5692]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610040
         score: 55
         factors:
           epoch: 0.244

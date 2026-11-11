@@ -1,0 +1,36 @@
+sources:
+  - wsv/3770030
+  - ticon/herbrumhafendamm-3770030-deu-wsv
+redirect_from:
+  - /tides/de/herbrumhafendamm/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/3770030:
+      position: [53.041915, 7.317135]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.161
+    ticon/herbrumhafendamm-3770030-deu-wsv:
+      position: [53.043415, 7.317939]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/3770030
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.157

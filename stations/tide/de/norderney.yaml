@@ -1,15 +1,47 @@
 sources:
+  - wsv/9360010
+  - ticon/norderneyriffgat-9360010-deu-wsv
   - ticon/norderneytg-nor-deu-cmems
+redirect_from:
+  - /tides/de/norderneyriffgat/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9360010:
+      position: [53.696499, 7.157759]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.008
+    ticon/norderneyriffgat-9360010-deu-wsv:
+      position: [53.698067, 7.158526]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9360010
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.005
     ticon/norderneytg-nor-deu-cmems:
       position: [53.700001, 7.16]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/norderneyriffgat-9360010-deu-wsv
+        redundant: wsv/9360010
         score: 43
         factors:
           epoch: 0.615

@@ -1,13 +1,31 @@
 sources:
+  - wsv/3910020
   - ticon/terborg-3910020-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/3910020:
+      position: [53.292704, 7.396102]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.174
+        issues:
+          - MLWS (3.433) > MLW (3.412)
     ticon/terborg-3910020-deu-wsv:
       position: [53.294232, 7.396913]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/3910020
         score: 84
         factors:
           epoch: 1

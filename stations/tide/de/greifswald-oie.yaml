@@ -1,0 +1,46 @@
+sources:
+  - wsv/9690078
+  - ticon/greifswaldoie-9690078-deu-wsv
+redirect_from:
+  - /tides/de/greifswaldoie/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9690078:
+      position: [54.241313, 13.907208]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.194
+        issues:
+          - MLWS (5.101) > MLW (5.092)
+          - MHWS (5.131) < MHW (5.136)
+          - "Seasonal curve peak (0.083m) exceeds the principal tide M2+S2+K1+O1 (0.034m): the yearly swing exceeds the daily one"
+    ticon/greifswaldoie-9690078-deu-wsv:
+      position: [54.241305, 13.907204]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9690078
+        seasonal_dominant: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.194
+        issues:
+          - MLWS (5.102) > MLW (5.092)
+          - MHWS (5.13) < MHW (5.136)
+          - "Seasonal curve peak (0.083m) exceeds the principal tide M2+S2+K1+O1 (0.033m): the yearly swing exceeds the daily one"

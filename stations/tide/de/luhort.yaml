@@ -1,0 +1,40 @@
+sources:
+  - wsv/5960010
+  - ticon/lhort-5960010-deu-wsv
+redirect_from:
+  - /tides/de/lhort/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5960010:
+      position: [53.571575, 9.633362]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.092
+        issues:
+          - MLWS (3.629) > MLW (3.623)
+    ticon/lhort-5960010-deu-wsv:
+      position: [53.571574, 9.633355]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5960010
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.092
+        issues:
+          - MLWS (3.662) > MLW (3.635)

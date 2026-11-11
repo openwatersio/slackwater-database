@@ -1,13 +1,34 @@
 sources:
+  - wsv/9690085
   - ticon/karlshagen-9690085-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9690085:
+      position: [54.10786, 13.807622]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.155
+        issues:
+          - MLWS (5.113) > MLW (5.107)
+          - MHWS (5.133) < MHW (5.14)
+          - "Seasonal curve peak (0.069m) exceeds the principal tide M2+S2+K1+O1 (0.024m): the yearly swing exceeds the daily one"
     ticon/karlshagen-9690085-deu-wsv:
       position: [54.107856, 13.80762]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9690085
         seasonal_dominant: true
         score: 83
         factors:

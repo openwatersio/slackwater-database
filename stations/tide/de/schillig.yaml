@@ -1,13 +1,29 @@
 sources:
+  - wsv/9430030
   - ticon/schillig-9430030-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9430030:
+      position: [53.699004, 8.047073]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.149
     ticon/schillig-9430030-deu-wsv:
       position: [53.700578, 8.047995]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9430030
         score: 68
         factors:
           epoch: 1

@@ -1,15 +1,47 @@
 sources:
+  - wsv/9630007
+  - ticon/timmendorfpoel-9630007-deu-wsv
   - ticon/timmendorfpoeltg-tim-deu-cmems
+redirect_from:
+  - /tides/de/timmendorfpoel/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9630007:
+      position: [53.991997, 11.375642]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.007
+    ticon/timmendorfpoel-9630007-deu-wsv:
+      position: [53.991991, 11.375636]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9630007
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.007
     ticon/timmendorfpoeltg-tim-deu-cmems:
       position: [53.990002, 11.38]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/timmendorfpoel-9630007-deu-wsv
+        redundant: wsv/9630007
         score: 43
         factors:
           epoch: 0.615

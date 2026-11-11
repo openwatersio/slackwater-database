@@ -1,13 +1,29 @@
 sources:
+  - wsv/3790020
   - ticon/weener-3790020-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/3790020:
+      position: [53.161188, 7.371913]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.115
     ticon/weener-3790020-deu-wsv:
       position: [53.162697, 7.372719]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/3790020
         score: 83
         factors:
           epoch: 1

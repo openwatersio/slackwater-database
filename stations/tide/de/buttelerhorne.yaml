@@ -1,17 +1,31 @@
-# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=4960060
-name: Buttelerhörne
 sources:
+  - wsv/4960060
   - ticon/buttelerhrne-4960060-deu-wsv
 redirect_from:
   - /tides/de/buttelerhrne/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/4960060:
+      position: [53.179899, 8.41261]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.05
     ticon/buttelerhrne-4960060-deu-wsv:
       position: [53.181412, 8.413586]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4960060
         score: 82
         factors:
           epoch: 1

@@ -1,0 +1,40 @@
+sources:
+  - wsv/5970035
+  - ticon/glckstadt-5970035-deu-wsv
+redirect_from:
+  - /tides/de/glckstadt/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5970035:
+      position: [53.784361, 9.40943]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.066
+        issues:
+          - MLWS (3.818) > MLW (3.788)
+    ticon/glckstadt-5970035-deu-wsv:
+      position: [53.78594, 9.41057]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5970035
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.07
+        issues:
+          - MLWS (3.828) > MLW (3.793)

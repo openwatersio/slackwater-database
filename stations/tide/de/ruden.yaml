@@ -1,13 +1,34 @@
 sources:
+  - wsv/9690077
   - ticon/ruden-9690077-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9690077:
+      position: [54.204348, 13.771906]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.188
+        issues:
+          - MLWS (5.1) > MLW (5.091)
+          - MHWS (5.132) < MHW (5.134)
+          - "Seasonal curve peak (0.075m) exceeds the principal tide M2+S2+K1+O1 (0.036m): the yearly swing exceeds the daily one"
     ticon/ruden-9690077-deu-wsv:
       position: [54.204346, 13.771895]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9690077
         seasonal_dominant: true
         score: 84
         factors:

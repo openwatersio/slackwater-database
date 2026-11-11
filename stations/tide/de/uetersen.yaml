@@ -1,13 +1,29 @@
 sources:
+  - wsv/5970016
   - ticon/uetersen-5970016-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/5970016:
+      position: [53.678193, 9.677084]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.157
     ticon/uetersen-5970016-deu-wsv:
       position: [53.678192, 9.677071]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5970016
         score: 83
         factors:
           epoch: 1

@@ -1,15 +1,47 @@
 sources:
+  - wsv/9510070
+  - ticon/helgolandbinnenhafen-9510070-deu-wsv
   - ticon/helgolandtg-hel-deu-cmems
+redirect_from:
+  - /tides/de/helgolandbinnenhafen/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9510070:
+      position: [54.178894, 7.889904]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/helgolandbinnenhafen-9510070-deu-wsv:
+      position: [54.180523, 7.890804]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9510070
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.004
     ticon/helgolandtg-hel-deu-cmems:
       position: [54.178902, 7.89]
       coastline: unverifiable
       quality:
         accepted: false
         reason: duplicate
-        redundant: ticon/helgolandbinnenhafen-9510070-deu-wsv
+        redundant: wsv/9510070
         score: 58
         factors:
           epoch: 0.617
@@ -17,4 +49,4 @@ computed:
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0.004
+          coverage: 0

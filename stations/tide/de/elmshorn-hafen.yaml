@@ -1,0 +1,36 @@
+sources:
+  - wsv/5970022
+  - ticon/elmshornhafen-5970022-deu-wsv
+redirect_from:
+  - /tides/de/elmshornhafen/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5970022:
+      position: [53.752182, 9.653894]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 75
+        factors:
+          epoch: 0.59
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.167
+    ticon/elmshornhafen-5970022-deu-wsv:
+      position: [53.752179, 9.653889]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5970022
+        score: 60
+        factors:
+          epoch: 0.593
+          recency: 0.99
+          source: 0.798
+          quality: 0
+          amplitude: 1
+          coverage: 0.167

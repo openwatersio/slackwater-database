@@ -1,13 +1,29 @@
 sources:
+  - wsv/4970040
   - ticon/nordenham-4970040-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/nordenham-4970040-deu-wsv:
+    wsv/4970040:
       position: [53.464497, 8.488052]
       coastline: unverifiable
       quality:
         accepted: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.183
+    ticon/nordenham-4970040-deu-wsv:
+      position: [53.464497, 8.488052]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4970040
         score: 84
         factors:
           epoch: 1

@@ -1,0 +1,55 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=9530010
+name: Eider-Sperrwerk AP
+sources:
+  - wsv/9530010
+  - ticon/eidersperrwerkap-9530010-deu-wsv
+  - ticon/eidersptg-eid-deu-cmems
+redirect_from:
+  - /tides/de/eider-sp/
+  - /tides/de/eidersperrwerkap/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9530010:
+      position: [54.265924, 8.84213]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/eidersperrwerkap-9530010-deu-wsv:
+      position: [54.265918, 8.842118]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9530010
+        score: 66
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 0
+          amplitude: 1
+          coverage: 0
+    ticon/eidersptg-eid-deu-cmems:
+      position: [54.265999, 8.842]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9530010
+        score: 43
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0

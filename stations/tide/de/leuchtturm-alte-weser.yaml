@@ -1,0 +1,53 @@
+sources:
+  - wsv/9460040
+  - ticon/altewesertg-alt-deu-cmems
+  - ticon/leuchtturmalteweser-9460040-deu-wsv
+redirect_from:
+  - /tides/de/alte-weser/
+  - /tides/de/leuchtturmalteweser/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9460040:
+      position: [53.863269, 8.127572]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/altewesertg-alt-deu-cmems:
+      position: [53.8633, 8.1275]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9460040
+        score: 58
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0
+    ticon/leuchtturmalteweser-9460040-deu-wsv:
+      position: [53.864862, 8.128508]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9460040
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.004

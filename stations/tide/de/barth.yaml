@@ -1,5 +1,6 @@
 sources:
   - ticon/barth-9650030-deu-wsv
+  - wsv/9650030
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -22,4 +23,24 @@ computed:
           - MLWS (5.119) > MLW (5.112)
           - MHWS (5.123) < MHW (5.127)
           - Tidal range 1.50cm < 2cm threshold
+          - "Seasonal curve peak (0.069m) exceeds the principal tide M2+S2+K1+O1 (0.005m): the yearly swing exceeds the daily one"
+    wsv/9650030:
+      position: [54.371221, 12.723221]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: range
+        seasonal_dominant: true
+        score: 0
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.424
+        issues:
+          - MLWS (5.167) > MLW (5.159)
+          - MHWS (5.171) < MHW (5.173)
+          - Tidal range 1.40cm < 2cm threshold
           - "Seasonal curve peak (0.069m) exceeds the principal tide M2+S2+K1+O1 (0.005m): the yearly swing exceeds the daily one"

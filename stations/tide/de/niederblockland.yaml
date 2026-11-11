@@ -1,10 +1,11 @@
 sources:
+  - wsv/4940020
   - ticon/niederblockland-4940020-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/niederblockland-4940020-deu-wsv:
-      position: [53.163014, 8.827546]
+    wsv/4940020:
+      position: [53.161504, 8.826505]
       coastline: unverifiable
       quality:
         accepted: true
@@ -16,3 +17,18 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.096
+    ticon/niederblockland-4940020-deu-wsv:
+      position: [53.163014, 8.827546]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4940020
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.095

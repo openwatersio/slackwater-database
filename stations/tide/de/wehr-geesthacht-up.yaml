@@ -1,0 +1,38 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=5930062
+name: Wehr Geesthacht UP
+sources:
+  - wsv/5930062
+  - ticon/wehrgeesthachtup-5930062-deu-wsv
+redirect_from:
+  - /tides/de/wehrgeesthachtup/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5930062:
+      position: [53.423294, 10.334765]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.053
+    ticon/wehrgeesthachtup-5930062-deu-wsv:
+      position: [53.424819, 10.336041]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5930062
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.054

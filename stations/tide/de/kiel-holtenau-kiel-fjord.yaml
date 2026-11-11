@@ -1,0 +1,36 @@
+sources:
+  - wsv/9610066
+  - ticon/kielholtenau-9610066-deu-wsv
+redirect_from:
+  - /tides/de/kielholtenau/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9610066:
+      position: [54.372087, 10.15705]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.019
+    ticon/kielholtenau-9610066-deu-wsv:
+      position: [54.372083, 10.157042]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610066
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.019

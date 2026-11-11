@@ -1,0 +1,57 @@
+sources:
+  - wsv/9610080
+  - ticon/neustadt-9610080-deu-wsv
+  - ticon/neustadttg-neu-deu-cmems
+redirect_from:
+  - /tides/de/neustadt-bay-of-lubeck/
+  - /tides/de/neustadt-neustadter-bucht/
+  - /tides/de/neustadt-schleswig-holstein/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9610080:
+      position: [54.096523, 10.804988]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.024
+    ticon/neustadt-9610080-deu-wsv:
+      position: [54.096522, 10.804985]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610080
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.024
+    ticon/neustadttg-neu-deu-cmems:
+      position: [54.087002, 10.813]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610080
+        score: 43
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.024
+        issues:
+          - MLWS (0.055) > MLW (0.05)
+          - MHWS (0.197) < MHW (0.199)

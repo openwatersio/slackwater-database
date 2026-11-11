@@ -1,0 +1,38 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=3880050
+name: Ledasperrwerk UP
+sources:
+  - wsv/3880050
+  - ticon/ledasperrwerkup-3880050-deu-wsv
+redirect_from:
+  - /tides/de/ledasperrwerkup/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/3880050:
+      position: [53.213549, 7.473236]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.062
+    ticon/ledasperrwerkup-3880050-deu-wsv:
+      position: [53.215068, 7.474064]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/3880050
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.063

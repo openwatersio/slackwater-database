@@ -1,0 +1,38 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=9510063
+name: Bake A
+sources:
+  - wsv/9510063
+  - ticon/bakea-9510063-deu-wsv
+redirect_from:
+  - /tides/de/bakea/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9510063:
+      position: [53.984421, 8.31514]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.065
+    ticon/bakea-9510063-deu-wsv:
+      position: [53.986027, 8.316107]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9510063
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.061

@@ -1,0 +1,55 @@
+sources:
+  - wsv/9610045
+  - ticon/eckernfoerdetg-eck-deu-cmems
+  - ticon/eckernfrde-9610045-deu-wsv
+redirect_from:
+  - /tides/de/eckernfoerde/
+  - /tides/de/eckernfrde/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9610045:
+      position: [54.474703, 9.836007]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+    ticon/eckernfoerdetg-eck-deu-cmems:
+      position: [54.474998, 9.837]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610045
+        score: 58
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+        issues:
+          - MLWS (0.061) > MLW (0.044)
+    ticon/eckernfrde-9610045-deu-wsv:
+      position: [54.474702, 9.835993]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610045
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.001

@@ -1,0 +1,38 @@
+sources:
+  - wsv/5970037
+  - ticon/grnhude-5970037-deu-wsv
+redirect_from:
+  - /tides/de/grnhude/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5970037:
+      position: [53.935698, 9.690579]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.078
+    ticon/grnhude-5970037-deu-wsv:
+      position: [53.935696, 9.690571]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5970037
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.078
+        issues:
+          - MHWS (6.656) < MHW (6.667)

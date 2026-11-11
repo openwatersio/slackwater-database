@@ -311,23 +311,28 @@ test("regenerates JMA's derived NLLW and preserves MSL zero", async () => {
   }
 });
 
-test("keeps a water-levels lake fit's observed means, as TICON's", async () => {
-  const root = await mkdtemp(join(tmpdir(), "smhi-datums-"));
-  try {
-    for (const source of ["dmi", "jhod", "jma", "linz", "smhi", "ticon"])
-      await mkdir(join(root, source));
-    const input = station({
-      disclaimers: `${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE}`,
-    });
-    await writeFile(join(root, "smhi", "2130.json"), JSON.stringify(input));
-    await regenerateDirectory(root);
-    const result = JSON.parse(
-      await readFile(join(root, "smhi", "2130.json"), "utf8"),
-    ) as StationData;
-    expect(result.datums["MSL"]).toBe(2.1234);
-    expect(result.datums["MHW"]).toBe(3.5);
-    expect(result.datums["HAT"]).toBeDefined();
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
-});
+// Each lake directory is created alone, so the other's absence, as in a
+// checkout that hasn't run the water-levels import, is tolerated too.
+test.each(["smhi", "wsv"])(
+  "keeps a water-levels lake fit's observed means, as TICON's (%s)",
+  async (lake) => {
+    const root = await mkdtemp(join(tmpdir(), "lake-datums-"));
+    try {
+      for (const source of ["dmi", "jhod", "jma", "linz", lake, "ticon"])
+        await mkdir(join(root, source));
+      const input = station({
+        disclaimers: `${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE}`,
+      });
+      await writeFile(join(root, lake, "2130.json"), JSON.stringify(input));
+      await regenerateDirectory(root);
+      const result = JSON.parse(
+        await readFile(join(root, lake, "2130.json"), "utf8"),
+      ) as StationData;
+      expect(result.datums["MSL"]).toBe(2.1234);
+      expect(result.datums["MHW"]).toBe(3.5);
+      expect(result.datums["HAT"]).toBeDefined();
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+);

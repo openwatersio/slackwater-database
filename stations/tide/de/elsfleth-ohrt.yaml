@@ -1,0 +1,36 @@
+sources:
+  - wsv/4960080
+  - ticon/elsflethohrt-4960080-deu-wsv
+redirect_from:
+  - /tides/de/elsflethohrt/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/4960080:
+      position: [53.221223, 8.459939]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.046
+    ticon/elsflethohrt-4960080-deu-wsv:
+      position: [53.222741, 8.460924]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4960080
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.049

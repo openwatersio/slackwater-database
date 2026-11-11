@@ -1,0 +1,59 @@
+sources:
+  - wsv/9570040
+  - ticon/dagebll-9570040-deu-wsv
+  - ticon/dagebuelltg-dag-deu-cmems
+redirect_from:
+  - /tides/de/dagebll/
+  - /tides/de/dagebuell/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9570040:
+      position: [54.730507, 8.686973]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+        issues:
+          - MLWS (3.505) > MLW (3.464)
+    ticon/dagebll-9570040-deu-wsv:
+      position: [54.732197, 8.688007]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9570040
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.003
+        issues:
+          - MLWS (3.513) > MLW (3.478)
+    ticon/dagebuelltg-dag-deu-cmems:
+      position: [54.730999, 8.687]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9570040
+        score: 43
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.001
+        issues:
+          - MLWS (-1.478) > MLW (-1.518)

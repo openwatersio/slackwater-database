@@ -1,0 +1,38 @@
+# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=4910040
+name: Weserwehr UW
+sources:
+  - wsv/4910040
+  - ticon/weserwehruw-4910040-deu-wsv
+redirect_from:
+  - /tides/de/weserwehruw/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/4910040:
+      position: [53.060246, 8.854803]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.074
+    ticon/weserwehruw-4910040-deu-wsv:
+      position: [53.061745, 8.855848]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4910040
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.074

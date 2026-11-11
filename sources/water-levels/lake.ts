@@ -16,24 +16,43 @@ import {
   readLakeSamples,
 } from "@slackwater/harmonic-analysis/lake";
 
+const CC_BY = {
+  type: "cc-by-4.0",
+  commercial_use: true,
+  url: "https://creativecommons.org/licenses/by/4.0/",
+};
+
 /**
  * The agencies whose series in the water-levels lake are fit here, by their
- * lake source name, which is also their TICON suffix and the directory under
- * data/ their records go to. Each joins once its lake series are fully
- * backfilled, in the order of the lake's TICON replacement inventory
- * (water-levels docs/ticon-replacement.md). sources/<name>/metadata.yaml
- * declares its credit.
+ * lake source name. `agency` is their TICON suffix and the directory under
+ * data/ their records go to, so a fit ranks as the agency's TICON relay of
+ * the gauge does. Each joins once its lake series are fully backfilled, in the
+ * order of the lake's TICON replacement inventory (water-levels
+ * docs/ticon-replacement.md). With `lakeMetadata`, records take the lake's
+ * name and position for the gauge rather than TICON's. sources/<agency>/metadata.yaml declares its
+ * credit.
  */
 export const CONTRIBUTORS = new Map([
   [
     "smhi",
     {
+      agency: "smhi",
       name: "Swedish Meteorological and Hydrological Institute",
-      license: {
-        type: "cc-by-4.0",
-        commercial_use: true,
-        url: "https://creativecommons.org/licenses/by/4.0/",
-      },
+      license: CC_BY,
+    },
+  ],
+  [
+    "pegelonline",
+    {
+      agency: "wsv",
+      name: "Wasserstraßen- und Schifffahrtsverwaltung des Bundes",
+      // TICON's WSV names drop their umlauts and spaces ("Bsum" for Büsum),
+      // and some gauges' only TICON records are CMEMS's, which are CC BY-NC.
+      lakeMetadata: true,
+      // PEGELONLINE's DL-DE-Zero-2.0 asks for nothing; the long-period
+      // constituents are a commercial TICON record's (for WSV records, this repo's
+      // re-fit of GESLA-4), under CC BY 4.0.
+      license: CC_BY,
     },
   ],
 ]);
@@ -170,7 +189,7 @@ export async function fitFromLake(
       ticon,
       longPeriod,
       relays,
-      series.split("/")[0]!,
+      CONTRIBUTORS.get(series.split("/")[0]!)!.agency,
     );
     if (fit) return fit;
   }
@@ -186,7 +205,7 @@ function scoreYear(
   ticon: HarmonicConstituent[],
   longPeriod: HarmonicConstituent[] | null,
   relays: Relay[],
-  contributor: string,
+  agency: string,
 ): LakeFit | undefined {
   const fitStart = addYears(heldOutStart, -FIT_YEARS);
   const fitSamples = samples.filter(
@@ -201,7 +220,7 @@ function scoreYear(
   const fitted = fitHarmonics(fitSamples, names);
   // Rounded as published, so the score and the datums see what is saved.
   const constituents = roundConstituents(
-    contributor,
+    agency,
     ticon.flatMap((t) => {
       const kept = isLongPeriod(t.name)
         ? longPeriod?.filter((c) => c.name === t.name)

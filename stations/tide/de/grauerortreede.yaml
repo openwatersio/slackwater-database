@@ -1,5 +1,6 @@
 sources:
   - ticon/grauerortreede-5970026-deu-wsv
+  - wsv/5970026
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -8,6 +9,21 @@ computed:
       coastline: unverifiable
       quality:
         accepted: true
+        score: 68
+        factors:
+          epoch: 0.274
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.085
+    wsv/5970026:
+      position: [53.67915, 9.494796]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/grauerortreede-5970026-deu-wsv
         score: 68
         factors:
           epoch: 0.274

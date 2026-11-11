@@ -1,10 +1,14 @@
 sources:
+  - wsv/9610070
   - ticon/heiligenhafen-9610070-deu-wsv
+  - ticon/heiligenhafentg-hei-deu-cmems
+redirect_from:
+  - /tides/de/heiligenhafen-schleswig-holstein/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/heiligenhafen-9610070-deu-wsv:
-      position: [54.372956, 11.005651]
+    wsv/9610070:
+      position: [54.372959, 11.005664]
       coastline: unverifiable
       quality:
         accepted: true
@@ -16,3 +20,35 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.003
+    ticon/heiligenhafen-9610070-deu-wsv:
+      position: [54.372956, 11.005651]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610070
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.003
+    ticon/heiligenhafentg-hei-deu-cmems:
+      position: [54.374001, 11.007]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9610070
+        score: 43
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 0
+          amplitude: 1
+          coverage: 0.003
+        issues:
+          - MLWS (0.048) > MLW (0.039)

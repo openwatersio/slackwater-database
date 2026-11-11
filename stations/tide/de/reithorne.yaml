@@ -1,14 +1,13 @@
-# PEGELONLINE: https://www.pegelonline.wsv.de/gast/stammdaten?pegelnr=4960040
-name: Reithörne
 sources:
+  - wsv/4960040
   - ticon/reithrne-4960040-deu-wsv
 redirect_from:
   - /tides/de/reithrne/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
-    ticon/reithrne-4960040-deu-wsv:
-      position: [53.162718, 8.323478]
+    wsv/4960040:
+      position: [53.161207, 8.322516]
       coastline: unverifiable
       quality:
         accepted: true
@@ -20,3 +19,18 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.076
+    ticon/reithrne-4960040-deu-wsv:
+      position: [53.162718, 8.323478]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/4960040
+        score: 82
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.074

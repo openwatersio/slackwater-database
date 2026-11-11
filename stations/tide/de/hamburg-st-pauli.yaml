@@ -1,0 +1,36 @@
+sources:
+  - wsv/5952050
+  - ticon/stpaulitg-stp-deu-cmems
+redirect_from:
+  - /tides/de/st-pauli/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/5952050:
+      position: [53.545442, 9.969965]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 84
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.237
+    ticon/stpaulitg-stp-deu-cmems:
+      position: [53.547001, 9.972]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/5952050
+        score: 61
+        factors:
+          epoch: 0.615
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.24

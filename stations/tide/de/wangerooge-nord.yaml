@@ -1,0 +1,36 @@
+sources:
+  - wsv/9420030
+  - ticon/wangeroogenord-9420030-deu-wsv
+redirect_from:
+  - /tides/de/wangeroogenord/
+# Written by `npm run stations`. Do not edit.
+computed:
+  sources:
+    wsv/9420030:
+      position: [53.806299, 7.9292]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
+    ticon/wangeroogenord-9420030-deu-wsv:
+      position: [53.807885, 7.930104]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9420030
+        score: 81
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.004

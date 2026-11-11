@@ -1,13 +1,34 @@
 sources:
+  - wsv/9650080
   - ticon/wolgast-9650080-deu-wsv
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    wsv/9650080:
+      position: [54.041737, 13.77038]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        seasonal_dominant: true
+        score: 83
+        factors:
+          epoch: 1
+          recency: 0.99
+          source: 0.798
+          quality: 1
+          amplitude: 1
+          coverage: 0.155
+        issues:
+          - MLWS (5.14) > MLW (5.135)
+          - MHWS (5.152) < MHW (5.16)
+          - "Seasonal curve peak (0.068m) exceeds the principal tide M2+S2+K1+O1 (0.017m): the yearly swing exceeds the daily one"
     ticon/wolgast-9650080-deu-wsv:
       position: [54.04173, 13.770372]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: wsv/9650080
         seasonal_dominant: true
         score: 83
         factors:

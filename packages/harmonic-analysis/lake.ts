@@ -33,9 +33,11 @@ export const VERIFIED_FLAGS = [0];
 /** Every measured value, verified or not yet: interpolated, suspect and bad
  *  ones are left out. */
 export const MEASURED_FLAGS = [0, 2];
-/** Verified values, and preliminary ones from before the station's
- *  `source_qc_start`: the agency will never check those, so they are as final
- *  as they get. Without a known start, preliminary values stay out. */
+/** Verified values, and preliminary ones the agency will never check, so they
+ *  are as final as they get: those from before the station's
+ *  `source_qc_start`, and all of them from a source whose `finalizes` is false
+ *  in the lake's sources.json, such as PEGELONLINE. Otherwise preliminary
+ *  values stay out. */
 export const FINAL_FLAGS = "final";
 
 export interface LakeEpoch {
@@ -51,6 +53,10 @@ export interface LakeStation {
   id: string;
   source: string;
   source_id: string;
+  /** The source's own name and position for the station. */
+  name: string;
+  lat: number;
+  lon: number;
   datum: string;
   first: Date | null;
   last: Date | null;
@@ -144,7 +150,7 @@ export function lakeStations(): Promise<Map<string, LakeStation>> {
     const reader = await (
       await db()
     ).runAndReadAll(`
-      SELECT id, source, source_id, datum, preferred, same_as,
+      SELECT id, source, source_id, name, lat, lon, datum, preferred, same_as,
         epoch_ms(first) AS first, epoch_ms(last) AS last,
         epoch_ms(source_qc_start) AS source_qc_start,
         [{id: e.id, since: epoch_ms(e.since), until: epoch_ms(e.until),
@@ -158,6 +164,9 @@ export function lakeStations(): Promise<Map<string, LakeStation>> {
           id: row.id,
           source: row.source,
           source_id: row.source_id,
+          name: row.name,
+          lat: row.lat,
+          lon: row.lon,
           datum: row.datum,
           preferred: row.preferred ?? row.id,
           same_as: row.same_as ?? [],
@@ -249,6 +258,22 @@ async function stationYears(station: LakeStation) {
   return years ?? new Map<string, string>();
 }
 
+/** Whether a source ever marks its values checked: false for one, such as
+ *  PEGELONLINE, whose `preliminary` values are as final as they get. */
+export async function sourceFinalizes(source: string): Promise<boolean> {
+  const file = await cachedLakeFile("sources.json");
+  if (!file) throw new Error(`${LAKE_URL}/sources.json is missing`);
+  const entry = (
+    JSON.parse(await readFile(file, "utf8")) as {
+      id: string;
+      finalizes?: boolean;
+    }[]
+  ).find((s) => s.id === source);
+  if (typeof entry?.finalizes !== "boolean")
+    throw new Error(`sources.json doesn't say whether ${source} finalizes`);
+  return entry.finalizes;
+}
+
 export async function lakeStation(
   id: string,
 ): Promise<LakeStation | undefined> {
@@ -256,10 +281,13 @@ export async function lakeStation(
 }
 
 /**
- * A lake series' levels with the given flags (or FINAL_FLAGS), verified ones by default, in [start, end), in metres in the station's
- * current datum. Each datum epoch's levels are moved by its `to_current`; an
- * epoch that can't be converted is left out. Where a rejected epoch and the
- * one before it share a time, the latter wins, as data.md's query does.
+ * A lake series' levels with the given flags (or FINAL_FLAGS), verified ones
+ * by default, in [start, end), in metres in the station's current datum, on
+ * the hour: a 1-minute series such as PEGELONLINE's gives sixty times the
+ * samples and no more tide. Each datum epoch's levels are moved by its
+ * `to_current`; an epoch that can't be converted is left out. Where a rejected
+ * epoch and the one before it share a time, the latter wins, as data.md's
+ * query does.
  */
 export async function readLakeSamples(
   id: string,
@@ -278,9 +306,11 @@ export async function readLakeSamples(
   const where =
     flags !== FINAL_FLAGS
       ? `flag IN (${flags.join(", ")})`
-      : qcStart
-        ? `(flag IN (${VERIFIED_FLAGS.join(", ")}) OR (flag = 2 AND time < make_timestamptz(${+qcStart}::BIGINT * 1000)))`
-        : `flag IN (${VERIFIED_FLAGS.join(", ")})`;
+      : !(await sourceFinalizes(station.source))
+        ? `flag IN (${MEASURED_FLAGS.join(", ")})`
+        : qcStart
+          ? `(flag IN (${VERIFIED_FLAGS.join(", ")}) OR (flag = 2 AND time < make_timestamptz(${+qcStart}::BIGINT * 1000)))`
+          : `flag IN (${VERIFIED_FLAGS.join(", ")})`;
 
   const byTime = new Map<number, { level: number; rejected: boolean }>();
   const read: string[] = [];
@@ -312,19 +342,30 @@ export async function readLakeSamples(
     }
     if (!files.length) continue;
 
-    const reader = await (
-      await db()
-    ).runAndReadAll(`
+    const query = (onHour: boolean) => `
       SELECT epoch_ms(time) AS t, CAST(level_m AS DOUBLE) AS level
       FROM read_parquet([${files.map(sqlString).join(", ")}], union_by_name = true)
       WHERE ${where} AND level_m IS NOT NULL
+        ${onHour ? `AND epoch_ms(time) % ${3_600_000} = 0` : ""}
         AND time >= make_timestamptz(${start}::BIGINT * 1000)
-        AND time < make_timestamptz(${end}::BIGINT * 1000)`);
-    const rejected = epoch.state === "rejected";
-    for (const row of reader.getRowObjectsJS() as {
+        AND time < make_timestamptz(${end}::BIGINT * 1000)
+      ${onHour ? "" : "LIMIT 1"}`;
+    const rows = (
+      await (await db()).runAndReadAll(query(true))
+    ).getRowObjectsJS() as {
       t: bigint;
       level: number;
-    }[]) {
+    }[];
+    // A series off the hour would otherwise read as too short to fit.
+    if (
+      !rows.length &&
+      (await (await db()).runAndReadAll(query(false))).currentRowCount
+    )
+      throw new Error(
+        `${station.id} has values in the period, none on the hour`,
+      );
+    const rejected = epoch.state === "rejected";
+    for (const row of rows) {
       const t = Number(row.t);
       if (rejected && byTime.has(t)) continue;
       // float32 in the lake; round off the widening noise below 0.1 mm.
