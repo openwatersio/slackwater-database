@@ -243,16 +243,16 @@ Parts of this plan:
 
 Sources whose fits come through this pipeline, once Stillwell carries them under terms that allow it:
 
-| Issue                                                           | Status here                                                                                                                                                                   |
-| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| #148 Expand tide-height coverage                                | Parent of the source issues below. Fitting open water-level records is one of its routes                                                                                      |
-| #138 UHSLC hourly data                                          | The `uhslc` profile. Waits on per-record credit and UHSLC's commercial terms ([stillwell#80](https://github.com/openwatersio/stillwell/issues/80))                            |
-| #124 IOC Sea Level Station Monitoring Facility                  | Restricted, so it needs IOC data in Stillwell and VLIZ's agreement first ([Stillwell decision 8](https://github.com/openwatersio/stillwell/blob/main/docs/plan.md#decisions)) |
-| #324 Re-derive CMEMS stations under Copernicus Marine's licence | Copernicus Marine becomes a Stillwell source request, then a profile here                                                                                                     |
-| #152 Rijkswaterstaat tide heights                               | The `rws` profile fits RWS's observations and compares with its astronomical tide. RWS's own constants, if it publishes them, would still come first                          |
-| #380 Dutch gauges with no usable record                         | The `rws` fits publish them once RWS's history back to 1990 is in Stillwell                                                                                                   |
-| #154 Marine Institute tide heights                              | The `marine-institute` profile fits observations and compares with the Marine Institute's predictions, at gauges whose predictions are harmonic                               |
-| #335 BSH tide heights                                           | BSH's tables are a comparison and HRoI's reference, never training data                                                                                                       |
+| Issue                                                           | Status here                                                                                                                                                                                      |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| #148 Expand tide-height coverage                                | Parent of the source issues below. Fitting open water-level records is one of its routes                                                                                                         |
+| #138 UHSLC hourly data                                          | The `uhslc` profile. Waits on per-record credit and UHSLC's commercial terms ([stillwell#80](https://github.com/openwatersio/stillwell/issues/80))                                               |
+| #124 IOC Sea Level Station Monitoring Facility                  | Restricted, so it needs IOC data in Stillwell's restricted store and VLIZ's agreement first ([Stillwell decision 8](https://github.com/openwatersio/stillwell/blob/main/docs/plan.md#decisions)) |
+| #324 Re-derive CMEMS stations under Copernicus Marine's licence | Copernicus Marine becomes a Stillwell source request, then a profile here                                                                                                                        |
+| #152 Rijkswaterstaat tide heights                               | The `rws` profile fits RWS's observations and compares with its astronomical tide. RWS's own constants, if it publishes them, would still come first                                             |
+| #380 Dutch gauges with no usable record                         | The `rws` fits publish them once RWS's history back to 1990 is in Stillwell                                                                                                                      |
+| #154 Marine Institute tide heights                              | The `marine-institute` profile fits observations and compares with the Marine Institute's predictions, at gauges whose predictions are harmonic                                                  |
+| #335 BSH tide heights                                           | BSH's tables are a comparison and HRoI's reference, never training data                                                                                                                          |
 
 TICON records with known faults, fixed at each gauge when its originator's series converts:
 
