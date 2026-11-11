@@ -16,21 +16,26 @@
     "commercial_use": true,
     "url": "https://creativecommons.org/licenses/by/4.0/"
   },
-  "disclaimers": "No obvious issues Datums derived from harmonic prediction; observations do not support a mean-datum reduction over twelve continuous whole months after bounded short-gap reconstruction. Datum values carry higher uncertainty. A calendar-balanced mean of complete prepared observation months supplies the vertical offset; the months may span a different period from the pinned prediction. Harmonic datums retain every predicted turning point without prominence filtering.",
+  "disclaimers": "No obvious issues Mean datums use one continuous observation window of whole years. Gaps shorter than 24 hours may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering.",
   "datums": {
-    "HAT": 0.594,
-    "MHHW": 0.294,
-    "MHW": 0.276,
-    "MSL": 0.122,
-    "MTL": 0.118,
-    "MLW": -0.04,
-    "MLLW": -0.073,
-    "LAT": -0.356,
-    "MHWS": 0.163,
-    "MLWS": 0.081
+    "MSL": 0.148,
+    "MHHW": 0.366,
+    "MHW": 0.277,
+    "MTL": 0.134,
+    "MLW": -0.009,
+    "MLLW": -0.095,
+    "HAT": 0.62,
+    "LAT": -0.33,
+    "MHWS": 0.189,
+    "MLWS": 0.107
   },
-  "datums_source": "harmonic",
+  "datums_source": "observed",
   "datum_frame": "gauge",
+  "datum_coverage": {
+    "months": 12,
+    "observed_hours": 8733,
+    "inferred_hours": 27
+  },
   "chart_datum": "MLLW",
   "type": "reference",
   "harmonic_constituents": [
@@ -285,6 +290,10 @@
       "phase": 22.222064
     }
   ],
+  "datum_epoch": {
+    "start": "2023-01-01",
+    "end": "2023-12-31"
+  },
   "epoch": {
     "start": "2008-01-23",
     "end": "2025-04-01"
