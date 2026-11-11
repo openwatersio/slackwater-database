@@ -1,6 +1,6 @@
 # Tidal analysis references
 
-The primary sources behind [the plan for fitting our own constituents](../../plans/water-levels-constituents.md): agency manuals, technical reports and peer-reviewed papers. Each entry says what we rely on it for and where in the source to find it. Page numbers are the printed ones. An entry marked _not yet read in full_ was checked only against its abstract, table of contents or the agency's own summary, and gets read before anything depends on details beyond what's listed.
+The primary sources behind [the plan for fitting our own constituents](../../plans/stillwell-constituents.md): agency manuals, technical reports and peer-reviewed papers. Each entry says what we rely on it for and where in the source to find it. Page numbers are the printed ones. An entry marked _not yet read in full_ was checked only against its abstract, table of contents or the agency's own summary, and gets read before anything depends on details beyond what's listed.
 
 [harmonic-inequalities](../harmonic-inequalities/README.md) covers HRoI and BSH's method in more depth.
 
