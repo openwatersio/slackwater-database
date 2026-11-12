@@ -43,7 +43,7 @@ final class StationDatabaseTests: XCTestCase {
       var fbb = FlatBufferBuilder()
       let root = Slackwater_Root.startRoot(&fbb)
       Slackwater_Root.add(formatVersion: UInt16(formatVersion), &fbb)
-      Slackwater_Root.finish(&fbb, end: Slackwater_Root.endRoot(&fbb, start: root), fileId: "TCDB")
+      Slackwater_Root.finish(&fbb, end: Slackwater_Root.endRoot(&fbb, start: root))
       return fbb.data
     }
     // 0 is a file written before the field existed.
@@ -66,7 +66,7 @@ final class StationDatabaseTests: XCTestCase {
       let root = Slackwater_Root.startRoot(&fbb)
       Slackwater_Root.add(version: tag, &fbb)
       Slackwater_Root.add(formatVersion: UInt16(formatVersion), &fbb)
-      Slackwater_Root.finish(&fbb, end: Slackwater_Root.endRoot(&fbb, start: root), fileId: "TCDB")
+      Slackwater_Root.finish(&fbb, end: Slackwater_Root.endRoot(&fbb, start: root))
       return Data(fbb.data.dropLast(16))
     }
     XCTAssertThrowsError(try StationDatabase(verifying: cut(formatVersion: StationDatabase.formatVersion))) {
