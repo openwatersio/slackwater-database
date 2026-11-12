@@ -34,6 +34,11 @@ table Root {
   datum_names: [string];
   tide_routes: [StationRoute];
   current_routes: [StationRoute];
+  /// Format major version. A reader refuses a file whose version is newer than
+  /// the newest it knows. It goes up only for a change an older reader would
+  /// misread; a change older readers can ignore keeps it. Absent (0) in files
+  /// written before readers checked it, which read as version 1.
+  format_version: ushort;
 }
 
 enum Kind : ubyte { Tide = 0, Current = 1 }

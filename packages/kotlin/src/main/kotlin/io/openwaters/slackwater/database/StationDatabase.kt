@@ -6,10 +6,21 @@ import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 
 /**
- * The bytes are not a station database: too short, or the "TCDB" file
- * identifier is missing.
+ * The bytes are not a station database: too short, the "TCDB" file
+ * identifier is missing, or the root table lies past the end.
  */
-class InvalidStationDatabaseException : IllegalArgumentException("Not a station database: missing the TCDB file identifier")
+class InvalidStationDatabaseException : IllegalArgumentException("Not a station database: missing the TCDB file identifier or root table")
+
+/**
+ * The bytes are a station database in a newer format than this reader knows.
+ * Upgrade the reader to open it.
+ */
+class UnsupportedStationDatabaseException(
+    /** The file's format major version. */
+    val formatVersion: Int,
+) : IllegalArgumentException(
+    "Unsupported station database: format version $formatVersion, this reader knows ${StationDatabase.FORMAT_VERSION}",
+)
 
 /**
  * A station database file (`.tcdb`, schemas/database.fbs in
@@ -44,7 +55,22 @@ class StationDatabase(buffer: ByteBuffer) : AbstractList<Station>(), RandomAcces
         if (bytes.remaining() < 8 || !Slackwater.Root.RootBufferHasIdentifier(bytes)) {
             throw InvalidStationDatabaseException()
         }
-        root = Slackwater.Root.getRootAsRoot(bytes)
+        // Files written before the field existed read as 0. The accessors
+        // read without bounds checks, so a cut-off root table throws here.
+        val format: Int
+        try {
+            root = Slackwater.Root.getRootAsRoot(bytes)
+            format = root.formatVersion.toInt()
+            // The vtable's second entry is the root table's size.
+            val table = bytes.getInt(0)
+            val vtable = table - bytes.getInt(table)
+            if (table + bytes.getShort(vtable + 2).toUShort().toInt() > bytes.limit()) {
+                throw InvalidStationDatabaseException()
+            }
+        } catch (e: IndexOutOfBoundsException) {
+            throw InvalidStationDatabaseException()
+        }
+        if (format > FORMAT_VERSION) throw UnsupportedStationDatabaseException(format)
     }
 
     /** Release tag of the database that produced the file, e.g. "0.9.20260801". */
@@ -73,6 +99,12 @@ class StationDatabase(buffer: ByteBuffer) : AbstractList<Station>(), RandomAcces
     }.map(::StationRoute)
 
     companion object {
+        /**
+         * The format major version this reader knows (`Root.format_version`
+         * in schemas/database.fbs). It opens files up to this version.
+         */
+        const val FORMAT_VERSION = 1
+
         /** Memory-map a database file. Pages fault in as they are read. */
         @JvmStatic
         fun open(file: File): StationDatabase =

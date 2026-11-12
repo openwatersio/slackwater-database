@@ -355,6 +355,7 @@ public struct Slackwater_Root: FlatBufferObject, Verifiable {
     case datumNames = 10
     case tideRoutes = 12
     case currentRoutes = 14
+    case formatVersion = 16
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -383,13 +384,19 @@ public struct Slackwater_Root: FlatBufferObject, Verifiable {
   public var currentRoutesCount: Int32 { let o = _accessor.offset(VTOFFSET.currentRoutes.v); return o == 0 ? 0 : _accessor.vector(count: o) }
   public func currentRoutes(at index: Int32) -> Slackwater_StationRoute? { let o = _accessor.offset(VTOFFSET.currentRoutes.v); return o == 0 ? nil : Slackwater_StationRoute(_accessor.bb, o: _accessor.indirect(_accessor.vector(at: o) + index * 4)) }
   public func currentRoutesBy(key: String) -> Slackwater_StationRoute? { let o = _accessor.offset(VTOFFSET.currentRoutes.v); return o == 0 ? nil : Slackwater_StationRoute.lookupByKey(vector: _accessor.vector(at: o), key: key, fbb: _accessor.bb) }
-  public static func startRoot(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 6) }
+  ///  Format major version. A reader refuses a file whose version is newer than
+  ///  the newest it knows. It goes up only for a change an older reader would
+  ///  misread; a change older readers can ignore keeps it. Absent (0) in files
+  ///  written before readers checked it, which read as version 1.
+  public var formatVersion: UInt16 { let o = _accessor.offset(VTOFFSET.formatVersion.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt16.self, at: o) }
+  public static func startRoot(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 7) }
   public static func add(version: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: version, at: VTOFFSET.version.p) }
   public static func addVectorOf(stations: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: stations, at: VTOFFSET.stations.p) }
   public static func addVectorOf(constituentNames: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: constituentNames, at: VTOFFSET.constituentNames.p) }
   public static func addVectorOf(datumNames: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: datumNames, at: VTOFFSET.datumNames.p) }
   public static func addVectorOf(tideRoutes: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: tideRoutes, at: VTOFFSET.tideRoutes.p) }
   public static func addVectorOf(currentRoutes: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: currentRoutes, at: VTOFFSET.currentRoutes.p) }
+  public static func add(formatVersion: UInt16, _ fbb: inout FlatBufferBuilder) { fbb.add(element: formatVersion, def: 0, at: VTOFFSET.formatVersion.p) }
   public static func endRoot(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createRoot(
     _ fbb: inout FlatBufferBuilder,
@@ -398,7 +405,8 @@ public struct Slackwater_Root: FlatBufferObject, Verifiable {
     constituentNamesVectorOffset constituentNames: Offset = Offset(),
     datumNamesVectorOffset datumNames: Offset = Offset(),
     tideRoutesVectorOffset tideRoutes: Offset = Offset(),
-    currentRoutesVectorOffset currentRoutes: Offset = Offset()
+    currentRoutesVectorOffset currentRoutes: Offset = Offset(),
+    formatVersion: UInt16 = 0
   ) -> Offset {
     let __start = Slackwater_Root.startRoot(&fbb)
     Slackwater_Root.add(version: version, &fbb)
@@ -407,6 +415,7 @@ public struct Slackwater_Root: FlatBufferObject, Verifiable {
     Slackwater_Root.addVectorOf(datumNames: datumNames, &fbb)
     Slackwater_Root.addVectorOf(tideRoutes: tideRoutes, &fbb)
     Slackwater_Root.addVectorOf(currentRoutes: currentRoutes, &fbb)
+    Slackwater_Root.add(formatVersion: formatVersion, &fbb)
     return Slackwater_Root.endRoot(&fbb, start: __start)
   }
 
@@ -418,6 +427,7 @@ public struct Slackwater_Root: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.datumNames.p, fieldName: "datumNames", required: false, type: ForwardOffset<Vector<ForwardOffset<String>, String>>.self)
     try _v.visit(field: VTOFFSET.tideRoutes.p, fieldName: "tideRoutes", required: false, type: ForwardOffset<Vector<ForwardOffset<Slackwater_StationRoute>, Slackwater_StationRoute>>.self)
     try _v.visit(field: VTOFFSET.currentRoutes.p, fieldName: "currentRoutes", required: false, type: ForwardOffset<Vector<ForwardOffset<Slackwater_StationRoute>, Slackwater_StationRoute>>.self)
+    try _v.visit(field: VTOFFSET.formatVersion.p, fieldName: "formatVersion", required: false, type: UInt16.self)
     _v.finish()
   }
 }

@@ -14,7 +14,7 @@ Per-record JSON decode was never the cost (4 ms for 200 records); the cost is de
 
 ## Schema shape
 
-- One root table with `version`, a `stations` vector sorted by `id` (the FlatBuffers `key`, so lookup is a binary search inside the buffer), name tables for constituent and datum names, and separate tide/current route vectors sorted by slug.
+- One root table with `version`, `format_version`, a `stations` vector sorted by `id` (the FlatBuffers `key`, so lookup is a binary search inside the buffer), name tables for constituent and datum names, and separate tide/current route vectors sorted by slug.
 - `Station` carries identity (id, name, kind, type, coordinates, timezone, locality, region, ISO region code, country, ISO country code, continent, context, cities, aliases), prediction data (constituents, datums, chart datum, tide/current offsets, source-reported epoch, optional mean-datum epoch), and provenance (source, license, disclaimers).
 - Constituents are a struct vector: a `ushort` index into the root name table plus two `float` values — 12 bytes per constituent, contiguous, versus ~28 for a table per constituent. Float32 holds seven significant digits. Source files keep each publisher's precision, and digits beyond seven significant figures are dropped here, far below any analysis's uncertainty. Datums use the same struct-plus-name-table pattern.
 - Identical `source` and `license` tables are written once and shared; repeated strings (timezones, countries, epochs) are deduplicated with shared strings.
@@ -24,6 +24,14 @@ Per-record JSON decode was never the cost (4 ms for 200 records); the cost is de
 - Quality evaluation (each record's `quality` block in its station file) rides along: the gate — `accepted` and `score` — is inline on `Station` so an identity scan can filter and rank from head pages, and the detail (factors, issues, reason, redundant) is a `Quality` sub-table written at the tail with the other lookup data. The file carries all stations, rejected ones included; readers apply the `accepted` filter.
 - `file_identifier "TCDB"`, `file_extension "tcdb"`.
 
+## Format version
+
+`Root.format_version` is the format's major version, 1 today. The JavaScript, Swift and Kotlin readers refuse a file whose version is newer than the one they were built for: JavaScript throws `UnsupportedStationDatabaseError`, Swift throws `UnsupportedStationDatabase`, and Kotlin throws `UnsupportedStationDatabaseException`, each carrying the file's version. Swift and JavaScript read the version with bounds checks, and Swift does it before the verifier runs, so `init(verifying:)` reports a newer file as unsupported even when this version's verifier would refuse it. Files written before the field existed read as 0 and open as version 1. A reader that knows a later version keeps opening 0 as version 1 for as long as it opens version 1.
+
+The version goes up only for a change that an older reader would misread rather than ignore, such as storing phases under another convention. Adding a table or a field that older readers skip keeps it. The constant lives in three places: `FORMAT_VERSION` in `packages/database/src/database/format.ts`, `StationDatabase.formatVersion` in Swift and `StationDatabase.FORMAT_VERSION` in Kotlin. They change together, in the same PR as the change that needs it. The Swift and Kotlin tests read a fixture written by the TypeScript builder and compare its version with their own constant, so a bump that misses one fails CI.
+
+Only readers that check the version are protected: not readers released before it existed, and not one an app generates from the schema without adding the check. So a breaking change can ship only after the apps that read the file have released a reader that checks. A reader generated from the schema should refuse a `format_version` above the one it was written for. `version`, the release tag, is for display and isn't checked.
+
 ## Build order and locality
 
 The finished file is laid out in two bands: every station table together at the head, and every station's lookup data together at the tail. The head band holds everything a scan needs — ids, names, coordinates, and the quality gate (`accepted` and `score` are inline scalars on the station table, not in the tail-side `Quality` detail) — so ranking all 8,000+ stations by distance and filtering to accepted ones touches only the head pages. The tail band holds what only a per-station lookup reads: constituents, datums, and the quality detail (factors, issues, reason), faulting in only when someone looks up that station. Identity is ~100 bytes per station and constituents ~1,300, so an interleaved layout would spread identity across thirteen times as many pages and an identity scan would fault in essentially the whole file.
@@ -32,7 +40,7 @@ The schema can't express this; the builder has to produce it deliberately. FlatB
 
 ## The reader
 
-`loadStations()` obtains the bytes and creates an instance. Importing the package performs no database I/O or station decoding. Node reads a local file or fetches a URL, browsers fetch a URL, and Workers decode the bundled base64 or fetch a supplied URL when the loader is called. A caller can also pass a `Uint8Array` directly. The loader checks the TCDB identifier; it is not a full structural verifier.
+`loadStations()` obtains the bytes and creates an instance. Importing the package performs no database I/O or station decoding. Node reads a local file or fetches a URL, browsers fetch a URL, and Workers decode the bundled base64 or fetch a supplied URL when the loader is called. A caller can also pass a `Uint8Array` directly. The loader checks the TCDB identifier, that the root table lies inside the buffer, and the [format version](#format-version), throwing `UnsupportedStationDatabaseError` for a newer file; it is not a full structural verifier.
 
 `src/stations.ts` creates a per-instance reader. `byId(id)` binary-searches the sorted station vector and caches successful lookups and decoded identity objects. `all` materializes the full identity array on demand; `accepted` materializes the quality-accepted subset, checking inline quality flags before decoding identity. Both collections reuse cached objects. Every call for the bundled database shares one instance; each supplied source gets independent identity, collection, route, and search-index caches.
 

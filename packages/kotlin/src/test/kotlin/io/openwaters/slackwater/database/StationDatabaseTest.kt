@@ -1,5 +1,6 @@
 package io.openwaters.slackwater.database
 
+import com.google.flatbuffers.FlatBufferBuilder
 import java.io.File
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
@@ -52,6 +53,31 @@ class StationDatabaseTest {
         assertFailsWith<InvalidStationDatabaseException> { StationDatabase(ByteBuffer.wrap("not a database".toByteArray())) }
         assertFailsWith<InvalidStationDatabaseException> { StationDatabase(ByteBuffer.allocate(0)) }
         assertFailsWith<IndexOutOfBoundsException> { db[7] }
+    }
+
+    @Test
+    fun refusesANewerFormatVersion() {
+        fun file(formatVersion: Int): ByteBuffer {
+            val builder = FlatBufferBuilder()
+            Slackwater.Root.startRoot(builder)
+            Slackwater.Root.addFormatVersion(builder, formatVersion.toUShort())
+            Slackwater.Root.finishRootBuffer(builder, Slackwater.Root.endRoot(builder))
+            return builder.dataBuffer()
+        }
+        assertEquals(StationDatabase.FORMAT_VERSION, db.root.formatVersion.toInt())
+        // 0 is a file written before the field existed.
+        StationDatabase(file(0))
+        StationDatabase(file(StationDatabase.FORMAT_VERSION))
+        val newer = StationDatabase.FORMAT_VERSION + 1
+        val error = assertFailsWith<UnsupportedStationDatabaseException> { StationDatabase(file(newer)) }
+        assertEquals(newer, error.formatVersion)
+
+        // A header whose root table lies past the end.
+        assertFailsWith<InvalidStationDatabaseException> { StationDatabase(ByteBuffer.wrap(fixture.readBytes().copyOf(8))) }
+        // One cut inside the root table, past its format version.
+        val bytes = fixture.readBytes()
+        val table = ByteBuffer.wrap(bytes).order(java.nio.ByteOrder.LITTLE_ENDIAN).getInt(0)
+        assertFailsWith<InvalidStationDatabaseException> { StationDatabase(ByteBuffer.wrap(bytes.copyOf(table + 6))) }
     }
 
     @Test
