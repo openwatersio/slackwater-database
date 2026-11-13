@@ -9,15 +9,15 @@ computed:
       quality:
         accepted: true
         seasonal_dominant: true
-        score: 52
+        score: 51
         factors:
           epoch: 0.724
           recency: 0.99
           source: 0.02
           quality: 0
           amplitude: 1
-          coverage: 0.455
+          coverage: 0.384
         issues:
-          - MLWS (-0.002) > MLW (-0.016)
-          - MHWS (0.012) < MHW (0.019)
+          - MLWS (-0.108) > MLW (-0.126)
+          - MHWS (-0.094) < MHW (-0.092)
           - "Seasonal curve peak (0.148m) exceeds the principal tide M2+S2+K1+O1 (0.039m): the yearly swing exceeds the daily one"

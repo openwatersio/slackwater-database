@@ -16,21 +16,26 @@
     "commercial_use": true,
     "url": "https://creativecommons.org/licenses/by/4.0/"
   },
-  "disclaimers": "No obvious issues Datums derived from harmonic prediction; observations do not support a mean-datum reduction over twelve continuous whole months after bounded short-gap reconstruction. Datum values carry higher uncertainty. Complete prepared observations do not cover every calendar month of the year for a balanced gauge mean; datums remain in the constituent frame (MSL = 0). Harmonic datums retain every predicted turning point without prominence filtering.",
+  "disclaimers": "No obvious issues Mean datums use one continuous observation window of whole years. Gaps shorter than 24 hours may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering.",
   "datums": {
-    "HAT": 0.246,
-    "MHHW": 0.095,
-    "MHW": 0.072,
-    "MSL": 0,
-    "MTL": -0.001,
-    "MLW": -0.073,
-    "MLLW": -0.084,
-    "LAT": -0.231,
-    "MHWS": 0.102,
-    "MLWS": -0.102
+    "MSL": 1.191,
+    "MHHW": 1.304,
+    "MHW": 1.276,
+    "MTL": 1.191,
+    "MLW": 1.106,
+    "MLLW": 1.087,
+    "HAT": 1.437,
+    "LAT": 0.96,
+    "MHWS": 1.293,
+    "MLWS": 1.089
   },
-  "datums_source": "harmonic",
-  "datum_frame": "constituent",
+  "datums_source": "observed",
+  "datum_frame": "gauge",
+  "datum_coverage": {
+    "months": 12,
+    "observed_hours": 8503,
+    "inferred_hours": 257
+  },
   "chart_datum": "LAT",
   "type": "reference",
   "harmonic_constituents": [
@@ -285,6 +290,10 @@
       "phase": 186.02456
     }
   ],
+  "datum_epoch": {
+    "start": "1938-04-01",
+    "end": "1939-03-31"
+  },
   "epoch": {
     "start": "1935-06-08",
     "end": "1948-07-28"

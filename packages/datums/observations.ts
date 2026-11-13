@@ -7,12 +7,26 @@ import { resolveEpoch, type Sample } from "./datum.ts";
 const HOUR_MS = 3600000;
 // Project eligibility limits, not an equivalence to NOAA's datum epoch.
 const MAX_BRACKET_HOURS = 4;
+// Longer gaps take the tide prediction plus a residual interpolated between the
+// observed hours on each side. IOC Manuals and Guides 14 vol. II recommends
+// filling only gaps under 24 hours; CO-OPS fills up to 3 days from predictions and
+// computes no monthly mean across a longer gap (Computational Techniques for Tidal
+// Datums Handbook §2.6; Water Level Station Specifications 2013 §1.3.3-1.3.4).
+const MAX_FILL_HOURS = 23;
+// This project's limit on a month's prediction-filled hours: CO-OPS's 3-day gap.
+const MAX_MONTH_FILL_HOURS = 72;
+// CO-OPS fills those gaps only where the source matches the gauge and no weather
+// event intervenes. A residual that changes across the gap by more than this
+// (a surge, or a gauge zero shift) leaves it open. The threshold is a project choice.
+const MAX_FILL_RESIDUAL_CHANGE_M = 0.1;
 const YEAR_MONTHS = 12;
 type Hourly = { hour: number; level: number };
 interface HourlyPreparation {
   hourly: Hourly[];
   levels: Map<number, number>;
   inferred: Set<number>;
+  /** Hours filled from the prediction over a gap the curve fit cannot bridge. */
+  filled: Set<number>;
 }
 
 export interface PreparedDatumObservations {
@@ -98,27 +112,40 @@ function prepareHourlyObservations(
   const hourly = hourlyWindow(samples);
   if (!hourly.length) return null;
   const levels = new Map(hourly.map((p) => [p.hour, p.level]));
-  const inferred = new Set<number>();
-  if (!constituents.length) return { hourly, levels, inferred };
+  const inferred = new Set<number>(),
+    filled = new Set<number>();
+  if (!constituents.length) return { hourly, levels, inferred, filled };
 
-  const gaps: Hourly[][] = [];
+  const gaps: Hourly[][] = [],
+    spans: Hourly[][] = [];
   const profiles = new Map<number, number[]>();
-  for (let i = 1; i < hourly.length - 2; i++) {
-    const anchors = hourly.slice(i - 1, i + 3),
-      left = anchors[1]!,
-      right = anchors[2]!;
+  for (let i = 0; i < hourly.length - 1; i++) {
+    const anchors = hourly.slice(Math.max(i - 1, 0), i + 3),
+      left = hourly[i]!,
+      right = hourly[i + 1]!;
     const separation = right.hour - left.hour;
+    if (separation <= 1 || separation > MAX_FILL_HOURS + 1) continue;
     if (
-      separation <= 1 ||
-      separation > MAX_BRACKET_HOURS ||
-      left.hour - anchors[0]!.hour > MAX_BRACKET_HOURS ||
-      anchors[3]!.hour - right.hour > MAX_BRACKET_HOURS
-    )
-      continue;
-    gaps.push(anchors);
-    for (const p of anchors) profiles.set(p.hour, []);
+      anchors.length === 4 &&
+      anchors[1] === left &&
+      separation <= MAX_BRACKET_HOURS &&
+      left.hour - anchors[0]!.hour <= MAX_BRACKET_HOURS &&
+      anchors[3]!.hour - right.hour <= MAX_BRACKET_HOURS
+    ) {
+      gaps.push(anchors);
+      for (const p of anchors) profiles.set(p.hour, []);
+    } else if (
+      // A lone real hour inside a longer outage must not chain two fills.
+      hourly[i - 1]?.hour === left.hour - 1 &&
+      hourly[i + 2]?.hour === right.hour + 1
+    ) {
+      spans.push([left, right]);
+      profiles.set(left.hour, []);
+      profiles.set(right.hour, []);
+    }
   }
-  if (!gaps.length) return { hourly, levels, inferred };
+  if (!gaps.length && !spans.length)
+    return { hourly, levels, inferred, filled };
   // Compare averaged measurements with averaged predictions at the same sample
   // instants. Retain sampling profiles only for the real anchors around gaps.
   for (const p of samples) {
@@ -152,7 +179,10 @@ function prepareHourlyObservations(
         p.level - binPrediction(p.hour, profiles.get(p.hour)!),
       ]),
     );
-    if (!coefficients) continue;
+    if (!coefficients) {
+      spans.push([left, right]);
+      continue;
+    }
     for (let hour = left.hour + 1; hour < right.hour; hour++) {
       // A missing bin follows its nearer real neighbour's sampling cadence.
       const profile = profiles.get(
@@ -170,7 +200,30 @@ function prepareHourlyObservations(
       }
     }
   }
-  return { hourly, levels, inferred };
+  for (const [left, right] of spans) {
+    const residual = (p: Hourly) =>
+      p.level - binPrediction(p.hour, profiles.get(p.hour)!);
+    const leftResidual = residual(left!),
+      rightResidual = residual(right!);
+    if (!(Math.abs(rightResidual - leftResidual) <= MAX_FILL_RESIDUAL_CHANGE_M))
+      continue;
+    for (let hour = left!.hour + 1; hour < right!.hour; hour++) {
+      const profile = profiles.get(
+        hour - left!.hour <= right!.hour - hour ? left!.hour : right!.hour,
+      )!;
+      const weight = (hour - left!.hour) / (right!.hour - left!.hour);
+      const level =
+        binPrediction(hour, profile) +
+        leftResidual +
+        weight * (rightResidual - leftResidual);
+      if (Number.isFinite(level)) {
+        levels.set(hour, level);
+        inferred.add(hour);
+        filled.add(hour);
+      }
+    }
+  }
+  return { hourly, levels, inferred, filled };
 }
 
 function samplingMoments(hour: number, profile: number[]): number[] {
@@ -208,7 +261,7 @@ function solveCubic(rows: number[][]): number[] | undefined {
   return coefficients;
 }
 
-function calendarMonths({ hourly, levels }: HourlyPreparation): {
+function calendarMonths({ hourly, levels, filled }: HourlyPreparation): {
   start: number;
   end: number;
   mean: number | undefined;
@@ -222,10 +275,12 @@ function calendarMonths({ hourly, levels }: HourlyPreparation): {
     const end = shiftMonth(month, 1);
     if (end - 1 > last) break;
     let sum = 0,
+      fills = 0,
       complete = true;
     for (let hour = month; hour < end; hour++) {
       const level = levels.get(hour);
-      if (level === undefined) {
+      if (filled.has(hour)) fills++;
+      if (level === undefined || fills > MAX_MONTH_FILL_HOURS) {
         complete = false;
         break;
       }

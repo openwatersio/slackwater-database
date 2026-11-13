@@ -40,7 +40,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (9.618) > MLW (9.613)
-          - MHWS (9.654) < MHW (9.659)
+          - MHWS (9.671) < MHW (9.681)
           - Superseded by noaa/8773146, its operator's own record
           - "Seasonal curve peak (0.180m) exceeds the principal tide M2+S2+K1+O1 (0.091m): the yearly swing exceeds the daily one"

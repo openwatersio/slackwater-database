@@ -167,8 +167,10 @@ describe("computeDatumsFromObservations", () => {
   });
 
   test.each([1, 3])(
-    "does not classify gaps in %i-hour observations",
+    "does not classify gaps in %i-hour observations it cannot fill",
     (step) => {
+      // Hourly samples leave 21-hour gaps, about 160 hours a month, over the
+      // 72-hour fill cap; three-hourly samples leave 63-hour gaps.
       const start = Date.UTC(2020, 0, 1);
       const levels = [0, 1, 2, 1, 0, -1, -2, -1];
       const samples = Array.from({ length: 24 * 400 }, (_, h) => ({
