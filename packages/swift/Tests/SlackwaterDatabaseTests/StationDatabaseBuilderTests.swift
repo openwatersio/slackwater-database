@@ -94,6 +94,11 @@ final class StationDatabaseBuilderTests: XCTestCase {
     XCTAssertNil(try XCTUnwrap(rebuilt.station(id: "test/subordinate-fixed")).raw.quality)
   }
 
+  func testWritesTheFormatVersion() throws {
+    let db = try rebuild(StationDatabase(contentsOf: StationDatabaseTests.url))
+    XCTAssertEqual(Int(db.root.formatVersion), StationDatabase.formatVersion)
+  }
+
   // Catches a schema field StationInput doesn't carry, which the accessor
   // comparisons can't see.
   func testRebuildStoresTheSameFieldsInEveryTable() throws {

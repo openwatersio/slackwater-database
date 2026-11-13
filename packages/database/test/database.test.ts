@@ -4,6 +4,10 @@ import * as flatbuffers from "flatbuffers";
 import { buildDatabase } from "../src/database/builder.ts";
 import { loadStations } from "../src/load-stations.ts";
 import { openDatabase } from "../src/database/reader.ts";
+import {
+  FORMAT_VERSION,
+  UnsupportedStationDatabaseError,
+} from "../src/database/format.ts";
 import { Root, Kind, DatumFrame } from "../src/generated/fbs/slackwater.ts";
 import type { ChsFitData, Station, StationInput } from "../src/types.ts";
 
@@ -34,6 +38,10 @@ describe("the shipped database file", () => {
       true,
     );
     expect(shipped.version()).toBeTruthy();
+  });
+
+  test("is written in this package's format version", () => {
+    expect(shipped.formatVersion()).toBe(FORMAT_VERSION);
   });
 
   test("stations are sorted by id, the vector key", () => {
@@ -698,5 +706,47 @@ describe("buildDatabase", () => {
       ebb_direction: 0,
       offsets: { reference: "test/2", flood_time: 0 },
     });
+  });
+});
+
+describe("format version", () => {
+  const withFormat = (formatVersion: number) => {
+    const builder = new flatbuffers.Builder();
+    Root.startRoot(builder);
+    Root.addFormatVersion(builder, formatVersion);
+    Root.finishRootBuffer(builder, Root.endRoot(builder));
+    return builder.asUint8Array();
+  };
+
+  test("opens files up to its own version, and those written before the field", () => {
+    expect(openDatabase(withFormat(FORMAT_VERSION)).formatVersion()).toBe(
+      FORMAT_VERSION,
+    );
+    expect(openDatabase(withFormat(0)).formatVersion()).toBe(0);
+  });
+
+  test("refuses a buffer whose root table is cut off", () => {
+    const whole = withFormat(FORMAT_VERSION);
+    const view = new DataView(whole.buffer, whole.byteOffset);
+    const root = view.getUint32(0, true);
+    const tableSize = view.getUint16(
+      root - view.getInt32(root, true) + 2,
+      true,
+    );
+    // The last cut keeps the format version but not the whole table.
+    for (const length of [8, whole.length - 2, root + tableSize - 1]) {
+      expect(() => openDatabase(whole.slice(0, length))).toThrow(
+        "Invalid station database",
+      );
+    }
+  });
+
+  test("refuses a newer version", () => {
+    expect(() => openDatabase(withFormat(FORMAT_VERSION + 1))).toThrow(
+      expect.objectContaining({
+        name: "UnsupportedStationDatabaseError",
+        formatVersion: FORMAT_VERSION + 1,
+      }) as UnsupportedStationDatabaseError,
+    );
   });
 });

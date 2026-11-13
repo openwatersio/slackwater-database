@@ -423,6 +423,7 @@ private struct DatabaseWriter {
     Slackwater_Root.addVectorOf(datumNames: datumNamesVector, &fbb)
     Slackwater_Root.addVectorOf(tideRoutes: tideRoutes, &fbb)
     Slackwater_Root.addVectorOf(currentRoutes: currentRoutes, &fbb)
+    Slackwater_Root.add(formatVersion: UInt16(StationDatabase.formatVersion), &fbb)
     Slackwater_Root.finish(&fbb, end: Slackwater_Root.endRoot(&fbb, start: root))
     return fbb.data
   }

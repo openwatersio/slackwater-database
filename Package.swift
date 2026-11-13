@@ -30,7 +30,7 @@ let package = Package(
     ),
     .testTarget(
       name: "SlackwaterDatabaseTests",
-      dependencies: ["SlackwaterDatabase"],
+      dependencies: ["SlackwaterDatabase", .product(name: "FlatBuffers", package: "flatbuffers")],
       path: "packages/swift/Tests/SlackwaterDatabaseTests",
       exclude: ["fixture.tcdb", "attribution.json"]
     ),

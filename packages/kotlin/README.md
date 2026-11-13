@@ -61,6 +61,8 @@ val db = context.assets.openFd("stations.tcdb").use { fd ->
 
 The mapping stays valid after the channel closes.
 
+Opening checks the file identifier and format version, and nothing else. Bytes without the identifier or root table throw `InvalidStationDatabaseException`, and a file in a newer format than this reader knows throws `UnsupportedStationDatabaseException`; upgrade the reader to open it.
+
 ## Attribution
 
 Most stations are CC BY, so showing them carries an obligation to the original source, not only to this project. `station.attribution` is that notice, assembled in the database file itself, so this library keeps no table of sources and neither does your app.

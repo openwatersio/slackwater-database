@@ -166,6 +166,17 @@ internal class Root : Table() {
             null
         }
     }
+    /**
+     * Format major version. A reader refuses a file whose version is newer than
+     * the newest it knows. It goes up only for a change an older reader would
+     * misread; a change older readers can ignore keeps it. Absent (0) in files
+     * written before readers checked it, which read as version 1.
+     */
+    val formatVersion : UShort
+        get() {
+            val o = __offset(16)
+            return if(o != 0) bb.getShort(o + bb_pos).toUShort() else 0u
+        }
     companion object {
         fun getRootAsRoot(_bb: ByteBuffer): Root = getRootAsRoot(_bb, Root())
         fun getRootAsRoot(_bb: ByteBuffer, obj: Root): Root {
@@ -173,17 +184,18 @@ internal class Root : Table() {
             return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb))
         }
         fun RootBufferHasIdentifier(_bb: ByteBuffer) : Boolean = __has_identifier(_bb, "TCDB")
-        fun createRoot(builder: FlatBufferBuilder, versionOffset: Int, stationsOffset: Int, constituentNamesOffset: Int, datumNamesOffset: Int, tideRoutesOffset: Int, currentRoutesOffset: Int) : Int {
-            builder.startTable(6)
+        fun createRoot(builder: FlatBufferBuilder, versionOffset: Int, stationsOffset: Int, constituentNamesOffset: Int, datumNamesOffset: Int, tideRoutesOffset: Int, currentRoutesOffset: Int, formatVersion: UShort) : Int {
+            builder.startTable(7)
             addCurrentRoutes(builder, currentRoutesOffset)
             addTideRoutes(builder, tideRoutesOffset)
             addDatumNames(builder, datumNamesOffset)
             addConstituentNames(builder, constituentNamesOffset)
             addStations(builder, stationsOffset)
             addVersion(builder, versionOffset)
+            addFormatVersion(builder, formatVersion)
             return endRoot(builder)
         }
-        fun startRoot(builder: FlatBufferBuilder) = builder.startTable(6)
+        fun startRoot(builder: FlatBufferBuilder) = builder.startTable(7)
         fun addVersion(builder: FlatBufferBuilder, version: Int) = builder.addOffset(0, version, 0)
         fun addStations(builder: FlatBufferBuilder, stations: Int) = builder.addOffset(1, stations, 0)
         fun createStationsVector(builder: FlatBufferBuilder, data: IntArray) : Int {
@@ -230,6 +242,7 @@ internal class Root : Table() {
             return builder.endVector()
         }
         fun startCurrentRoutesVector(builder: FlatBufferBuilder, numElems: Int) = builder.startVector(4, numElems, 4)
+        fun addFormatVersion(builder: FlatBufferBuilder, formatVersion: UShort) = builder.addShort(6, formatVersion.toShort(), 0)
         fun endRoot(builder: FlatBufferBuilder) : Int {
             val o = builder.endTable()
             return o

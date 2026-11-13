@@ -1,6 +1,7 @@
 import { Root, StationType } from "../generated/fbs/slackwater.ts";
 import * as flatbuffers from "flatbuffers";
 import type { StationMeta } from "../types.js";
+import { FORMAT_VERSION, UnsupportedStationDatabaseError } from "./format.ts";
 
 /**
  * Open a database buffer. The only place a consumer should touch the
@@ -8,7 +9,37 @@ import type { StationMeta } from "../types.js";
  * rest of the package doesn't have to.
  */
 export function openDatabase(bytes: Uint8Array): Root {
-  return Root.getRootAsRoot(new flatbuffers.ByteBuffer(bytes));
+  if (!rootInBounds(bytes)) {
+    throw new Error(
+      "Invalid station database: the root table lies past the end",
+    );
+  }
+  const root = Root.getRootAsRoot(new flatbuffers.ByteBuffer(bytes));
+  if (root.formatVersion() > FORMAT_VERSION) {
+    throw new UnsupportedStationDatabaseError(root.formatVersion());
+  }
+  return root;
+}
+
+/**
+ * Whether the root table and its vtable lie inside `bytes`, so reading the
+ * format version can't run past the end. FlatBuffers' JavaScript reads past
+ * the end without throwing.
+ */
+function rootInBounds(bytes: Uint8Array): boolean {
+  if (bytes.length < 8) return false;
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const root = view.getUint32(0, true);
+  if (root + 4 > bytes.length) return false;
+  const vtable = root - view.getInt32(root, true);
+  if (vtable < 0 || vtable + 4 > bytes.length) return false;
+  // The vtable's first two entries are its own size and the table's.
+  const vtableSize = view.getUint16(vtable, true);
+  if (vtable + vtableSize > bytes.length) return false;
+  if (root + view.getUint16(vtable + 2, true) > bytes.length) return false;
+  // Root.format_version's entry, when the vtable has one.
+  const field = vtableSize >= 18 ? view.getUint16(vtable + 16, true) : 0;
+  return field === 0 || root + field + 2 <= bytes.length;
 }
 
 /**

@@ -26,6 +26,7 @@ import {
 import * as flatbuffers from "flatbuffers";
 import countryLookup from "country-code-lookup";
 import { attributionWithCredit } from "../attribution.ts";
+import { FORMAT_VERSION } from "./format.ts";
 import type {
   DatabaseRoutes,
   HarmonicConstituent,
@@ -509,6 +510,7 @@ export function buildDatabase(
       datumNamesVector,
       tideRoutesVector,
       currentRoutesVector,
+      FORMAT_VERSION,
     ),
   );
 

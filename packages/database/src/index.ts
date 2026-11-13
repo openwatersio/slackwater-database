@@ -14,4 +14,5 @@ export type {
   StationWithDistance,
 } from "./search/index.js";
 export { buildDatabase } from "./database/builder.js";
+export { UnsupportedStationDatabaseError } from "./database/format.js";
 export type * from "./types.js";

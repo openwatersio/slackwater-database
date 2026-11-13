@@ -37,7 +37,7 @@ A pre-built [TCD file](./packages/tcd/README.md) compatible with XTide, OpenCPN,
 
 ### FlatBuffers file
 
-Each release attaches `slackwater-<date>.tcdb`, the whole database as one [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](./schemas/database.fbs). It is the same file the NPM package reads; native apps can bundle and memory-map it, generating a reader in their language from the schema. [See the format documentation.](./docs/database-format.md)
+Each release attaches `slackwater-<date>.tcdb`, the whole database as one [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](./schemas/database.fbs). It is the same file the NPM package reads; native apps can bundle and memory-map it, generating a reader in their language from the schema. A generated reader should refuse a file whose `format_version` is newer than it knows. [See the format documentation.](./docs/database-format.md)
 
 ### JavaScript / TypeScript
 

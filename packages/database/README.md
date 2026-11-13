@@ -42,7 +42,7 @@ const remote = await loadStations("https://example.com/stations.tcdb");
 const supplied = await loadStations(bytes); // Uint8Array, including Node Buffer
 ```
 
-Browsers accept relative or absolute fetchable URLs; Workers accept fetchable URLs and bundled bytes. Node accepts filesystem paths, file URLs, and HTTP(S) URLs. URLs download the whole file before returning a reader; individual station reads then use the in-memory buffer. In Workers, call a remote loader in a request handler or another context where fetch is allowed. Each supplied source gets its own instance and caches, so reuse the one it returns.
+Browsers accept relative or absolute fetchable URLs; Workers accept fetchable URLs and bundled bytes. Node accepts filesystem paths, file URLs, and HTTP(S) URLs. URLs download the whole file before returning a reader; individual station reads then use the in-memory buffer. In Workers, call a remote loader in a request handler or another context where fetch is allowed. Each supplied source gets its own instance and caches, so reuse the one it returns. A file in a newer format than this package reads throws `UnsupportedStationDatabaseError`, exported from the package; upgrade the package to read it.
 
 The geographic and text indexes initialize on first use. Bundled data uses prebuilt indexes; supplied sources build matching indexes from the loaded buffer's coordinates or searchable metadata. Neither path reads prediction data to build an index.
 
@@ -201,7 +201,7 @@ The full field-by-field description lives in [`schemas/station.schema.json`](htt
 
 ## The database file
 
-The module reads a single [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](https://github.com/openwatersio/slackwater-database/blob/main/schemas/database.fbs). Every release of this package also attaches that file as `slackwater-<date>.tcdb`, so native apps can bundle and memory-map it and generate a reader in their own language from the schema. [See the format documentation.](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md)
+The module reads a single [FlatBuffers](https://flatbuffers.dev) file built from [`schemas/database.fbs`](https://github.com/openwatersio/slackwater-database/blob/main/schemas/database.fbs). Every release of this package also attaches that file as `slackwater-<date>.tcdb`, so native apps can bundle and memory-map it and generate a reader in their own language from the schema. A generated reader should refuse a file whose `format_version` is newer than it knows. [See the format documentation.](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md)
 
 ## License
 

@@ -1,3 +1,4 @@
+import FlatBuffers
 import Foundation
 import XCTest
 
@@ -27,6 +28,52 @@ final class StationDatabaseTests: XCTestCase {
     }
     XCTAssertThrowsError(try StationDatabase(data: Data())) {
       XCTAssert($0 is InvalidStationDatabase)
+    }
+  }
+
+  func testReadsTheFixturesFormatVersion() throws {
+    // The fixture comes from the TypeScript builder, so this also keeps the two constants equal.
+    XCTAssertEqual(Int(try open().root.formatVersion), StationDatabase.formatVersion)
+    let data = try Data(contentsOf: Self.url)
+    XCTAssertEqual(StationDatabase.formatVersion(of: data), StationDatabase.formatVersion)
+  }
+
+  func testRefusesANewerFormatVersion() throws {
+    func file(formatVersion: Int) -> Data {
+      var fbb = FlatBufferBuilder()
+      let root = Slackwater_Root.startRoot(&fbb)
+      Slackwater_Root.add(formatVersion: UInt16(formatVersion), &fbb)
+      Slackwater_Root.finish(&fbb, end: Slackwater_Root.endRoot(&fbb, start: root))
+      return fbb.data
+    }
+    // 0 is a file written before the field existed.
+    for version in [0, StationDatabase.formatVersion] {
+      XCTAssertNoThrow(try StationDatabase(data: file(formatVersion: version)))
+      XCTAssertNoThrow(try StationDatabase(verifying: file(formatVersion: version)))
+    }
+    let newer = StationDatabase.formatVersion + 1
+    XCTAssertThrowsError(try StationDatabase(data: file(formatVersion: newer))) {
+      XCTAssertEqual(($0 as? UnsupportedStationDatabase)?.formatVersion, newer)
+    }
+    XCTAssertThrowsError(try StationDatabase(verifying: file(formatVersion: newer))) {
+      XCTAssertEqual(($0 as? UnsupportedStationDatabase)?.formatVersion, newer)
+    }
+    // A newer file this verifier refuses still reports its version: here the
+    // root table survives at the head and the string it points to is cut off.
+    func cut(formatVersion: Int) -> Data {
+      var fbb = FlatBufferBuilder()
+      let tag = fbb.create(string: "a release tag long enough to cut")
+      let root = Slackwater_Root.startRoot(&fbb)
+      Slackwater_Root.add(version: tag, &fbb)
+      Slackwater_Root.add(formatVersion: UInt16(formatVersion), &fbb)
+      Slackwater_Root.finish(&fbb, end: Slackwater_Root.endRoot(&fbb, start: root))
+      return Data(fbb.data.dropLast(16))
+    }
+    XCTAssertThrowsError(try StationDatabase(verifying: cut(formatVersion: StationDatabase.formatVersion))) {
+      XCTAssert($0 is InvalidStationDatabase)
+    }
+    XCTAssertThrowsError(try StationDatabase(verifying: cut(formatVersion: newer))) {
+      XCTAssertEqual(($0 as? UnsupportedStationDatabase)?.formatVersion, newer)
     }
   }
 
@@ -287,12 +334,39 @@ final class StationDatabaseTests: XCTestCase {
     let data = try Data(contentsOf: Self.url)
     for length in [8, 64, data.count / 4, data.count / 2, data.count * 3 / 4] {
       let prefix = Data(data.prefix(length))
-      // The header check alone lets this through.
-      XCTAssertNoThrow(try StationDatabase(data: prefix))
+      // The header check refuses a prefix that cuts off the root table and
+      // lets through one that keeps it, without trapping either way.
+      if length == 8 {
+        XCTAssertThrowsError(try StationDatabase(data: prefix)) { XCTAssert($0 is InvalidStationDatabase) }
+      } else {
+        XCTAssertNoThrow(try StationDatabase(data: prefix), "\(length) bytes")
+      }
       XCTAssertThrowsError(try StationDatabase(verifying: prefix), "\(length) bytes") {
         XCTAssert($0 is InvalidStationDatabase)
       }
     }
+  }
+
+  func testHeaderCheckRefusesAVtableOffsetThatOverflows() throws {
+    // Root at 8, vtable back-offset Int32.min: past Int on a 32-bit watch.
+    let bytes = Data([8, 0, 0, 0] + Array("TCDB".utf8) + [0, 0, 0, 0x80])
+    XCTAssertNil(StationDatabase.formatVersion(of: bytes))
+    XCTAssertThrowsError(try StationDatabase(verifying: bytes)) { XCTAssert($0 is InvalidStationDatabase) }
+  }
+
+  func testHeaderCheckRefusesARootTablePastTheEnd() throws {
+    var data = try Data(contentsOf: Self.url)
+    let root = Int(data.withUnsafeBytes { $0.loadUnaligned(fromByteOffset: 0, as: UInt32.self) })
+    let vtable = root - Int(data.withUnsafeBytes { $0.loadUnaligned(fromByteOffset: root, as: Int32.self) })
+    let tableSize = Int(data[vtable + 2]) | Int(data[vtable + 3]) << 8
+    // One byte short of the table's end, past the format field.
+    let cut = Data(data.prefix(root + tableSize - 1))
+    XCTAssertThrowsError(try StationDatabase(data: cut)) { XCTAssert($0 is InvalidStationDatabase) }
+    // A table size that runs one byte past the end of the file.
+    let pastEnd = data.count - root + 1
+    data[vtable + 2] = UInt8(pastEnd & 0xFF)
+    data[vtable + 3] = UInt8(pastEnd >> 8)
+    XCTAssertThrowsError(try StationDatabase(data: data)) { XCTAssert($0 is InvalidStationDatabase) }
   }
 
   func testVerifyingOpenRejectsRandomBytesBehindAValidHeader() throws {

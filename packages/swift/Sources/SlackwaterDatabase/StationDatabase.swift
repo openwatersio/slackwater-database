@@ -1,10 +1,17 @@
 import FlatBuffers
 import Foundation
 
-/// The file is not a station database: too short, or the "TCDB" file identifier
-/// is missing. A verifying open also throws it for a file that fails the
-/// FlatBuffers verifier, a name index past its table, or a string that is not UTF-8.
+/// The file is not a station database: too short, the "TCDB" file identifier
+/// is missing, or the root table or its format version lies past the end. A
+/// verifying open also throws it for a file that fails the FlatBuffers verifier, a name index past its table, or a string that is not UTF-8.
 public struct InvalidStationDatabase: Error {}
+
+/// The file is a station database in a newer format than this reader knows.
+/// Upgrade the SlackwaterDatabase package to read it.
+public struct UnsupportedStationDatabase: Error {
+  /// The file's format major version.
+  public let formatVersion: Int
+}
 
 public enum StationKind: Hashable, Sendable {
   case tide
@@ -259,8 +266,7 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
     // The "TCDB" file identifier occupies bytes 4..<8 of every database file.
     // Checked directly instead of running the FlatBuffers verifier, which
     // would walk — and page in — the entire buffer.
-    guard data.count >= 8, data.dropFirst(4).prefix(4).elementsEqual("TCDB".utf8)
-    else { throw InvalidStationDatabase() }
+    try Self.checkHeader(data)
     // ByteBuffer retains the Data without copying, so a mapped file stays
     // mapped for the life of the database.
     var buffer = ByteBuffer(data: data)
@@ -282,6 +288,8 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
   /// nil or wrong results, not traps. This reads the whole buffer once, so
   /// keep `init(data:)` for a bundled file.
   public init(verifying data: Data) throws {
+    // Before the verifier, so a newer file it would refuse reports its version.
+    try Self.checkHeader(data)
     // Not through init(data:): its unchecked root read traps on a root offset past Int32.
     var buffer = ByteBuffer(data: data)
     do {
@@ -291,6 +299,56 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
       throw InvalidStationDatabase()
     }
     try checkContents()
+  }
+
+  /// The format major version this package writes and the newest it reads
+  /// (`Root.format_version` in schemas/database.fbs).
+  public static let formatVersion = 1
+
+  /// The file identifier and format version, read with bounds checks so any
+  /// bytes are safe here. Files written before the version existed read as 0.
+  static func checkHeader(_ data: Data) throws {
+    // The "TCDB" file identifier occupies bytes 4..<8 of every database file.
+    guard data.count >= 8, data.dropFirst(4).prefix(4).elementsEqual("TCDB".utf8),
+      let version = formatVersion(of: data)
+    else { throw InvalidStationDatabase() }
+    guard version <= formatVersion else {
+      throw UnsupportedStationDatabase(formatVersion: version)
+    }
+  }
+
+  /// `Root.format_version` read through the root table's vtable by hand, nil
+  /// when either lies outside `data`. The generated accessor has no bounds checks.
+  static func formatVersion(of data: Data) -> Int? {
+    func read<T: FixedWidthInteger>(_: T.Type, at offset: Int) -> T? {
+      let size = MemoryLayout<T>.size
+      guard offset >= 0, offset <= data.count - size else { return nil }
+      var value = T.zero
+      withUnsafeMutableBytes(of: &value) {
+        $0.copyBytes(from: data[(data.startIndex + offset)..<(data.startIndex + offset + size)])
+      }
+      return T(littleEndian: value)
+    }
+    // Int(exactly:) so a root offset past Int32 can't trap on a 32-bit watch.
+    guard let rootOffset = read(UInt32.self, at: 0).flatMap({ Int(exactly: $0) }),
+      let vtableBack = read(Int32.self, at: rootOffset)
+    else { return nil }
+    // Offsets from the file can overflow a 32-bit Int, so every sum reports it.
+    func add(_ a: Int, _ b: Int) -> Int? {
+      let (sum, overflow) = a.addingReportingOverflow(b)
+      return overflow ? nil : sum
+    }
+    let (vtable, overflow) = rootOffset.subtractingReportingOverflow(Int(vtableBack))
+    // The vtable's second entry is the root table's size; the table must fit.
+    guard !overflow, let vtableSize = read(UInt16.self, at: vtable),
+      let tableSize = read(UInt16.self, at: vtable + 2),
+      let tableEnd = add(rootOffset, Int(tableSize)), tableEnd <= data.count
+    else { return nil }
+    let slot = 16  // Root.format_version's vtable entry, as in the generated VTOFFSET.
+    guard slot + 2 <= Int(vtableSize) else { return 0 }
+    guard let field = read(UInt16.self, at: vtable + slot) else { return nil }
+    if field == 0 { return 0 }
+    return add(rootOffset, Int(field)).flatMap { read(UInt16.self, at: $0) }.map(Int.init)
   }
 
   /// `init(verifying:)` on a memory-mapped file. Reads after verifying go to
