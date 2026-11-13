@@ -59,7 +59,7 @@ So the database carries definitions, as [#238](https://github.com/openwatersio/s
 - Fits from Stillwell record the definitions `fit()` used, so the catalog can change later without moving them.
 - The engine predicts from the definitions it is given, with its catalog as the default.
 
-Kept this way, the definitions table is additive: a reader that ignores it predicts as it does today. A future change that does break old readers, such as moving stored phases to another convention, needs a check that doesn't exist yet. The format's `version` is a free-text string no reader checks, and the npm prerelease base in [CONTRIBUTING.md](../../CONTRIBUTING.md) protects only npm ranges, not the `beta` tag or SwiftPM. So this work also adds a format major version that the JavaScript, Swift and Kotlin readers refuse when it's newer than they know. Readers already deployed don't have that check, so it has to ship, and reach the apps, well before the first change that needs it. Everything in this repo that resolves constituents by name moves onto the definitions too: `packages/tcd`, the seasonal checks in `packages/stations/filtering.ts` and `evaluate-quality.ts`, `packages/stations/lat-hat.ts` and `validate-datums.ts`, `packages/datums` (`datum.ts` and `observations.ts`), and the Swift and Kotlin readers. It comes before fits from Stillwell ship at scale, so none of them has to be converted afterward.
+Kept this way, the definitions table is additive: a reader that ignores it predicts as it does today. A future change that does break old readers, such as moving stored phases to another convention, bumps the [format version](../database-format.md#format-version) that the JavaScript, Swift and Kotlin readers refuse when it's newer than they know. Readers released before that check don't have it, so such a change waits until the apps ship a reader that does. Everything in this repo that resolves constituents by name moves onto the definitions too: `packages/tcd`, the seasonal checks in `packages/stations/filtering.ts` and `evaluate-quality.ts`, `packages/stations/lat-hat.ts` and `validate-datums.ts`, `packages/datums` (`datum.ts` and `observations.ts`), and the Swift and Kotlin readers. It comes before fits from Stillwell ship at scale, so none of them has to be converted afterward.
 
 ## Goals
 
@@ -268,7 +268,7 @@ TICON records with known faults, fixed at each gauge when its originator's serie
 ## Order of work
 
 1. Feedback to Stillwell: the inventory of GESLA-only years, and issues for the other needs under [Stillwell](#stillwell).
-2. Constituent definitions in the database format and the engine (#238, slackwater#241 and slackwater#242), with TICON's and Kartverket's conventions moved into data, and a format major version the readers check.
+2. Constituent definitions in the database format and the engine (#238, slackwater#241 and slackwater#242), with TICON's and Kartverket's conventions moved into data.
 3. Engine: multi-year nodal fit with weights, confidence intervals and SNR, and constituent selection in `@slackwater/engine`, with tests against synthetic tides of known constants. Then the engine check in `packages/tcd` and validation, and the move of `fitHarmonics` onto the new `fit()`.
 4. Verification harness: held-out scoring, extremum picker, band energy and the agency comparisons, as one report.
 5. Calibration against NOAA, Kartverket and JCG constants, and RWS and BSH predictions.

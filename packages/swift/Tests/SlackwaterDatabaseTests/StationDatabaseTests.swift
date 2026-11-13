@@ -354,6 +354,21 @@ final class StationDatabaseTests: XCTestCase {
     XCTAssertThrowsError(try StationDatabase(verifying: bytes)) { XCTAssert($0 is InvalidStationDatabase) }
   }
 
+  func testHeaderCheckRefusesARootTablePastTheEnd() throws {
+    var data = try Data(contentsOf: Self.url)
+    let root = Int(data.withUnsafeBytes { $0.loadUnaligned(fromByteOffset: 0, as: UInt32.self) })
+    let vtable = root - Int(data.withUnsafeBytes { $0.loadUnaligned(fromByteOffset: root, as: Int32.self) })
+    let tableSize = Int(data[vtable + 2]) | Int(data[vtable + 3]) << 8
+    // One byte short of the table's end, past the format field.
+    let cut = Data(data.prefix(root + tableSize - 1))
+    XCTAssertThrowsError(try StationDatabase(data: cut)) { XCTAssert($0 is InvalidStationDatabase) }
+    // A table size that runs one byte past the end of the file.
+    let pastEnd = data.count - root + 1
+    data[vtable + 2] = UInt8(pastEnd & 0xFF)
+    data[vtable + 3] = UInt8(pastEnd >> 8)
+    XCTAssertThrowsError(try StationDatabase(data: data)) { XCTAssert($0 is InvalidStationDatabase) }
+  }
+
   func testVerifyingOpenRejectsRandomBytesBehindAValidHeader() throws {
     // A fixed-seed generator, so a failure reproduces.
     var state: UInt64 = 0x9E37_79B9_7F4A_7C15

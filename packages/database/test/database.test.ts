@@ -727,7 +727,14 @@ describe("format version", () => {
 
   test("refuses a buffer whose root table is cut off", () => {
     const whole = withFormat(FORMAT_VERSION);
-    for (const length of [8, whole.length - 2]) {
+    const view = new DataView(whole.buffer, whole.byteOffset);
+    const root = view.getUint32(0, true);
+    const tableSize = view.getUint16(
+      root - view.getInt32(root, true) + 2,
+      true,
+    );
+    // The last cut keeps the format version but not the whole table.
+    for (const length of [8, whole.length - 2, root + tableSize - 1]) {
       expect(() => openDatabase(whole.slice(0, length))).toThrow(
         "Invalid station database",
       );

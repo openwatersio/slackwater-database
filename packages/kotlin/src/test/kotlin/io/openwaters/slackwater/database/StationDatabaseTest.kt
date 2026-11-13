@@ -74,10 +74,12 @@ class StationDatabaseTest {
 
         // A header whose root table lies past the end.
         assertFailsWith<InvalidStationDatabaseException> { StationDatabase(ByteBuffer.wrap(fixture.readBytes().copyOf(8))) }
-        // One cut inside the root table, past its format version.
+        // One byte short of the root table's end, past its format version.
         val bytes = fixture.readBytes()
-        val table = ByteBuffer.wrap(bytes).order(java.nio.ByteOrder.LITTLE_ENDIAN).getInt(0)
-        assertFailsWith<InvalidStationDatabaseException> { StationDatabase(ByteBuffer.wrap(bytes.copyOf(table + 6))) }
+        val header = ByteBuffer.wrap(bytes).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+        val table = header.getInt(0)
+        val tableSize = header.getShort(table - header.getInt(table) + 2).toUShort().toInt()
+        assertFailsWith<InvalidStationDatabaseException> { StationDatabase(ByteBuffer.wrap(bytes.copyOf(table + tableSize - 1))) }
     }
 
     @Test

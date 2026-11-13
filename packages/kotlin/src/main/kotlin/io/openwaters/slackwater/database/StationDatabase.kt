@@ -64,7 +64,8 @@ class StationDatabase(buffer: ByteBuffer) : AbstractList<Station>(), RandomAcces
             // The vtable's second entry is the root table's size.
             val table = bytes.getInt(0)
             val vtable = table - bytes.getInt(table)
-            if (table + bytes.getShort(vtable + 2).toUShort().toInt() > bytes.limit()) {
+            // Subtracted, not added, so a table offset near Int.MAX_VALUE can't wrap.
+            if (bytes.getShort(vtable + 2).toUShort().toInt() > bytes.limit() - table) {
                 throw InvalidStationDatabaseException()
             }
         } catch (e: IndexOutOfBoundsException) {

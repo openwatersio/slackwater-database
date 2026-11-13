@@ -2,8 +2,8 @@ import FlatBuffers
 import Foundation
 
 /// The file is not a station database: too short, the "TCDB" file identifier
-/// is missing, or the root table or its format version lies past the end. A verifying open also throws it for a file that fails the
-/// FlatBuffers verifier, a name index past its table, or a string that is not UTF-8.
+/// is missing, or the root table or its format version lies past the end. A
+/// verifying open also throws it for a file that fails the FlatBuffers verifier, a name index past its table, or a string that is not UTF-8.
 public struct InvalidStationDatabase: Error {}
 
 /// The file is a station database in a newer format than this reader knows.
@@ -333,14 +333,22 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
     guard let rootOffset = read(UInt32.self, at: 0).flatMap({ Int(exactly: $0) }),
       let vtableBack = read(Int32.self, at: rootOffset)
     else { return nil }
-    // A file's back-offset can overflow a 32-bit Int.
+    // Offsets from the file can overflow a 32-bit Int, so every sum reports it.
+    func add(_ a: Int, _ b: Int) -> Int? {
+      let (sum, overflow) = a.addingReportingOverflow(b)
+      return overflow ? nil : sum
+    }
     let (vtable, overflow) = rootOffset.subtractingReportingOverflow(Int(vtableBack))
-    guard !overflow, let vtableSize = read(UInt16.self, at: vtable) else { return nil }
+    // The vtable's second entry is the root table's size; the table must fit.
+    guard !overflow, let vtableSize = read(UInt16.self, at: vtable),
+      let tableSize = read(UInt16.self, at: vtable + 2),
+      let tableEnd = add(rootOffset, Int(tableSize)), tableEnd <= data.count
+    else { return nil }
     let slot = 16  // Root.format_version's vtable entry, as in the generated VTOFFSET.
     guard slot + 2 <= Int(vtableSize) else { return 0 }
     guard let field = read(UInt16.self, at: vtable + slot) else { return nil }
     if field == 0 { return 0 }
-    return read(UInt16.self, at: rootOffset + Int(field)).map(Int.init)
+    return add(rootOffset, Int(field)).flatMap { read(UInt16.self, at: $0) }.map(Int.init)
   }
 
   /// `init(verifying:)` on a memory-mapped file. Reads after verifying go to
