@@ -104,7 +104,7 @@ class StationDatabase(buffer: ByteBuffer) : AbstractList<Station>(), RandomAcces
          * The format major version this reader knows (`Root.format_version`
          * in schemas/database.fbs). It opens files up to this version.
          */
-        const val FORMAT_VERSION = 1
+        const val FORMAT_VERSION = 2
 
         /** Memory-map a database file. Pages fault in as they are read. */
         @JvmStatic

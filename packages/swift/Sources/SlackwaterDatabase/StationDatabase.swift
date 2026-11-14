@@ -303,7 +303,7 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
 
   /// The format major version this package writes and the newest it reads
   /// (`Root.format_version` in schemas/database.fbs).
-  public static let formatVersion = 1
+  public static let formatVersion = 2
 
   /// The file identifier and format version, read with bounds checks so any
   /// bytes are safe here. Files written before the version existed read as 0.

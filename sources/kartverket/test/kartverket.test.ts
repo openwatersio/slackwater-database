@@ -295,6 +295,13 @@ describe("Kartverket source parser", () => {
         doodson: "BWZCZZZ",
       }),
     ).toBe("OQ2_KV");
+    expect(
+      resolveConstituent({
+        name: "M3",
+        speed: 43.47615636,
+        doodson: "CZZZZZB",
+      }),
+    ).toBe("M3");
   });
 
   it("resolves ordinary catalogue tuples and rejects unknown ones", () => {

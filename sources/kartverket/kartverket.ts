@@ -67,6 +67,8 @@ const overrides = new Map<string, string>([
   ["SA|0.04106668|ZZAZZYZ", "SA_KV"],
   ["S1|15.00000196|AAYZZAA", "S1_KV"],
   ["OQ2|27.35098024|BWZCZZZ", "OQ2_KV"],
+  // Kartverket labels M3 with a 180° constant, but its predictions use Schureman's argument, as the engine does.
+  ["M3|43.47615636|CZZZZZB", "M3"],
 ]);
 
 export const normalizePhase = (phase: number, speed: number) =>
