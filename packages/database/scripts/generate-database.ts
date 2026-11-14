@@ -51,6 +51,7 @@ const database = buildDatabase(catalogue.stations, {
   version,
   routes: catalogue.routes,
   credits: catalogue.credits,
+  constituents: catalogue.constituents,
 });
 
 writeFileSync(join(outDir, "slackwater.tcdb"), database);

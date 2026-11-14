@@ -101,7 +101,7 @@ class StationDatabase(buffer: ByteBuffer) : AbstractList<Station>(), RandomAcces
 
     companion object {
         /**
-         * The format major version this reader knows (`Root.format_version`
+         * The newest format major version this reader knows (`Root.format_version`
          * in schemas/database.fbs). It opens files up to this version.
          */
         const val FORMAT_VERSION = 1

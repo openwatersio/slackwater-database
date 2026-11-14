@@ -6,6 +6,8 @@ import XCTest
 /// Writes databases through `StationDatabase.build` and reads them back with
 /// the same reader that opens the TypeScript-built fixture.
 final class StationDatabaseBuilderTests: XCTestCase {
+  static let definitions = StationDatabaseTests.definitions
+
   func fixture() throws -> StationDatabase {
     try StationDatabase(contentsOf: StationDatabaseTests.url)
   }
@@ -20,7 +22,9 @@ final class StationDatabaseBuilderTests: XCTestCase {
     var inputs = db.map(StationInput.init)
     edit(&inputs)
     return try StationDatabase(
-      data: StationDatabase.build(inputs, version: db.version, routes: routes(of: db)))
+      data: StationDatabase.build(
+        inputs, version: db.version, routes: routes(of: db),
+        constituentDefinitions: db.constituentDefinitions))
   }
 
   func assertSameStation(_ a: Station, _ b: Station, file: StaticString = #filePath, line: UInt = #line) {
@@ -63,6 +67,8 @@ final class StationDatabaseBuilderTests: XCTestCase {
     eq(a.astronomicalBounds?.lat, b.astronomicalBounds?.lat, "astronomicalBounds.lat")
     eq(a.astronomicalBounds?.hat, b.astronomicalBounds?.hat, "astronomicalBounds.hat")
     eq(a.attribution, b.attribution, "attribution")
+    eq(a.constituentDefinitions, b.constituentDefinitions, "constituentDefinitions")
+    eq(a.nodeCorrections, b.nodeCorrections, "nodeCorrections")
     // Fields only the generated accessors reach, and the record's own prediction data.
     eq(StationInput(a), StationInput(b), "StationInput")
     eq(a.raw.attribution, b.raw.attribution, "raw.attribution")
@@ -74,6 +80,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
     let rebuilt = try rebuild(original)
     XCTAssertEqual(rebuilt.version, original.version)
     XCTAssertEqual(rebuilt.count, original.count)
+    XCTAssertEqual(rebuilt.constituentDefinitions, original.constituentDefinitions)
     for (a, b) in zip(original, rebuilt) { assertSameStation(a, b) }
     for kind in [StationRouteKind.tide, .current] {
       XCTAssertEqual(rebuilt.stationRoutes(kind: kind), original.stationRoutes(kind: kind))
@@ -99,12 +106,145 @@ final class StationDatabaseBuilderTests: XCTestCase {
     XCTAssertEqual(Int(db.root.formatVersion), StationDatabase.formatVersion)
   }
 
+  // A name the source stops defining has to resolve in the shared set.
+  func testResolvesANameASourceStopsDefiningInTheSharedSet() throws {
+    let original = try fixture()
+    var inputs = original.map(StationInput.init)
+    for i in inputs.indices {
+      inputs[i].source?.constituentDefinitions = []
+      inputs[i].source?.nodeCorrections = .iho
+    }
+    let credits: [String: String?] = ["Test Source": nil]
+    // The fixture's S2 lived on its source.
+    assertBuildFails(
+      inputs, credits: credits, constituentDefinitions: original.constituentDefinitions,
+      "test/reference: no definition for constituent S2")
+    let s2 = Station.ConstituentDefinition(name: "S2", speed: 30, coefficients: [2, 2, -2, 0, 0, 0, 0])
+    let db = try StationDatabase(
+      data: StationDatabase.build(
+        inputs, credits: credits, constituentDefinitions: original.constituentDefinitions + [s2]))
+    let reference = try XCTUnwrap(db.station(id: "test/reference"))
+    XCTAssertEqual(reference.nodeCorrections, .iho)
+    XCTAssertEqual(reference.constituentDefinitions?.first, s2)
+  }
+
+  func testRejectsMalformedOrUnresolvedDefinitions() throws {
+    var station = try StationInput(XCTUnwrap(fixture().station(id: "test/reference")))
+    let s2 = Station.ConstituentDefinition(name: "S2", speed: 30, coefficients: [2, 2, -2, 0, 0, 0, 1])
+    station.source?.constituentDefinitions = [s2, s2]
+    assertBuildFails([station], "Test Source: S2 is defined twice")
+    station.source?.constituentDefinitions = [
+      Station.ConstituentDefinition(name: "S2", speed: 30, coefficients: [2, 2, -2, 0, 0, 0, 200])
+    ]
+    assertBuildFails([station], "Test Source: S2 needs 7 integer coefficients or nil")
+    station.source?.constituentDefinitions = [
+      Station.ConstituentDefinition(
+        name: "MS4", speed: 58.98, coefficients: nil, members: [.init(name: "MX", factor: 1)])
+    ]
+    assertBuildFails([station], "Test Source: MS4 names member MX, which nothing defines")
+    // The file stores a factor as a float, where this one overflows.
+    station.source?.constituentDefinitions = [
+      Station.ConstituentDefinition(
+        name: "MS4", speed: 58.98, coefficients: nil, members: [.init(name: "M2", factor: 1e39)])
+    ]
+    assertBuildFails([station], "Test Source: MS4 has a malformed member")
+  }
+
+  // A station storing both spellings would hand the engine two lines for one catalog entry.
+  func testRejectsTwoOwnDefinitionsReplacingOneSharedDefinition() throws {
+    var station = try StationInput(XCTUnwrap(fixture().station(id: "test/reference")))
+    let sa = Station.ConstituentDefinition(
+      name: "Sa", speed: 0.0410686, coefficients: [0, 0, 1, 0, 0, 0, 0], aliases: ["SA"])
+    let kv = Station.ConstituentDefinition(
+      name: "SA", speed: 0.04106668, coefficients: [0, 0, 1, 0, 0, -1, 0])
+    var kvSa = kv
+    kvSa.name = "Sa"
+    station.source?.constituentDefinitions += [kv, kvSa]
+    assertBuildFails(
+      [station], constituentDefinitions: Self.definitions + [sa],
+      "Test Source: Sa and SA both replace the shared Sa")
+    // And one line for two catalog entries.
+    var both = try StationInput(XCTUnwrap(fixture().station(id: "test/reference")))
+    var s2 = both.source!.constituentDefinitions[0]
+    s2.aliases = ["Sa"]
+    both.source?.constituentDefinitions = [s2]
+    assertBuildFails(
+      [both], constituentDefinitions: Self.definitions + [sa],
+      "Test Source: S2 replaces both the shared S2 and Sa")
+  }
+
+  // As one written before definitions, which reads back an empty shared set.
+  func testBuildsWithoutDefinitionsWhenNoneAreGivenAndNoSourceChangesPredictions() throws {
+    var inputs = try fixture().map(StationInput.init)
+    for i in inputs.indices {
+      inputs[i].source?.constituentDefinitions = []
+      inputs[i].source?.nodeCorrections = .iho
+    }
+    let db = try StationDatabase(
+      data: StationDatabase.build(
+        inputs, credits: ["Test Source": nil], constituentDefinitions: []))
+    XCTAssertEqual(db.constituentDefinitions, [])
+    XCTAssertNil(try XCTUnwrap(db.station(id: "test/reference")).constituentDefinitions)
+  }
+
+  // A TypeScript reader keys a source's definitions by its name.
+  func testRejectsStationsOfOneSourceThatDisagreeOnDefinitions() throws {
+    var inputs = try fixture().map(StationInput.init)
+    let gate = try XCTUnwrap(inputs.firstIndex { $0.id == "test/zfit-online" })
+    inputs[gate].source?.nodeCorrections = .iho
+    let message =
+      "Test Source: stations of one source carry different constituent definitions or node corrections"
+    assertBuildFails(inputs, message)
+    inputs[gate].source?.nodeCorrections = .schureman
+    inputs[gate].source?.constituentDefinitions = []
+    assertBuildFails(inputs, message)
+  }
+
+  // Readers predict it from its reference's record, so its own constituents go unread.
+  func testSkipsTheDefinitionCheckForASubordinateWhoseReferenceIsInTheFile() throws {
+    let db = try fixture()
+    let reference = try StationInput(XCTUnwrap(db.station(id: "test/reference")))
+    var subordinate = try StationInput(XCTUnwrap(db.station(id: "test/subordinate")))
+    subordinate.constituents = [Station.Constituent(name: "ZZ", amplitude: 0.1, phase: 0)]
+    XCTAssertNoThrow(
+      try StationDatabase.build([reference, subordinate], constituentDefinitions: Self.definitions))
+    assertBuildFails([subordinate], "test/subordinate: no definition for constituent ZZ")
+  }
+
+  func testRequiresADefinitionForEveryStoredConstituent() throws {
+    let station = try StationInput(XCTUnwrap(fixture().station(id: "test/reference")))
+    // Its source defines S2; nothing defines M2.
+    assertBuildFails(
+      [station], constituentDefinitions: [], "test/reference: no definition for constituent M2")
+  }
+
+  // Members resolve as the readers resolve them, the source's own set first.
+  func testRejectsDefinitionsCyclicThroughTheirMembers() throws {
+    var station = try StationInput(XCTUnwrap(fixture().station(id: "test/reference")))
+    let s2 = Station.ConstituentDefinition(name: "S2", speed: 30, coefficients: [2, 2, -2, 0, 0, 0, 1])
+    station.source?.constituentDefinitions = [
+      s2,
+      Station.ConstituentDefinition(name: "X", speed: 1, coefficients: nil, members: [.init(name: "Y", factor: 1)]),
+      Station.ConstituentDefinition(name: "Y", speed: 1, coefficients: nil, members: [.init(name: "X", factor: 1)]),
+    ]
+    assertBuildFails([station], "Test Source: X is cyclic through its members")
+    // The shared Q1's member O1 resolves to the source's own O1, which leads back to Q1.
+    station.source?.constituentDefinitions = [
+      s2,
+      Station.ConstituentDefinition(name: "O1", speed: 13.94, coefficients: nil, members: [.init(name: "Q1", factor: 1)]),
+    ]
+    assertBuildFails([station], "Test Source: O1 is cyclic through its members")
+    let shared = Self.definitions.first { $0.name == "Q1" }
+    XCTAssertEqual(shared?.members, [.init(name: "O1", factor: 1)])
+  }
+
   // Catches a schema field StationInput doesn't carry, which the accessor
   // comparisons can't see.
   func testRebuildStoresTheSameFieldsInEveryTable() throws {
     let original = try fixture()
     let data = try StationDatabase.build(
-      original.map(StationInput.init), version: original.version, routes: routes(of: original))
+      original.map(StationInput.init), version: original.version, routes: routes(of: original),
+      constituentDefinitions: original.constituentDefinitions)
     let before = Layout(bytes: [UInt8](try Data(contentsOf: StationDatabaseTests.url)))
     XCTAssertEqual(Layout(bytes: [UInt8](data)).storedFields, before.storedFields)
     XCTAssertEqual(before.storedFields.count, original.count)
@@ -176,7 +316,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
     input.license = license
     assertBuildFails([input], "test/new: no credit decision for source S")
 
-    let db = try StationDatabase(data: StationDatabase.build([input], credits: ["S": "Credit line"]))
+    let db = try StationDatabase(data: StationDatabase.build([input], credits: ["S": "Credit line"], constituentDefinitions: []))
     let station = try XCTUnwrap(db.station(id: "test/new"))
     XCTAssertEqual(station.aliases, ["new", "new place"])
     XCTAssertEqual(station.current?.floodDirection, 0)
@@ -190,7 +330,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
     XCTAssertEqual(db.version, nil)
 
     // A source that needs no credit is a decision too.
-    let uncredited = try StationDatabase(data: StationDatabase.build([input], credits: ["S": nil]))
+    let uncredited = try StationDatabase(data: StationDatabase.build([input], credits: ["S": nil], constituentDefinitions: []))
     XCTAssertEqual(
       uncredited.station(id: "test/new")?.attribution,
       "\(Station.projectCredit). Licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)."
@@ -221,7 +361,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
       [relicensed],
       "Station test/reference attribution does not end with its license notice \"\(clause)\"; set it to nil to compose one")
     relicensed.attribution = nil
-    let composed = try StationDatabase(data: StationDatabase.build([relicensed], credits: [source: nil]))
+    let composed = try StationDatabase(data: StationDatabase.build([relicensed], credits: [source: nil], constituentDefinitions: Self.definitions))
     let cc = try StationInput(XCTUnwrap(composed.station(id: "test/reference")))
     XCTAssert(try XCTUnwrap(cc.attribution).hasSuffix(clause))
     // A hand-written credit needs the credits entry that composes it.
@@ -230,7 +370,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
     assertBuildFails(
       [credited],
       "Station test/reference attribution can't be checked without a credits entry for its source Test Source; set attribution to nil and pass credits")
-    XCTAssertNoThrow(try StationDatabase.build([credited], credits: [source: "A credit"]))
+    XCTAssertNoThrow(try StationDatabase.build([credited], credits: [source: "A credit"], constituentDefinitions: Self.definitions))
 
     // CC BY back to public domain, keeping the CC BY notice.
     var publicDomain = cc
@@ -243,7 +383,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
     var noURL = cc
     noURL.license?.url = nil
     noURL.attribution = nil
-    XCTAssertThrowsError(try StationDatabase.build([noURL], credits: [source: nil])) {
+    XCTAssertThrowsError(try StationDatabase.build([noURL], credits: [source: nil], constituentDefinitions: Self.definitions)) {
       XCTAssertEqual(
         ($0 as? StationDatabaseBuildError)?.message,
         "Station test/reference license cc-by-4.0 has no url, which its notice must give")
@@ -258,7 +398,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
     station.source = StationSource(name: "LINZ", id: "1", url: nil, publishedHarmonics: true)
     station.license = Self.ccBy
     station.attribution = StationAttribution.notice(credit: linz, license: Self.ccBy)
-    XCTAssertNoThrow(try StationDatabase.build([station], credits: ["LINZ": linz]))
+    XCTAssertNoThrow(try StationDatabase.build([station], credits: ["LINZ": linz], constituentDefinitions: Self.definitions))
     // With no entry, a hand-written notice can't be checked.
     assertBuildFails(
       [station],
@@ -298,7 +438,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
     // Unchanged, and an unchanged copy under a new id: builds.
     var copy = try XCTUnwrap(inputs.first { $0.id == "test/reference" })
     copy.id = "test/reference-copy"
-    XCTAssertNoThrow(try StationDatabase.build(inputs + [copy], routes: routes))
+    XCTAssertNoThrow(try StationDatabase.build(inputs + [copy], routes: routes, constituentDefinitions: Self.definitions))
 
     let refused =
       "Station test/reference-copy attribution can't be checked without a credits entry for its source %@; set attribution to nil and pass credits"
@@ -324,9 +464,9 @@ final class StationDatabaseBuilderTests: XCTestCase {
     assertBuildFails(
       [station],
       "Station test/new attribution can't be checked without a credits entry for its source S; set attribution to nil and pass credits")
-    XCTAssertNoThrow(try StationDatabase.build([station], credits: ["S": nil]))
+    XCTAssertNoThrow(try StationDatabase.build([station], credits: ["S": nil], constituentDefinitions: []))
     station.attribution = nil
-    XCTAssertNoThrow(try StationDatabase.build([station], credits: ["S": nil]))
+    XCTAssertNoThrow(try StationDatabase.build([station], credits: ["S": nil], constituentDefinitions: []))
   }
 
   func testRefusesValuesThatOverflowTheirField() throws {
@@ -354,9 +494,9 @@ final class StationDatabaseBuilderTests: XCTestCase {
     var station = try StationInput(XCTUnwrap(fixture().station(id: "test/reference")))
     station.attribution = "\(Station.projectCredit). Licensed by the harbour authority"
     XCTAssertNoThrow(
-      try StationDatabase.build([station], credits: ["Test Source": "Licensed by the harbour authority"]))
+      try StationDatabase.build([station], credits: ["Test Source": "Licensed by the harbour authority"], constituentDefinitions: Self.definitions))
     station.attribution = "\(Station.projectCredit). Modified: see \(StationAttribution.modificationsURL)"
-    XCTAssertThrowsError(try StationDatabase.build([station]))
+    XCTAssertThrowsError(try StationDatabase.build([station], constituentDefinitions: Self.definitions))
   }
 
   func testInfersTypeFromOffsetsAndRejectsAReferenceWithTideOffsets() throws {
@@ -381,25 +521,25 @@ final class StationDatabaseBuilderTests: XCTestCase {
     var station = try StationInput(XCTUnwrap(fixture().station(id: "test/subordinate-fixed")))
     station.type = .reference
     station.tideOffsets = nil
-    let plain = try StationDatabase(data: StationDatabase.build([station]))
+    let plain = try StationDatabase(data: StationDatabase.build([station], constituentDefinitions: Self.definitions))
     XCTAssertNil(plain.station(id: "test/subordinate-fixed")?.raw.quality)
 
     station.accepted = false
-    let rejected = try StationDatabase(data: StationDatabase.build([station]))
+    let rejected = try StationDatabase(data: StationDatabase.build([station], constituentDefinitions: Self.definitions))
     XCTAssertNotNil(rejected.station(id: "test/subordinate-fixed")?.raw.quality)
     XCTAssertEqual(rejected.station(id: "test/subordinate-fixed")?.accepted, false)
 
     // An empty stored table, as buildDatabase writes for any `quality` block, survives a rebuild.
     station.preserved.hadQualityTable = true
-    let empty = try StationDatabase(data: StationDatabase.build([station.withAccepted(true)]))
+    let empty = try StationDatabase(data: StationDatabase.build([station.withAccepted(true)], constituentDefinitions: Self.definitions))
     let reread = try StationInput(XCTUnwrap(empty.station(id: "test/subordinate-fixed")))
-    let again = try StationDatabase(data: StationDatabase.build([reread]))
+    let again = try StationDatabase(data: StationDatabase.build([reread], constituentDefinitions: Self.definitions))
     XCTAssertNotNil(again.station(id: "test/subordinate-fixed")?.raw.quality)
     station.preserved.hadQualityTable = false
 
     station.accepted = true
     station.score = 12
-    let scored = try StationDatabase(data: StationDatabase.build([station]))
+    let scored = try StationDatabase(data: StationDatabase.build([station], constituentDefinitions: Self.definitions))
     XCTAssertNotNil(scored.station(id: "test/subordinate-fixed")?.raw.quality)
     XCTAssertEqual(scored.station(id: "test/subordinate-fixed")?.score, 12)
   }
@@ -426,7 +566,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
     var inputs = db.map(StationInput.init)
     inputs.removeAll { $0.id == "test/reference" }
     let routes = self.routes(of: db).mapValues { $0.filter { $0.slug != "reference" } }
-    XCTAssertThrowsError(try StationDatabase.build(inputs, routes: routes)) {
+    XCTAssertThrowsError(try StationDatabase.build(inputs, routes: routes, constituentDefinitions: Self.definitions)) {
       XCTAssertEqual(
         ($0 as? StationDatabaseBuildError)?.message,
         "Station test/subordinate references missing station test/reference and has no prediction data of its own")
@@ -438,7 +578,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
       inputs[index].constituents = reference.constituents
       inputs[index].datums = reference.datums
     }
-    let resolved = try StationDatabase(data: StationDatabase.build(inputs, routes: routes))
+    let resolved = try StationDatabase(data: StationDatabase.build(inputs, routes: routes, constituentDefinitions: Self.definitions))
     XCTAssertEqual(resolved.station(id: "test/subordinate")?.constituents, reference.constituents)
   }
 
@@ -449,7 +589,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
     let currents = db.filter { $0.kind == .current }.map(StationInput.init)
     var routes = self.routes(of: db)
     routes[.tide] = []
-    let built = try StationDatabase(data: StationDatabase.build(currents, routes: routes))
+    let built = try StationDatabase(data: StationDatabase.build(currents, routes: routes, constituentDefinitions: Self.definitions))
     let current = try XCTUnwrap(built.station(id: "test/current")?.current)
     XCTAssertEqual(current.tideReference, "test/reference")
     XCTAssertEqual(current.offsets?.reference, "test/reference")
@@ -463,7 +603,8 @@ final class StationDatabaseBuilderTests: XCTestCase {
     }
     let original = try StationDatabase(contentsOf: URL(fileURLWithPath: path))
     let data = try StationDatabase.build(
-      original.map(StationInput.init), version: original.version, routes: routes(of: original))
+      original.map(StationInput.init), version: original.version, routes: routes(of: original),
+      constituentDefinitions: original.constituentDefinitions)
     let rebuilt = try StationDatabase(data: data)
     XCTAssertEqual(rebuilt.version, original.version)
     XCTAssertEqual(rebuilt.count, original.count)
@@ -503,7 +644,9 @@ final class StationDatabaseBuilderTests: XCTestCase {
           ? nil : StationRoute(slug: route.slug, stationIDs: ids, formerPaths: route.formerPaths)
       }
     }
-    let data = try StationDatabase.build(stations, version: db.version, routes: routes)
+    let data = try StationDatabase.build(
+      stations, version: db.version, routes: routes,
+      constituentDefinitions: db.constituentDefinitions)
 
     let built = try StationDatabase(data: data)
     XCTAssertNil(built.station(id: removed))
@@ -521,7 +664,8 @@ final class StationDatabaseBuilderTests: XCTestCase {
     }
     let relicensed = try StationDatabase.build(
       stations, version: db.version, routes: routes,
-      credits: ["US National Oceanic and Atmospheric Administration": nil])
+      credits: ["US National Oceanic and Atmospheric Administration": nil],
+      constituentDefinitions: db.constituentDefinitions)
 
     let notice = try XCTUnwrap(
       StationDatabase(data: relicensed).station(id: "noaa/ACT0101-cc-by")?.attribution)
@@ -570,8 +714,8 @@ final class StationDatabaseBuilderTests: XCTestCase {
     for data in [
       // The TypeScript-built fixture first, so a broken walk can't pass on its own.
       try Data(contentsOf: StationDatabaseTests.url),
-      try StationDatabase.build(inputs, version: original.version, routes: routes(of: original)),
-      try StationDatabase.build(many),
+      try StationDatabase.build(inputs, version: original.version, routes: routes(of: original), constituentDefinitions: Self.definitions),
+      try StationDatabase.build(many, constituentDefinitions: Self.definitions),
     ] {
       let layout = Layout(bytes: [UInt8](data))
       XCTAssertGreaterThan(layout.highestStationTable, 0)
@@ -585,10 +729,13 @@ final class StationDatabaseBuilderTests: XCTestCase {
   func assertBuildFails(
     _ stations: [StationInput], routes: [StationRouteKind: [StationRoute]] = [:],
     credits: [String: String?] = [:],
+    constituentDefinitions: [Station.ConstituentDefinition] = StationDatabaseTests.definitions,
     _ message: String, file: StaticString = #filePath, line: UInt = #line
   ) {
     XCTAssertThrowsError(
-      try StationDatabase.build(stations, routes: routes, credits: credits), file: file, line: line
+      try StationDatabase.build(
+        stations, routes: routes, credits: credits, constituentDefinitions: constituentDefinitions),
+      file: file, line: line
     ) {
       XCTAssertEqual(($0 as? StationDatabaseBuildError)?.message, message, file: file, line: line)
     }
@@ -601,7 +748,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
 
   func testSortsUnsortedInput() throws {
     let original = try fixture()
-    let db = try StationDatabase(data: StationDatabase.build(original.map(StationInput.init).reversed()))
+    let db = try StationDatabase(data: StationDatabase.build(original.map(StationInput.init).reversed(), constituentDefinitions: Self.definitions))
     XCTAssertEqual(db.map(\.id), original.map(\.id))
     XCTAssertEqual(db.station(id: "test/zfit-online")?.name, "An online gate")
   }
@@ -660,7 +807,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
     inputs[ref].constituents[0].amplitude = .nan
     let sub = inputs.firstIndex { $0.id == "test/subordinate" }!
     inputs[sub].tideOffsets?.heightHigh = .infinity
-    let db = try StationDatabase(data: StationDatabase.build(inputs))
+    let db = try StationDatabase(data: StationDatabase.build(inputs, constituentDefinitions: Self.definitions))
     XCTAssertTrue(try XCTUnwrap(db.station(id: "test/reference")?.constituents.first).amplitude.isNaN)
     XCTAssertEqual(db.station(id: "test/subordinate")?.tideOffsets?.heightHigh, .infinity)
 

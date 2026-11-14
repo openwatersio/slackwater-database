@@ -177,6 +177,26 @@ internal class Root : Table() {
             val o = __offset(16)
             return if(o != 0) bb.getShort(o + bb_pos).toUShort() else 0u
         }
+    /**
+     * The line each constituent name stands for, at most one per name or alias:
+     * every name a station stores, unless its source defines it, and every
+     * member those definitions lead to. A source's `constituent_definitions` replace these for its
+     * own stations. A file written before this field has none; readers then leave
+     * every name to the predictor's own catalogue.
+     */
+    fun constituentDefinitions(j: Int) : Slackwater.ConstituentDefinition? = constituentDefinitions(Slackwater.ConstituentDefinition(), j)
+    fun constituentDefinitions(obj: Slackwater.ConstituentDefinition, j: Int) : Slackwater.ConstituentDefinition? {
+        val o = __offset(18)
+        return if (o != 0) {
+            obj.__assign(__indirect(__vector(o) + j * 4), bb)
+        } else {
+            null
+        }
+    }
+    val constituentDefinitionsLength : Int
+        get() {
+            val o = __offset(18); return if (o != 0) __vector_len(o) else 0
+        }
     companion object {
         fun getRootAsRoot(_bb: ByteBuffer): Root = getRootAsRoot(_bb, Root())
         fun getRootAsRoot(_bb: ByteBuffer, obj: Root): Root {
@@ -184,8 +204,9 @@ internal class Root : Table() {
             return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb))
         }
         fun RootBufferHasIdentifier(_bb: ByteBuffer) : Boolean = __has_identifier(_bb, "TCDB")
-        fun createRoot(builder: FlatBufferBuilder, versionOffset: Int, stationsOffset: Int, constituentNamesOffset: Int, datumNamesOffset: Int, tideRoutesOffset: Int, currentRoutesOffset: Int, formatVersion: UShort) : Int {
-            builder.startTable(7)
+        fun createRoot(builder: FlatBufferBuilder, versionOffset: Int, stationsOffset: Int, constituentNamesOffset: Int, datumNamesOffset: Int, tideRoutesOffset: Int, currentRoutesOffset: Int, formatVersion: UShort, constituentDefinitionsOffset: Int) : Int {
+            builder.startTable(8)
+            addConstituentDefinitions(builder, constituentDefinitionsOffset)
             addCurrentRoutes(builder, currentRoutesOffset)
             addTideRoutes(builder, tideRoutesOffset)
             addDatumNames(builder, datumNamesOffset)
@@ -195,7 +216,7 @@ internal class Root : Table() {
             addFormatVersion(builder, formatVersion)
             return endRoot(builder)
         }
-        fun startRoot(builder: FlatBufferBuilder) = builder.startTable(7)
+        fun startRoot(builder: FlatBufferBuilder) = builder.startTable(8)
         fun addVersion(builder: FlatBufferBuilder, version: Int) = builder.addOffset(0, version, 0)
         fun addStations(builder: FlatBufferBuilder, stations: Int) = builder.addOffset(1, stations, 0)
         fun createStationsVector(builder: FlatBufferBuilder, data: IntArray) : Int {
@@ -243,6 +264,15 @@ internal class Root : Table() {
         }
         fun startCurrentRoutesVector(builder: FlatBufferBuilder, numElems: Int) = builder.startVector(4, numElems, 4)
         fun addFormatVersion(builder: FlatBufferBuilder, formatVersion: UShort) = builder.addShort(6, formatVersion.toShort(), 0)
+        fun addConstituentDefinitions(builder: FlatBufferBuilder, constituentDefinitions: Int) = builder.addOffset(7, constituentDefinitions, 0)
+        fun createConstituentDefinitionsVector(builder: FlatBufferBuilder, data: IntArray) : Int {
+            builder.startVector(4, data.size, 4)
+            for (i in data.size - 1 downTo 0) {
+                builder.addOffset(data[i])
+            }
+            return builder.endVector()
+        }
+        fun startConstituentDefinitionsVector(builder: FlatBufferBuilder, numElems: Int) = builder.startVector(4, numElems, 4)
         fun endRoot(builder: FlatBufferBuilder) : Int {
             val o = builder.endTable()
             return o

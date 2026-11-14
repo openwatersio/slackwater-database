@@ -14,7 +14,7 @@ import {
 // database against the same per-source metadata the build used.
 import { loadSources } from "../../stations/sources.ts";
 
-const { all: allStations } = await loadStations();
+const { all: allStations, constituents } = await loadStations();
 
 const sources = loadSources();
 const creditOf = (name: string) => sources.get(name)?.credit;
@@ -73,7 +73,12 @@ describe("attribution", () => {
         ]),
       ).values(),
     ];
-    const rebuilt = openDatabase(buildDatabase(representatives, { credits }));
+    const rebuilt = openDatabase(
+      buildDatabase(representatives, {
+        credits,
+        constituents,
+      }),
+    );
     const notices = new Map(
       representatives.map((station) => [station.id, station.attribution]),
     );

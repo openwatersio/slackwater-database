@@ -9,7 +9,9 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { openDatabase } from "../../database/src/database/reader.ts";
 import { buildDatabase } from "../../database/src/database/builder.ts";
+import { FORMAT_VERSION } from "../../database/src/database/format.ts";
 import type { StationInput } from "../../database/src/types.ts";
+import { databaseConstituents } from "../../stations/constituent-definitions.ts";
 
 // Every station carries full identity: the builder requires name, timezone,
 // continent, country, an ISO country code, source, and license on each record.
@@ -189,8 +191,30 @@ stations.push({
   },
 });
 
+// The test source redefines S2 with a 90° phase constant and uses Schureman's
+// nodal corrections, so the readers see a source's own definitions.
+const S2_OVERRIDE = {
+  name: "S2",
+  speed: 30,
+  coefficients: [2, 2, -2, 0, 0, 0, 1] as [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+  ],
+};
 const bytes = buildDatabase(stations, {
   credits: new Map([["Test Source", null]]),
+  constituents: databaseConstituents(stations, (name) => ({
+    name,
+    authoritative: false,
+    credit: null,
+    node_corrections: "schureman",
+    constituent_definitions: [S2_OVERRIDE],
+  })),
   version: "0.0.0-fixture",
   routes: {
     tide: [
@@ -203,6 +227,12 @@ const bytes = buildDatabase(stations, {
     current: [{ slug: "a-current", station_ids: ["test/current"] }],
   },
 });
+// The Swift and Kotlin tests compare this with their own newest version, so a
+// FORMAT_VERSION bump that the builder never writes, or that misses them, fails.
+if (openDatabase(bytes).formatVersion() !== FORMAT_VERSION)
+  throw new Error(
+    `the fixture is format version ${openDatabase(bytes).formatVersion()}, not FORMAT_VERSION ${FORMAT_VERSION}`,
+  );
 const unknownFit = openDatabase(bytes);
 for (let i = 0; i < unknownFit.stationsLength(); i++) {
   const station = unknownFit.stations(i)!;

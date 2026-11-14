@@ -29,7 +29,12 @@ test("a failed bundled load is retried on the next call", async () => {
   const loadBytes = vi
     .fn()
     .mockRejectedValueOnce(new Error("offline"))
-    .mockResolvedValue(buildDatabase([], { credits: new Map() }));
+    .mockResolvedValue(
+      buildDatabase([], {
+        credits: new Map(),
+        constituents: { definitions: [] },
+      }),
+    );
   vi.doMock("#slackwater.tcdb", () => ({ default: loadBytes }));
   try {
     const { loadStations } = await import("../src/load-stations.js");
