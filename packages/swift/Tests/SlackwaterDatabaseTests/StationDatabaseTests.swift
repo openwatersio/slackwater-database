@@ -12,6 +12,12 @@ final class StationDatabaseTests: XCTestCase {
     .deletingLastPathComponent()
     .appendingPathComponent("fixture.tcdb")
 
+  /// The fixture's shared definitions and the catalog's S2, which its source
+  /// redefines, so a fixture station resolves every name after its source changes.
+  static let definitions: [Station.ConstituentDefinition] =
+    ((try? StationDatabase(contentsOf: url).constituentDefinitions) ?? [])
+    + [Station.ConstituentDefinition(name: "S2", speed: 30, coefficients: [2, 2, -2, 0, 0, 0, 0])]
+
   func open() throws -> StationDatabase {
     try StationDatabase(contentsOf: Self.url)
   }
@@ -276,6 +282,42 @@ final class StationDatabaseTests: XCTestCase {
     XCTAssertNil(current.azimuth)
   }
 
+  func testReadsEachStationsConstituentDefinitions() throws {
+    let db = try open()
+    let reference = try XCTUnwrap(db.station(id: "test/reference"))
+    XCTAssertEqual(reference.nodeCorrections, .schureman)
+    let definitions = try XCTUnwrap(reference.constituentDefinitions)
+    XCTAssertEqual(definitions.map(\.name), ["S2", "M2"])
+    // The source's own S2, with a 90° phase constant, replaces the shared one.
+    let s2 = Station.ConstituentDefinition(name: "S2", speed: 30, coefficients: [2, 2, -2, 0, 0, 0, 1])
+    XCTAssertEqual(definitions[0], s2)
+    XCTAssertEqual(definitions[1].coefficients, [2, 0, 0, 0, 0, 0, 0])
+    XCTAssertEqual(definitions[1].speed, 28.9841042, accuracy: 1e-7)
+    XCTAssertEqual(reference.source?.constituentDefinitions, [s2])
+    XCTAssertEqual(reference.source?.nodeCorrections, .schureman)
+    XCTAssertEqual(db.constituentDefinitions.map(\.name).sorted(), ["K1", "M2", "O1", "Q1"])
+
+    // A subordinate reads its reference's.
+    let subordinate = try XCTUnwrap(db.station(id: "test/subordinate"))
+    XCTAssertEqual(subordinate.raw.constituentsCount, 0)
+    XCTAssertEqual(subordinate.constituentDefinitions, definitions)
+    XCTAssertEqual(subordinate.nodeCorrections, .schureman)
+
+    // Minor current constituents count, and so do the members a compound names.
+    let current = try XCTUnwrap(db.station(id: "test/current")?.constituentDefinitions)
+    XCTAssertEqual(current.map(\.name), ["K1", "Q1", "O1"])
+    XCTAssertEqual(current[1].members, [Station.ConstituentDefinition.Member(name: "O1", factor: 1)])
+    XCTAssertEqual(db.station(id: "test/zfit-online")?.constituentDefinitions, [])
+  }
+
+  func testReadsAFileWrittenBeforeDefinitionsAsLeavingThemToTheEngine() throws {
+    let url = Self.url.deletingLastPathComponent()
+      .appendingPathComponent("../../../database/test/fixtures/pre-minor-current.tcdb")
+    let station = try XCTUnwrap(StationDatabase(contentsOf: url).station(id: "test/current"))
+    XCTAssertNil(station.constituentDefinitions)
+    XCTAssertEqual(station.nodeCorrections, .iho)
+  }
+
   func testReadsAnUnknownChsFitTierAsOnlineWithoutMeasuredNumbers() throws {
     let fit = try XCTUnwrap(open().station(id: "test/zfit-unknown")?.current?.chsFit)
     XCTAssertEqual(fit.tier, .online)
@@ -402,6 +444,92 @@ final class StationDatabaseTests: XCTestCase {
     }
   }
 
+  func testVerifyingOpenRejectsADefinitionNameIndexPastItsTable() throws {
+    // A shared definition's member, through the fixture's Q1.
+    let data = try Data(contentsOf: Self.url)
+    let root = try StationDatabase(data: data).root
+    let q1 = try XCTUnwrap(
+      (0..<root.constituentDefinitionsCount).compactMap { root.constituentDefinitions(at: $0) }
+        .first { root.constituentNames(at: Int32($0.name)) == "Q1" })
+    let members = try XCTUnwrap(q1.withUnsafePointerToMembers { Int(bitPattern: $0.baseAddress) })
+    // A source's own definition's alias, through a built file.
+    var station = try StationInput(XCTUnwrap(StationDatabase(data: data).station(id: "test/reference")))
+    station.source?.constituentDefinitions = [
+      Station.ConstituentDefinition(
+        name: "S2", speed: 30, coefficients: [2, 2, -2, 0, 0, 0, 1], aliases: ["S2X"])
+    ]
+    let built = try StationDatabase.build([station], credits: ["Test Source": nil], constituentDefinitions: Self.definitions)
+    let source = try XCTUnwrap(StationDatabase(data: built).station(id: "test/reference")?.raw.source)
+    let aliases = try XCTUnwrap(
+      source.constituentDefinitions(at: 0)?.withUnsafePointerToAliases { Int(bitPattern: $0.baseAddress) })
+    for (file, vector) in [(data, members), (built, aliases)] {
+      XCTAssertNoThrow(try StationDatabase(verifying: file))
+      let base = file.withUnsafeBytes { Int(bitPattern: $0.baseAddress) }
+      var bytes = [UInt8](file)
+      // The first ushort name index, little-endian.
+      bytes[vector - base] = 0xFF
+      bytes[vector - base + 1] = 0xFF
+      XCTAssertNoThrow(try StationDatabase(data: Data(bytes)))
+      XCTAssertThrowsError(try StationDatabase(verifying: Data(bytes))) {
+        XCTAssert($0 is InvalidStationDatabase)
+      }
+    }
+  }
+
+  // As the Kotlin and TypeScript readers read it; builders write none empty.
+  func testReadsEmptyCoefficientsAsACompound() throws {
+    func file(members: Bool) -> Data {
+      var fbb = FlatBufferBuilder()
+      let names = ["M2", "X"].map { fbb.create(string: $0) }
+      let namesVector = fbb.createVector(ofOffsets: names)
+      let coefficients = fbb.createVector([Int8]())
+      let memberVector =
+        members
+        ? fbb.createVector(ofStructs: [Slackwater_ConstituentMember(name: 0, factor: 2)]) : Offset()
+      let x = Slackwater_ConstituentDefinition.createConstituentDefinition(
+        &fbb, name: 1, speed: 57.97, coefficientsVectorOffset: coefficients,
+        membersVectorOffset: memberVector)
+      let definitions = fbb.createVector(ofOffsets: [x])
+      let root = Slackwater_Root.startRoot(&fbb)
+      Slackwater_Root.addVectorOf(constituentNames: namesVector, &fbb)
+      Slackwater_Root.addVectorOf(constituentDefinitions: definitions, &fbb)
+      Slackwater_Root.add(formatVersion: UInt16(StationDatabase.formatVersion), &fbb)
+      Slackwater_Root.finish(&fbb, end: Slackwater_Root.endRoot(&fbb, start: root))
+      return fbb.data
+    }
+    let compound = try StationDatabase(verifying: file(members: true))
+    XCTAssertEqual(
+      compound.constituentDefinitions,
+      [
+        Station.ConstituentDefinition(
+          name: "X", speed: 57.97, coefficients: nil, members: [.init(name: "M2", factor: 2)])
+      ])
+    // Neither coefficients nor members: readable, but refused by the verifying open.
+    XCTAssertNoThrow(try StationDatabase(data: file(members: false)))
+    XCTAssertThrowsError(try StationDatabase(verifying: file(members: false))) {
+      XCTAssert($0 is InvalidStationDatabase)
+    }
+  }
+
+  func testVerifyingOpenRejectsCoefficientsThatAreNotSeven() throws {
+    let data = try Data(contentsOf: Self.url)
+    let station = try XCTUnwrap(StationDatabase(data: data).station(id: "test/reference"))
+    // The source's own S2.
+    let vector = try XCTUnwrap(
+      station.raw.source?.constituentDefinitions(at: 0)?.withUnsafePointerToCoefficients {
+        Int(bitPattern: $0.baseAddress)
+      })
+    let base = data.withUnsafeBytes { Int(bitPattern: $0.baseAddress) }
+    var bytes = [UInt8](data)
+    // The uint count before the elements, little-endian: 6 instead of 7.
+    XCTAssertEqual(bytes[vector - base - 4], 7)
+    bytes[vector - base - 4] = 6
+    XCTAssertNoThrow(try StationDatabase(data: Data(bytes)))
+    XCTAssertThrowsError(try StationDatabase(verifying: Data(bytes))) {
+      XCTAssert($0 is InvalidStationDatabase)
+    }
+  }
+
   /// The fixture with one byte inside the first occurrence of `text` set to 0xFF.
   func fixtureCorrupting(_ text: String) throws -> Data {
     var bytes = [UInt8](try Data(contentsOf: Self.url))
@@ -446,7 +574,7 @@ final class StationDatabaseTests: XCTestCase {
     let index = try XCTUnwrap(inputs.firstIndex { $0.id == "test/reference" })
     let marker = 0x7A5C_3E1D
     inputs[index].datumCoverage?.months = marker
-    var bytes = [UInt8](try StationDatabase.build(inputs))
+    var bytes = [UInt8](try StationDatabase.build(inputs, constituentDefinitions: Self.definitions))
     let needle = withUnsafeBytes(of: UInt32(marker).littleEndian, Array.init)
     let position = try XCTUnwrap(
       (0...(bytes.count - 4)).first { bytes[$0..<($0 + 4)].elementsEqual(needle) })

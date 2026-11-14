@@ -6,6 +6,49 @@ export interface HarmonicConstituent {
   speed?: number;
 }
 
+/** Doodson numbers for τ, s, h, p, N′ and p′, then the multiple of 90°. */
+export type Coefficients = [
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+];
+
+/** A constituent's line, in the shape `@slackwater/engine`'s `ConstituentDefinition` takes. */
+export interface ConstituentDefinition {
+  name: string;
+  /** Degrees per hour. */
+  speed: number;
+  /** Null for a compound whose argument is the sum of its members'. */
+  coefficients: Coefficients | null;
+  /** `[name, factor]` for each constituent whose nodal correction combines into this one's. */
+  members?: [string, number][];
+  /** Other spellings of `name`, such as "MM" for "Mm". */
+  aliases?: string[];
+}
+
+/** The nodal correction formulas a source's constants were analyzed with. */
+export type NodeCorrections = "iho" | "schureman";
+
+/** How a source's constants differ from the database's shared definitions. */
+export interface SourceConstituents {
+  /** Absent means IHO. */
+  node_corrections?: NodeCorrections;
+  /** Replace the shared definition of the same name, or add a name, for this source's stations. */
+  constituent_definitions?: ConstituentDefinition[];
+}
+
+/** Constituent definitions for `buildDatabase`. */
+export interface DatabaseConstituents {
+  /** One per name, covering every name a station stores unless its source defines it, and every member these name. */
+  definitions: ConstituentDefinition[];
+  /** By `source.name`. */
+  sources?: ReadonlyMap<string, SourceConstituents>;
+}
+
 export interface Constituent {
   name: string;
   description: string | null;
@@ -250,6 +293,16 @@ export interface Station extends StationData {
    * to render as-is. Derived from `source`; see src/attribution.ts.
    */
   attribution: string;
+  /**
+   * The line each of this station's constituent names stands for, its
+   * source's own definitions first, with every compound member included:
+   * pass it as `@slackwater/engine`'s `definitions` option. Absent in a file
+   * written before definitions were stored. A subordinate's are its
+   * reference's, like its constituents.
+   */
+  constituent_definitions?: ConstituentDefinition[];
+  /** The nodal correction formulas to predict with: `@slackwater/engine`'s `nodeCorrections` option. */
+  node_corrections: NodeCorrections;
 }
 
 // The light fields the search/geo/list paths need. Used at build time to

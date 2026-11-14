@@ -70,6 +70,19 @@ public enum Slackwater_DatumFrame: UInt8, Enum, Verifiable {
 }
 
 
+///  The nodal correction formulas a source's constants were analyzed with.
+public enum Slackwater_NodeCorrections: UInt8, Enum, Verifiable {
+  public typealias T = UInt8
+  public static var byteSize: Int { return MemoryLayout<UInt8>.size }
+  public var value: UInt8 { return self.rawValue }
+  case iho = 0
+  case schureman = 1
+
+  public static var max: Slackwater_NodeCorrections { return .schureman }
+  public static var min: Slackwater_NodeCorrections { return .iho }
+}
+
+
 public enum Slackwater_ChsFitTier: UInt8, Enum, Verifiable {
   public typealias T = UInt8
   public static var byteSize: Int { return MemoryLayout<UInt8>.size }
@@ -137,6 +150,54 @@ public struct Slackwater_Constituent_Mutable: FlatBufferObject {
   public var name: UInt16 { return _accessor.readBuffer(of: UInt16.self, at: 0) }
   public var amplitude: Float32 { return _accessor.readBuffer(of: Float32.self, at: 4) }
   public var phase: Float32 { return _accessor.readBuffer(of: Float32.self, at: 8) }
+}
+
+///  A compound member: `factor` times the member's argument and nodal phase
+///  correction, and the member's node factor to the power |factor|.
+public struct Slackwater_ConstituentMember: NativeStruct, Verifiable, FlatbuffersInitializable {
+
+  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+
+  private var _name: UInt16
+  private let padding0__: UInt16 = 0
+  private var _factor: Float32
+
+  public init(_ bb: ByteBuffer, o: Int32) {
+    let _accessor = Struct(bb: bb, position: o)
+    _name = _accessor.readBuffer(of: UInt16.self, at: 0)
+    _factor = _accessor.readBuffer(of: Float32.self, at: 4)
+  }
+
+  public init(name: UInt16, factor: Float32) {
+    _name = name
+    _factor = factor
+  }
+
+  public init() {
+    _name = 0
+    _factor = 0.0
+  }
+
+  public var name: UInt16 { _name }
+  public var factor: Float32 { _factor }
+
+  public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    try verifier.inBuffer(position: position, of: Slackwater_ConstituentMember.self)
+  }
+}
+
+///  A compound member: `factor` times the member's argument and nodal phase
+///  correction, and the member's node factor to the power |factor|.
+public struct Slackwater_ConstituentMember_Mutable: FlatBufferObject {
+
+  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  public var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Struct
+
+  public init(_ bb: ByteBuffer, o: Int32) { _accessor = Struct(bb: bb, position: o) }
+
+  public var name: UInt16 { return _accessor.readBuffer(of: UInt16.self, at: 0) }
+  public var factor: Float32 { return _accessor.readBuffer(of: Float32.self, at: 4) }
 }
 
 public struct Slackwater_Datum: NativeStruct, Verifiable, FlatbuffersInitializable {
@@ -356,6 +417,7 @@ public struct Slackwater_Root: FlatBufferObject, Verifiable {
     case tideRoutes = 12
     case currentRoutes = 14
     case formatVersion = 16
+    case constituentDefinitions = 18
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -389,7 +451,15 @@ public struct Slackwater_Root: FlatBufferObject, Verifiable {
   ///  misread; a change older readers can ignore keeps it. Absent (0) in files
   ///  written before readers checked it, which read as version 1.
   public var formatVersion: UInt16 { let o = _accessor.offset(VTOFFSET.formatVersion.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt16.self, at: o) }
-  public static func startRoot(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 7) }
+  ///  The line each constituent name stands for, at most one per name or alias:
+  ///  every name a station stores, unless its source defines it, and every
+  ///  member these name. A source's `constituent_definitions` replace these for its
+  ///  own stations. A file written before this field has none; readers then leave
+  ///  every name to the predictor's own catalogue.
+  public var hasConstituentDefinitions: Bool { let o = _accessor.offset(VTOFFSET.constituentDefinitions.v); return o == 0 ? false : true }
+  public var constituentDefinitionsCount: Int32 { let o = _accessor.offset(VTOFFSET.constituentDefinitions.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  public func constituentDefinitions(at index: Int32) -> Slackwater_ConstituentDefinition? { let o = _accessor.offset(VTOFFSET.constituentDefinitions.v); return o == 0 ? nil : Slackwater_ConstituentDefinition(_accessor.bb, o: _accessor.indirect(_accessor.vector(at: o) + index * 4)) }
+  public static func startRoot(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 8) }
   public static func add(version: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: version, at: VTOFFSET.version.p) }
   public static func addVectorOf(stations: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: stations, at: VTOFFSET.stations.p) }
   public static func addVectorOf(constituentNames: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: constituentNames, at: VTOFFSET.constituentNames.p) }
@@ -397,6 +467,7 @@ public struct Slackwater_Root: FlatBufferObject, Verifiable {
   public static func addVectorOf(tideRoutes: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: tideRoutes, at: VTOFFSET.tideRoutes.p) }
   public static func addVectorOf(currentRoutes: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: currentRoutes, at: VTOFFSET.currentRoutes.p) }
   public static func add(formatVersion: UInt16, _ fbb: inout FlatBufferBuilder) { fbb.add(element: formatVersion, def: 0, at: VTOFFSET.formatVersion.p) }
+  public static func addVectorOf(constituentDefinitions: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: constituentDefinitions, at: VTOFFSET.constituentDefinitions.p) }
   public static func endRoot(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createRoot(
     _ fbb: inout FlatBufferBuilder,
@@ -406,7 +477,8 @@ public struct Slackwater_Root: FlatBufferObject, Verifiable {
     datumNamesVectorOffset datumNames: Offset = Offset(),
     tideRoutesVectorOffset tideRoutes: Offset = Offset(),
     currentRoutesVectorOffset currentRoutes: Offset = Offset(),
-    formatVersion: UInt16 = 0
+    formatVersion: UInt16 = 0,
+    constituentDefinitionsVectorOffset constituentDefinitions: Offset = Offset()
   ) -> Offset {
     let __start = Slackwater_Root.startRoot(&fbb)
     Slackwater_Root.add(version: version, &fbb)
@@ -416,6 +488,7 @@ public struct Slackwater_Root: FlatBufferObject, Verifiable {
     Slackwater_Root.addVectorOf(tideRoutes: tideRoutes, &fbb)
     Slackwater_Root.addVectorOf(currentRoutes: currentRoutes, &fbb)
     Slackwater_Root.add(formatVersion: formatVersion, &fbb)
+    Slackwater_Root.addVectorOf(constituentDefinitions: constituentDefinitions, &fbb)
     return Slackwater_Root.endRoot(&fbb, start: __start)
   }
 
@@ -428,6 +501,7 @@ public struct Slackwater_Root: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.tideRoutes.p, fieldName: "tideRoutes", required: false, type: ForwardOffset<Vector<ForwardOffset<Slackwater_StationRoute>, Slackwater_StationRoute>>.self)
     try _v.visit(field: VTOFFSET.currentRoutes.p, fieldName: "currentRoutes", required: false, type: ForwardOffset<Vector<ForwardOffset<Slackwater_StationRoute>, Slackwater_StationRoute>>.self)
     try _v.visit(field: VTOFFSET.formatVersion.p, fieldName: "formatVersion", required: false, type: UInt16.self)
+    try _v.visit(field: VTOFFSET.constituentDefinitions.p, fieldName: "constituentDefinitions", required: false, type: ForwardOffset<Vector<ForwardOffset<Slackwater_ConstituentDefinition>, Slackwater_ConstituentDefinition>>.self)
     _v.finish()
   }
 }
@@ -477,6 +551,91 @@ public struct Slackwater_DatumCoverage: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.months.p, fieldName: "months", required: false, type: UInt32.self)
     try _v.visit(field: VTOFFSET.observedHours.p, fieldName: "observedHours", required: false, type: UInt32.self)
     try _v.visit(field: VTOFFSET.inferredHours.p, fieldName: "inferredHours", required: false, type: UInt32.self)
+    _v.finish()
+  }
+}
+
+///  A constituent's line, as @slackwater/engine's ConstituentDefinition holds it.
+public struct Slackwater_ConstituentDefinition: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_25_9_23() }
+  public var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  public static var id: String { "TCDB" } 
+  public static func finish(_ fbb: inout FlatBufferBuilder, end: Offset, prefix: Bool = false) { fbb.finish(offset: end, fileId: Slackwater_ConstituentDefinition.id, addPrefix: prefix) }
+  private init(_ t: Table) { _accessor = t }
+  public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case name = 4
+    case speed = 6
+    case coefficients = 8
+    case members = 10
+    case aliases = 12
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  public var name: UInt16 { let o = _accessor.offset(VTOFFSET.name.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt16.self, at: o) }
+  public var speed: Double { let o = _accessor.offset(VTOFFSET.speed.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Double.self, at: o) }
+  ///  Doodson numbers for τ, s, h, p, N′ and p′, then the multiple of 90° in
+  ///  the phase, as the engine defines them. Absent for a compound whose
+  ///  argument is the sum of its members'.
+  public var hasCoefficients: Bool { let o = _accessor.offset(VTOFFSET.coefficients.v); return o == 0 ? false : true }
+  public var coefficientsCount: Int32 { let o = _accessor.offset(VTOFFSET.coefficients.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  public func coefficients(at index: Int32) -> Int8 { let o = _accessor.offset(VTOFFSET.coefficients.v); return o == 0 ? 0 : _accessor.directRead(of: Int8.self, offset: _accessor.vector(at: o) + index * 1) }
+  public var coefficients: [Int8] { return _accessor.getVector(at: VTOFFSET.coefficients.v) ?? [] }
+  public func withUnsafePointerToCoefficients<T>(_ body: (UnsafeRawBufferPointer) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VTOFFSET.coefficients.v, body: body) }
+  ///  Constituents whose nodal corrections combine into this one's. Empty for
+  ///  no correction, and ignored for a name the nodal formulas cover (M2, K1, …).
+  public var hasMembers: Bool { let o = _accessor.offset(VTOFFSET.members.v); return o == 0 ? false : true }
+  public var membersCount: Int32 { let o = _accessor.offset(VTOFFSET.members.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  public func members(at index: Int32) -> Slackwater_ConstituentMember? { let o = _accessor.offset(VTOFFSET.members.v); return o == 0 ? nil : _accessor.directRead(of: Slackwater_ConstituentMember.self, offset: _accessor.vector(at: o) + index * 8) }
+  public func mutableMembers(at index: Int32) -> Slackwater_ConstituentMember_Mutable? { let o = _accessor.offset(VTOFFSET.members.v); return o == 0 ? nil : Slackwater_ConstituentMember_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 8) }
+  public func withUnsafePointerToMembers<T>(_ body: (UnsafeRawBufferPointer) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VTOFFSET.members.v, body: body) }
+  ///  Other spellings of `name`, such as "MM" for "Mm". A reader looks a stored
+  ///  name up by name or alias, and a source's own definition of any spelling
+  ///  replaces this one for that source's stations.
+  public var hasAliases: Bool { let o = _accessor.offset(VTOFFSET.aliases.v); return o == 0 ? false : true }
+  public var aliasesCount: Int32 { let o = _accessor.offset(VTOFFSET.aliases.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  public func aliases(at index: Int32) -> UInt16 { let o = _accessor.offset(VTOFFSET.aliases.v); return o == 0 ? 0 : _accessor.directRead(of: UInt16.self, offset: _accessor.vector(at: o) + index * 2) }
+  public var aliases: [UInt16] { return _accessor.getVector(at: VTOFFSET.aliases.v) ?? [] }
+  public func withUnsafePointerToAliases<T>(_ body: (UnsafeRawBufferPointer) throws -> T) rethrows -> T? { return try _accessor.withUnsafePointerToSlice(at: VTOFFSET.aliases.v, body: body) }
+  public static func startConstituentDefinition(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 5) }
+  public static func add(name: UInt16, _ fbb: inout FlatBufferBuilder) { fbb.add(element: name, def: 0, at: VTOFFSET.name.p) }
+  public static func add(speed: Double, _ fbb: inout FlatBufferBuilder) { fbb.add(element: speed, def: 0.0, at: VTOFFSET.speed.p) }
+  public static func addVectorOf(coefficients: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: coefficients, at: VTOFFSET.coefficients.p) }
+  public static func addVectorOf(members: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: members, at: VTOFFSET.members.p) }
+  public static func startVectorOfMembers(_ size: Int, in builder: inout FlatBufferBuilder) {
+    builder.startVector(size * MemoryLayout<Slackwater_ConstituentMember>.size, elementSize: MemoryLayout<Slackwater_ConstituentMember>.alignment)
+  }
+  public static func addVectorOf(aliases: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: aliases, at: VTOFFSET.aliases.p) }
+  public static func endConstituentDefinition(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
+  public static func createConstituentDefinition(
+    _ fbb: inout FlatBufferBuilder,
+    name: UInt16 = 0,
+    speed: Double = 0.0,
+    coefficientsVectorOffset coefficients: Offset = Offset(),
+    membersVectorOffset members: Offset = Offset(),
+    aliasesVectorOffset aliases: Offset = Offset()
+  ) -> Offset {
+    let __start = Slackwater_ConstituentDefinition.startConstituentDefinition(&fbb)
+    Slackwater_ConstituentDefinition.add(name: name, &fbb)
+    Slackwater_ConstituentDefinition.add(speed: speed, &fbb)
+    Slackwater_ConstituentDefinition.addVectorOf(coefficients: coefficients, &fbb)
+    Slackwater_ConstituentDefinition.addVectorOf(members: members, &fbb)
+    Slackwater_ConstituentDefinition.addVectorOf(aliases: aliases, &fbb)
+    return Slackwater_ConstituentDefinition.endConstituentDefinition(&fbb, start: __start)
+  }
+
+  public static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.name.p, fieldName: "name", required: false, type: UInt16.self)
+    try _v.visit(field: VTOFFSET.speed.p, fieldName: "speed", required: false, type: Double.self)
+    try _v.visit(field: VTOFFSET.coefficients.p, fieldName: "coefficients", required: false, type: ForwardOffset<Vector<Int8, Int8>>.self)
+    try _v.visit(field: VTOFFSET.members.p, fieldName: "members", required: false, type: ForwardOffset<Vector<Slackwater_ConstituentMember, Slackwater_ConstituentMember>>.self)
+    try _v.visit(field: VTOFFSET.aliases.p, fieldName: "aliases", required: false, type: ForwardOffset<Vector<UInt16, UInt16>>.self)
     _v.finish()
   }
 }
@@ -998,6 +1157,8 @@ public struct Slackwater_Source: FlatBufferObject, Verifiable {
     case id = 6
     case url = 8
     case publishedHarmonics = 10
+    case constituentDefinitions = 12
+    case nodeCorrections = 14
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -1009,25 +1170,38 @@ public struct Slackwater_Source: FlatBufferObject, Verifiable {
   public var url: String? { let o = _accessor.offset(VTOFFSET.url.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var urlSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.url.v) }
   public var publishedHarmonics: Bool { let o = _accessor.offset(VTOFFSET.publishedHarmonics.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
-  public static func startSource(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 4) }
+  ///  Definitions that replace `Root.constituent_definitions` entries of the
+  ///  same name, or add names, for this source's stations. Stations of one
+  ///  source share the vector.
+  public var hasConstituentDefinitions: Bool { let o = _accessor.offset(VTOFFSET.constituentDefinitions.v); return o == 0 ? false : true }
+  public var constituentDefinitionsCount: Int32 { let o = _accessor.offset(VTOFFSET.constituentDefinitions.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  public func constituentDefinitions(at index: Int32) -> Slackwater_ConstituentDefinition? { let o = _accessor.offset(VTOFFSET.constituentDefinitions.v); return o == 0 ? nil : Slackwater_ConstituentDefinition(_accessor.bb, o: _accessor.indirect(_accessor.vector(at: o) + index * 4)) }
+  public var nodeCorrections: Slackwater_NodeCorrections { let o = _accessor.offset(VTOFFSET.nodeCorrections.v); return o == 0 ? .iho : Slackwater_NodeCorrections(rawValue: _accessor.readBuffer(of: UInt8.self, at: o)) ?? .iho }
+  public static func startSource(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 6) }
   public static func add(name: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: name, at: VTOFFSET.name.p) }
   public static func add(id: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: id, at: VTOFFSET.id.p) }
   public static func add(url: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: url, at: VTOFFSET.url.p) }
   public static func add(publishedHarmonics: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: publishedHarmonics, def: false,
    at: VTOFFSET.publishedHarmonics.p) }
+  public static func addVectorOf(constituentDefinitions: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: constituentDefinitions, at: VTOFFSET.constituentDefinitions.p) }
+  public static func add(nodeCorrections: Slackwater_NodeCorrections, _ fbb: inout FlatBufferBuilder) { fbb.add(element: nodeCorrections.rawValue, def: 0, at: VTOFFSET.nodeCorrections.p) }
   public static func endSource(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createSource(
     _ fbb: inout FlatBufferBuilder,
     nameOffset name: Offset = Offset(),
     idOffset id: Offset = Offset(),
     urlOffset url: Offset = Offset(),
-    publishedHarmonics: Bool = false
+    publishedHarmonics: Bool = false,
+    constituentDefinitionsVectorOffset constituentDefinitions: Offset = Offset(),
+    nodeCorrections: Slackwater_NodeCorrections = .iho
   ) -> Offset {
     let __start = Slackwater_Source.startSource(&fbb)
     Slackwater_Source.add(name: name, &fbb)
     Slackwater_Source.add(id: id, &fbb)
     Slackwater_Source.add(url: url, &fbb)
     Slackwater_Source.add(publishedHarmonics: publishedHarmonics, &fbb)
+    Slackwater_Source.addVectorOf(constituentDefinitions: constituentDefinitions, &fbb)
+    Slackwater_Source.add(nodeCorrections: nodeCorrections, &fbb)
     return Slackwater_Source.endSource(&fbb, start: __start)
   }
 
@@ -1037,6 +1211,8 @@ public struct Slackwater_Source: FlatBufferObject, Verifiable {
     try _v.visit(field: VTOFFSET.id.p, fieldName: "id", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.url.p, fieldName: "url", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.publishedHarmonics.p, fieldName: "publishedHarmonics", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.constituentDefinitions.p, fieldName: "constituentDefinitions", required: false, type: ForwardOffset<Vector<ForwardOffset<Slackwater_ConstituentDefinition>, Slackwater_ConstituentDefinition>>.self)
+    try _v.visit(field: VTOFFSET.nodeCorrections.p, fieldName: "nodeCorrections", required: false, type: Slackwater_NodeCorrections.self)
     _v.finish()
   }
 }

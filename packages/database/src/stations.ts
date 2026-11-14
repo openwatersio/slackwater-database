@@ -1,5 +1,8 @@
 import {
   Constituent,
+  ConstituentDefinition as DefinitionTable,
+  ConstituentMember,
+  NodeCorrections as FbsNodeCorrections,
   ChsFitTier,
   Datum,
   DatumFrame,
@@ -10,12 +13,17 @@ import {
   StationType,
 } from "./generated/fbs/slackwater.ts";
 import { PROJECT_CREDIT } from "./attribution.js";
+import { stationDefinitions } from "./constituent-definitions.js";
 import type {
   AstronomicalBounds,
   ChsFitClause,
   ChsFitContext,
   ChsFitData,
+  Coefficients,
+  ConstituentDefinition,
   CurrentData,
+  DatabaseConstituents,
+  SourceConstituents,
   HarmonicConstituent,
   Station,
   StationData,
@@ -32,6 +40,15 @@ export function qualityFilter(station: Station): boolean {
   return station.quality?.accepted ?? true;
 }
 
+const copyDefinition = (d: ConstituentDefinition): ConstituentDefinition => ({
+  ...d,
+  coefficients: d.coefficients && ([...d.coefficients] as Coefficients),
+  ...(d.members
+    ? { members: d.members.map((m) => [...m] as [string, number]) }
+    : {}),
+  ...(d.aliases ? { aliases: [...d.aliases] } : {}),
+});
+
 /** A reader and identity cache owned by one loaded database. */
 export function createStationReader(db: Root) {
   const constituentNames: string[] = Array.from(
@@ -44,6 +61,120 @@ export function createStationReader(db: Root) {
     { length: db.datumNamesLength() },
     (_, i) => db.datumNames(i),
   );
+
+  function toDefinition(d: DefinitionTable): ConstituentDefinition {
+    const coefficients = d.coefficientsArray();
+    const member = new ConstituentMember();
+    const members = Array.from({ length: d.membersLength() }, (_, i) => {
+      d.members(i, member);
+      return [constituentNames[member.name()]!, member.factor()] as [
+        string,
+        number,
+      ];
+    });
+    const aliases = Array.from(
+      { length: d.aliasesLength() },
+      (_, i) => constituentNames[d.aliases(i)!]!,
+    );
+    return {
+      name: constituentNames[d.name()]!,
+      speed: d.speed(),
+      // An empty vector reads as absent, as Kotlin's accessor gives it.
+      coefficients: coefficients?.length
+        ? (Array.from(coefficients) as Coefficients)
+        : null,
+      ...(members.length ? { members } : {}),
+      ...(aliases.length ? { aliases } : {}),
+    };
+  }
+
+  // By name and alias. A malformed file that spells one name twice keeps the
+  // first, as the Swift and Kotlin readers do, rather than failing the read.
+  const readDefinitionSet = (
+    length: number,
+    at: (i: number) => DefinitionTable | null,
+  ) => {
+    const index = new Map<string, ConstituentDefinition>();
+    for (let i = 0; i < length; i++) {
+      const d = toDefinition(at(i)!);
+      for (const spelling of [d.name, ...(d.aliases ?? [])])
+        if (!index.has(spelling)) index.set(spelling, d);
+    }
+    return index;
+  };
+  let sharedDefinitions: Map<string, ConstituentDefinition> | undefined;
+  // By the buffer position of a source's first definition: sources share a
+  // vector only when they share their definitions.
+  const sourceDefinitions = new Map<
+    number,
+    Map<string, ConstituentDefinition>
+  >();
+
+  /** The station's names and their members, each from its source's definitions first. */
+  function readDefinitions(index: number): ConstituentDefinition[] | undefined {
+    const table = db.stations(index)!;
+    sharedDefinitions ??= readDefinitionSet(
+      db.constituentDefinitionsLength(),
+      (i) => db.constituentDefinitions(i),
+    );
+    const source = table.source();
+    let own: Map<string, ConstituentDefinition> | undefined;
+    if (source?.constituentDefinitionsLength()) {
+      const key = source.constituentDefinitions(0)!.bb_pos;
+      own = sourceDefinitions.get(key);
+      if (!own) {
+        own = readDefinitionSet(source.constituentDefinitionsLength(), (i) =>
+          source.constituentDefinitions(i),
+        );
+        sourceDefinitions.set(key, own);
+      }
+    }
+    if (sharedDefinitions.size === 0 && !own) return undefined;
+    const names = [
+      ...readConstituents(index),
+      ...(readCurrent(index)?.minor_constituents ?? []),
+    ].map((c) => c.name);
+    // Copies: the decoded definitions are cached and shared between stations.
+    return stationDefinitions(names, own ?? new Map(), sharedDefinitions).map(
+      copyDefinition,
+    );
+  }
+
+  /**
+   * The file's shared definitions and each source's own, in the form
+   * `buildDatabase` takes, so stations read from this file can be written
+   * again with the same definitions. Decoded afresh on each call.
+   */
+  function readDatabaseConstituents(): DatabaseConstituents {
+    const definitions = Array.from(
+      { length: db.constituentDefinitionsLength() },
+      (_, i) => toDefinition(db.constituentDefinitions(i)!),
+    );
+    const sources = new Map<string, SourceConstituents>();
+    for (let i = 0; i < db.stationsLength(); i++) {
+      const source = db.stations(i)!.source();
+      const name = source?.name();
+      if (!source || !name || sources.has(name)) continue;
+      const own = Array.from(
+        { length: source.constituentDefinitionsLength() },
+        (_, j) => toDefinition(source.constituentDefinitions(j)!),
+      );
+      sources.set(name, {
+        ...(source.nodeCorrections() === FbsNodeCorrections.Schureman
+          ? { node_corrections: "schureman" as const }
+          : {}),
+        ...(own.length ? { constituent_definitions: own } : {}),
+      });
+    }
+    return { definitions, sources };
+  }
+
+  function readNodeCorrections(index: number): Station["node_corrections"] {
+    const nodeCorrections = db.stations(index)!.source()?.nodeCorrections();
+    return nodeCorrections === FbsNodeCorrections.Schureman
+      ? "schureman"
+      : "iho";
+  }
 
   const indexCache = new Map<string, number>();
   const stationCache = new Map<number, Station>();
@@ -493,6 +624,16 @@ export function createStationReader(db: Root) {
         configurable: true,
         get: () => readDatumsSource(dataIndex(station)),
       },
+      constituent_definitions: {
+        enumerable: true,
+        configurable: true,
+        get: () => readDefinitions(dataIndex(station)),
+      },
+      node_corrections: {
+        enumerable: true,
+        configurable: true,
+        get: () => readNodeCorrections(dataIndex(station)),
+      },
     });
 
     return station;
@@ -501,6 +642,9 @@ export function createStationReader(db: Root) {
   return {
     at,
     indexOf: findIndex,
+    get constituents() {
+      return readDatabaseConstituents();
+    },
     isAccepted,
     byId,
     datums,

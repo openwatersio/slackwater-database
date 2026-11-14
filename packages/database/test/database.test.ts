@@ -10,16 +10,18 @@ import {
 } from "../src/database/format.ts";
 import { Root, Kind, DatumFrame } from "../src/generated/fbs/slackwater.ts";
 import type { ChsFitData, Station, StationInput } from "../src/types.ts";
+import { definedNames } from "./definitions.ts";
 
 // The fixtures' sources carry no credit of their own.
 const build = (
   stations: Parameters<typeof buildDatabase>[0],
-  options: Omit<Parameters<typeof buildDatabase>[1], "credits"> = {},
+  options: Partial<Parameters<typeof buildDatabase>[1]> = {},
 ) =>
   buildDatabase(stations, {
     credits: new Map(
       stations.flatMap(({ source }) => (source ? [[source.name, null]] : [])),
     ),
+    constituents: definedNames(stations),
     ...options,
   });
 
@@ -40,8 +42,11 @@ describe("the shipped database file", () => {
     expect(shipped.version()).toBeTruthy();
   });
 
-  test("is written in this package's format version", () => {
-    expect(shipped.formatVersion()).toBe(FORMAT_VERSION);
+  // No source defines its own constituents yet, so readers released before
+  // source definitions still open the shipped file.
+  test("is written at version 1 while no source changes its predictions", () => {
+    expect(shipped.formatVersion()).toBe(1);
+    expect(shipped.constituentDefinitionsLength()).toBeGreaterThan(0);
   });
 
   test("stations are sorted by id, the vector key", () => {
@@ -247,7 +252,11 @@ describe("buildDatabase", () => {
   // A source missing from the map would ship every notice without its credit.
   test("rejects a station whose source has no credit decision", () => {
     expect(() =>
-      buildDatabase(inputs, { version: "1.2.3", credits: new Map() }),
+      buildDatabase(inputs, {
+        version: "1.2.3",
+        credits: new Map(),
+        constituents: definedNames(inputs),
+      }),
     ).toThrow(/no credit decision for source/);
     expect(() => (buildDatabase as Function)(inputs)).toThrow(/needs credits/);
   });

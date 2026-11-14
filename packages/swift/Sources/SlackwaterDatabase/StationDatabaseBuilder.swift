@@ -288,6 +288,22 @@ extension StationDatabase {
   /// and its `license`; one whose source has no entry is refused. A given
   /// notice is checked as `StationInput.attribution` describes.
   ///
+  /// `constituentDefinitions` is the shared set (`StationDatabase.constituentDefinitions`
+  /// reads it back). It must hold `@slackwater/engine`'s catalog lines as they
+  /// are, which the builder can't check: a reader released before definitions
+  /// predicts with its own catalog instead. Each source's own set and node corrections travel on
+  /// `StationInput.source`. Each set must spell every name or alias once, and
+  /// every stored constituent and every member must resolve as the readers
+  /// resolve them, in the source's own set first and then the shared one,
+  /// without a cycle; a subordinate whose reference is in the file is predicted
+  /// from the reference's record, so its own constituents are not checked.
+  /// No two of a source's definitions may replace one shared definition, and
+  /// speeds aren't checked against coefficients. With an empty shared set and no
+  /// source that has its own definitions or Schureman's corrections, names
+  /// aren't checked and the file has no definitions, as one written before
+  /// them. Stations whose sources share a name must carry the same definitions
+  /// and node corrections.
+  ///
   /// Throws `StationDatabaseBuildError` for what `buildDatabase` refuses, with
   /// these differences: `country` is not matched against `countryCode`, integer
   /// fields that would overflow their FlatBuffers type are refused rather than
@@ -299,7 +315,8 @@ extension StationDatabase {
   public static func build(
     _ stations: [StationInput], version: String? = nil,
     routes: [StationRouteKind: [StationRoute]] = [:],
-    credits: [String: String?] = [:]
+    credits: [String: String?] = [:],
+    constituentDefinitions: [Station.ConstituentDefinition]
   ) throws -> Data {
     // strcmp order on UTF-8, which FlatBuffers key lookup binary-searches by.
     var sorted = stations.sorted { $0.id.utf8.lexicographicallyPrecedes($1.id.utf8) }
@@ -310,6 +327,7 @@ extension StationDatabase {
       }
     }
     try requireReferencedData(sorted)
+    try checkDefinitions(sorted, shared: constituentDefinitions)
     for index in sorted.indices {
       let station = sorted[index]
       let entry = station.source?.name.flatMap { credits[$0] }
@@ -340,10 +358,13 @@ extension StationDatabase {
       sorted[index].attribution = StationAttribution.notice(credit: credit, license: station.license)
     }
     let preparedRoutes = try prepareRoutes(sorted, routes)
+    let definitions = constituentDefinitions + sorted.flatMap { $0.source?.constituentDefinitions ?? [] }
     var writer = try DatabaseWriter(
       stations: sorted,
+      sharedDefinitions: constituentDefinitions,
       constituentNames: NameTable(
-        sorted.flatMap { ($0.constituents + ($0.current?.minorConstituents ?? [])).map(\.name) }),
+        sorted.flatMap { ($0.constituents + ($0.current?.minorConstituents ?? [])).map(\.name) }
+          + definitions.flatMap { [$0.name] + $0.aliases + $0.members.map(\.name) }),
       datumNames: NameTable(sorted.flatMap { $0.datums.keys }))
     return try writer.write(version: version, routes: preparedRoutes)
   }
@@ -364,6 +385,7 @@ private struct NameTable {
 
 private struct DatabaseWriter {
   let stations: [StationInput]
+  let sharedDefinitions: [Station.ConstituentDefinition]
   let constituentNames: NameTable
   let datumNames: NameTable
   var fbb: FlatBufferBuilder
@@ -372,9 +394,15 @@ private struct DatabaseWriter {
   var sourceOffsets: [StationSource: Offset] = [:]
   var licenseOffsets: [StationLicense: Offset] = [:]
   var epochOffsets: [StationEpoch: Offset] = [:]
+  // A source's definitions, written once and shared by its stations.
+  var definitionOffsets: [[Station.ConstituentDefinition]: Offset] = [:]
 
-  init(stations: [StationInput], constituentNames: NameTable, datumNames: NameTable) {
+  init(
+    stations: [StationInput], sharedDefinitions: [Station.ConstituentDefinition],
+    constituentNames: NameTable, datumNames: NameTable
+  ) {
     self.stations = stations
+    self.sharedDefinitions = sharedDefinitions
     self.constituentNames = constituentNames
     self.datumNames = datumNames
     fbb = FlatBufferBuilder(initialSize: Int32(clamping: max(1 << 16, stations.count * 1536)))
@@ -390,7 +418,14 @@ private struct DatabaseWriter {
   mutating func write(version: String?, routes: [StationRouteKind: [StationRoute]]) throws
     -> Data
   {
-    // Phase 1: prediction vectors and quality detail, which land at the tail.
+    // Phase 1: definitions, prediction vectors and quality detail, which land at the tail.
+    let sharedDefinitionsVector = writeDefinitions(sharedDefinitions)
+    for station in stations {
+      guard let own = station.source?.constituentDefinitions, !own.isEmpty,
+        definitionOffsets[own] == nil
+      else { continue }
+      definitionOffsets[own] = writeDefinitions(own)
+    }
     var prediction: [(constituents: Offset, minor: Offset, datums: Offset, quality: Offset)] = []
     prediction.reserveCapacity(stations.count)
     for station in stations {
@@ -424,6 +459,7 @@ private struct DatabaseWriter {
     Slackwater_Root.addVectorOf(tideRoutes: tideRoutes, &fbb)
     Slackwater_Root.addVectorOf(currentRoutes: currentRoutes, &fbb)
     Slackwater_Root.add(formatVersion: UInt16(StationDatabase.formatVersion), &fbb)
+    Slackwater_Root.addVectorOf(constituentDefinitions: sharedDefinitionsVector, &fbb)
     Slackwater_Root.finish(&fbb, end: Slackwater_Root.endRoot(&fbb, start: root))
     return fbb.data
   }
@@ -436,6 +472,29 @@ private struct DatabaseWriter {
         phase: Float($0.phase))
     }
     return fbb.createVector(ofStructs: structs)
+  }
+
+  mutating func writeDefinitions(_ definitions: [Station.ConstituentDefinition]) -> Offset {
+    guard !definitions.isEmpty else { return Offset() }
+    let tables = definitions.map { d -> Offset in
+      // checkDefinitions keeps every coefficient inside Int8.
+      let coefficients = d.coefficients.map { fbb.createVector($0.map { Int8($0) }) } ?? Offset()
+      let members =
+        d.members.isEmpty
+        ? Offset()
+        : fbb.createVector(
+          ofStructs: d.members.map {
+            Slackwater_ConstituentMember(
+              name: constituentNames.index[$0.name]!, factor: Float($0.factor))
+          })
+      let aliases =
+        d.aliases.isEmpty ? Offset() : fbb.createVector(d.aliases.map { constituentNames.index[$0]! })
+      return Slackwater_ConstituentDefinition.createConstituentDefinition(
+        &fbb, name: constituentNames.index[d.name]!, speed: d.speed,
+        coefficientsVectorOffset: coefficients, membersVectorOffset: members,
+        aliasesVectorOffset: aliases)
+    }
+    return fbb.createVector(ofOffsets: tables)
   }
 
   mutating func writeDatums(_ datums: [String: Double]) -> Offset {
@@ -497,6 +556,10 @@ private struct DatabaseWriter {
     Slackwater_Source.add(id: id, &fbb)
     Slackwater_Source.add(url: url, &fbb)
     Slackwater_Source.add(publishedHarmonics: source.publishedHarmonics, &fbb)
+    Slackwater_Source.addVectorOf(
+      constituentDefinitions: definitionOffsets[source.constituentDefinitions] ?? Offset(), &fbb)
+    Slackwater_Source.add(
+      nodeCorrections: source.nodeCorrections == .schureman ? .schureman : .iho, &fbb)
     let offset = Slackwater_Source.endSource(&fbb, start: start)
     sourceOffsets[source] = offset
     return offset
@@ -896,6 +959,163 @@ private func requireReferencedData(_ stations: [StationInput]) throws {
     throw StationDatabaseBuildError(
       "Station \(station.id) references missing station \(reference) and has no prediction data of its own")
   }
+}
+
+/// What `checkDefinitions` in packages/database/src/database/definitions.ts refuses.
+private func checkDefinitions(
+  _ stations: [StationInput], shared: [Station.ConstituentDefinition]
+) throws {
+  let common = try bySpelling(shared, "shared definitions")
+  try requireMembers(shared, own: [:], common, "shared definitions")
+  var sources: [[Station.ConstituentDefinition]: [String: Station.ConstituentDefinition]] = [:]
+  // A TypeScript reader keys a source's definitions by its name.
+  var byName: [String: StationSource] = [:]
+  let ids = Set(stations.map(\.id))
+  let changesPredictions = stations.contains {
+    guard let source = $0.source else { return false }
+    return !source.constituentDefinitions.isEmpty || source.nodeCorrections != .iho
+  }
+  for station in stations {
+    if let source = station.source, let name = source.name {
+      if let first = byName[name] {
+        if first.constituentDefinitions != source.constituentDefinitions
+          || first.nodeCorrections != source.nodeCorrections
+        {
+          throw StationDatabaseBuildError(
+            "\(name): stations of one source carry different constituent definitions or node corrections")
+        }
+      } else {
+        byName[name] = source
+      }
+    }
+    let set = station.source?.constituentDefinitions ?? []
+    let own: [String: Station.ConstituentDefinition]
+    if let known = sources[set] {
+      own = known
+    } else {
+      let label = station.source?.name ?? "Station \(station.id) source"
+      own = try bySpelling(set, label)
+      try requireMembers(set, own: own, common, label)
+      try requireOneReplacement(own, common, label)
+      sources[set] = own
+    }
+    // A file without definitions, as one written before them.
+    if shared.isEmpty, !changesPredictions { continue }
+    // Readers predict a subordinate whose reference is in the file from the reference's record.
+    if station.type == .subordinate, let reference = station.tideOffsets?.reference,
+      ids.contains(reference)
+    {
+      continue
+    }
+    for c in station.constituents + (station.current?.minorConstituents ?? [])
+    where own[c.name] == nil && common[c.name] == nil {
+      throw StationDatabaseBuildError("\(station.id): no definition for constituent \(c.name)")
+    }
+  }
+}
+
+/// The definition a reader picks for `name`, as `Station.constituentDefinitions` does.
+private func pick(
+  _ name: String, own: [String: Station.ConstituentDefinition],
+  _ common: [String: Station.ConstituentDefinition]
+) -> Station.ConstituentDefinition? {
+  if let mine = own[name] { return mine }
+  guard let shared = common[name] else { return nil }
+  return ([shared.name] + shared.aliases).lazy.compactMap { own[$0] }.first ?? shared
+}
+
+/// Every member of `set` resolves, and no definition leads back to itself
+/// through its members.
+private func requireMembers(
+  _ set: [Station.ConstituentDefinition], own: [String: Station.ConstituentDefinition],
+  _ common: [String: Station.ConstituentDefinition], _ label: String
+) throws {
+  for d in set {
+    for member in d.members where pick(member.name, own: own, common) == nil {
+      throw StationDatabaseBuildError(
+        "\(label): \(d.name) names member \(member.name), which nothing defines")
+    }
+  }
+  // A cycle through shared definitions alone shows when the shared set is
+  // checked, so walking from this set's definitions finds every other one.
+  var done = Set<Station.ConstituentDefinition>()
+  for d in set {
+    var path = Set<Station.ConstituentDefinition>()
+    func visit(_ definition: Station.ConstituentDefinition) throws {
+      if done.contains(definition) { return }
+      guard path.insert(definition).inserted else {
+        throw StationDatabaseBuildError("\(label): \(d.name) is cyclic through its members")
+      }
+      for member in definition.members {
+        if let next = pick(member.name, own: own, common) { try visit(next) }
+      }
+      path.remove(definition)
+      done.insert(definition)
+    }
+    try visit(d)
+  }
+}
+
+/// No two of a source's definitions replace one shared definition under
+/// different spellings, and no one replaces two: the engine would get two
+/// lines for one entry, or one line for two.
+private func requireOneReplacement(
+  _ own: [String: Station.ConstituentDefinition],
+  _ common: [String: Station.ConstituentDefinition], _ label: String
+) throws {
+  for shared in Set(common.values) {
+    var replacing: [Station.ConstituentDefinition] = []
+    for spelling in [shared.name] + shared.aliases {
+      if let d = own[spelling], !replacing.contains(d) { replacing.append(d) }
+    }
+    if replacing.count > 1 {
+      throw StationDatabaseBuildError(
+        "\(label): \(replacing.map(\.name).joined(separator: " and ")) both replace the shared \(shared.name)")
+    }
+  }
+  for d in Set(own.values) {
+    var replaced: [Station.ConstituentDefinition] = []
+    for spelling in [d.name] + d.aliases {
+      if let shared = common[spelling], !replaced.contains(shared) { replaced.append(shared) }
+    }
+    if replaced.count > 1 {
+      throw StationDatabaseBuildError(
+        "\(label): \(d.name) replaces both the shared \(replaced.map(\.name).joined(separator: " and "))")
+    }
+  }
+}
+
+/// `definitions` by every name and alias, after checking each definition is
+/// well formed and each spelling appears once.
+private func bySpelling(_ definitions: [Station.ConstituentDefinition], _ label: String) throws
+  -> [String: Station.ConstituentDefinition]
+{
+  var index: [String: Station.ConstituentDefinition] = [:]
+  for d in definitions {
+    guard !d.name.isEmpty, d.speed.isFinite, d.speed >= 0 else {
+      throw StationDatabaseBuildError(
+        "\(label): \(d.name.isEmpty ? "a definition" : d.name) has no name or a bad speed")
+    }
+    if let c = d.coefficients, c.count != 7 || c.contains(where: { Int8(exactly: $0) == nil }) {
+      throw StationDatabaseBuildError("\(label): \(d.name) needs 7 integer coefficients or nil")
+    }
+    if d.coefficients == nil, d.members.isEmpty {
+      throw StationDatabaseBuildError("\(label): \(d.name) has neither coefficients nor members")
+    }
+    // The file stores a factor as a float.
+    if d.members.contains(where: { $0.name.isEmpty || !Float($0.factor).isFinite }) {
+      throw StationDatabaseBuildError("\(label): \(d.name) has a malformed member")
+    }
+    if d.aliases.contains("") {
+      throw StationDatabaseBuildError("\(label): \(d.name) has an empty alias")
+    }
+    for spelling in [d.name] + d.aliases {
+      guard index.updateValue(d, forKey: spelling) == nil else {
+        throw StationDatabaseBuildError("\(label): \(spelling) is defined twice")
+      }
+    }
+  }
+  return index
 }
 
 private func prepareRoutes(

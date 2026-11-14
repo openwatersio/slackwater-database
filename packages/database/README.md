@@ -31,7 +31,21 @@ Importing the package performs no database I/O or station decoding. `loadStation
 
 `db.byId(id)` binary-searches the database and caches the matching station's identity. `db.all` materializes every identity, including rejected records; `db.accepted` leaves out records rejected by quality evaluation. These collections reuse identities already decoded and are cached on first access. Every search function below takes `includeAll: true` to search the full catalog instead of the accepted subset.
 
-Prediction fields — `harmonic_constituents`, `datums`, `datums_source`, `datum_frame`, `datum_coverage`, `epoch`, and `datum_epoch` — remain getters that decode from the buffer on each access, without persistent caching. [See the format documentation](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md).
+Prediction fields — `harmonic_constituents`, `constituent_definitions`, `node_corrections`, `datums`, `datums_source`, `datum_frame`, `datum_coverage`, `epoch`, and `datum_epoch` — remain getters that decode from the buffer on each access, without persistent caching. [See the format documentation](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md).
+
+Predict with the station's own constituent definitions and nodal formulas, so each name means the line its source analyzed it on rather than whatever the engine's catalog holds:
+
+```ts
+import { createTidePredictor } from "@slackwater/engine";
+
+const { constituent_definitions: definitions, node_corrections } = station;
+const predictor = createTidePredictor(station.harmonic_constituents, {
+  ...(definitions ? { definitions } : {}),
+  nodeCorrections: node_corrections,
+});
+```
+
+`constituent_definitions` is undefined for a file written before definitions were stored. See [constituent definitions](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md#constituent-definitions).
 
 The loader also accepts a source:
 
@@ -242,7 +256,7 @@ Those are the three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.o
 
 `attribution` is a display string. It is not a substitute for `license` when you need to make a decision in code — filter on `license.commercial_use` or `license.type` for that.
 
-To rebuild a filtered database, pass the exported `credits` map to `buildDatabase`. It maps each published `source.name` to its credit line, or `null` when it requires none, using the same source metadata as the bundled database.
+To rebuild a filtered database, pass the exported `credits` map and the database's `constituents` to `buildDatabase`. `credits` maps each published `source.name` to its credit line, or `null` when it requires none, using the same source metadata as the bundled database. `constituents` holds the file's constituent definitions and each source's own definitions and nodal formulas, so the rebuilt file predicts the same way.
 
 ```js
 import { buildDatabase, credits, loadStations } from "@slackwater/database";
@@ -250,6 +264,6 @@ import { buildDatabase, credits, loadStations } from "@slackwater/database";
 const db = await loadStations();
 const bytes = buildDatabase(
   db.accepted.filter((station) => station.country_code === "CA"),
-  { credits },
+  { credits, constituents: db.constituents },
 );
 ```
