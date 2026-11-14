@@ -180,7 +180,7 @@ internal class Root : Table() {
     /**
      * The line each constituent name stands for, at most one per name or alias:
      * every name a station stores, unless its source defines it, and every
-     * member these name. A source's `constituent_definitions` replace these for its
+     * member those definitions lead to. A source's `constituent_definitions` replace these for its
      * own stations. A file written before this field has none; readers then leave
      * every name to the predictor's own catalogue.
      */

@@ -19,7 +19,7 @@ import { sourceMetadata, type SourceMetadata } from "./sources.ts";
 /**
  * The definitions `buildDatabase` stores: each source's own definitions and
  * nodal formulas, and the engine's catalog line for every name a station
- * stores that its source doesn't define, and every member these name. A
+ * stores that its source doesn't define, and every member those definitions lead to. A
  * catalog line is stored once, under the catalog's name, with every alias the
  * catalog gives it, so a source's own definition of any spelling replaces it
  * whichever other stations the file holds. Throws on a name nothing defines, and

@@ -43,7 +43,7 @@ export interface SourceConstituents {
 
 /** Constituent definitions for `buildDatabase`. */
 export interface DatabaseConstituents {
-  /** One per name, covering every name a station stores unless its source defines it, and every member these name. */
+  /** One per name, covering every name a station stores unless its source defines it, and every member those definitions lead to. */
   definitions: ConstituentDefinition[];
   /** By `source.name`. */
   sources?: ReadonlyMap<string, SourceConstituents>;
