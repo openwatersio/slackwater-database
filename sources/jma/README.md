@@ -22,7 +22,7 @@ The raw JMA latitude remains the station list's whole-minute value. Curated posi
 
 ## Prediction comparison
 
-Four stations (Wakkanai, Tokyo, Naha and Nagoya) each have seven days of hourly predictions pinned for January, April, July and October 2026: 2,688 comparisons in JST. All 70 imported constituent sets, raw coordinates, epochs and published zero offsets are checked against the pinned snapshot. These are published harmonic predictions, not observations. RMSE ranges from 0.0065 to 0.0234 m and maximum absolute difference reaches 0.0594 m at Nagoya in October. The source regression limits are 0.03 m RMSE and 0.065 m maximum absolute error, chosen for this project's measured comparison, not publisher uncertainty bounds. Residual differences remain; these checks do not establish year-round accuracy, high/low-water timing accuracy or official datum agreement.
+Four stations (Wakkanai, Tokyo, Naha and Nagoya) each have seven days of hourly predictions pinned for January, April, July and October 2026: 2,688 comparisons in JST. All 70 imported constituent sets, raw coordinates, epochs and published zero offsets are checked against the pinned snapshot. These are published harmonic predictions, not observations. RMSE ranges from 0.0042 to 0.0146 m and maximum absolute difference reaches 0.0334 m at Nagoya in October. The source regression limits are 0.03 m RMSE and 0.065 m maximum absolute error, chosen for this project's measured comparison, not publisher uncertainty bounds. Residual differences remain; these checks do not establish year-round accuracy, high/low-water timing accuracy or official datum agreement.
 
 ## Attribution and license
 

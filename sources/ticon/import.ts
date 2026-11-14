@@ -76,10 +76,8 @@ const [shard = 0, shards = 1] = (process.env["SHARD"] ?? "0/1")
 // TICON's constituent against the raw GESLA-4 record at its largest gauges
 // (#239). Subtracting it restates the phase against the engine's argument.
 const TICON_ARGUMENT_OFFSET: Record<string, number> = {
-  M3: 180,
   SGM: 180,
   T3: 180,
-  S3: 180,
   R3: -90,
   "3L2": -90,
   "2MK5": -90,
