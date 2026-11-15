@@ -33,9 +33,9 @@ The same crosswalk applies when pinned UHSLC metadata explicitly names Japan Oce
 
 ## Prediction comparison
 
-`npm run validate -w sources/jhod` compares all 480 published hourly heights for 20 October 2026 JST against the imported constituents, with the published Z0 added. These are harmonic predictions, not observations. RMSE ranges from 0.0041 to 0.0245 m; the largest absolute difference is 0.0414 m, at Hiroshima. The validation uses project regression limits of 0.03 m RMSE and 0.05 m maximum error; these are not publisher-specified uncertainty bounds.
+`npm run validate -w sources/jhod` compares all 480 published hourly heights for 20 October 2026 JST against the imported constituents, with the published Z0 added. These are harmonic predictions, not observations. RMSE ranges from 0.0040 to 0.0240 m; the largest absolute difference is 0.0425 m, at Hiroshima. The validation uses project regression limits of 0.03 m RMSE and 0.05 m maximum error; these are not publisher-specified uncertainty bounds.
 
-For comparison, Sasebo's RMSE is 0.5301 m with unconverted phases, 0.0471 m with a nine-hour JST shift, and 0.0177 m with the local-meridian conversion. Residual centimetre differences remain; the comparison does not establish year-round accuracy or agreement of high/low-water times. In particular, one day cannot independently validate long-period phases. Derived datums have not been compared with publisher datum values.
+For comparison, Sasebo's RMSE is 0.5301 m with unconverted phases, 0.0471 m with a nine-hour JST shift, and 0.0117 m with the local-meridian conversion. Residual centimetre differences remain; the comparison does not establish year-round accuracy or agreement of high/low-water times. In particular, one day cannot independently validate long-period phases. Derived datums have not been compared with publisher datum values.
 
 ## Attribution and source decision
 

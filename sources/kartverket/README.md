@@ -22,11 +22,11 @@ npm run validate -w sources/kartverket
 
 CI does not run it, and it exits 1 while any window fails, so read the per-station report rather than the exit code.
 
-Heights pass every limit. The worst station RMSE is 0.010230 m against a 0.02 m limit, the worst p95 absolute error is 0.018329 m against 0.03 m, and the largest individual height error is 0.027871 m against 0.05 m. Matched extreme heights also pass, with a worst error of 0.022585 m against 0.05 m.
+Heights pass every limit. The worst station RMSE is 0.007785 m against a 0.02 m limit, the worst p95 absolute error is 0.014942 m against 0.03 m, and the largest individual height error is 0.021170 m against 0.05 m. Matched extreme heights also pass, with a worst error of 0.020050 m against 0.05 m.
 
-High and low water times miss the five-minute limit in 51 windows across 15 stations, worst 30.894 minutes at VIK in July 2040. All 15 are among the 16 stations with the smallest M2 amplitude, from 0.033 m at SIE to 0.530 m at KAZ, on the south and west coasts; every station with a larger M2 passes. Turns in a small tide are flat, so a small difference in height moves the time of an extreme a long way. The smallest-range stations also disagree with Kartverket on which turning points count: the pinned SIE hourly series has 34 strict interior turning points in January 2030, while Kartverket's `tab` response publishes 11 events. The API protocol calls `tab` the tide-table response but does not document how it selects events.
+High and low water times miss the five-minute limit in 12 windows across 7 stations, worst 14.227 minutes at SOY in July 2040, and SIE publishes a different number of extremes in 4 more. The 8 stations are the 8 with the smallest M2 amplitude, from 0.033 m at SIE to 0.153 m at SOY, on the south and west coasts; every station with a larger M2 passes. Turns in a small tide are flat, so a small difference in height moves the time of an extreme a long way. The smallest-range stations also disagree with Kartverket on which turning points count: the pinned SIE hourly series has 34 strict interior turning points in January 2030, while Kartverket's `tab` response publishes 11 events. The API protocol calls `tab` the tide-table response but does not document how it selects events.
 
-When #163 measured it, a 180-degree M3 phase reversal cut the failed windows from 53 to 19. It contradicts Kartverket's published M3 Doodson metadata, so the importer does not apply it. The validator keeps the original thresholds and reports every unmatched event.
+Kartverket labels M3 with Doodson `CZZZZZB`, a 180° phase constant, but its predictions use Schureman's M3 argument, which has none and is the engine's. Against the engine's M3 the validator fails 16 windows; with the 180° constant it fails 51. `resolveConstituent` maps Kartverket's M3 to the engine's M3 for that reason. The validator keeps the original thresholds and reports every unmatched event.
 
 ## Datums
 
