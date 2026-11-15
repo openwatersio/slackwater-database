@@ -174,6 +174,93 @@ class Station internal constructor(
             return (0 until raw.constituentsLength).mapNotNull { constituentOf(raw.constituents(it)) }
         }
 
+    /** A constituent's line, as @slackwater/engine's `ConstituentDefinition` holds it. */
+    data class ConstituentDefinition(
+        val name: String,
+        /** Degrees per hour. */
+        val speed: Double,
+        /**
+         * Doodson numbers for τ, s, h, p, N′ and p′, then the multiple of 90°
+         * in the phase. Null for a compound whose argument is the sum of its
+         * members'.
+         */
+        val coefficients: List<Int>?,
+        /** Other spellings of [name], such as "MM" for "Mm". */
+        val aliases: List<String> = emptyList(),
+        /**
+         * Constituents whose nodal corrections combine into this one's. Empty
+         * for no correction, and ignored for a name the nodal formulas cover.
+         */
+        val members: List<Member> = emptyList(),
+    ) {
+        /**
+         * A compound member: [factor] times the member's argument and nodal
+         * phase correction, and the member's node factor to the power |factor|.
+         */
+        data class Member(val name: String, val factor: Double)
+    }
+
+    /** The nodal correction formulas a source's constants were analyzed with. */
+    enum class NodeCorrections { IHO, SCHUREMAN }
+
+    /**
+     * The definitions to hand the prediction engine for this station's
+     * constituents and minor current constituents: each name and every member
+     * it leads to, once each. The source's own definition wins when it defines
+     * the name or any spelling of the shared definition's; names nothing
+     * defines are left out. Null for a file written before definitions, which
+     * leaves every name to the engine's own catalog. A tide subordinate
+     * reports its reference's, like [constituents].
+     */
+    val constituentDefinitions: List<ConstituentDefinition>?
+        get() {
+            val record = predictionSource.raw
+            val source = record.source
+            val ownCount = source?.constituentDefinitionsLength ?: 0
+            if (root.constituentDefinitionsLength == 0 && ownCount == 0) return null
+            val own = definitionIndex(ownCount) { source!!.constituentDefinitions(it) }
+            val shared = definitionIndex(root.constituentDefinitionsLength) { root.constituentDefinitions(it) }
+            // A definition's position, and whether it is the source's own.
+            fun pick(name: Int): Pair<Boolean, Int>? {
+                own[name]?.let { return true to it }
+                val at = shared[name] ?: return null
+                val common = root.constituentDefinitions(at) ?: return null
+                for (spelling in spellings(common)) own[spelling]?.let { return true to it }
+                return false to at
+            }
+            val pending = ArrayList<Int>()
+            for (i in 0 until record.constituentsLength) record.constituents(i)?.let { pending += it.name.toInt() }
+            record.current?.let { current ->
+                for (i in 0 until current.minorConstituentsLength) {
+                    current.minorConstituents(i)?.let { pending += it.name.toInt() }
+                }
+            }
+            val seen = HashSet<Pair<Boolean, Int>>()
+            val result = ArrayList<ConstituentDefinition>()
+            // Last first, as the TypeScript reader walks them, so the readers list them in one order.
+            while (pending.isNotEmpty()) {
+                val key = pick(pending.removeAt(pending.size - 1)) ?: continue
+                if (!seen.add(key)) continue
+                val raw = (if (key.first) source!!.constituentDefinitions(key.second) else root.constituentDefinitions(key.second))
+                    ?: continue
+                result += definitionOf(raw) ?: continue
+                for (i in 0 until raw.membersLength) raw.members(i)?.let { pending += it.name.toInt() }
+            }
+            return result
+        }
+
+    /**
+     * The nodal correction formulas this station's constants were analyzed
+     * with, from its source; IHO when the file does not say. A tide
+     * subordinate reports its reference's.
+     */
+    val nodeCorrections: NodeCorrections
+        get() = if (predictionSource.raw.source?.nodeCorrections == Slackwater.NodeCorrections.Schureman) {
+            NodeCorrections.SCHUREMAN
+        } else {
+            NodeCorrections.IHO
+        }
+
     /**
      * Vertical datums in metres above the station's zero, keyed by name
      * ("MLLW", "MSL", ...), in file order. A tide subordinate reports its
@@ -279,7 +366,38 @@ class Station internal constructor(
         return Constituent(name, raw.amplitude.toDouble(), raw.phase.toDouble())
     }
 
+    private fun definitionOf(raw: Slackwater.ConstituentDefinition): ConstituentDefinition? {
+        fun name(index: UShort) = root.constituentNames(index.toInt())
+        return ConstituentDefinition(
+            name = name(raw.name) ?: return null,
+            speed = raw.speed,
+            // The generated accessors can't tell an absent vector from an empty one; builders write neither empty.
+            coefficients = if (raw.coefficientsLength == 0) null else (0 until raw.coefficientsLength).map { raw.coefficients(it).toInt() },
+            aliases = (0 until raw.aliasesLength).mapNotNull { name(raw.aliases(it)) },
+            members = (0 until raw.membersLength).mapNotNull { i ->
+                raw.members(i)?.let { m -> name(m.name)?.let { ConstituentDefinition.Member(it, m.factor.toDouble()) } }
+            },
+        )
+    }
+
     companion object {
+        private fun spellings(d: Slackwater.ConstituentDefinition) =
+            listOf(d.name.toInt()) + (0 until d.aliasesLength).map { d.aliases(it).toInt() }
+
+        /**
+         * A definitions vector's positions by the name index of each
+         * definition's name and aliases. The first wins; the builders write
+         * each spelling once.
+         */
+        private fun definitionIndex(count: Int, at: (Int) -> Slackwater.ConstituentDefinition?): Map<Int, Int> {
+            val index = HashMap<Int, Int>()
+            for (position in 0 until count) {
+                val definition = at(position) ?: continue
+                for (spelling in spellings(definition)) index.putIfAbsent(spelling, position)
+            }
+            return index
+        }
+
         /**
          * The project half of every station credit, and the fallback for a
          * file written before credits were stored in it.

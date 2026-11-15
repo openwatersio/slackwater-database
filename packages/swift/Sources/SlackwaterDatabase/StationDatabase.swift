@@ -74,12 +74,23 @@ public struct StationSource: Hashable, Sendable {
   public var id: String?
   public var url: String?
   public var publishedHarmonics: Bool
+  /// Definitions that replace the file's shared definitions of the same name,
+  /// or add names, for this source's stations.
+  public var constituentDefinitions: [Station.ConstituentDefinition]
+  /// The nodal correction formulas the source's constants were analyzed with.
+  public var nodeCorrections: Station.NodeCorrections
 
-  public init(name: String?, id: String?, url: String?, publishedHarmonics: Bool) {
+  public init(
+    name: String?, id: String?, url: String?, publishedHarmonics: Bool,
+    constituentDefinitions: [Station.ConstituentDefinition] = [],
+    nodeCorrections: Station.NodeCorrections = .iho
+  ) {
     self.name = name
     self.id = id
     self.url = url
     self.publishedHarmonics = publishedHarmonics
+    self.constituentDefinitions = constituentDefinitions
+    self.nodeCorrections = nodeCorrections
   }
 }
 
@@ -280,8 +291,9 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
 
   /// Read bytes you didn't ship, such as a download, after checking all of
   /// them: the FlatBuffers verifier walks every table and vector, every
-  /// constituent and datum name index is checked against its name table, and
-  /// every string is checked for UTF-8. A file that fails throws
+  /// constituent, definition and datum name index is checked against its name table,
+  /// a definition must have seven coefficients or none and members, and every string is
+  /// checked for UTF-8. A file that fails throws
   /// `InvalidStationDatabase` here, so a truncated or corrupt file does not
   /// trap on a later read. It does not check that stations are sorted, that
   /// routes name stations in the file, or that references resolve: those give
@@ -367,6 +379,8 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
     try requireText(root.version, root.versionSegmentArray)
     for i in 0..<constituentNames { try requireText(root.constituentNames(at: i)) }
     for i in 0..<datumNames { try requireText(root.datumNames(at: i)) }
+    try checkDefinitions(
+      root.constituentDefinitionsCount, root.constituentDefinitions(at:), names: constituentNames)
     for routes in [
       (0..<root.tideRoutesCount).map { root.tideRoutes(at: $0) },
       (0..<root.currentRoutesCount).map { root.currentRoutes(at: $0) },
@@ -389,6 +403,11 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
         throw InvalidStationDatabase()
       }
       try checkStrings(of: station)
+      if let source = station.source {
+        try checkDefinitions(
+          source.constituentDefinitionsCount, source.constituentDefinitions(at:),
+          names: constituentNames)
+      }
       // uint counts the reader converts to Int, which is 32 bits on a watch.
       if let coverage = station.datumCoverage,
         [coverage.months, coverage.observedHours, coverage.inferredHours].contains(where: {
@@ -403,6 +422,23 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
           throw InvalidStationDatabase()
         }
         try checkStrings(of: current)
+      }
+    }
+  }
+
+  private func checkDefinitions(
+    _ count: Int32, _ at: (Int32) -> Slackwater_ConstituentDefinition?, names: Int32
+  ) throws {
+    for i in 0..<count {
+      guard let d = at(i) else { throw InvalidStationDatabase() }
+      // Readers hand the engine all seven; none (absent or empty) is a compound, which needs members.
+      let coefficients = d.coefficientsCount
+      if coefficients == 0 ? d.membersCount == 0 : coefficients != 7 {
+        throw InvalidStationDatabase()
+      }
+      let members = (0..<d.membersCount).map { d.members(at: $0)?.name ?? .max }
+      if ([d.name] + d.aliases + members).contains(where: { Int32($0) >= names }) {
+        throw InvalidStationDatabase()
       }
     }
   }
@@ -456,6 +492,15 @@ public struct StationDatabase: RandomAccessCollection, @unchecked Sendable {
 
   /// Release tag of the database that produced the file, e.g. "0.9.20260801".
   public var version: String? { root.version }
+
+  /// The definitions every source shares, at most one per name or alias.
+  /// Empty for a file written before definitions. `Station.constituentDefinitions`
+  /// picks a station's from these and its source's own.
+  public var constituentDefinitions: [Station.ConstituentDefinition] {
+    (0..<root.constituentDefinitionsCount).compactMap { index in
+      root.constituentDefinitions(at: index).flatMap { Station.ConstituentDefinition(raw: $0, root: root) }
+    }
+  }
 
   /// Binary search on the id-sorted stations vector; no scan, no decode.
   public func station(id: String) -> Station? {
@@ -555,10 +600,14 @@ public struct Station: Identifiable, @unchecked Sendable {
   // MARK: Typed metadata
 
   public var source: StationSource? {
-    raw.source.map {
+    raw.source.map { source in
       StationSource(
-        name: $0.name, id: $0.id, url: $0.url,
-        publishedHarmonics: $0.publishedHarmonics)
+        name: source.name, id: source.id, url: source.url,
+        publishedHarmonics: source.publishedHarmonics,
+        constituentDefinitions: (0..<source.constituentDefinitionsCount).compactMap { index in
+          source.constituentDefinitions(at: index).flatMap { ConstituentDefinition(raw: $0, root: root) }
+        },
+        nodeCorrections: source.nodeCorrections == .schureman ? .schureman : .iho)
     }
   }
 
@@ -717,6 +766,119 @@ public struct Station: Identifiable, @unchecked Sendable {
   /// the ones its prediction starts from.
   public var constituents: [Constituent] { predictionSource.storedConstituents }
 
+  /// A constituent's line, as @slackwater/engine's `ConstituentDefinition` holds it.
+  public struct ConstituentDefinition: Hashable, Sendable {
+    /// A compound member: `factor` times the member's argument and nodal phase
+    /// correction, and the member's node factor to the power |factor|.
+    public struct Member: Hashable, Sendable {
+      public var name: String
+      public var factor: Double
+
+      public init(name: String, factor: Double) {
+        self.name = name
+        self.factor = factor
+      }
+    }
+
+    public var name: String
+    /// Degrees per hour.
+    public var speed: Double
+    /// Doodson numbers for τ, s, h, p, N′ and p′, then the multiple of 90° in
+    /// the phase. Nil for a compound whose argument is the sum of its members'.
+    public var coefficients: [Int]?
+    /// Other spellings of `name`, such as "MM" for "Mm".
+    public var aliases: [String]
+    /// Constituents whose nodal corrections combine into this one's. Empty for
+    /// no correction, and ignored for a name the nodal formulas cover.
+    public var members: [Member]
+
+    public init(
+      name: String, speed: Double, coefficients: [Int]?, aliases: [String] = [],
+      members: [Member] = []
+    ) {
+      self.name = name
+      self.speed = speed
+      self.coefficients = coefficients
+      self.aliases = aliases
+      self.members = members
+    }
+
+    init?(raw: Slackwater_ConstituentDefinition, root: Slackwater_Root) {
+      func name(_ index: UInt16) -> String? { root.constituentNames(at: Int32(index)) }
+      guard let definitionName = name(raw.name) else { return nil }
+      self.init(
+        name: definitionName, speed: raw.speed,
+        // An empty vector reads as absent, as the Kotlin and TypeScript readers read it.
+        coefficients: raw.coefficientsCount > 0 ? raw.coefficients.map(Int.init) : nil,
+        aliases: raw.aliases.compactMap(name),
+        members: (0..<raw.membersCount).compactMap { index in
+          raw.members(at: index).flatMap { member in
+            name(member.name).map { Member(name: $0, factor: Double(member.factor)) }
+          }
+        })
+    }
+  }
+
+  /// The nodal correction formulas a source's constants were analyzed with.
+  public enum NodeCorrections: Hashable, Sendable {
+    case iho
+    case schureman
+  }
+
+  /// The definitions to hand the prediction engine for this station's
+  /// constituents and minor current constituents: each name and every member
+  /// it leads to, once each. The source's own definition wins when it defines
+  /// the name or any spelling of the shared definition's; names nothing
+  /// defines are left out. Nil for a file written before definitions, which
+  /// leaves every name to the engine's own catalog. A subordinate reports its
+  /// reference's, like `constituents`.
+  public var constituentDefinitions: [ConstituentDefinition]? {
+    let record = predictionSource.raw
+    let source = record.source
+    let ownCount = source?.constituentDefinitionsCount ?? 0
+    guard root.constituentDefinitionsCount > 0 || ownCount > 0 else { return nil }
+    let own = definitionIndex(ownCount) { source?.constituentDefinitions(at: $0) }
+    let shared = definitionIndex(root.constituentDefinitionsCount) {
+      root.constituentDefinitions(at: $0)
+    }
+    func pick(_ name: UInt16) -> DefinitionKey? {
+      if let at = own[name] { return DefinitionKey(own: true, at: at) }
+      guard let at = shared[name], let common = root.constituentDefinitions(at: at) else {
+        return nil
+      }
+      for spelling in [common.name] + common.aliases {
+        if let mine = own[spelling] { return DefinitionKey(own: true, at: mine) }
+      }
+      return DefinitionKey(own: false, at: at)
+    }
+    var pending = (0..<record.constituentsCount).compactMap { record.constituents(at: $0)?.name }
+    if let current = record.current {
+      pending += (0..<current.minorConstituentsCount).compactMap {
+        current.minorConstituents(at: $0)?.name
+      }
+    }
+    var seen = Set<DefinitionKey>()
+    var result: [ConstituentDefinition] = []
+    // Last first, as the TypeScript reader walks them, so the readers list them in one order.
+    while let name = pending.popLast() {
+      guard let key = pick(name), seen.insert(key).inserted,
+        let raw = key.own
+          ? source?.constituentDefinitions(at: key.at) : root.constituentDefinitions(at: key.at),
+        let definition = ConstituentDefinition(raw: raw, root: root)
+      else { continue }
+      result.append(definition)
+      pending += (0..<raw.membersCount).compactMap { raw.members(at: $0)?.name }
+    }
+    return result
+  }
+
+  /// The nodal correction formulas this station's constants were analyzed
+  /// with, from its source; IHO when the file does not say. A subordinate
+  /// reports its reference's.
+  public var nodeCorrections: NodeCorrections {
+    predictionSource.raw.source?.nodeCorrections == .schureman ? .schureman : .iho
+  }
+
   var storedConstituents: [Constituent] {
     (0..<raw.constituentsCount).compactMap { index in
       guard let c = raw.constituents(at: index),
@@ -811,6 +973,26 @@ public struct Station: Identifiable, @unchecked Sendable {
       lat: ratio ? (lat - zero) * low : (lat - zero) + low,
       hat: ratio ? (hat - zero) * high : (hat - zero) + high)
   }
+}
+
+private struct DefinitionKey: Hashable {
+  var own: Bool
+  var at: Int32
+}
+
+/// A definitions vector's positions by the name index of each definition's
+/// name and aliases. The first wins; the builders write each spelling once.
+private func definitionIndex(
+  _ count: Int32, _ at: (Int32) -> Slackwater_ConstituentDefinition?
+) -> [UInt16: Int32] {
+  var index: [UInt16: Int32] = [:]
+  for position in 0..<count {
+    guard let definition = at(position) else { continue }
+    for spelling in [definition.name] + definition.aliases where index[spelling] == nil {
+      index[spelling] = position
+    }
+  }
+  return index
 }
 
 /// A required string or a vector element, which the runtime reads as nil when

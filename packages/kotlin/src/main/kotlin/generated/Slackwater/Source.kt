@@ -66,25 +66,60 @@ internal class Source : Table() {
             val o = __offset(10)
             return if(o != 0) 0.toByte() != bb.get(o + bb_pos) else false
         }
+    /**
+     * Definitions that replace `Root.constituent_definitions` entries of the
+     * same name, or add names, for this source's stations. Stations of one
+     * source share the vector.
+     */
+    fun constituentDefinitions(j: Int) : Slackwater.ConstituentDefinition? = constituentDefinitions(Slackwater.ConstituentDefinition(), j)
+    fun constituentDefinitions(obj: Slackwater.ConstituentDefinition, j: Int) : Slackwater.ConstituentDefinition? {
+        val o = __offset(12)
+        return if (o != 0) {
+            obj.__assign(__indirect(__vector(o) + j * 4), bb)
+        } else {
+            null
+        }
+    }
+    val constituentDefinitionsLength : Int
+        get() {
+            val o = __offset(12); return if (o != 0) __vector_len(o) else 0
+        }
+    val nodeCorrections : UByte
+        get() {
+            val o = __offset(14)
+            return if(o != 0) bb.get(o + bb_pos).toUByte() else 0u
+        }
     companion object {
         fun getRootAsSource(_bb: ByteBuffer): Source = getRootAsSource(_bb, Source())
         fun getRootAsSource(_bb: ByteBuffer, obj: Source): Source {
             _bb.order(ByteOrder.LITTLE_ENDIAN)
             return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb))
         }
-        fun createSource(builder: FlatBufferBuilder, nameOffset: Int, idOffset: Int, urlOffset: Int, publishedHarmonics: Boolean) : Int {
-            builder.startTable(4)
+        fun createSource(builder: FlatBufferBuilder, nameOffset: Int, idOffset: Int, urlOffset: Int, publishedHarmonics: Boolean, constituentDefinitionsOffset: Int, nodeCorrections: UByte) : Int {
+            builder.startTable(6)
+            addConstituentDefinitions(builder, constituentDefinitionsOffset)
             addUrl(builder, urlOffset)
             addId(builder, idOffset)
             addName(builder, nameOffset)
+            addNodeCorrections(builder, nodeCorrections)
             addPublishedHarmonics(builder, publishedHarmonics)
             return endSource(builder)
         }
-        fun startSource(builder: FlatBufferBuilder) = builder.startTable(4)
+        fun startSource(builder: FlatBufferBuilder) = builder.startTable(6)
         fun addName(builder: FlatBufferBuilder, name: Int) = builder.addOffset(0, name, 0)
         fun addId(builder: FlatBufferBuilder, id: Int) = builder.addOffset(1, id, 0)
         fun addUrl(builder: FlatBufferBuilder, url: Int) = builder.addOffset(2, url, 0)
         fun addPublishedHarmonics(builder: FlatBufferBuilder, publishedHarmonics: Boolean) = builder.addBoolean(3, publishedHarmonics, false)
+        fun addConstituentDefinitions(builder: FlatBufferBuilder, constituentDefinitions: Int) = builder.addOffset(4, constituentDefinitions, 0)
+        fun createConstituentDefinitionsVector(builder: FlatBufferBuilder, data: IntArray) : Int {
+            builder.startVector(4, data.size, 4)
+            for (i in data.size - 1 downTo 0) {
+                builder.addOffset(data[i])
+            }
+            return builder.endVector()
+        }
+        fun startConstituentDefinitionsVector(builder: FlatBufferBuilder, numElems: Int) = builder.startVector(4, numElems, 4)
+        fun addNodeCorrections(builder: FlatBufferBuilder, nodeCorrections: UByte) = builder.addByte(5, nodeCorrections.toByte(), 0)
         fun endSource(builder: FlatBufferBuilder) : Int {
             val o = builder.endTable()
             return o

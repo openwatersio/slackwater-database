@@ -7,6 +7,7 @@ import { runInNewContext } from "node:vm";
 import { loadStations } from "../src/load-stations.js";
 import { qualityFilter } from "../src/stations.js";
 import { buildDatabase } from "../src/database/builder.js";
+import { definedNames } from "./definitions.ts";
 import { Station as StationTable } from "../src/generated/fbs/slackwater.ts";
 import type { StationInput } from "../src/types.js";
 
@@ -39,7 +40,8 @@ function station(id: string, name = id): StationInput {
     datums: { MLLW: 0, MSL: 1, LAT: -1, HAT: 3 },
   };
 }
-const build = (records: StationInput[]) => buildDatabase(records, { credits });
+const build = (records: StationInput[]) =>
+  buildDatabase(records, { credits, constituents: definedNames(records) });
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -296,8 +298,10 @@ describe("supplied database search and routes", () => {
   });
 
   test("routes are lazy, cached, and resolve geography from the supplied database", async () => {
-    const bytes = buildDatabase([station("test/a"), station("test/b")], {
+    const records = [station("test/a"), station("test/b")];
+    const bytes = buildDatabase(records, {
       credits,
+      constituents: definedNames(records),
       routes: {
         tide: [
           { slug: "harbour", station_ids: ["test/a"], former_paths: ["/old/"] },

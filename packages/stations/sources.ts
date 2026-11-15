@@ -1,6 +1,12 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
+import type {
+  ConstituentDefinition,
+  NodeCorrections,
+} from "@slackwater/database";
+// From source: the database's own build runs this before its dist exists.
+import { checkDefinition } from "../database/src/constituent-definitions.ts";
 
 /** What `sources/<name>/metadata.yaml` declares about a provider. */
 export interface SourceMetadata {
@@ -13,6 +19,13 @@ export interface SourceMetadata {
   /** The countries, as records write `country`, whose gauges an authoritative
    *  provider operates. Absent means everywhere it publishes. */
   jurisdiction?: string[];
+  /** The nodal correction formulas the provider's constants were analyzed with. Absent means IHO. */
+  node_corrections?: NodeCorrections;
+  /**
+   * Lines the provider means by a name that differ from `@slackwater/engine`'s
+   * catalog, or names the catalog lacks, for its own stations only.
+   */
+  constituent_definitions?: ConstituentDefinition[];
 }
 
 const SOURCES_DIR = join(import.meta.dirname, "..", "..", "sources");
@@ -42,6 +55,19 @@ export function loadSources(dir = SOURCES_DIR): Map<string, SourceMetadata> {
       )
     )
       throw new Error(`${path}: jurisdiction must be a list of countries`);
+    if (
+      source.node_corrections !== undefined &&
+      source.node_corrections !== "iho" &&
+      source.node_corrections !== "schureman"
+    )
+      throw new Error(`${path}: node_corrections must be iho or schureman`);
+    if (
+      source.constituent_definitions !== undefined &&
+      !Array.isArray(source.constituent_definitions)
+    )
+      throw new Error(`${path}: constituent_definitions must be a list`);
+    for (const definition of source.constituent_definitions ?? [])
+      checkDefinition(definition, `${path}: constituent_definitions`);
     if (sources.has(source.name))
       throw new Error(`${path}: ${source.name} is declared twice`);
     sources.set(source.name, source);

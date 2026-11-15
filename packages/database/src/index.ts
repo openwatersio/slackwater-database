@@ -15,4 +15,8 @@ export type {
 } from "./search/index.js";
 export { buildDatabase } from "./database/builder.js";
 export { UnsupportedStationDatabaseError } from "./database/format.js";
+export {
+  definitionIndex,
+  stationDefinitions,
+} from "./constituent-definitions.js";
 export type * from "./types.js";

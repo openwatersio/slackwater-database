@@ -43,11 +43,13 @@ let route = db.stationRoute(kind: .tide, slug: "friday-harbor")
 
 The package requires Swift 6. `StationDatabase`, `Station`, and their typed metadata conform to `Sendable` and support concurrent reads. The reader retains immutable `Data`, including memory-mapped files, without exposing the FlatBuffers buffer for mutation.
 
-A subordinate station's record holds no constituents or datums of its own, only the offsets that correct its reference's. Reading `constituents`, `datums`, `chartDatumShift`, or `astronomicalBounds` on one resolves the reference for you, so both station types answer the same questions.
+A subordinate station's record holds no constituents or datums of its own, only the offsets that correct its reference's. Reading `constituents`, `datums`, `chartDatumShift`, `astronomicalBounds`, `constituentDefinitions`, or `nodeCorrections` on one resolves the reference for you, so both station types answer the same questions.
+
+`station.constituentDefinitions` is the line behind each constituent name the station stores, and behind every member a compound names, as `Station.ConstituentDefinition` values that map field for field to the engine's `ConstituentDefinition`. A source can define a name its own way, such as a different phase constant, and its stations read that definition in place of the shared one. `station.nodeCorrections` is the nodal correction formulas the source's constants were analyzed with, `.iho` or `.schureman`. Pass both to the engine (its `definitions` and node-correction options) so predictions match the analysis. `constituentDefinitions` is nil for a file written before definitions, which leaves every name to the engine's own catalog.
 
 ### Bytes you didn't ship
 
-`init(data:)` and `init(contentsOf:)` check only the file identifier, the root table's bounds and the format version, throwing `InvalidStationDatabase` when the identifier is missing or the root table is cut off, so opening a bundled file pages in only its head. A truncated or corrupt file opened that way can trap the process on a later read. For a download or any other file you didn't ship, open it with `StationDatabase(verifying:)` or `StationDatabase(verifyingContentsOf:)`. They run the FlatBuffers verifier over the whole buffer, check every constituent and datum name index against its table, and check that every string is UTF-8, so a file they accept does not trap on a read; one they refuse throws `InvalidStationDatabase`. Every initializer throws `UnsupportedStationDatabase` for a file in a newer format than this package reads; upgrade the package to open it. They do not check that stations are in id order, that routes name stations in the file, or that references resolve. A file wrong in those ways gives nil or wrong results, not a trap. Verifying reads every page once, so do it once, when the file arrives. `init(verifyingContentsOf:)` memory-maps the file, and reads after verifying go to the file, so it must not change while the database is open. If you can't promise that, read it into `Data` and use `init(verifying:)`.
+`init(data:)` and `init(contentsOf:)` check only the file identifier, the root table's bounds and the format version, throwing `InvalidStationDatabase` when the identifier is missing or the root table is cut off, so opening a bundled file pages in only its head. A truncated or corrupt file opened that way can trap the process on a later read. For a download or any other file you didn't ship, open it with `StationDatabase(verifying:)` or `StationDatabase(verifyingContentsOf:)`. They run the FlatBuffers verifier over the whole buffer, check every constituent, definition and datum name index against its table and that a definition's coefficients number seven, and check that every string is UTF-8, so a file they accept does not trap on a read; one they refuse throws `InvalidStationDatabase`. Every initializer throws `UnsupportedStationDatabase` for a file in a newer format than this package reads; upgrade the package to open it. They do not check that stations are in id order, that routes name stations in the file, or that references resolve. A file wrong in those ways gives nil or wrong results, not a trap. Verifying reads every page once, so do it once, when the file arrives. `init(verifyingContentsOf:)` memory-maps the file, and reads after verifying go to the file, so it must not change while the database is open. If you can't promise that, read it into `Data` and use `init(verifying:)`.
 
 A `datumCoverage` count is a `uint`, which can overflow `Int` on a 32-bit watch. The verifying open refuses a count above `Int32.max`, and the plain reader returns nil coverage for a count that doesn't fit `Int`.
 
@@ -72,8 +74,12 @@ for kind in [StationRouteKind.tide, .current] {
       ? nil : StationRoute(slug: route.slug, stationIDs: ids, formerPaths: route.formerPaths)
   }
 }
-let data = try StationDatabase.build(stations, version: db.version, routes: routes)
+let data = try StationDatabase.build(
+  stations, version: db.version, routes: routes,
+  constituentDefinitions: db.constituentDefinitions)
 ```
+
+`constituentDefinitions: db.constituentDefinitions` keeps the shared definitions. Each source's own definitions and node corrections travel on `StationInput.source`, so they carry through as read. Every constituent a station stores, and every member a definition names, must resolve in its source's own definitions or the shared ones, without a cycle; a subordinate whose reference is in the file predicts from the reference's record, so its own constituents are not checked. Stations whose sources share a name must carry the same definitions and node corrections.
 
 `StationInput(station)` keeps the station's stored `attribution`, and `build` checks a given notice. It must start with the project credit and end with the licence's clause when the licence is one `StationAttribution.licenseNames` lists (which also needs a `url`), or otherwise carry no licence clause. With a `credits` entry for the station's `source.name` it must also equal `StationAttribution.notice(credit:license:)` composed from that entry. Without one it must be the notice `StationInput(station)` read, with the `source` and `license` it was read with, so a hand-written notice or a copy whose source or licence changed is refused. After changing a copied station's `source` or `license`, set `attribution = nil` and pass `credits`, each source's credit line by `source.name` (nil when it needs none), so the notice is composed again with `StationAttribution.notice(credit:license:)`:
 
@@ -87,7 +93,8 @@ if var copy = stations.first(where: { $0.id == "noaa/ACT0101" }) {
 }
 let relicensed = try StationDatabase.build(
   stations, version: db.version, routes: routes,
-  credits: ["US National Oceanic and Atmospheric Administration": nil])
+  credits: ["US National Oceanic and Atmospheric Administration": nil],
+  constituentDefinitions: db.constituentDefinitions)
 ```
 
 A station with no `attribution` whose source has no entry in `credits` is refused, as in the TypeScript builder.
@@ -100,6 +107,7 @@ Rebuild a file from an older release the same way, with every `attribution` set 
 - A station keeping the notice it was read with, for the same source and licence, needs no `credits` entry; the TypeScript builder requires one for every source.
 - A station that carries `tideOffsets` must be `.subordinate`, because the TypeScript reader resolves offsets only for one. The memberwise `StationInput` init infers `type` from the offsets when you leave it out.
 - It refuses a subordinate whose tide `reference` is not in the file and that holds no constituents or datums of its own, which the TypeScript reader could not predict. Current offsets and `tideReference` are not checked, so a currents file can name tide stations that live in another file.
+- It doesn't check a station's constituent definitions against the shared set it was read with, which `StationInput` doesn't carry; the TypeScript builder refuses a rebuild that changes them. Pass `db.constituentDefinitions` to keep them.
 
 Non-finite major constituents and offsets are written as given, so a consumer's own validation can be tested against them.
 

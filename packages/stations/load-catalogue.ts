@@ -5,6 +5,7 @@ import chsStations from "../../sources/chs/stations.json" with { type: "json" };
 import { countryByName } from "./country.ts";
 import type { StationInput, StationQuality } from "@slackwater/database";
 import { buildCatalogue } from "./catalogue.ts";
+import { databaseConstituents } from "./constituent-definitions.ts";
 import { chsInputs } from "./chs-input.ts";
 import { currentInputs } from "./current-input.ts";
 import { loadGeocoder } from "./geocode.ts";
@@ -67,9 +68,15 @@ export async function loadProductionCatalogue(
         : [],
     ),
   );
+  let constituents: ReturnType<typeof databaseConstituents> | undefined;
   return {
     ...catalogue,
     credits,
+    // Only the database build needs these; scripts that don't read them
+    // don't stop on a constituent name problem.
+    get constituents() {
+      return (constituents ??= databaseConstituents(catalogue.stations));
+    },
     stationFiles,
     providerTideIds: new Set(tides.map(({ id }) => id)),
     providerCurrentIds: new Set(currents.map(({ id }) => id)),

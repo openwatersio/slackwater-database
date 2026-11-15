@@ -59,6 +59,10 @@ function createDatabase(bytes: Uint8Array, indexes?: SearchIndexData) {
     get datums() {
       return reader.datums;
     },
+    /** The definitions to pass to `buildDatabase` when writing this file's stations again. */
+    get constituents() {
+      return reader.constituents;
+    },
     ...createRoutes(root, reader),
     ...createSearch(bytes, root, reader, indexes),
   };

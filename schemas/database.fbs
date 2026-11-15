@@ -39,6 +39,12 @@ table Root {
   /// misread; a change older readers can ignore keeps it. Absent (0) in files
   /// written before readers checked it, which read as version 1.
   format_version: ushort;
+  /// The line each constituent name stands for, at most one per name or alias:
+  /// every name a station stores, unless its source defines it, and every
+  /// member those definitions lead to. A source's `constituent_definitions` replace these for its
+  /// own stations. A file written before this field has none; readers then leave
+  /// every name to the predictor's own catalogue.
+  constituent_definitions: [ConstituentDefinition];
 }
 
 enum Kind : ubyte { Tide = 0, Current = 1 }
@@ -61,6 +67,33 @@ struct Constituent {
   amplitude: float;
   phase: float;
 }
+
+/// A compound member: `factor` times the member's argument and nodal phase
+/// correction, and the member's node factor to the power |factor|.
+struct ConstituentMember {
+  name: ushort;      // index into Root.constituent_names
+  factor: float;
+}
+
+/// A constituent's line, as @slackwater/engine's ConstituentDefinition holds it.
+table ConstituentDefinition {
+  name: ushort;      // index into Root.constituent_names
+  speed: double;     // degrees per hour
+  /// Doodson numbers for τ, s, h, p, N′ and p′, then the multiple of 90° in
+  /// the phase, as the engine defines them. Absent for a compound whose
+  /// argument is the sum of its members'.
+  coefficients: [byte];
+  /// Constituents whose nodal corrections combine into this one's. Empty for
+  /// no correction, and ignored for a name the nodal formulas cover (M2, K1, …).
+  members: [ConstituentMember];
+  /// Other spellings of `name`, such as "MM" for "Mm". A reader looks a stored
+  /// name up by name or alias, and a source's own definition of any spelling
+  /// replaces this one for that source's stations.
+  aliases: [ushort];   // indexes into Root.constituent_names
+}
+
+/// The nodal correction formulas a source's constants were analyzed with.
+enum NodeCorrections : ubyte { IHO = 0, Schureman = 1 }
 
 struct Datum {
   name: ushort;      // index into Root.datum_names
@@ -149,6 +182,11 @@ table Source {
   id: string;
   url: string;
   published_harmonics: bool;
+  /// Definitions that replace `Root.constituent_definitions` entries of the
+  /// same name, or add names, for this source's stations. Stations of one
+  /// source share the vector.
+  constituent_definitions: [ConstituentDefinition];
+  node_corrections: NodeCorrections;
 }
 
 table License {

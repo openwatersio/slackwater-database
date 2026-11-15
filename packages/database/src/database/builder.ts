@@ -27,7 +27,14 @@ import * as flatbuffers from "flatbuffers";
 import countryLookup from "country-code-lookup";
 import { attributionWithCredit } from "../attribution.ts";
 import { FORMAT_VERSION } from "./format.ts";
+import {
+  NODE_CORRECTIONS,
+  checkDefinitions,
+  definitionNames,
+  writeDefinitions,
+} from "./definitions.ts";
 import type {
+  DatabaseConstituents,
   DatabaseRoutes,
   HarmonicConstituent,
   StationInput,
@@ -64,13 +71,31 @@ export function buildDatabase(
      * every notice by omission.
      */
     credits: ReadonlyMap<string, string | null>;
+    /**
+     * The line each constituent name stands for. Required, so no file leaves
+     * a stored name to whatever catalogue its reader happens to have. The
+     * shared definitions must be `@slackwater/engine`'s catalog lines as they
+     * are, which this package can't check: a reader released before
+     * definitions predicts with its own catalog instead. To rebuild from a read database, pass its
+     * `constituents`.
+     */
+    constituents: DatabaseConstituents;
   },
 ): Uint8Array {
   if (!options?.credits)
     throw new Error(
       "buildDatabase needs credits: each source's credit line by source.name, null when it needs none",
     );
-  const { version, routes = { tide: [], current: [] }, credits } = options;
+  if (!options.constituents)
+    throw new Error(
+      "buildDatabase needs constituents: a definition for every constituent name the stations store",
+    );
+  const {
+    version,
+    routes = { tide: [], current: [] },
+    credits,
+    constituents,
+  } = options;
   const creditFor = ({ id, source }: StationInput) => {
     if (!source) return null;
     const credit = credits.get(source.name);
@@ -89,14 +114,17 @@ export function buildDatabase(
       throw new Error(`duplicate station id ${station.id}`);
   });
   const preparedRoutes = prepareRoutes(sorted, routes);
+  checkDefinitions(sorted, constituents);
 
   const constituentNames = nameTable(
-    sorted.flatMap((s) =>
-      [
-        ...(s.harmonic_constituents ?? []),
-        ...(s.current?.minor_constituents ?? []),
-      ].map((c) => c.name),
-    ),
+    sorted
+      .flatMap((s) =>
+        [
+          ...(s.harmonic_constituents ?? []),
+          ...(s.current?.minor_constituents ?? []),
+        ].map((c) => c.name),
+      )
+      .concat(definitionNames(constituents)),
   );
   const datumNames = nameTable(
     sorted.flatMap((s) => Object.keys(s.datums ?? {})),
@@ -120,6 +148,36 @@ export function buildDatabase(
     }
     return builder.endVector();
   };
+
+  // Definitions sit with the prediction data at the tail. A source's vector is
+  // written once and shared by all of its stations.
+  const sharedDefinitions = writeDefinitions(
+    builder,
+    constituents.definitions,
+    constituentNames.index,
+  );
+  const usedSources = new Set(
+    sorted.flatMap((s) => (s.source ? [s.source.name] : [])),
+  );
+  const sourceDefinitions = new Map(
+    [...(constituents.sources ?? [])].flatMap(([name, s]) =>
+      s.constituent_definitions?.length && usedSources.has(name)
+        ? [
+            [
+              name,
+              Source.createConstituentDefinitionsVector(
+                builder,
+                writeDefinitions(
+                  builder,
+                  s.constituent_definitions,
+                  constituentNames.index,
+                ),
+              ),
+            ] as const,
+          ]
+        : [],
+    ),
+  );
 
   // Phase 1: lookup data — prediction vectors and quality detail — together at
   // the tail of the file.
@@ -242,6 +300,7 @@ export function buildDatabase(
     let source = 0;
     if (s.source) {
       const { name, id, url, published_harmonics } = s.source;
+      const own = constituents.sources?.get(name);
       source = memo(sourceOffsets, s.source, () =>
         Source.createSource(
           builder,
@@ -249,6 +308,8 @@ export function buildDatabase(
           str(id),
           str(url),
           published_harmonics,
+          sourceDefinitions.get(name) ?? 0,
+          NODE_CORRECTIONS[own?.node_corrections ?? "iho"],
         ),
       );
     }
@@ -498,6 +559,9 @@ export function buildDatabase(
     builder,
     datumNames.names.map((n) => builder.createSharedString(n)),
   );
+  const definitionsVector = sharedDefinitions.length
+    ? Root.createConstituentDefinitionsVector(builder, sharedDefinitions)
+    : 0;
   const versionOffset = str(version);
 
   Root.finishRootBuffer(
@@ -511,6 +575,7 @@ export function buildDatabase(
       tideRoutesVector,
       currentRoutesVector,
       FORMAT_VERSION,
+      definitionsVector,
     ),
   );
 

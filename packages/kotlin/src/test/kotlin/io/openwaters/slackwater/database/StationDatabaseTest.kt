@@ -334,6 +334,37 @@ class StationDatabaseTest {
     }
 
     @Test
+    fun readsEachStationsConstituentDefinitions() {
+        val reference = db.require("test/reference")
+        assertEquals(Station.NodeCorrections.SCHUREMAN, reference.nodeCorrections)
+        val definitions = assertNotNull(reference.constituentDefinitions)
+        assertEquals(listOf("S2", "M2"), definitions.map { it.name })
+        // The source's own S2, with a 90° phase constant, replaces the shared one.
+        assertEquals(Station.ConstituentDefinition("S2", 30.0, listOf(2, 2, -2, 0, 0, 0, 1)), definitions[0])
+        assertEquals(listOf(2, 0, 0, 0, 0, 0, 0), definitions[1].coefficients)
+        assertEquals(28.9841042, definitions[1].speed, 1e-7)
+
+        // A subordinate reads its reference's.
+        val subordinate = db.require("test/subordinate")
+        assertEquals(0, subordinate.raw.constituentsLength)
+        assertEquals(definitions, subordinate.constituentDefinitions)
+        assertEquals(Station.NodeCorrections.SCHUREMAN, subordinate.nodeCorrections)
+
+        // Minor current constituents count, and so do the members a compound names.
+        val current = assertNotNull(db.require("test/current").constituentDefinitions)
+        assertEquals(listOf("K1", "Q1", "O1"), current.map { it.name })
+        assertEquals(listOf(Station.ConstituentDefinition.Member("O1", 1.0)), current[1].members)
+        assertEquals(emptyList(), db.require("test/zfit-online").constituentDefinitions)
+    }
+
+    @Test
+    fun readsAFileWrittenBeforeDefinitionsAsLeavingThemToTheEngine() {
+        val old = StationDatabase.open(File(System.getProperty("preMinorFixture")))
+        assertNull(old.require("test/current").constituentDefinitions)
+        assertEquals(Station.NodeCorrections.IHO, old.require("test/current").nodeCorrections)
+    }
+
+    @Test
     fun looksUpStableRoutes() {
         assertEquals(
             StationRoute("reference", listOf("test/reference"), listOf("old-reference")),

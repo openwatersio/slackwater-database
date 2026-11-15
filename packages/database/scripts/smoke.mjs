@@ -40,7 +40,10 @@ function check(db, api, label) {
     );
   }
   assert.ok(
-    api.buildDatabase([db.accepted[0]], { credits: api.credits }).length > 0,
+    api.buildDatabase([db.accepted[0]], {
+      credits: api.credits,
+      constituents: db.constituents,
+    }).length > 0,
   );
 
   const ref = db.accepted.find(
