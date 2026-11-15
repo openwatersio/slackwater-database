@@ -3,7 +3,7 @@ import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import {
-  catalogCandidates,
+  fitSelected,
   harmonicSamples,
   publishedConstants,
   type Sample,
@@ -11,7 +11,6 @@ import {
 import {
   createTidePredictor,
   fit,
-  selectConstituents,
   type HarmonicConstituent,
 } from "@slackwater/engine";
 
@@ -367,9 +366,7 @@ export async function runRwsHarmonicValidation(
     // finely enough that the highest harmonics stay below their Nyquist frequency.
     const firstRows = fitTraining.filter((_, i) => i % 2 === 0);
     const secondRows = fitTraining.filter((_, i) => i % 2 === 1);
-    const selected = selectConstituents(harmonicSamples(firstRows), {
-      candidates: catalogCandidates(baselineNames),
-    }).fit;
+    const selected = fitSelected(harmonicSamples(firstRows), baselineNames);
     const names = selected.constituents.map((c) => c.name);
     const firstFit = publishedConstants(selected.constituents);
     const secondFit = publishedConstants(

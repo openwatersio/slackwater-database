@@ -1,7 +1,8 @@
 import { describe, test, expect } from "vitest";
-import { constituents } from "@slackwater/engine";
+import { constituents, createTidePredictor } from "@slackwater/engine";
 import {
   catalogCandidates,
+  fitSelected,
   parseGeslaSamplesInZone,
   publishedConstants,
 } from "../index.js";
@@ -15,6 +16,25 @@ describe("catalogCandidates", () => {
     expect(lines).not.toContain("Z0");
     expect(lines.slice(3)).not.toContain("Sa");
     expect(lines.slice(3)).not.toContain("mu2");
+  });
+});
+
+describe("fitSelected", () => {
+  test("keeps a given name the record measures near zero", () => {
+    const predictor = createTidePredictor(
+      [{ name: "M2", amplitude: 1, phase: 100 }],
+      { offset: false },
+    );
+    const start = Date.UTC(2026, 0, 1);
+    const samples = Array.from({ length: 24 * 40 }, (_, h) => {
+      const time = new Date(start + h * 3600_000);
+      // Millimetre rounding, as a published prediction is, gives the SNR a noise floor.
+      const level = predictor.getWaterLevelAtTime({ time }).level;
+      return { time, value: Math.round(level * 1000) / 1000 };
+    });
+    const fit = fitSelected(samples, ["M2", "S2"], false);
+    expect(fit.constituents.map((c) => c.name)).toEqual(["M2", "S2"]);
+    expect(fit.constituents[1]!.amplitude).toBeLessThan(0.001);
   });
 });
 

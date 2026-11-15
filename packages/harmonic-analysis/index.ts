@@ -1,7 +1,10 @@
 import {
   constituents,
+  fit,
+  selectConstituents,
   type Candidate,
   type FittedConstituent,
+  type HarmonicFit,
   type HarmonicSample,
 } from "@slackwater/engine";
 
@@ -132,4 +135,27 @@ export function publishedConstants(
     amplitude: Math.round(amplitude * 1000) / 1000,
     phase: (Math.round(phase * 100) / 100) % 360,
   }));
+}
+
+/**
+ * Fit `names`, extended with the catalog lines the record supports. Every
+ * candidate passes the engine's selection, except that a name in `names`
+ * below its SNR cut stays: its small amplitude is a measured value, not a
+ * missing one. With `extras` false, only `names` are candidates.
+ */
+export function fitSelected(
+  samples: readonly HarmonicSample[],
+  names: readonly string[],
+  extras = true,
+): HarmonicFit {
+  const given = new Set(names);
+  const { selection } = selectConstituents(samples, {
+    candidates: extras
+      ? catalogCandidates(names)
+      : names.map((name) => ({ name })),
+  });
+  const chosen = selection
+    .filter((s) => s.kept || (s.reason === "snr" && given.has(s.name)))
+    .map((s) => s.name);
+  return fit(samples, chosen, { dropDependent: true });
 }

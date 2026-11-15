@@ -2,11 +2,10 @@ import {
   constituents,
   createTidePredictor,
   fit,
-  selectConstituents,
   type HarmonicFit,
 } from "@slackwater/engine";
 import {
-  catalogCandidates,
+  fitSelected,
   harmonicSamples,
   publishedConstants,
   type Sample,
@@ -119,12 +118,11 @@ export function fitSeries(
   // enough that the highest harmonics stay below their Nyquist frequency.
   const firstRows = training.filter((_, i) => i % 2 === 0),
     secondRows = training.filter((_, i) => i % 2 === 1);
-  const selected = selectConstituents(harmonicSamples(firstRows), {
-    candidates:
-      options.extras === false
-        ? names.map((name) => ({ name }))
-        : catalogCandidates(names),
-  }).fit;
+  const selected = fitSelected(
+    harmonicSamples(firstRows),
+    names,
+    options.extras !== false,
+  );
   const chosen = selected.constituents.map((c) => c.name);
   const first = fitted(firstRows, selected),
     second = fitted(
