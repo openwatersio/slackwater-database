@@ -2,15 +2,12 @@ import { createHash } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { astro, constituents } from "@slackwater/engine";
 import { expect, test } from "vitest";
 import {
   eventMetrics,
   parseEvents,
   parseHeightChunks,
   readCachedJson,
-  selectExtraConstituents,
-  spreadSample,
   trainingSamplesBefore,
   validationGates,
 } from "./harmonics.js";
@@ -83,50 +80,6 @@ function eventResponse(
   };
 }
 
-function excludeOtherSpeeds(...speeds: number[]) {
-  return [
-    ...new Map(
-      Object.values(constituents).map((model) => [model.name, model]),
-    ).values(),
-  ]
-    .filter((model) => !speeds.includes(model.speed))
-    .map(({ name }) => name);
-}
-
-test("spread sampling and residual ranking are deterministic", () => {
-  const screenSamples = Array.from({ length: 400 }, (_, index) => ({
-    t: Date.UTC(2020, 0, 1) + index * 3_600_000,
-    level: 0,
-  }));
-  const residuals = screenSamples.map(({ t }) => {
-    const astronomy = astro(new Date(t));
-    return [
-      ["M2", 1],
-      ["S2", 0.5],
-    ].reduce((level, [name, amplitude]) => {
-      const model = constituents[String(name)]!;
-      const { f, u } = model.correction(astronomy);
-      return (
-        level +
-        Number(amplitude) *
-          f *
-          Math.cos((model.value(astronomy) + u) * (Math.PI / 180))
-      );
-    }, 0);
-  });
-  expect(spreadSample([...Array(20).keys()], 5, 3)).toEqual([3, 4, 9, 14, 19]);
-  const selected = selectExtraConstituents(
-    screenSamples,
-    residuals,
-    excludeOtherSpeeds(constituents["M2"]!.speed, constituents["S2"]!.speed),
-    2,
-  );
-  expect(selected.map((name) => constituents[name]!.speed)).toEqual([
-    constituents["M2"]!.speed,
-    constituents["S2"]!.speed,
-  ]);
-});
-
 test("training selections exclude the validation boundary", () => {
   const validationStart = Date.parse("2025-01-01T00:00:00Z");
   const samples = [
@@ -135,39 +88,6 @@ test("training selections exclude the validation boundary", () => {
   ];
 
   expect(trainingSamplesBefore(samples, validationStart)).toEqual([samples[0]]);
-});
-
-test("selects at most one extra constituent per exact speed", () => {
-  const samples = Array.from({ length: 400 }, (_, index) => ({
-    t: Date.UTC(2020, 0, 1) + index * 3_600_000,
-    level: 0,
-  }));
-  const residuals = samples.map(({ t }) => {
-    const astronomy = astro(new Date(t));
-    return [
-      ["2MK2", 1],
-      ["M2", 0.5],
-    ].reduce((level, [name, amplitude]) => {
-      const model = constituents[String(name)]!;
-      const { f, u } = model.correction(astronomy);
-      return (
-        level +
-        Number(amplitude) *
-          f *
-          Math.cos((model.value(astronomy) + u) * (Math.PI / 180))
-      );
-    }, 0);
-  });
-  const selected = selectExtraConstituents(
-    samples,
-    residuals,
-    excludeOtherSpeeds(constituents["2MK2"]!.speed, constituents["M2"]!.speed),
-    2,
-  );
-  expect(selected.map((name) => constituents[name]!.speed)).toEqual([
-    constituents["2MK2"]!.speed,
-    constituents["M2"]!.speed,
-  ]);
 });
 
 const bounds = {

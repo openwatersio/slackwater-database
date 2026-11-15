@@ -19,7 +19,7 @@ Scientific accuracy comes first. When the scientifically correct change and the 
 - `packages/database` — the published `@slackwater/database` package and the FlatBuffers builder. Its format is documented in [docs/database-format.md](docs/database-format.md).
 - `packages/stations` — station identity, quality evaluation, and the station-file writer.
 - `packages/datums` — datum derivation and the ordering gate.
-- `packages/harmonic-analysis` — constituent fitting.
+- `packages/harmonic-analysis` — GESLA parsing, constituent-line scoring, and helpers for the fits this database makes with `@slackwater/engine`.
 - `packages/tcd` — the XTide-compatible TCD writer.
 - `packages/swift` — the Swift reader and writer, built on generated FlatBuffers accessors. The generated sources are committed, because SwiftPM consumers cannot run `flatc`.
 - `packages/kotlin` — the generated Kotlin/JVM reader. The generated sources are committed, because Gradle composite-build consumers cannot run `flatc`.

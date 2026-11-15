@@ -9,12 +9,12 @@
   },
   "dependencies": {
     "@slackwater/datums": "*",
+    "@slackwater/engine": "https://pkg.pr.new/openwatersio/slackwater/@slackwater/engine@518c680",
     "@slackwater/harmonic-analysis": "*",
     "@slackwater/stations": "*",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@slackwater/engine": "https://pkg.pr.new/openwatersio/slackwater/@slackwater/engine@518c680",
     "vitest": "^5.0.5"
   }
 }

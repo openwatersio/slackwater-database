@@ -1,18 +1,17 @@
-import {
-  spreadSample,
-  selectExtraConstituents,
-} from "@slackwater/harmonic-analysis";
-export {
-  spreadSample,
-  selectExtraConstituents,
-} from "@slackwater/harmonic-analysis";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { fitHarmonics, type Sample } from "@slackwater/harmonic-analysis";
+import {
+  catalogCandidates,
+  harmonicSamples,
+  publishedConstants,
+  type Sample,
+} from "@slackwater/harmonic-analysis";
 import {
   createTidePredictor,
+  fit,
+  selectConstituents,
   type HarmonicConstituent,
 } from "@slackwater/engine";
 
@@ -364,42 +363,19 @@ export async function runRwsHarmonicValidation(
       validationBounds.startMs,
     );
     const baselineNames = await readTiconNames(station.ticon);
-    const baselineRows = spreadSample(fitTraining, 12_000, station.code.length);
-    const baselineFit = fitHarmonics(baselineRows, baselineNames);
-    const baselineOffset = meanOffset(baselineRows, baselineFit);
-    const scoreRows = spreadSample(
-      fitTraining,
-      24_000,
-      station.code.length * 17,
+    // Alternate ten-minute samples: two disjoint regular series, sampled
+    // finely enough that the highest harmonics stay below their Nyquist frequency.
+    const firstRows = fitTraining.filter((_, i) => i % 2 === 0);
+    const secondRows = fitTraining.filter((_, i) => i % 2 === 1);
+    const selected = selectConstituents(harmonicSamples(firstRows), {
+      candidates: catalogCandidates(baselineNames),
+    }).fit;
+    const names = selected.constituents.map((c) => c.name);
+    const firstFit = publishedConstants(selected.constituents);
+    const secondFit = publishedConstants(
+      fit(harmonicSamples(secondRows), names, { dropDependent: true })
+        .constituents,
     );
-    const baselinePredictor = createTidePredictor(baselineFit, {
-      offset: baselineOffset,
-    });
-    const residuals = scoreRows.map(
-      (sample) =>
-        sample.level -
-        baselinePredictor.getWaterLevelAtTime({ time: new Date(sample.t) })
-          .level,
-    );
-    const extraNames = selectExtraConstituents(
-      scoreRows,
-      residuals,
-      baselineNames,
-      50,
-    );
-    const names = [...baselineNames, ...extraNames];
-    const firstRows = spreadSample(
-      fitTraining,
-      4_000,
-      station.code.length * 97,
-    );
-    const secondRows = spreadSample(
-      fitTraining,
-      4_000,
-      station.code.length * 97 + 1,
-    );
-    const firstFit = fitHarmonics(firstRows, names, { solver: "svd" });
-    const secondFit = fitHarmonics(secondRows, names, { solver: "svd" });
     const firstPredictor = createTidePredictor(firstFit, {
       offset: meanOffset(firstRows, firstFit),
     });

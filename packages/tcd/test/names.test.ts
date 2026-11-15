@@ -94,3 +94,16 @@ test("zero-only terms use no TCD constituent slot; small measured terms still do
   });
   expect(buildConstituentList([s, other])).toEqual(["M2", "S2"]);
 });
+
+test("a constituent the engine doesn't know fails the build, even at zero amplitude", () => {
+  const s = station({
+    type: "reference",
+    harmonic_constituents: [
+      { name: "M2", amplitude: 0.5, phase: 15 },
+      { name: "NOTALINE", amplitude: 0, phase: 0 },
+    ],
+  });
+  expect(() => buildConstituentList([s])).toThrow(
+    "Constituents @slackwater/engine doesn't know: NOTALINE",
+  );
+});

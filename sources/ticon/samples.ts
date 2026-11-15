@@ -4,7 +4,11 @@ import {
   type PartialStationData,
 } from "@slackwater/stations";
 import { parseGeslaSamples, type Sample } from "@slackwater/datums";
-import { parseGeslaSamplesInZone } from "@slackwater/harmonic-analysis";
+import { selectConstituents } from "@slackwater/engine";
+import {
+  parseGeslaSamplesInZone,
+  publishedConstants,
+} from "@slackwater/harmonic-analysis";
 
 type Constituents = PartialStationData["harmonic_constituents"];
 
@@ -99,4 +103,29 @@ export function sameConstituents(a: Constituents, b: Constituents) {
         h.phase === b[i]!.phase,
     )
   );
+}
+
+/**
+ * Fit TICON's constituents to a station's record, once its clock is fixed.
+ * A constituent the record can't separate from one before it in `names` is
+ * left out by the Rayleigh criterion, as 3N2 is from N2 and 3L2 from L2 on a
+ * record shorter than a lunar perigee cycle (8.85 years); the stronger one
+ * keeps the signal. Every other name is kept whatever its SNR, as TICON keeps
+ * them. Throws on a record shorter than the year Sa and Ssa need.
+ */
+export function refitConstituents(
+  samples: Sample[],
+  names: string[],
+): Constituents {
+  const sorted = samples.toSorted((a, b) => +a.time - +b.time);
+  if (
+    !sorted.length ||
+    +sorted.at(-1)!.time - +sorted[0]!.time < 365 * 86_400_000
+  )
+    throw new Error("record too short to re-analyze its non-UTC phases");
+  const { fit } = selectConstituents(
+    sorted.map(({ time, level }) => ({ time, value: level })),
+    { candidates: names.map((name) => ({ name })), minSnr: 0 },
+  );
+  return publishedConstants(fit.constituents);
 }
