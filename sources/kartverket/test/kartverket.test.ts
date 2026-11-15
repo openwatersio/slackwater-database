@@ -181,6 +181,9 @@ describe("Kartverket source parser", () => {
     expect(parseTimestamp("2006-01-01T00:00:00.000Z")).toBe(
       Date.UTC(2006, 0, 1),
     );
+    expect(parseTimestamp("2005-12-31T23:59:59.9-01:30")).toBe(
+      Date.UTC(2006, 0, 1, 1, 29, 59, 900),
+    );
     const shortOffsets = tromsoXml.replaceAll(
       /(T\d{2}:\d{2}:\d{2})\+01:00/g,
       "$1+01",

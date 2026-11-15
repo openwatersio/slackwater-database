@@ -148,14 +148,15 @@ export function meanTtMinusUtc(start?: number, end?: number): number {
  */
 export function parseTimestamp(value: string): number {
   const match =
-    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:Z|([+-])(\d{2})(?::?(\d{2}))?)$/.exec(
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(\.\d+)?)?(?:Z|([+-])(\d{2})(?::?(\d{2}))?)$/.exec(
       value,
     );
   if (!match) throw new Error(`Invalid timestamp: ${value}`);
-  const [y, mo, d, h, mi, s, , zh, zm] = match
+  const [y, mo, d, h, mi, s, fraction, , zh, zm] = match
     .slice(1)
     .map((part) => Number(part ?? 0));
-  const local = Date.UTC(y!, mo! - 1, d!, h!, mi!, s!);
+  const local =
+    Date.UTC(y!, mo! - 1, d!, h!, mi!, s!) + Math.round(fraction! * 1000);
   const check = new Date(local);
   if (
     check.getUTCFullYear() !== y ||
@@ -168,7 +169,7 @@ export function parseTimestamp(value: string): number {
     zm! > 59
   )
     throw new Error(`Invalid timestamp: ${value}`);
-  const sign = match[7] === "-" ? -1 : 1;
+  const sign = match[8] === "-" ? -1 : 1;
   return local - sign * (zh! * 60 + zm!) * 60_000;
 }
 
