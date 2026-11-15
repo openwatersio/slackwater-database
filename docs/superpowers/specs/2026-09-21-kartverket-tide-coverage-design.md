@@ -21,7 +21,7 @@ Kartverket publishes the data through its [water-level API](https://www.kartverk
 
 The source README, package NOTICE, and exported source metadata must include that credit and links to the [source](https://www.kartverket.no/en/api-and-data/tides-and-water-level-data) and [licence terms](https://www.kartverket.no/en/api-and-data/terms-of-use).
 
-The importer records every transformation: centimetres to metres, phase conversion from UTC+1 to UTC, constituent-name normalization, MSL-relative datum handling, polygon-ring closure, and unsupported-zone exclusion.
+The importer records every transformation: centimetres to metres, phase conversion from UTC+1 and Terrestrial Time to UTC, constituent-name normalization, MSL-relative datum handling, polygon-ring closure, and unsupported-zone exclusion.
 
 ## Verified source inventory
 
@@ -57,7 +57,7 @@ Each station uses a stable ID of `kartverket/<station-code>` and preserves Kartv
 Normalization rules:
 
 - amplitudes: centimetres to metres;
-- phases: `phaseUTC = normalize(phasePublished - speedDegreesPerHour)` because published phases use UTC+1;
+- phases: `phaseUTC = normalize(phasePublished - speedDegreesPerHour × (1 + ttMinusUtcSeconds / 3600))` because published phases use UTC+1 and an analysis in Terrestrial Time, with `ttMinusUtcSeconds` the mean over the analysis period;
 - chart datum: preserve the explicit `CD` level; `LAT` is a separate datum;
 - missing observation epochs: leave the epoch absent;
 - source data: mark the harmonics as published and attach the Kartverket source and CC BY 4.0 licence.
@@ -224,7 +224,7 @@ Required numerical agreement with Kartverket:
 - high/low time error at most five minutes;
 - high/low height error at most 0.05 m.
 
-Calculations outside the declared interval remain possible but carry no Kartverket validation guarantee. A constituent-model or convention mismatch that exceeds these thresholds blocks release and requires a design correction.
+Kartverket's predictions run TT − UTC (67–69 s) behind its observations, and the imported phases follow the observations, so that minute is part of every figure; [the source README](../../../sources/kartverket/README.md#phases) has the evidence. Calculations outside the declared interval remain possible but carry no Kartverket validation guarantee. A constituent-model or convention mismatch that exceeds these thresholds blocks release and requires a design correction.
 
 ## Failure behavior
 
