@@ -178,7 +178,7 @@ For TICON-4 stations:
 - Datums use supported GESLA-4 observation windows or a labeled harmonic fallback, since TICON does not publish them. See [sources/ticon/README.md](./sources/ticon/README.md) for the method and its uncertainties.
 - Four UHSLC research-quality records, Ammassalik (297A), Langkawi (142A), Macaé (719A) and Alotau (069A), take UHSLC's position for the gauge instead of TICON's, which sits 17 to 49 km away. See [sources/ticon/README.md](./sources/ticon/README.md#positions) and [#371](https://github.com/openwatersio/slackwater-database/issues/371).
 
-For Kartverket stations, published harmonic phases are converted from UTC+1 to UTC and centimetres are converted to metres. The original responses and comparison results are pinned under [sources/kartverket](./sources/kartverket/README.md).
+For Kartverket stations, published harmonic phases are converted from UTC+1 to UTC, less the Terrestrial Time offset Kartverket's analysis carries (TT − UTC, 67–69 s), and centimetres are converted to metres. The original responses and comparison results are pinned under [sources/kartverket](./sources/kartverket/README.md).
 
 For LINZ stations, published harmonic phases are converted from NZST (UTC+12) to UTC, centimetres are converted to metres, five constituent names are mapped to the catalogue's spelling (such as `LDA2` to `lambda2`), and Nelson's misprinted latitude is corrected. Datums other than MSL are derived from the constituents, since LINZ publishes only the mean level. See [sources/linz](./sources/linz/README.md) for the method.
 

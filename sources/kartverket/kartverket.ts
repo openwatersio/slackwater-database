@@ -71,8 +71,106 @@ const overrides = new Map<string, string>([
   ["M3|43.47615636|CZZZZZB", "M3"],
 ]);
 
-export const normalizePhase = (phase: number, speed: number) =>
-  (((phase - speed) % 360) + 360) % 360;
+/**
+ * Refers a Kartverket phase to UTC. Kartverket publishes phases for UTC+1, an
+ * hour of each constituent's speed, and its analysis computes the astronomical
+ * arguments in Terrestrial Time while its observations and predictions are in
+ * UTC, so its phases also carry TT − UTC, 67–69 s since 2006.
+ */
+export const normalizePhase = (
+  phase: number,
+  speed: number,
+  ttMinusUtcSeconds = 0,
+) => (((phase - speed * (1 + ttMinusUtcSeconds / 3600)) % 360) + 360) % 360;
+
+// TAI − UTC from each leap second on, from IERS Bulletin C; TT − UTC is
+// 32.184 s more. None has been added since 2017.
+const LEAP_SECONDS: readonly [number, number][] = (
+  [
+    [1972, 0, 10],
+    [1972, 6, 11],
+    [1973, 0, 12],
+    [1974, 0, 13],
+    [1975, 0, 14],
+    [1976, 0, 15],
+    [1977, 0, 16],
+    [1978, 0, 17],
+    [1979, 0, 18],
+    [1980, 0, 19],
+    [1981, 6, 20],
+    [1982, 6, 21],
+    [1983, 6, 22],
+    [1985, 6, 23],
+    [1988, 0, 24],
+    [1990, 0, 25],
+    [1991, 0, 26],
+    [1992, 6, 27],
+    [1993, 6, 28],
+    [1994, 6, 29],
+    [1996, 0, 30],
+    [1997, 6, 31],
+    [1999, 0, 32],
+    [2006, 0, 33],
+    [2009, 0, 34],
+    [2012, 6, 35],
+    [2015, 6, 36],
+    [2017, 0, 37],
+  ] as const
+).map(([year, month, seconds]) => [Date.UTC(year, month, 1), seconds]);
+const TT_MINUS_TAI = 32.184;
+
+/**
+ * Mean TT − UTC in seconds over an analysis period, or the current value
+ * without one, as for Kartverket's stations that publish no period.
+ */
+export function meanTtMinusUtc(start?: number, end?: number): number {
+  const latest = TT_MINUS_TAI + LEAP_SECONDS.at(-1)![1];
+  if (start === undefined && end === undefined) return latest;
+  if (
+    start === undefined ||
+    end === undefined ||
+    !(start < end) ||
+    start < LEAP_SECONDS[0]![0]
+  )
+    throw new Error(`Unexpected analysis period: ${start} to ${end}`);
+  let total = 0;
+  LEAP_SECONDS.forEach(([from, seconds], i) => {
+    const to = LEAP_SECONDS[i + 1]?.[0] ?? Infinity;
+    const overlap = Math.min(end, to) - Math.max(start, from);
+    if (overlap > 0) total += overlap * (TT_MINUS_TAI + seconds);
+  });
+  return total / (end - start);
+}
+
+/**
+ * An ISO timestamp with an offset, as Kartverket's protocol gives them:
+ * `+01:00` or the hour-only `+01`. Refuses a date the calendar doesn't have.
+ */
+export function parseTimestamp(value: string): number {
+  const match =
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:Z|([+-])(\d{2})(?::?(\d{2}))?)$/.exec(
+      value,
+    );
+  if (!match) throw new Error(`Invalid timestamp: ${value}`);
+  const [y, mo, d, h, mi, s, , zh, zm] = match
+    .slice(1)
+    .map((part) => Number(part ?? 0));
+  const local = Date.UTC(y!, mo! - 1, d!, h!, mi!, s!);
+  const check = new Date(local);
+  if (
+    check.getUTCFullYear() !== y ||
+    check.getUTCMonth() !== mo! - 1 ||
+    check.getUTCDate() !== d ||
+    h! > 23 ||
+    mi! > 59 ||
+    s! > 59 ||
+    zh! > 23 ||
+    zm! > 59
+  )
+    throw new Error(`Invalid timestamp: ${value}`);
+  const sign = match[7] === "-" ? -1 : 1;
+  return local - sign * (zh! * 60 + zm!) * 60_000;
+}
 
 export const centimetersToMeters = (value: string) => Number(value) / 100;
 
@@ -206,6 +304,20 @@ export function parseConstituents(xml: string): ParsedConstituents {
   if (dataAttributes["utcoffset"] !== "+01:00")
     throw new Error(`Unexpected UTC offset: ${dataAttributes["utcoffset"]}`);
 
+  const observations = attributes(data["observations"] as XmlNode | undefined);
+  const start = observations?.["start"];
+  const end = observations?.["end"];
+  if (Boolean(start) !== Boolean(end))
+    throw new Error(`Incomplete analysis period: ${start} to ${end}`);
+  const epoch =
+    start && end
+      ? { start: start.slice(0, 10), end: end.slice(0, 10) }
+      : undefined;
+  const ttMinusUtc =
+    start && end
+      ? meanTtMinusUtc(parseTimestamp(start), parseTimestamp(end))
+      : meanTtMinusUtc();
+
   const constituents = asArray(
     data["constituent"] as XmlNode | XmlNode[] | undefined,
   ).map((node) => {
@@ -222,20 +334,16 @@ export function parseConstituents(xml: string): ParsedConstituents {
       }),
       amplitude: decimal(amplitude / 100),
       phase: decimal(
-        normalizePhase(number(value["phaseangle"], "constituent phase"), speed),
+        normalizePhase(
+          number(value["phaseangle"], "constituent phase"),
+          speed,
+          ttMinusUtc,
+        ),
       ),
     };
   });
   if (constituents.length === 0) throw new Error("Missing constituent values");
 
-  const observations = attributes(data["observations"] as XmlNode | undefined);
-  const epoch =
-    observations?.["start"] && observations["end"]
-      ? {
-          start: observations["start"].slice(0, 10),
-          end: observations["end"].slice(0, 10),
-        }
-      : undefined;
   return {
     location: location(attributes(data["location"] as XmlNode | undefined)),
     constituents,

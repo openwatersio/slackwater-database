@@ -176,9 +176,9 @@ export const PUBLISHED_PRECISION: Record<
   noaa: { amplitude: 3, phase: 1 },
   // Centimetres to 6 decimals, phase to 6 decimals.
   ticon: { amplitude: 8, phase: 6 },
-  // Centimetres to 2 decimals. Phase to 0.01° in UTC+1, shifted to UTC by
-  // the constituent's speed, which is published to 8 decimals: the shift is
-  // exact, so its digits are kept.
+  // Centimetres to 2 decimals. Phase to 0.01° in UTC+1, shifted to UTC and
+  // out of Terrestrial Time by the constituent's speed, published to 8
+  // decimals; the shift's digits are kept so a rebuild reproduces them.
   kartverket: { amplitude: 4, phase: 8 },
   // Centimetres to 4 decimals. Phase to 4 decimals after the shift from NZST,
   // as the LINZ importer writes it: the shift's further digits fall below

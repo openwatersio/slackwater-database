@@ -6,6 +6,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { refreshSnapshot, verifySnapshot } from "../import.ts";
 import {
   buildStation,
+  meanTtMinusUtc,
+  parseTimestamp,
   parseConstituents,
   parseLocationLevels,
   parseStationList,
@@ -133,8 +135,102 @@ describe("Kartverket source parser", () => {
     expect(parseConstituents(tromsoXml).constituents[0]).toMatchObject({
       name: "SA_KV",
       amplitude: 0.1286,
-      phase: 330.19893332,
+      phase: 330.19816692,
     });
+  });
+
+  it("takes TT − UTC over the analysis period out of each phase", () => {
+    const m2 = tromsoXml.replace(
+      /<constituent [^>]*\/>/,
+      `<constituent name="M2" doodson="BZZZZZZ" speed="28.98410420" phaseangle="100" amplitude="10"/>`,
+    );
+    // 67.18 s of M2's speed past the hour for UTC+1.
+    expect(parseConstituents(m2).constituents[0]!.phase).toBeCloseTo(
+      100 - 28.9841042 - 0.54091,
+      5,
+    );
+  });
+
+  it("averages TT − UTC over leap seconds and uses today's without a period", () => {
+    expect(
+      meanTtMinusUtc(
+        Date.parse("2006-01-01T00:00:00+01:00"),
+        Date.parse("2020-12-31T23:00:00+01:00"),
+      ),
+    ).toBeCloseTo(67.1845, 4);
+    expect(
+      meanTtMinusUtc(Date.parse("2022-11-25"), Date.parse("2025-02-06")),
+    ).toBe(69.184);
+    expect(meanTtMinusUtc()).toBe(69.184);
+    // 25 s in 1990, 26 s in 1991, then 32.184 s more.
+    expect(
+      meanTtMinusUtc(Date.UTC(1990, 6, 1), Date.UTC(1991, 6, 1)),
+    ).toBeCloseTo(32.184 + 25.5, 1);
+    for (const [start, end] of [
+      [Date.UTC(1960, 0, 1), Date.UTC(1980, 0, 1)],
+      [Date.UTC(2010, 0, 1), Date.UTC(2009, 0, 1)],
+      [Date.UTC(2010, 0, 1), undefined],
+    ] as const)
+      expect(() => meanTtMinusUtc(start, end)).toThrow(/analysis period/);
+  });
+
+  it("reads hour-only offsets and refuses impossible timestamps", () => {
+    expect(parseTimestamp("2006-01-01T00:00:00+01")).toBe(
+      Date.UTC(2005, 11, 31, 23),
+    );
+    expect(parseTimestamp("2006-01-01T00:00:00.000Z")).toBe(
+      Date.UTC(2006, 0, 1),
+    );
+    const shortOffsets = tromsoXml.replaceAll(
+      /(T\d{2}:\d{2}:\d{2})\+01:00/g,
+      "$1+01",
+    );
+    expect(parseConstituents(shortOffsets).constituents).toEqual(
+      parseConstituents(tromsoXml).constituents,
+    );
+    for (const [from, to] of [
+      ["2006-01-01T00:00:00", "2006-02-31T00:00:00"],
+      ["2006-01-01T00:00:00+01:00", "2006-01-01T00:00:00+99:00"],
+    ] as const)
+      expect(() => parseConstituents(tromsoXml.replace(from, to))).toThrow(
+        /Invalid timestamp/,
+      );
+  });
+
+  it("refuses an analysis period with only one end", () => {
+    const xml = tromsoXml.replace(/ end="[^"]*"/, "");
+
+    expect(() => parseConstituents(xml)).toThrow(/Incomplete analysis period/);
+  });
+
+  it("brings Andenes' M2 onto independent analyses of the same gauge", async () => {
+    // UHSLC's research and fast-delivery series, CMEMS's relay and TICON's
+    // analysis of Kartverket's record, all against UTC.
+    const read = async (path: string) =>
+      JSON.parse(
+        await readFile(
+          new URL(`../../../data/${path}`, import.meta.url),
+          "utf8",
+        ),
+      ) as { harmonic_constituents: { name: string; phase: number }[] };
+    const m2 = async (path: string) => {
+      const m2 = (await read(path)).harmonic_constituents.find(
+        (c) => c.name === "M2",
+      );
+      if (!m2) throw new Error(`${path} has no M2`);
+      return m2.phase;
+    };
+    const independent = await Promise.all(
+      [
+        "ticon/andenes-800-nor-uhslc_fd.json",
+        "ticon/andenes-800a-nor-uhslc_rq.json",
+        "ticon/andenestg-and-nor-cmems.json",
+        "ticon/andenes-anx-nor-nhs.json",
+      ].map(m2),
+    );
+    const kartverket = await m2("kartverket/ANX.json");
+    for (const phase of independent)
+      expect(Math.abs(kartverket - phase)).toBeLessThan(0.05);
   });
 
   it("leaves a missing observation epoch absent", () => {
