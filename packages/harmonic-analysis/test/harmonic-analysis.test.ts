@@ -35,6 +35,9 @@ describe("fitSelected", () => {
     const fit = fitSelected(samples, ["M2", "S2"], false);
     expect(fit.constituents.map((c) => c.name)).toEqual(["M2", "S2"]);
     expect(fit.constituents[1]!.amplitude).toBeLessThan(0.001);
+    expect(() => fitSelected(samples, ["M2", "XYZ9"], false)).toThrow(
+      "can't fit XYZ9 (unknown)",
+    );
   });
 });
 

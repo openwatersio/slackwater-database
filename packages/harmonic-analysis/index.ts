@@ -141,7 +141,8 @@ export function publishedConstants(
  * Fit `names`, extended with the catalog lines the record supports. Every
  * candidate passes the engine's selection, except that a name in `names`
  * below its SNR cut stays: its small amplitude is a measured value, not a
- * missing one. With `extras` false, only `names` are candidates.
+ * missing one. Throws on a name in `names` the engine doesn't know or the
+ * sampling can't resolve. With `extras` false, only `names` are candidates.
  */
 export function fitSelected(
   samples: readonly HarmonicSample[],
@@ -154,6 +155,14 @@ export function fitSelected(
       ? catalogCandidates(names)
       : names.map((name) => ({ name })),
   });
+  const lost = selection.filter(
+    (s) =>
+      given.has(s.name) && (s.reason === "unknown" || s.reason === "nyquist"),
+  );
+  if (lost.length)
+    throw new Error(
+      `can't fit ${lost.map((s) => `${s.name} (${s.reason})`).join(", ")}`,
+    );
   const chosen = selection
     .filter((s) => s.kept || (s.reason === "snr" && given.has(s.name)))
     .map((s) => s.name);

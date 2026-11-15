@@ -52,6 +52,29 @@ describe("refitConstituents", () => {
     expect(() =>
       refitConstituents(synthetic(24 * 300, [["M2", 1, 0]]), ["M2"]),
     ).toThrow("record too short");
+    // Four hours short of the 365.25 days that separate K1 from S1.
+    expect(() =>
+      refitConstituents(synthetic(24 * 365 + 3, [["M2", 1, 0]]), ["M2"]),
+    ).toThrow("record too short");
+  });
+
+  test("refuses to drop any name but 3N2 and 3L2", () => {
+    const samples = synthetic(24 * 400, [["M2", 1, 0]]);
+    expect(() => refitConstituents(samples, ["M2", "XYZ9"])).toThrow(
+      "re-fit would drop XYZ9 (unknown)",
+    );
+    // S2 and T2 need 365.26 days.
+    expect(() =>
+      refitConstituents(synthetic(24 * 365.25 + 1, [["M2", 1, 0]]), [
+        "M2",
+        "S2",
+        "T2",
+      ]),
+    ).toThrow("re-fit would drop T2 (rayleigh)");
+    // Three-hourly samples can't resolve M6's 87°/h.
+    expect(() =>
+      refitConstituents(synthetic(24 * 400, [["M2", 1, 0]], 3), ["M2", "M6"]),
+    ).toThrow("re-fit would drop M6 (nyquist)");
   });
 
   test("fits MKS2 on its own line and never reports it as 3N2", () => {
