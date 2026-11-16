@@ -53,6 +53,20 @@ describe("publishedConstants", () => {
       { name: "S2", amplitude: 0, phase: 0 },
     ]);
   });
+
+  test("leaves out a catalog extra that rounds to zero, never a given name", () => {
+    expect(
+      publishedConstants(
+        [
+          { name: "M2", amplitude: 1, phase: 10 },
+          { name: "S2", amplitude: 0.0004, phase: 20 },
+          { name: "MKS2", amplitude: 0.0004, phase: 30 },
+          { name: "MSN2", amplitude: 0.0006, phase: 40 },
+        ],
+        ["M2", "S2"],
+      ).map((c) => c.name),
+    ).toEqual(["M2", "S2", "MSN2"]);
+  });
 });
 
 describe("parseGeslaSamplesInZone", () => {

@@ -74,8 +74,8 @@ export function storedHeight(
 }
 
 /** A fit as it is stored, rounded, with the mean offset of that representation. */
-function fitted(samples: Sample[], result: HarmonicFit) {
-  const fit = publishedConstants(result.constituents);
+function fitted(samples: Sample[], result: HarmonicFit, names: string[]) {
+  const fit = publishedConstants(result.constituents, names);
   const predictor = createTidePredictor(fit, { offset: false });
   const offset = Number(
     (
@@ -124,10 +124,11 @@ export function fitSeries(
     options.extras !== false,
   );
   const chosen = selected.constituents.map((c) => c.name);
-  const first = fitted(firstRows, selected),
+  const first = fitted(firstRows, selected, names),
     second = fitted(
       secondRows,
       fit(harmonicSamples(secondRows), chosen, { dropDependent: true }),
+      names,
     );
   const errors: number[] = [];
   let squares = 0,

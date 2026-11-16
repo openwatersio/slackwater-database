@@ -368,10 +368,11 @@ export async function runRwsHarmonicValidation(
     const secondRows = fitTraining.filter((_, i) => i % 2 === 1);
     const selected = fitSelected(harmonicSamples(firstRows), baselineNames);
     const names = selected.constituents.map((c) => c.name);
-    const firstFit = publishedConstants(selected.constituents);
+    const firstFit = publishedConstants(selected.constituents, baselineNames);
     const secondFit = publishedConstants(
       fit(harmonicSamples(secondRows), names, { dropDependent: true })
         .constituents,
+      baselineNames,
     );
     const firstPredictor = createTidePredictor(firstFit, {
       offset: meanOffset(firstRows, firstFit),

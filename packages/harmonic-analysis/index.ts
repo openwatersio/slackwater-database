@@ -125,16 +125,21 @@ export function catalogCandidates(names: readonly string[]): Candidate[] {
 /**
  * Fitted constants as this database publishes its own analyses: to 1 mm and
  * 0.01 degrees, as NOAA publishes its amplitudes. Finer digits sit below any
- * fit's uncertainty.
+ * fit's uncertainty. With `given`, a catalog extra outside it that rounds to
+ * zero is left out: it changes no prediction, while a given name's zero is a
+ * measured value and stays.
  */
 export function publishedConstants(
   fitted: readonly FittedConstituent[],
+  given?: readonly string[],
 ): HarmonicConstituent[] {
-  return fitted.map(({ name, amplitude, phase }) => ({
-    name,
-    amplitude: Math.round(amplitude * 1000) / 1000,
-    phase: (Math.round(phase * 100) / 100) % 360,
-  }));
+  return fitted
+    .map(({ name, amplitude, phase }) => ({
+      name,
+      amplitude: Math.round(amplitude * 1000) / 1000,
+      phase: (Math.round(phase * 100) / 100) % 360,
+    }))
+    .filter((c) => !given || c.amplitude > 0 || given.includes(c.name));
 }
 
 /**
