@@ -16,6 +16,9 @@
     "lint": "prettier --check .",
     "format": "prettier --write ."
   },
+  "dependencies": {
+    "@slackwater/engine": "1.0.0-beta.13"
+  },
   "devDependencies": {
     "@types/node": "^26.6.5",
     "prettier": "^3.9.10",

@@ -7,8 +7,7 @@
     "validate": "node harmonics.ts"
   },
   "dependencies": {
-    "@slackwater/harmonic-analysis": "*",
-    "@slackwater/engine": "1.0.0-beta.13"
+    "@slackwater/harmonic-analysis": "*"
   },
   "devDependencies": {
     "vitest": "^5.0.5"
