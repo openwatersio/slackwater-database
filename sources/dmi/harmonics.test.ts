@@ -44,7 +44,7 @@ test("recovers Greenwich phases and a mean offset from training only", () => {
 test("extends the given names from the catalog, keeping them in unresolved pairs", () => {
   const start = Date.parse("2026-01-02T00:00Z");
   const result = fitSeries(
-    synthetic(start, 367, 367 * 24 + 1),
+    synthetic(start, 367, 367 * 12 + 1),
     synthetic(start + 370 * 86400000, 350, 1000),
     { names: ["M2", "S2", "Sa"] },
   );
