@@ -1,11 +1,40 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import type { Result } from "@openwaters/c5y-n8r";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
 import { countryByName as baselineCountryByName } from "../../packages/stations/country.ts";
 
+function snapshot(result: Result) {
+  return {
+    selection: result.selection,
+    temporalAmbiguity: result.temporalAmbiguity,
+    coverage: result.coverage,
+    evidenceStatus: result.evidenceStatus,
+    preferred: result.preferred && {
+      id: result.preferred.id,
+      namespace: result.preferred.namespace,
+      value: result.preferred.value,
+    },
+    candidates: result.candidates.map((c) => ({
+      id: c.id,
+      name: c.name,
+      namespace: c.namespace,
+      value: c.value,
+      matchedBy: c.matchedBy,
+      applicability: c.applicability,
+      tentative: c.tentative,
+      temporalReviewed: c.temporalReviewed,
+      retiredAtDay: c.retiredAtDay,
+      successors: c.successors,
+      evidence: c.evidence,
+    })),
+  };
+}
+
 const started = performance.now();
-const { countryByName, countryRegistry } = await import("./adapter.ts");
+const { countryByName, countryRegistry, countryBinarySha256 } =
+  await import("./adapter.ts");
 const openAndIndexMs = performance.now() - started;
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const counts = new Map<string, number>();
@@ -18,8 +47,12 @@ function walk(dir: string) {
       !entry.name.endsWith(".geo.json")
     ) {
       const row = JSON.parse(readFileSync(path, "utf8"));
-      if (typeof row.country !== "string")
-        throw new Error(`Missing country: ${path}`);
+      if (
+        typeof row.country !== "string" ||
+        !row.country.trim() ||
+        row.country.length > 1024
+      )
+        throw new Error(`Invalid country: ${path}`);
       counts.set(row.country, (counts.get(row.country) ?? 0) + 1);
     }
   }
@@ -29,7 +62,10 @@ const cases = [...counts]
   .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
   .map(([input, records]) => {
     const old = baselineCountryByName(input);
-    const result = countryRegistry.resolve(input, { namespace: "name" });
+    const result = countryRegistry.convert(input, {
+      from: "name",
+      to: "iso-alpha2",
+    });
     const actual = countryByName(input);
     return {
       input,
@@ -40,15 +76,19 @@ const cases = [...counts]
         continent: old.continent,
       },
       actual,
-      selection: result.selection,
-      temporalAmbiguity: result.temporalAmbiguity,
-      evidenceStatus: result.evidenceStatus,
-      candidates: result.candidates.map((c) => ({
-        id: c.id,
-        name: c.name,
-        applicability: c.applicability,
-        evidence: c.evidence,
-      })),
+      nameChanged: Boolean(old && actual && old.country !== actual.country),
+      continentChanged: Boolean(
+        old && actual && old.continent !== actual.continent,
+      ),
+      datumPolicyReview: Boolean(
+        old && actual && old.country !== actual.country,
+      ),
+      tentative: Boolean(
+        result.source.preferred?.tentative ||
+        result.target.preferred?.tentative,
+      ),
+      source: snapshot(result.source),
+      target: snapshot(result.target),
       outcome: !actual
         ? "unresolved"
         : !old
@@ -68,6 +108,7 @@ const lookupMs = performance.now() - lookupStarted;
 const report = {
   package: "@openwaters/c5y-n8r",
   metadata: countryRegistry.metadata(),
+  binarySha256: countryBinarySha256,
   records: [...counts.values()].reduce((a, b) => a + b, 0),
   inputs: counts.size,
   openAndIndexMs,
@@ -81,9 +122,25 @@ const report = {
     },
     {},
   ),
+  resolvedInputs: cases.filter((c) => c.actual !== null).length,
+  resolvedRecords: cases.reduce(
+    (total, c) => total + (c.actual ? c.records : 0),
+    0,
+  ),
+  resolvedInputsWithoutContinent: cases.filter(
+    (c) => c.actual && !c.actual.continent?.trim(),
+  ).length,
+  tentativeResolvedInputs: cases.filter((c) => c.actual && c.tentative).length,
+  tentativeResolvedRecords: cases.reduce(
+    (total, c) => total + (c.actual && c.tentative ? c.records : 0),
+    0,
+  ),
+  nameDifferenceInputs: cases.filter((c) => c.nameChanged).length,
+  continentDifferenceInputs: cases.filter((c) => c.continentChanged).length,
+  datumPolicyReviewInputs: cases.filter((c) => c.datumPolicyReview).length,
   verifiedInputs: 0,
   limitation:
-    "Compatibility baselines are not verified facts. This partial unreviewed corpus cannot replace the production dependency. Timing includes the alpha-2 scan and measures this machine only.",
+    "Compatibility baselines are not verified facts. This partial unreviewed corpus cannot replace the production dependency. Timing includes package loading and validated registry opening and measures this machine only. Tentative preferred codes remain unverified and are reported with their uncertainty.",
   cases,
 };
 const output = resolve(
