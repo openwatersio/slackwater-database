@@ -4,6 +4,7 @@ import { readFile } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import {
+  countryByNameOrCode,
   parseCSV,
   groupBy,
   normalize,
@@ -37,7 +38,11 @@ import {
   matchMetadata,
   type TiconMetaRow,
 } from "./meta.ts";
-import { reduceTiconDatums, cachedDatumNotice } from "./datums.ts";
+import {
+  reduceTiconDatums,
+  cachedDatumNotice,
+  restoreCachedCountryDatum,
+} from "./datums.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const metaPath = join(__dirname, "..", "..", "tmp", "TICON-4", "meta.csv");
@@ -170,6 +175,7 @@ async function main() {
     try {
       const { datum_notice, ...datumResult } = await getDatums(
         id,
+        rows[0].country,
         epoch,
         harmonic_constituents,
       );
@@ -240,6 +246,7 @@ async function main() {
  */
 async function getDatums(
   id: string,
+  country: string,
   obsEpoch: { start: Date; end: Date },
   harmonic_constituents: PartialStationData["harmonic_constituents"],
 ) {
@@ -274,8 +281,17 @@ async function getDatums(
           existing.harmonic_constituents,
           roundConstituents("ticon", harmonic_constituents),
         )
-      )
-        return { datums: existing.datums, ...cached, datum_notice };
+      ) {
+        const countryCode = countryByNameOrCode(country)?.iso2;
+        if (countryCode && existing.datums) {
+          const datums = restoreCachedCountryDatum(
+            countryCode,
+            existing.datums,
+            harmonic_constituents,
+          );
+          if (datums) return { datums, ...cached, datum_notice };
+        }
+      }
     }
   }
 
