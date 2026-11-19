@@ -73,6 +73,16 @@ const computed = {
 };
 
 describe("stored harmonic datum ownership", () => {
+  test("keeps China's TLT after its display name changes", () => {
+    const input = station({
+      country: "People's Republic of China",
+      country_code: "CN",
+    });
+    const datums = mergeHarmonicDatums("ticon", input, computed);
+    expect(datums["TLT"]).toBe(0.123);
+    expect(datums["LLWLT"]).toBeUndefined();
+  });
+
   test("keeps observed TICON means and lifts only harmonic datums into the stored gauge frame", () => {
     const input = station();
     const original = structuredClone(input);

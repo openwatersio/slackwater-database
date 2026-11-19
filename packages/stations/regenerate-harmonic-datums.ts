@@ -10,6 +10,7 @@ import {
   OBSERVED_KEYS,
   storedDatumNotice,
 } from "../../sources/ticon/datums.ts";
+import { countryByNameOrCode } from "./country.ts";
 import { DATA_DIR, pruneDatums } from "./station.ts";
 
 export type HarmonicDatumSource = "ticon" | "dmi" | "linz" | "jhod" | "jma";
@@ -22,6 +23,8 @@ export function mergeHarmonicDatums(
 ): Datums {
   if (!SOURCES.includes(source))
     throw new Error(`Unsupported source: ${source}`);
+  const countryCode =
+    station.country_code || countryByNameOrCode(station.country)?.iso2 || "";
   const requireDatum = (key: string) => {
     const value = station.datums?.[key];
     if (value === undefined || !Number.isFinite(value))
@@ -43,7 +46,7 @@ export function mergeHarmonicDatums(
       const means = Object.fromEntries(
         OBSERVED_KEYS.map((key) => [key, requireDatum(key)]),
       );
-      return pruneDatums(station.country, {
+      return pruneDatums(countryCode, {
         ...means,
         ...Object.fromEntries(
           HARMONIC_KEYS.filter((key) => computed[key] !== undefined).map(
@@ -79,7 +82,7 @@ export function mergeHarmonicDatums(
       throw new Error(`${source}/${station.source.id}: expected ${zero} = 0`);
     shifted[zero] = station.datums[zero]!;
   }
-  return pruneDatums(station.country, shifted);
+  return pruneDatums(countryCode, shifted);
 }
 
 export function parseShard(value: string | undefined): [number, number] {

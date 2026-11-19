@@ -65,6 +65,12 @@ describe("computeDatums — extra chart datums", () => {
   });
 });
 
+test("China keeps its theoretical lowest tide datum by ISO code", () => {
+  const datums = { LAT: -1.6, TLT: -1.55 };
+  expect(getChartDatum("CN", datums)).toBe("TLT");
+  expect(pruneDatums("CN", datums)).toEqual(datums);
+});
+
 describe("isBaltic", () => {
   const cases: [string, number, number, boolean][] = [
     ["Norderney (North Sea)", 53.7, 7.15, false],
@@ -115,38 +121,38 @@ describe("getChartDatum", () => {
   };
 
   test("US → MLLW", () => {
-    expect(getChartDatum("United States", all, 40, -74)).toBe("MLLW");
+    expect(getChartDatum("US", all, 40, -74)).toBe("MLLW");
   });
   test("Canada → LLWLT", () => {
-    expect(getChartDatum("Canada", all, 49, -123)).toBe("LLWLT");
+    expect(getChartDatum("CA", all, 49, -123)).toBe("LLWLT");
   });
   test("unlisted country → LAT", () => {
-    expect(getChartDatum("United Kingdom", all, 51, 0)).toBe("LAT");
+    expect(getChartDatum("GB", all, 51, 0)).toBe("LAT");
   });
   test("Baltic location → MSL regardless of country", () => {
     // A German Baltic station (Kiel) overrides the country default.
-    expect(getChartDatum("Germany", all, 54.32, 10.14)).toBe("MSL");
+    expect(getChartDatum("DE", all, 54.32, 10.14)).toBe("MSL");
   });
   test("German North Sea station → LAT (not overridden)", () => {
-    expect(getChartDatum("Germany", all, 53.87, 8.72)).toBe("LAT");
+    expect(getChartDatum("DE", all, 53.87, 8.72)).toBe("LAT");
   });
   test("falls back to LAT when the preferred datum is absent", () => {
     const noLlwlt = { MSL: 0, MLW: -1, LAT: -1.6 };
-    expect(getChartDatum("Canada", noLlwlt, 49, -123)).toBe("LAT");
+    expect(getChartDatum("CA", noLlwlt, 49, -123)).toBe("LAT");
   });
 });
 
 describe("pruneDatums", () => {
   const full = { MSL: 0, MLWS: -1.3, LLWLT: -1.5, TLT: -1.55, NLLW: -1.6 };
   test("keeps standard datums, drops other countries' bespoke datums", () => {
-    const canada = pruneDatums("Canada", full);
+    const canada = pruneDatums("CA", full);
     expect(canada["LLWLT"]).toBeDefined();
     expect(canada["MLWS"]).toBeDefined();
     expect(canada["TLT"]).toBeUndefined();
     expect(canada["NLLW"]).toBeUndefined();
   });
   test("a non-owning country keeps only the standard datums", () => {
-    const uk = pruneDatums("United Kingdom", full);
+    const uk = pruneDatums("GB", full);
     expect(uk["MSL"]).toBeDefined();
     expect(uk["MLWS"]).toBeDefined();
     expect(uk["LLWLT"]).toBeUndefined();
