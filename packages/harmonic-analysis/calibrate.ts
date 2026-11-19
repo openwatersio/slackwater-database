@@ -1,9 +1,17 @@
-import { createHash } from "node:crypto";
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { constituents as catalog } from "@slackwater/engine";
 import { format } from "prettier";
-import type { HarmonicConstituent } from "./index.ts";
+import {
+  codeDigest,
+  constantsDigest,
+  gauges,
+  type Gauge,
+  KARTVERKET,
+  kartverket,
+  record,
+  ROOT,
+} from "./calibration-inputs.ts";
 import {
   agencyConstants,
   verifyFit,
@@ -18,27 +26,7 @@ import {
  * again whenever the fitter changes.
  */
 
-const ROOT = join(import.meta.dirname, "..", "..");
 const OUT = join(ROOT, "docs", "calibration");
-
-interface Gauge {
-  series: string;
-  agency: string;
-  /** The agency's analysis period, [start, end). */
-  start: Date;
-  end: Date;
-  /** For NOAA, a digest of the constants the period was read for. */
-  digest?: string;
-}
-
-/** A short digest of constants, to tell when they change. */
-const constantsDigest = (constants: HarmonicConstituent[]) =>
-  createHash("sha256")
-    .update(
-      JSON.stringify(constants.map((c) => [c.name, c.amplitude, c.phase])),
-    )
-    .digest("hex")
-    .slice(0, 16);
 
 const MARKER = "<!-- calibration results -->";
 const template = readFileSync(join(OUT, "README.md"), "utf8");
@@ -47,86 +35,11 @@ if (!template.includes(MARKER))
 
 const DAY_MS = 86_400_000;
 
-/**
- * NOAA CO-OPS reference stations and the years NOAA's constants come from,
- * from each station's harcon comments
- * (https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/<id>/harcon.json),
- * read 2026-11-19. NOAA vector-averages one-year analyses over these years and
- * takes Sa and Ssa, sometimes Mm, Mf and Msf, from a longer span the comments
- * also give; this calibration fits every constituent over the main years.
- * The digest is of the constants those years were read for (constantsDigest):
- * when a NOAA import changes them, read the comments again.
- */
-const NOAA: [string, number, number, string][] = [
-  ["1612340", 2014, 2018, "f053c93323616e23"],
-  ["1820000", 2014, 2018, "6792a35950d8a9b0"],
-  ["8443970", 2015, 2019, "581660c8f1c41afc"],
-  ["8452660", 2007, 2012, "6fcfb2127bceab68"],
-  ["8518750", 2018, 2022, "308c8c31766e2437"],
-  ["8545240", 2016, 2020, "c34629e553f95e65"],
-  ["8574680", 2017, 2021, "8bc73101c81e7176"],
-  ["8638610", 2015, 2019, "4080427153ecd5d0"],
-  ["8665530", 2017, 2021, "cf1a08a603e51457"],
-  ["8723214", 2019, 2023, "6e60f860f9dde4a7"],
-  ["8724580", 2018, 2022, "ccc9ea46d32d24a7"],
-  ["8729840", 2018, 2022, "ea286eed4be177f9"],
-  ["8761724", 2021, 2025, "754af73e685df8f0"],
-  ["8771450", 2021, 2025, "5fb81976a05cc077"],
-  ["9410170", 2017, 2021, "022e603deca80221"],
-  ["9435380", 2007, 2012, "481eeb09fbba57e9"],
-  ["9449880", 2011, 2016, "4bff6d6b356934f6"],
-  ["9455920", 2012, 2016, "4d6292fc0ebaf94d"],
-  ["9462620", 2020, 2024, "c9ddd217b2325b78"],
-  ["9751639", 2007, 2012, "d3c2b57ec09b7740"],
-];
-
-const record = (dir: string, id: string) =>
-  JSON.parse(readFileSync(join(ROOT, "data", dir, `${id}.json`), "utf8")) as {
-    harmonic_constituents: HarmonicConstituent[];
-    epoch?: { start: string; end: string };
-  };
-
-/** Kartverket's gauges with a multi-year analysis (2006–2020 or 2010–2020),
- *  whose period its records carry. */
-const kartverket = (): Gauge[] =>
-  readdirSync(join(ROOT, "data", "kartverket"))
-    .filter((f) => f.endsWith(".json"))
-    .sort()
-    .map((f) => f.replace(".json", ""))
-    .flatMap((id) => {
-      const epoch = record("kartverket", id).epoch;
-      if (!epoch || epoch.end !== "2020-12-31" || epoch.start > "2010-12-31")
-        return [];
-      return [
-        {
-          series: `kartverket/${id}`,
-          agency: `kartverket/${id}`,
-          start: new Date(epoch.start),
-          end: new Date(Date.parse(epoch.end) + DAY_MS),
-        },
-      ];
-    });
-
-/** The Kartverket gauges calibrated: a reimport that changes which records
- *  carry a 2006–2020 or 2010–2020 analysis must change this list too. */
-const KARTVERKET =
-  "AES ANX BGO BOO HAR HEI HFT HRO HVG KAB KSU MAY MSU NVK NYA OSC OSL RVK SVG TOS TRD TRG VAW VIK";
 const selected = kartverket().map((g) => g.agency.slice("kartverket/".length));
 if (selected.join(" ") !== KARTVERKET)
   throw new Error(
     `Kartverket's multi-year analyses are now ${selected.join(" ")}; update KARTVERKET and the README`,
   );
-
-const gauges: Gauge[] = [
-  ...kartverket(),
-  ...NOAA.map(([id, start, end, digest]) => ({
-    series: `coops/${id}`,
-    agency: `noaa/${id}`,
-    start: new Date(Date.UTC(start, 0, 1)),
-    end: new Date(Date.UTC(end + 1, 0, 1)),
-    digest,
-  })),
-];
 
 const isoDate = (d: Date) => d.toISOString().slice(0, 10);
 
@@ -136,6 +49,8 @@ const longPeriod = (name: string) => (catalog[name]?.speed ?? 0) < 5;
 
 interface Result {
   gauge: Gauge;
+  /** A digest of the agency constants fitted against. */
+  constants?: string;
   report?: VerificationReport;
   error?: string;
 }
@@ -154,7 +69,7 @@ for (const gauge of gauges) {
     });
     continue;
   }
-  const { constants, rounding } = agencyConstants(dir, agency);
+  const { constants, rounding, nodeCorrections } = agencyConstants(dir, agency);
   try {
     const report = await verifyFit({
       series: gauge.series,
@@ -166,13 +81,18 @@ for (const gauge of gauges) {
         label: gauge.agency,
         constants,
         rounding,
+        nodeCorrections,
         epoch: {
           start: isoDate(gauge.start),
           end: isoDate(new Date(+gauge.end - DAY_MS)),
         },
       },
     });
-    results.push({ gauge, report });
+    results.push({
+      gauge,
+      constants: constantsDigest(agency.harmonic_constituents),
+      report,
+    });
     console.error(
       `${gauge.series}: ${summarize(report).outside}/${summarize(report).compared} outside`,
     );
@@ -269,7 +189,7 @@ const sourceLine = (label: string, prefix: string) => {
 const header = [
   `Gauges fitted: ${ok.length} of ${results.length}.`,
   "",
-  "| Source | Compared | Without an interval | Outside our 95% interval | Long-period | With amplitudes over 1 mm apart | Median ratio outside |",
+  "| Source | Compared | Without an interval | Outside our 95% interval | Long-period | Outside and over 1 mm apart | Median ratio outside |",
   "| --- | --: | --: | --: | --: | --: | --: |",
   sourceLine("Kartverket", "kartverket/"),
   sourceLine("NOAA CO-OPS", "noaa/"),
@@ -318,9 +238,12 @@ const json = await format(
           "utf8",
         ),
       ).version,
-      gauges: results.map(({ gauge, report }) => ({
+      // What else it was computed from, which npm test checks.
+      code: codeDigest(),
+      gauges: results.map(({ gauge, constants, report }) => ({
         series: gauge.series,
         agency: gauge.agency,
+        constants,
         period: {
           start: isoDate(gauge.start),
           end: isoDate(new Date(+gauge.end - DAY_MS)),
@@ -332,6 +255,6 @@ const json = await format(
   ),
   { parser: "json" },
 );
-// Written together, once both are built, so a failure leaves both as they were.
+// Written once both are built, so a failed fit or build leaves both as they were.
 writeFileSync(join(OUT, "README.md"), readme);
 writeFileSync(join(OUT, "calibration.json"), json);

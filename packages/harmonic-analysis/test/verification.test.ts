@@ -276,3 +276,27 @@ describe("agency comparison", () => {
     expect(compareCurves(a, b)).toEqual({ n: 3, rms: 0, max: 0 });
   });
 });
+
+describe("nodal corrections", () => {
+  test("a set of constants is scored with the corrections it declares", () => {
+    const tide = [...TIDE, { name: "M1", amplitude: 0.05, phase: 30 }];
+    const p = createTidePredictor(tide, {
+      offset: false,
+      nodeCorrections: "schureman",
+    });
+    const observed = Array.from({ length: 24 * 120 }, (_, h) => ({
+      t: START + h * HOUR,
+      level: p.getWaterLevelAtTime({ time: new Date(START + h * HOUR) }).level,
+    }));
+    const { others } = scoreHeldOut(observed, tide, {
+      schureman: {
+        constituents: tide,
+        seen: false,
+        nodeCorrections: "schureman",
+      },
+      iho: { constituents: tide, seen: false },
+    });
+    expect(others["schureman"]!.rms).toBeLessThan(1e-9);
+    expect(others["iho"]!.rms).toBeGreaterThan(1e-4);
+  });
+});
