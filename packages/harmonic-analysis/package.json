@@ -9,7 +9,8 @@
   "scripts": {
     "test": "vitest run",
     "report:score-line": "node score-line.ts",
-    "report:verify": "node verify-fit.ts"
+    "report:verify": "node verify-fit.ts",
+    "refresh:calibration": "node calibrate.ts"
   },
   "dependencies": {
     "@slackwater/datums": "*",

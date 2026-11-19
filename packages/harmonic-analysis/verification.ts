@@ -633,7 +633,7 @@ export interface ConstantDifference {
   /** Ours minus theirs, in metres and degrees (phase wrapped to ±180). */
   amplitude: number;
   phase: number;
-  /** Our 95% intervals' half-widths. */
+  /** Our 95% intervals' half-widths, widened by the agency's rounding. */
   amplitudeInterval: number | null;
   phaseInterval: number | null;
   /** The larger of |amplitude| / amplitudeInterval and |phase| / phaseInterval:
@@ -641,10 +641,17 @@ export interface ConstantDifference {
   ratio: number | null;
 }
 
-/** Our fitted constants against an agency's, name for name. */
+/**
+ * Our fitted constants against an agency's, name for name. `rounding` is half
+ * the last digit the agency publishes, in metres and degrees: its constants
+ * are uncertain by that much at least, so it widens our intervals in
+ * quadrature before the ratio is taken, and a difference that is only the
+ * agency's rounding isn't counted as one.
+ */
 export function compareConstants(
   ours: readonly FittedConstituent[],
   theirs: readonly HarmonicConstituent[],
+  rounding = { amplitude: 0, phase: 0 },
 ): ConstantDifference[] {
   const byName = new Map(theirs.map((c) => [c.name, c]));
   return ours.flatMap((c) => {
@@ -652,8 +659,14 @@ export function compareConstants(
     if (!t) return [];
     const amplitude = c.amplitude - t.amplitude;
     const phase = ((((c.phase - t.phase) % 360) + 540) % 360) - 180;
-    const ai = c.amplitudeInterval ?? null;
-    const pi = c.phaseInterval ?? null;
+    const ai =
+      c.amplitudeInterval == null
+        ? null
+        : Math.hypot(c.amplitudeInterval, rounding.amplitude);
+    const pi =
+      c.phaseInterval == null
+        ? null
+        : Math.hypot(c.phaseInterval, rounding.phase);
     return [
       {
         name: c.name,

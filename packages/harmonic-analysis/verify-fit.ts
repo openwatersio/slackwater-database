@@ -38,9 +38,41 @@ const DATA = join(import.meta.dirname, "..", "..", "data");
 const HOUR_MS = 3_600_000;
 
 /** A record in data/, as much of it as verification reads. */
-interface DataRecord {
+export interface DataRecord {
   harmonic_constituents: HarmonicConstituent[];
   epoch?: { start?: string; end?: string };
+}
+
+/**
+ * Half the last digit each agency publishes, in metres and degrees, which
+ * PUBLISHED_PRECISION's comments give. Its digits are the ones stored, which
+ * for some sources carry a time-zone shift's further digits, so each agency
+ * compared with is declared here: NOAA publishes millimetres and 0.1°, and
+ * Kartverket 0.1 mm and 0.01°.
+ */
+const ROUNDING: Record<string, { amplitude: number; phase: number }> = {
+  noaa: { amplitude: 0.0005, phase: 0.05 },
+  kartverket: { amplitude: 0.00005, phase: 0.005 },
+};
+const rounding = (dir: string) => {
+  const r = ROUNDING[dir];
+  if (!r)
+    throw new Error(
+      `declare the precision ${dir} publishes in ROUNDING before comparing with it`,
+    );
+  return r;
+};
+
+/** An agency's record as verification compares with it: the constants it
+ *  determined, and its rounding. NOAA's amplitude 0 with phase 0 marks a
+ *  constituent it didn't determine. */
+export function agencyConstants(dir: string, record: DataRecord) {
+  return {
+    constants: record.harmonic_constituents.filter(
+      (c) => dir !== "noaa" || c.amplitude !== 0 || c.phase !== 0,
+    ),
+    rounding: rounding(dir),
+  };
 }
 
 const readRecord = (dir: string, id: string): DataRecord | undefined => {
@@ -68,6 +100,8 @@ export interface VerifyOptions {
     label: string;
     constants: HarmonicConstituent[];
     epoch?: { start?: string; end?: string };
+    /** Half the last digit the agency publishes (see compareConstants). */
+    rounding?: { amplitude: number; phase: number };
   };
   /** Decisions on Stillwell's `kept` errata, by id. */
   errata?: ErrataDecisions;
@@ -254,6 +288,7 @@ export async function verifyFit(
       constants: compareConstants(
         fitted.constituents,
         options.agency.constants,
+        options.agency.rounding,
       ),
       curve,
     };
@@ -329,7 +364,15 @@ if (import.meta.main) {
         JSON.parse(
           readFileSync(join(DATA, "..", values.names), "utf8"),
         ) as DataRecord
-      ).harmonic_constituents.map((c) => c.name)
+      ).harmonic_constituents
+        // NOAA's amplitude 0 with phase 0 marks a constituent it didn't determine.
+        .filter(
+          (c) =>
+            !values.names!.includes("noaa/") ||
+            c.amplitude !== 0 ||
+            c.phase !== 0,
+        )
+        .map((c) => c.name)
     : values.names.split(",");
   const [, dir, id] = agencyPath ?? [];
   const agency = dir && id ? readRecord(dir, id) : undefined;
@@ -346,7 +389,7 @@ if (import.meta.main) {
       ? {
           agency: {
             label: values.agency!,
-            constants: agency.harmonic_constituents,
+            ...agencyConstants(dir!, agency),
             // A record's epoch can be its datum epoch, as NOAA's is, so the
             // CLI leaves the agency's analysis period unknown: maybe seen.
           },

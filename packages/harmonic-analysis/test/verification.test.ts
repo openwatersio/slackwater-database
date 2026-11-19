@@ -252,6 +252,24 @@ describe("agency comparison", () => {
     ]);
   });
 
+  test("doesn't count the agency's rounding as a difference", () => {
+    const ours = [
+      {
+        name: "M4",
+        amplitude: 0.00276,
+        phase: 10,
+        amplitudeInterval: 0.0002,
+        phaseInterval: 5,
+      },
+    ];
+    const theirs = [{ name: "M4", amplitude: 0.003, phase: 10 }];
+    expect(compareConstants(ours, theirs)[0]!.ratio).toBeGreaterThan(1);
+    expect(
+      compareConstants(ours, theirs, { amplitude: 0.0005, phase: 0.05 })[0]!
+        .ratio,
+    ).toBeLessThan(1);
+  });
+
   test("compares curves on another datum by shape", () => {
     const a = [1, 2, 3].map((x, i) => ({ t: i, level: x }));
     const b = [1, 2, 3].map((x, i) => ({ t: i, level: x + 5 }));
