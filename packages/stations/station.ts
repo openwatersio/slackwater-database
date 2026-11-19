@@ -1,7 +1,6 @@
 import type { StationData } from "@slackwater/database";
 import { find as findTz } from "geo-tz/all";
-import countryLookup from "country-code-lookup";
-import { countryByName } from "./country.ts";
+import { countryByNameOrCode } from "./country.ts";
 import { join, dirname } from "path";
 import { mkdir, writeFile, readFile } from "fs/promises";
 import sortObject from "sort-object-keys";
@@ -31,7 +30,7 @@ const sortOrder: (keyof StationData)[] = [
   "offsets",
 ];
 
-// Preferred chart datum by country. Names must match country-code-lookup output.
+// Preferred chart datum by ISO alpha-2 country code.
 // Countries not listed default to LAT (the IHO international recommendation).
 // Sources: IHO Resolution (LAT, or a closely-equivalent datum, as chart datum)
 // and the IHO TWCWG "List of Vertical Datums used by IHO Member States to
@@ -39,37 +38,37 @@ const sortOrder: (keyof StationData)[] = [
 // https://iho.int/uploads/user/Services%20and%20Standards/TWCWG/MISC/TWCWG_Vertical_Datums_v1.0.pdf
 const CHART_DATUMS: Record<string, string> = {
   // Mean Lower Low Water (US low-water convention and Pacific territories)
-  "United States": "MLLW",
-  "The Bahamas": "MLLW",
-  Philippines: "MLLW",
-  "Marshall Islands": "MLLW",
-  Palau: "MLLW",
-  "Federated States of Micronesia": "MLLW",
+  US: "MLLW",
+  BS: "MLLW",
+  PH: "MLLW",
+  MH: "MLLW",
+  PW: "MLLW",
+  FM: "MLLW",
   // Lower Low Water, Large Tide (Canadian Hydrographic Service)
-  Canada: "LLWLT",
+  CA: "LLWLT",
   // Nearly / Approximate Lowest Low Water ≈ Indian Spring Low Water
-  Japan: "NLLW",
-  "South Korea": "ALLW",
+  JP: "NLLW",
+  KR: "ALLW",
   // Theoretical Lowest Tide (China's theoretical depth datum)
-  China: "TLT",
+  CN: "TLT",
   // Mean Low Water Springs (per the IHO TWCWG list)
-  Brazil: "MLWS",
-  Italy: "MLWS",
-  Chile: "MLWS",
+  BR: "MLWS",
+  IT: "MLWS",
+  CL: "MLWS",
   // Baltic Sea Chart Datum ≈ mean sea level (non-tidal Baltic). Sweden is
   // whole-country BSCD2000 by national policy; other Baltic-basin stations
   // (incl. Denmark's inner waters/Kattegat and Germany's Baltic coast) are
   // handled by the isBaltic() override in getChartDatum().
-  Sweden: "MSL",
+  SE: "MSL",
 };
 
 // Datums that are specific to one country and shouldn't be persisted elsewhere.
 // (MLWS/MHWS are standard tidal levels and kept for all stations.)
 const COUNTRY_SPECIFIC_DATUMS: Record<string, string> = {
-  LLWLT: "Canada",
-  TLT: "China",
-  NLLW: "Japan",
-  ALLW: "South Korea",
+  LLWLT: "CA",
+  TLT: "CN",
+  NLLW: "JP",
+  ALLW: "KR",
 };
 
 /**
@@ -77,13 +76,13 @@ const COUNTRY_SPECIFIC_DATUMS: Record<string, string> = {
  * use them as their chart datum, so a UK station never carries a stray TLT.
  */
 export function pruneDatums(
-  country: string,
+  countryCode: string,
   datums: Record<string, number>,
 ): Record<string, number> {
   const out: Record<string, number> = {};
   for (const [name, value] of Object.entries(datums)) {
     const owner = COUNTRY_SPECIFIC_DATUMS[name];
-    if (owner && owner !== country) continue;
+    if (owner && owner !== countryCode) continue;
     out[name] = value;
   }
   return out;
@@ -95,7 +94,7 @@ export function pruneDatums(
  * preferred datum is used when present, falling back to LAT.
  */
 export function getChartDatum(
-  country: string,
+  countryCode: string,
   availableDatums: Record<string, number>,
   latitude?: number,
   longitude?: number,
@@ -108,7 +107,7 @@ export function getChartDatum(
   ) {
     return "MSL";
   }
-  const preferred = CHART_DATUMS[country];
+  const preferred = CHART_DATUMS[countryCode];
   return preferred && preferred in availableDatums ? preferred : "LAT";
 }
 
@@ -120,9 +119,7 @@ export type PartialStationData = Omit<StationData, OptionalProperties> &
 
 export function normalize(station: PartialStationData): StationData {
   const { iso2, continent, country } =
-    countryByName(station.country) ||
-    countryLookup.byIso(station.country) ||
-    {};
+    countryByNameOrCode(station.country) || {};
 
   if (!iso2 || !continent || !country) {
     throw new Error(
@@ -139,7 +136,7 @@ export function normalize(station: PartialStationData): StationData {
   }
 
   // Subordinate stations carry no datums of their own; leave the key absent.
-  const datums = station.datums && pruneDatums(country, station.datums);
+  const datums = station.datums && pruneDatums(iso2, station.datums);
 
   return sortObject(
     {
@@ -150,12 +147,7 @@ export function normalize(station: PartialStationData): StationData {
       ...(datums ? { datums } : {}),
       chart_datum:
         station.chart_datum ??
-        getChartDatum(
-          country,
-          datums ?? {},
-          station.latitude,
-          station.longitude,
-        ),
+        getChartDatum(iso2, datums ?? {}, station.latitude, station.longitude),
       // Cast: subordinates legitimately omit `datums` (see OptionalProperties).
     } as StationData,
     sortOrder,

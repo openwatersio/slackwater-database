@@ -5,3 +5,7 @@ export function countryByName(name: string) {
   if (name === "Cape Verde") return countryLookup.byIso("CV");
   return countryLookup.byCountry(name);
 }
+
+export function countryByNameOrCode(input: string) {
+  return countryByName(input) || countryLookup.byIso(input);
+}
