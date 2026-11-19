@@ -22,7 +22,6 @@ import {
   rqdEnd,
   GESLA_DIR,
 } from "@slackwater/datums";
-import { fitHarmonics, isAnalyzable } from "@slackwater/harmonic-analysis";
 import {
   parseTiconSamples,
   shiftEarlyGauge,
@@ -30,6 +29,7 @@ import {
   extendsGeslaRecord,
   cachedRefit,
   sameConstituents,
+  refitConstituents,
 } from "./samples.ts";
 import {
   checkCorrections,
@@ -352,15 +352,10 @@ async function getHarmonics(
   }
 
   await ensureGesla();
-  const samples = parseTiconSamples(
-    id,
-    await readFile(join(GESLA_DIR, id), "utf-8"),
-  ).map((p) => ({ t: +p.time, level: p.level }));
-  const names = csvHarmonics.map((h) => h.name);
-  if (!isAnalyzable(samples, names.length)) {
-    throw new Error("record too short to re-analyze its non-UTC phases");
-  }
-  return fitHarmonics(samples, names);
+  return refitConstituents(
+    parseTiconSamples(id, await readFile(join(GESLA_DIR, id), "utf-8")),
+    csvHarmonics.map((h) => h.name),
+  );
 }
 
 function toISODate(date: Date) {

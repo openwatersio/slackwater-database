@@ -1,51 +1,6 @@
 import { expect, test } from "vitest";
-import { astro, createTidePredictor, constituents } from "@slackwater/engine";
-import { selectExtraConstituents } from "@slackwater/harmonic-analysis";
-import {
-  fitSeries,
-  heightGate,
-  resolvedNames,
-  storedHeight,
-} from "./harmonics.ts";
-
-test("resolves frequencies over the training span and keeps majors over aliases", () => {
-  expect(resolvedNames(["N2", "3N2", "M2"], 367 * 24)).toEqual(["N2", "M2"]);
-  expect(resolvedNames(["Sa", "Ssa"], 367 * 24)).toEqual(["Sa", "Ssa"]);
-  const picked = resolvedNames(
-    Object.values(constituents).map((c) => c.name),
-    367 * 24,
-  );
-  const speeds = picked.map((n) => constituents[n]!.speed);
-  expect(
-    speeds.every((s, i) =>
-      speeds.slice(i + 1).every((v) => Math.abs(s - v) >= 360 / (367 * 24)),
-    ),
-  ).toBe(true);
-});
-
-test("residual selection cannot reintroduce an unresolved neighbour of a major", () => {
-  const spanHours = 367 * 24,
-    start = Date.parse("2026-01-02T00:00Z"),
-    model = constituents["3N2"]!;
-  const samples = Array.from({ length: 400 }, (_, i) => ({
-    t: start + (i * spanHours * 3600000) / 399,
-    level: 0,
-  }));
-  const residuals = samples.map((s) => {
-    const a = astro(new Date(s.t)),
-      { f, u } = model.correction(a);
-    return f * Math.cos(((model.value(a) + u) * Math.PI) / 180);
-  });
-  const gap = 360 / spanHours;
-  const selected = selectExtraConstituents(samples, residuals, ["N2"], 20, gap);
-  expect(selected.length).toBeGreaterThan(0);
-  expect(
-    selected.every(
-      (n) =>
-        Math.abs(constituents[n]!.speed - constituents["N2"]!.speed) >= gap,
-    ),
-  ).toBe(true);
-});
+import { createTidePredictor, constituents } from "@slackwater/engine";
+import { fitSeries, heightGate, storedHeight } from "./harmonics.ts";
 
 const terms = [
   { name: "M2", amplitude: 0.7, phase: 123.45 },
@@ -65,11 +20,12 @@ function synthetic(start: number, days: number, count: number) {
 
 test("recovers Greenwich phases and a mean offset from training only", () => {
   const start = Date.parse("2026-01-02T00:00Z");
-  const training = synthetic(start, 367, 1600);
+  // Hourly, so the alternate samples each half fits stay below M2's Nyquist frequency.
+  const training = synthetic(start, 367, 367 * 24 + 1);
   const validation = synthetic(start + 370 * 86400000, 350, 1000);
   const result = fitSeries(training, validation, {
     names: ["M2", "S2", "Sa"],
-    extra: 0,
+    extras: false,
   });
   expect(result.accepted).toBe(true);
   expect(result.offset).toBeCloseTo(0.123, 3);
@@ -78,11 +34,30 @@ test("recovers Greenwich phases and a mean offset from training only", () => {
   const changed = fitSeries(
     training,
     validation.map((s) => ({ ...s, level: s.level + 0.5 })),
-    { names: ["M2", "S2", "Sa"], extra: 0 },
+    { names: ["M2", "S2", "Sa"], extras: false },
   );
   expect(changed.accepted).toBe(false);
   expect(changed.constituents).toEqual(result.constituents);
   expect(changed.offset).toBe(result.offset);
+});
+
+test("extends the given names from the catalog, keeping them in unresolved pairs", () => {
+  const start = Date.parse("2026-01-02T00:00Z");
+  const result = fitSeries(
+    synthetic(start, 367, 367 * 12 + 1),
+    synthetic(start + 370 * 86400000, 350, 1000),
+    { names: ["M2", "S2", "Sa"] },
+  );
+  const names = result.constituents.map((c) => c.name);
+  expect(names.slice(0, 3)).toEqual(["M2", "S2", "Sa"]);
+  const speeds = names.map((n) => constituents[n]!.speed);
+  const spanHours = 367 * 24;
+  expect(
+    speeds.every((s, i) =>
+      speeds.slice(i + 1).every((v) => Math.abs(s - v) * spanHours >= 360),
+    ),
+  ).toBe(true);
+  expect(result.accepted).toBe(true);
 });
 
 test("rejects overlapping windows and an insufficient annual training span", () => {

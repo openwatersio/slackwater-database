@@ -98,7 +98,7 @@ The station files keep TICON's constituent names as published, and `@slackwater/
 - MKS2 is the IHO MKS2 at Doodson 257.555 (29.0662415°/h).
 - 3N2 is a degree-3 line at Doodson 245.555 (28.4350877°/h) with a +90° phase constant.
 
-Table 1 of the TICON-4 manual swaps these two rows. Scored against the raw GESLA-4 records, TICON's published phases match the lines above, so `TICON_REFERENCE_SPEED` in [`packages/harmonic-analysis/index.ts`](../../packages/harmonic-analysis/index.ts) uses these speeds rather than Table 1's.
+Table 1 of the TICON-4 manual swaps these two rows. Scored against the raw GESLA-4 records, TICON's published phases match the lines above, so the re-fits below use these lines rather than Table 1's, and [`test/refit.test.ts`](test/refit.test.ts) fails if the engine's catalog moves one of these names to another line.
 
 Table 1 also lists Sa as 056.554, with a solar perigee term, where the engine uses 056.555. Scored the same way, TICON's published Sa matches 056.555 at 17 of the 18 gauges tried (0.98 to 1.05, against −0.49 to −0.64 for 056.554), so it needs no conversion. The engine doc has the gauges and the commands.
 
@@ -115,7 +115,7 @@ Six constituents sit on the engine's line but are phased against a different equ
 
 At its offset each scores close to +1, and at the engine's own argument close to −1 (unrelated) or −3 (anti-phase). 3L2 scores lower and more widely, −0.6 to 2.0, because it is one lunar perigee cycle (8.85 years) from L2 and hard to separate from it. Most of the gauges that disagree are river gauges such as Hedel and Gorinchem, where the constituent scores near −1 at every offset. S1, P1, T2, R2, S4, RHO1, 2SM2, 2MS6, 3N2 and MKS2 score best at 0° and need no conversion. So do M3, at 8 of 8 gauges (Thevenard, Cananéia, Millport, Bristol Channel), and S3, at 17 of 20, where the engine uses Schureman's argument. One S3 gauge that disagrees, L'Isle-aux-Grues in the St. Lawrence estuary, scores 0.66 at 180°. The re-fit `wsv` and `rws` stations are fit against the engine's arguments, so the conversion applies only to TICON's published phases.
 
-The importer re-fits the `wsv` and `rws` stations, whose GESLA-4 files label local time as UTC (see `LOCAL_TIME_SOURCES` in [`samples.ts`](samples.ts)), and three Hong Kong gauges whose UHSLC times are one hour early (`EARLY_GAUGES`). `fitHarmonics` skips any constituent whose engine speed differs from its reference speed, so a re-fit never stores a name on a line TICON doesn't mean by it. It also skips 3N2 when the record is shorter than one lunar perigee cycle (8.85 years), the time it takes to separate 3N2 from N2; on those records N2 keeps the signal. To re-fit these stations:
+The importer re-fits the `wsv` and `rws` stations, whose GESLA-4 files label local time as UTC (see `LOCAL_TIME_SOURCES` in [`samples.ts`](samples.ts)), and three Hong Kong gauges whose UHSLC times are one hour early (`EARLY_GAUGES`). `refitConstituents` fits TICON's names with `@slackwater/engine`'s `selectConstituents`, keeping every one whatever its SNR, as TICON does, except a name the record can't separate from one before it in TICON's list by the Rayleigh criterion. On a record shorter than one lunar perigee cycle (8.85 years), that leaves out 3N2 next to N2 and 3L2 next to L2, and the stronger line keeps the signal. To re-fit these stations:
 
 ```sh
 FORCE_HARMONICS=1 npm run import -w sources/ticon

@@ -10,9 +10,7 @@
     "report:score-line": "node score-line.ts"
   },
   "dependencies": {
-    "@slackwater/datums": "*",
-    "@slackwater/engine": "1.0.0-beta.12",
-    "ml-matrix": "^6.15.1"
+    "@slackwater/datums": "*"
   },
   "devDependencies": {
     "vitest": "^5.0.5"

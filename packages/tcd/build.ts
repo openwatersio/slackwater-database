@@ -47,23 +47,27 @@ function modulus(a: number, b: number): number {
 /**
  * Build the master constituent list from station data.
  * Returns constituents in the order defined by tide-predictor.
+ * Throws on a name the engine doesn't know, which XTide couldn't predict.
  */
 export function buildConstituentList(stations: StationData[]): string[] {
   const usedConstituents = new Set<string>();
+  const unknown = new Set<string>();
 
   // Scan all reference stations to find which constituents are used
   for (const station of stations) {
     if (station.type === "reference") {
       for (const hc of station.harmonic_constituents) {
-        // Zero-only terms change no prediction and waste libtcd's 255 constituent slots.
-        if (hc.amplitude === 0) continue;
         const constituent = constituents[hc.name];
-        if (constituent) {
-          usedConstituents.add(constituent.name);
-        }
+        if (!constituent) unknown.add(hc.name);
+        // Zero-only terms change no prediction and waste libtcd's 255 constituent slots.
+        else if (hc.amplitude !== 0) usedConstituents.add(constituent.name);
       }
     }
   }
+  if (unknown.size > 0)
+    throw new Error(
+      `Constituents @slackwater/engine doesn't know: ${[...unknown].sort().join(", ")}`,
+    );
 
   // Return constituents in the order they're defined in tide-predictor
   const names: string[] = [];
@@ -799,34 +803,6 @@ async function main() {
     `Master constituent list: ${masterConstituents.length} constituents`,
   );
   console.error(`  ${masterConstituents.join(", ")}`);
-
-  // Count how many station constituents we can cover
-  let totalConstituents = 0;
-  let coveredConstituents = 0;
-  const masterSet = new Set(masterConstituents);
-  const uncoveredNames = new Set<string>();
-
-  for (const station of referenceStations) {
-    for (const hc of station.harmonic_constituents) {
-      if (hc.amplitude === 0) continue;
-      totalConstituents++;
-      const resolved = resolveConstituentName(hc.name, masterSet);
-      if (resolved) {
-        coveredConstituents++;
-      } else {
-        uncoveredNames.add(hc.name);
-      }
-    }
-  }
-
-  console.error(
-    `Nonzero constituent coverage: ${coveredConstituents}/${totalConstituents} (${((coveredConstituents / totalConstituents) * 100).toFixed(1)}%)`,
-  );
-  if (uncoveredNames.size > 0) {
-    console.error(
-      `Uncovered constituent names (${uncoveredNames.size}): ${[...uncoveredNames].sort().join(", ")}`,
-    );
-  }
 
   await mkdir(outDir, { recursive: true });
 

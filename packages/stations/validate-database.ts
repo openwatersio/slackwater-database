@@ -31,6 +31,12 @@ assert.deepEqual(
 const quality = new Map((await evaluateQuality()).map((q) => [q.id, q]));
 const catalogue = await loadProductionCatalogue(ROOT, files, quality);
 
+// Every constituent a station stores resolves in its source's definitions or
+// @slackwater/engine's catalog, as the database build requires; this throws
+// on one that doesn't, without building the database. The TCD build is
+// stricter: it needs every name in the engine's catalog.
+void catalogue.constituents;
+
 // Every route, path, redirect, member and position audit is what the station
 // files record, or a code or data change moved one without npm run stations.
 const stale = await planStationFiles(

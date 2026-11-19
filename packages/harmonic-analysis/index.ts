@@ -1,20 +1,16 @@
-import * as engine from "@slackwater/engine";
-import { Matrix, SingularValueDecomposition } from "ml-matrix";
+import {
+  constituents,
+  fit,
+  selectConstituents,
+  type Candidate,
+  type FittedConstituent,
+  type HarmonicFit,
+  type HarmonicSample,
+} from "@slackwater/engine";
 
 /**
- * Re-analyze tidal harmonics from raw water-level observations.
- *
- * Some GESLA-4 sources (notably WSV / pegelonline.wsv.de) timestamp their
- * water levels in local legal time but label the file "TIME ZONE HOURS 0"
- * (UTC), so TICON's published phases are not UTC-referenced (see issue #96).
- * This re-fits amplitude + UTC/Greenwich phase directly from the observations
- * with the timestamps interpreted in the correct IANA zone.
- *
- * Constituent frequencies are known, so analysis is ordinary linear least
- * squares: fit Z0 + Σ f_k·[p_k·cos(V0_k+u_k) + q_k·sin(V0_k+u_k)] where V0 is
- * the Greenwich equilibrium argument and (f,u) the nodal factor/angle (both
- * from @slackwater/engine, applied per-timestamp). Phase G = atan2(q,p) then lands in the
- * same Greenwich, nodal-corrected convention as the rest of the database.
+ * Helpers for this database's own harmonic fits, which go through
+ * `@slackwater/engine`'s `fit()` and `selectConstituents()`.
  */
 
 export interface HarmonicConstituent {
@@ -27,47 +23,6 @@ export interface Sample {
   t: number; // UTC epoch ms
   level: number; // meters
 }
-
-export interface FitOptions {
-  solver?: "qr" | "svd";
-}
-
-const DEG = Math.PI / 180;
-const DAY_MS = 86_400_000;
-
-// Constituents whose engine definition has disagreed with TICON's (issue #76).
-// Engine speeds are compared against these TICON reference speeds at fit time;
-// any constituent still mismatched is skipped rather than fit at the wrong
-// frequency. This self-heals — once the engine corrects a definition, it is
-// included again.
-const TICON_REFERENCE_SPEED: Record<string, number> = {
-  SA: 0.0410686,
-  // The TICON-4 manual swaps these two rows; TICON's published phases fit MKS2 at 257.555 and 3N2 at 245.555 (openwatersio/slackwater#359).
-  MKS2: 29.0662415,
-  "3N2": 28.4350877,
-  "3L2": 29.5331208,
-  T3: 44.9589333,
-  R3: 45.0410706,
-};
-export function definitionMismatched(
-  name: string,
-  engineSpeed: number,
-): boolean {
-  const ref = TICON_REFERENCE_SPEED[name.toUpperCase()];
-  return ref !== undefined && Math.abs(engineSpeed - ref) > 1e-4;
-}
-
-// Map DB/TICON constituent names (incl. aliases) to engine constituent keys.
-const constituentKey = (() => {
-  const idx = new Map<string, string>();
-  for (const [key, c] of Object.entries(engine.constituents)) {
-    idx.set(key.toUpperCase(), key);
-    for (const alias of (c as { aliases?: string[] }).aliases ?? []) {
-      idx.set(String(alias).toUpperCase(), key);
-    }
-  }
-  return idx;
-})();
 
 /**
  * Parse GESLA-4 water levels, interpreting each timestamp as wall-clock time in
@@ -144,114 +99,77 @@ export function parseGeslaSamplesInZone(text: string, tz: string): Sample[] {
   return samples;
 }
 
-/**
- * Whether a record can support a meaningful re-analysis: at least a year of
- * span (to resolve annual constituents) and enough samples for the fit.
- */
-export function isAnalyzable(
-  samples: Sample[],
-  nConstituents: number,
-): boolean {
-  if (samples.length < 4 * (1 + 2 * nConstituents)) return false;
-  return spanMs(samples) >= 365 * DAY_MS;
-}
-
-/** Time from the earliest sample to the latest, in any sample order. */
-function spanMs(samples: Sample[]): number {
-  let lo = Infinity;
-  let hi = -Infinity;
-  for (const s of samples) {
-    if (s.t < lo) lo = s.t;
-    if (s.t > hi) hi = s.t;
-  }
-  return samples.length ? hi - lo : 0;
-}
-
-// 3N2 and N2 are one lunar perigee cycle apart (8.85 years). A shorter record
-// can't separate them, and fitting both splits N2 between the two lines, so
-// N2 keeps the signal on its own.
-// ponytail: 3N2 only; a general Rayleigh check would also cover 3L2 against L2.
-function unresolvedFromN2(
-  name: string,
-  speed: number,
-  spanHours: number,
-): boolean {
-  return (
-    name.toUpperCase() === "3N2" &&
-    360 / Math.abs(speed - engine.constituents["N2"]!.speed) > spanHours
-  );
+/** Database samples as the engine's fit takes them, in the same order. */
+export function harmonicSamples(samples: readonly Sample[]): HarmonicSample[] {
+  return samples.map(({ t, level }) => ({ time: new Date(t), value: level }));
 }
 
 /**
- * Least-squares fit of the named constituents to the samples, returning
- * amplitude (m) and UTC/Greenwich phase (deg) for each. Names not known to
- * the engine are dropped (callers should pass a covered set).
+ * Candidates for `selectConstituents`: `names` first, in priority order, then
+ * every other line in the engine's catalog. With no comparison constituent,
+ * each is tested by the Rayleigh criterion against every candidate kept before
+ * it, so a name in `names` wins a pair the record can't separate.
  */
-export function fitHarmonics(
-  samples: Sample[],
-  names: string[],
-  options: FitOptions = {},
+export function catalogCandidates(names: readonly string[]): Candidate[] {
+  const lines = new Set(names.map((name) => constituents[name]?.name ?? name));
+  const rest = [
+    ...new Set(
+      Object.values(constituents)
+        .filter((model) => model.speed > 0)
+        .map((model) => model.name),
+    ),
+  ].filter((name) => !lines.has(name));
+  return [...names, ...rest].map((name) => ({ name }));
+}
+
+/**
+ * Fitted constants as this database publishes its own analyses: to 1 mm and
+ * 0.01 degrees, as NOAA publishes its amplitudes. Finer digits sit below any
+ * fit's uncertainty. With `given`, a catalog extra outside it that rounds to
+ * zero is left out: it changes no prediction, while a given name's zero is a
+ * measured value and stays.
+ */
+export function publishedConstants(
+  fitted: readonly FittedConstituent[],
+  given?: readonly string[],
 ): HarmonicConstituent[] {
-  const spanHours = spanMs(samples) / 3_600_000;
-  const cons = names
-    .map((name) => ({
+  return fitted
+    .map(({ name, amplitude, phase }) => ({
       name,
-      c: engine.constituents[constituentKey.get(name.toUpperCase())!],
+      amplitude: Math.round(amplitude * 1000) / 1000,
+      phase: (Math.round(phase * 100) / 100) % 360,
     }))
-    .filter(
-      (x): x is { name: string; c: (typeof engine.constituents)[string] } =>
-        !!x.c &&
-        !definitionMismatched(x.name, x.c.speed) &&
-        !unresolvedFromN2(x.name, x.c.speed, spanHours),
-    );
-
-  const ncol = 1 + 2 * cons.length;
-  if (options.solver === "svd") {
-    const rows = samples.map((sample) => {
-      const row = new Array<number>(ncol).fill(0);
-      row[0] = 1;
-      const a = engine.astro(new Date(sample.t));
-      for (let k = 0; k < cons.length; k++) {
-        const con = cons[k]!.c;
-        const { f, u } = con.correction(a);
-        const arg = (con.value(a) + u) * DEG;
-        row[1 + 2 * k] = f * Math.cos(arg);
-        row[2 + 2 * k] = f * Math.sin(arg);
-      }
-      return row;
-    });
-    const x = new SingularValueDecomposition(new Matrix(rows), {
-      autoTranspose: true,
-    })
-      .solve(Matrix.columnVector(samples.map(({ level }) => level)))
-      .getColumn(0);
-    if (!x.every(Number.isFinite))
-      throw new Error("non-finite harmonic SVD solution");
-    return cons.map((co, k) => {
-      const p = x[1 + 2 * k]!;
-      const q = x[2 + 2 * k]!;
-      return {
-        name: co.name,
-        amplitude: Math.round(Math.hypot(p, q) * 1000) / 1000,
-        phase:
-          Math.round(((((Math.atan2(q, p) / DEG) % 360) + 360) % 360) * 100) /
-          100,
-      };
-    });
-  }
-  const result = engine.fit(
-    samples
-      .toSorted((a, b) => a.t - b.t)
-      .map(({ t, level }) => ({ time: new Date(t), value: level })),
-    cons.map(({ c }) => c.name),
-  );
-  // Our own analyses are published to 1 mm and 0.01 degrees, as NOAA's
-  // amplitudes are; finer digits sit below any fit's uncertainty.
-  return result.constituents.map((c, i) => ({
-    name: cons[i]!.name,
-    amplitude: Math.round(c.amplitude * 1000) / 1000,
-    phase: Math.round(c.phase * 100) / 100,
-  }));
+    .filter((c) => !given || c.amplitude > 0 || given.includes(c.name));
 }
 
-export { spreadSample, selectExtraConstituents } from "./selection.ts";
+/**
+ * Fit `names`, extended with the catalog lines the record supports. Every
+ * candidate passes the engine's selection, except that a name in `names`
+ * below its SNR cut stays: its small amplitude is a measured value, not a
+ * missing one. Throws on a name in `names` the engine doesn't know or the
+ * sampling can't resolve. With `extras` false, only `names` are candidates.
+ */
+export function fitSelected(
+  samples: readonly HarmonicSample[],
+  names: readonly string[],
+  extras = true,
+): HarmonicFit {
+  const given = new Set(names);
+  const { selection } = selectConstituents(samples, {
+    candidates: extras
+      ? catalogCandidates(names)
+      : names.map((name) => ({ name })),
+  });
+  const lost = selection.filter(
+    (s) =>
+      given.has(s.name) && (s.reason === "unknown" || s.reason === "nyquist"),
+  );
+  if (lost.length)
+    throw new Error(
+      `can't fit ${lost.map((s) => `${s.name} (${s.reason})`).join(", ")}`,
+    );
+  const chosen = selection
+    .filter((s) => s.kept || (s.reason === "snr" && given.has(s.name)))
+    .map((s) => s.name);
+  return fit(samples, chosen, { dropDependent: true });
+}

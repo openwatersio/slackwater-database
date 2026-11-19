@@ -1,8 +1,13 @@
-import { constituents, createTidePredictor } from "@slackwater/engine";
 import {
-  fitHarmonics,
-  selectExtraConstituents,
-  spreadSample,
+  constituents,
+  createTidePredictor,
+  fit,
+  type HarmonicFit,
+} from "@slackwater/engine";
+import {
+  fitSelected,
+  harmonicSamples,
+  publishedConstants,
   type Sample,
   type HarmonicConstituent,
 } from "@slackwater/harmonic-analysis";
@@ -22,22 +27,6 @@ export type FitResult = {
   training: { start: string; end: string; count: number };
   validation: { start: string; end: string; count: number };
 };
-
-export function resolvedNames(names: string[], spanHours: number): string[] {
-  const speeds: number[] = [];
-  return names.filter((name) => {
-    const c = models.get(name);
-    // Rayleigh resolution: one relative cycle in the training span (Codiga 2011, UTide).
-    if (
-      !c ||
-      c.speed <= 0 ||
-      speeds.some((s) => Math.abs(s - c.speed) < 360 / spanHours)
-    )
-      return false;
-    speeds.push(c.speed);
-    return true;
-  });
-}
 
 export function heightGate(height: Metrics, stabilityRms: number): boolean {
   return (
@@ -84,8 +73,9 @@ export function storedHeight(
   };
 }
 
-function fitted(samples: Sample[], names: string[]) {
-  const fit = fitHarmonics(samples, names, { solver: "svd" });
+/** A fit as it is stored, rounded, with the mean offset of that representation. */
+function fitted(samples: Sample[], result: HarmonicFit, names: string[]) {
+  const fit = publishedConstants(result.constituents, names);
   const predictor = createTidePredictor(fit, { offset: false });
   const offset = Number(
     (
@@ -104,7 +94,7 @@ function fitted(samples: Sample[], names: string[]) {
 export function fitSeries(
   training: Sample[],
   validation: Sample[],
-  options: { names?: string[]; extra?: number } = {},
+  options: { names?: string[]; extras?: boolean } = {},
 ): FitResult {
   for (const rows of [training, validation]) {
     if (
@@ -123,28 +113,23 @@ export function fitSeries(
   const spanHours = (training.at(-1)!.t - training[0]!.t) / 3600000;
   if (spanHours < 365.25 * 24)
     throw new Error("Training must span a complete annual cycle");
-  const names = resolvedNames(options.names ?? MAJORS, spanHours);
-  const firstRows = spreadSample(training, 4000, 17),
-    secondRows = spreadSample(training, 4000, 18);
-  const baseline = fitted(firstRows, names);
-  const residual = firstRows.map(
-    (s) =>
-      s.level -
-      baseline.predictor.getWaterLevelAtTime({ time: new Date(s.t) }).level,
+  const names = options.names ?? MAJORS;
+  // Alternate ten-minute samples: two disjoint regular series, sampled finely
+  // enough that the highest harmonics stay below their Nyquist frequency.
+  const firstRows = training.filter((_, i) => i % 2 === 0),
+    secondRows = training.filter((_, i) => i % 2 === 1);
+  const selected = fitSelected(
+    harmonicSamples(firstRows),
+    names,
+    options.extras !== false,
   );
-  const extras =
-    options.extra === 0
-      ? []
-      : selectExtraConstituents(
-          firstRows,
-          residual,
-          names,
-          options.extra ?? 40,
-          360 / spanHours,
-        );
-  const chosen = [...names, ...extras];
-  const first = fitted(firstRows, chosen),
-    second = fitted(secondRows, chosen);
+  const chosen = selected.constituents.map((c) => c.name);
+  const first = fitted(firstRows, selected, names),
+    second = fitted(
+      secondRows,
+      fit(harmonicSamples(secondRows), chosen, { dropDependent: true }),
+      names,
+    );
   const errors: number[] = [];
   let squares = 0,
     stability = 0;

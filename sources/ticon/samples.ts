@@ -4,7 +4,11 @@ import {
   type PartialStationData,
 } from "@slackwater/stations";
 import { parseGeslaSamples, type Sample } from "@slackwater/datums";
-import { parseGeslaSamplesInZone } from "@slackwater/harmonic-analysis";
+import { selectConstituents } from "@slackwater/engine";
+import {
+  parseGeslaSamplesInZone,
+  publishedConstants,
+} from "@slackwater/harmonic-analysis";
 
 type Constituents = PartialStationData["harmonic_constituents"];
 
@@ -99,4 +103,44 @@ export function sameConstituents(a: Constituents, b: Constituents) {
         h.phase === b[i]!.phase,
     )
   );
+}
+
+/** The lines a re-fit may drop: each is a perigee cycle from N2 or L2. */
+const PERIGEE_PAIRED = new Map([
+  ["3N2", "N2"],
+  ["3L2", "L2"],
+]);
+
+/**
+ * Fit TICON's constituents to a station's record, once its clock is fixed.
+ * 3N2 and 3L2 are left out by the Rayleigh criterion on a record shorter than
+ * a lunar perigee cycle (8.85 years), where they can't be separated from N2
+ * and L2; the stronger one keeps the signal. Every other name is kept whatever
+ * its SNR, as TICON keeps them, and the re-fit throws rather than drop one.
+ * Throws on a record shorter than 365.25 days, which K1 and S1 need.
+ */
+export function refitConstituents(
+  samples: Sample[],
+  names: string[],
+): Constituents {
+  const sorted = samples.toSorted((a, b) => +a.time - +b.time);
+  if (
+    !sorted.length ||
+    +sorted.at(-1)!.time - +sorted[0]!.time < 365.25 * 86_400_000
+  )
+    throw new Error("record too short to re-analyze its non-UTC phases");
+  const { fit, selection } = selectConstituents(
+    sorted.map(({ time, level }) => ({ time, value: level })),
+    { candidates: names.map((name) => ({ name })), minSnr: 0 },
+  );
+  const lost = selection.filter(
+    (s) =>
+      !s.kept &&
+      !(s.reason === "rayleigh" && PERIGEE_PAIRED.get(s.name) === s.conflict),
+  );
+  if (lost.length)
+    throw new Error(
+      `re-fit would drop ${lost.map((s) => `${s.name} (${s.reason})`).join(", ")}`,
+    );
+  return publishedConstants(fit.constituents);
 }
