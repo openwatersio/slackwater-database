@@ -3,14 +3,18 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./stillwell": "./stillwell.ts"
   },
   "scripts": {
     "test": "vitest run",
-    "report:score-line": "node score-line.ts"
+    "report:score-line": "node score-line.ts",
+    "report:verify": "node verify-fit.ts"
   },
   "dependencies": {
-    "@slackwater/datums": "*"
+    "@slackwater/datums": "*",
+    "@duckdb/node-api": "1.5.6-r.2",
+    "@slackwater/stations": "*"
   },
   "devDependencies": {
     "vitest": "^5.0.5"

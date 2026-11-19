@@ -91,7 +91,7 @@ This repo is an npm workspace. Station data lives in [`data/`](./data), and ever
 - [`packages/kotlin`](./packages/kotlin) — the Kotlin/JVM reader for `.tcdb`, consumed from source through a Gradle composite build
 - [`packages/tcd`](./packages/tcd) — TCD harmonics files for XTide-compatible software
 - [`packages/datums`](./packages/datums) — tidal datum computation and sea-region classification
-- [`packages/harmonic-analysis`](./packages/harmonic-analysis) — GESLA parsing, constituent-line scoring and helpers for this database's own fits, which run through `@slackwater/engine`'s `fit()` and `selectConstituents()`
+- [`packages/harmonic-analysis`](./packages/harmonic-analysis) — GESLA parsing, constituent-line scoring, reading Stillwell, verifying fits, and helpers for this database's own fits, which run through `@slackwater/engine`'s `fit()` and `selectConstituents()`
 - [`packages/stations`](./packages/stations) — station file I/O, quality filtering, geocoding, the unified catalogue, and maintenance scripts (including `npm run stations`, which writes the [station files](./stations/README.md))
 - [`sources/*`](./sources) — one package per data source, most with an `npm run import`
 

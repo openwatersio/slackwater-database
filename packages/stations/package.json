@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./filtering": "./filtering.ts"
   },
   "scripts": {
     "test": "vitest run",

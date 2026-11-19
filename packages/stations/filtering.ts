@@ -279,6 +279,20 @@ export const MIN_DEDUP_DISTANCE = 0.05; // 50 meters
  *  (see PUBLISHED_PRECISION) and say nothing about this. */
 export const AMPLITUDE_TOLERANCE = 0.003;
 
+/** Whether constants with tidal-band residual `rms` (m) on a held-out year
+ *  predict it worse than constants with `other`. Their residual variances must
+ *  differ by more than the data can resolve: more than a constituent error of
+ *  AMPLITUDE_TOLERANCE would add (A²/2), and more than twice `se`, the
+ *  standard error of the difference over that year, so that chance in one
+ *  year's weather doesn't decide it. The difference is rounded first, so
+ *  stored scores decide it. */
+export function scoresWorse(rms: number, other: number, se: number): boolean {
+  return (
+    Number((rms ** 2 - other ** 2).toFixed(12)) >
+    Math.max(AMPLITUDE_TOLERANCE ** 2 / 2, 2 * se)
+  );
+}
+
 /** Project screening allowance for observed means versus harmonic bounds from
  * different periods, including weather. Masked-record changes and NOAA paired
  * mean-level residuals are centimetre-scale. This 5 cm allowance is a
