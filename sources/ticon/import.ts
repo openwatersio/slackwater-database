@@ -35,6 +35,7 @@ import {
 import {
   checkCorrections,
   correctPosition,
+  correctCountry,
   matchMetadata,
   type TiconMetaRow,
 } from "./meta.ts";
@@ -162,20 +163,27 @@ async function main() {
         360,
     }));
 
-    // WSV, RWS and the early Hong Kong gauges have GESLA times that are not
-    // UTC, so TICON's phases are not UTC-referenced; re-fit them from the raw
-    // water levels. See #96 and #360.
-    const harmonic_constituents = await getHarmonics(id, csvHarmonics);
-
     const epoch = {
       start: dayMonthYearToDate(rows[0].start_date),
       end: dayMonthYearToDate(rows[0].end_date),
     };
 
+    const country = correctCountry(id, rows[0].country);
+    const countryCode = countryByNameOrCode(country)?.iso2;
+    if (!countryCode) {
+      console.error(`\nError processing ${id}: Unknown country: ${country}`);
+      errors++;
+      process.stdout.write("x");
+      continue;
+    }
+
+    // Refit gauges whose published phases are not UTC-referenced.
+    const harmonic_constituents = await getHarmonics(id, csvHarmonics);
+
     try {
       const { datum_notice, ...datumResult } = await getDatums(
         id,
-        rows[0].country,
+        countryCode,
         epoch,
         harmonic_constituents,
       );
@@ -185,7 +193,7 @@ async function main() {
 
       const candidate: PartialStationData = {
         name: gesla["SITE NAME"],
-        country: rows[0].country,
+        country,
         latitude: lat,
         longitude: lon,
         type: "reference",
@@ -246,7 +254,7 @@ async function main() {
  */
 async function getDatums(
   id: string,
-  country: string,
+  countryCode: string,
   obsEpoch: { start: Date; end: Date },
   harmonic_constituents: PartialStationData["harmonic_constituents"],
 ) {
@@ -282,8 +290,7 @@ async function getDatums(
           roundConstituents("ticon", harmonic_constituents),
         )
       ) {
-        const countryCode = countryByNameOrCode(country)?.iso2;
-        if (countryCode && existing.datums) {
+        if (existing.datums) {
           const datums = restoreCachedCountryDatum(
             countryCode,
             existing.datums,

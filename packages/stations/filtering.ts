@@ -192,7 +192,10 @@ export function gaugeKey(sourceId: string): string {
   parts[codeIdx] = parts[codeIdx]!.replace(/^(\d+)[a-z]$/i, "$1");
   const key = parts.join("-");
   // TICON mislabels UHSLC's Roseau station 786 as Dominican Republic (#328).
-  return key === "roseau-786-dom" ? "roseau-786-dma" : key;
+  if (key === "roseau-786-dom") return "roseau-786-dma";
+  if (key === "kaohsiung-340-chn" || key === "keelung-341-chn")
+    return key.replace(/-chn$/, "-twn");
+  return key;
 }
 
 /** Radius around Null Island (0°, 0°) within which a station's coordinates are

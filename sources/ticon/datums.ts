@@ -128,7 +128,7 @@ export function restoreCachedCountryDatum(
   const harmonic = computeDatums(constituents, {}).datums[datum];
   return harmonic === undefined
     ? datums
-    : { ...datums, [datum]: toFixed(harmonic + msl, 3) };
+    : { ...datums, ...shiftHarmonicDatums({ [datum]: harmonic }, msl) };
 }
 
 export function storedDatumNotice(
