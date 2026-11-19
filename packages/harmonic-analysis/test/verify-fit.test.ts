@@ -92,6 +92,7 @@ describe("verifyFit", () => {
         label: "agency/g",
         constants: AGENCY,
         epoch: { start: "2019-01-01", end: "2020-12-31" },
+        rounding: { amplitude: 0.0005, phase: 0.05 },
       },
     });
   });
@@ -118,6 +119,10 @@ describe("verifyFit", () => {
     expect(report.heldOut?.others["agency/g"]?.seen).toBe(false);
     expect(report.heldOut?.beatsTicon).toBe(true);
     expect(report.agency?.curve?.n).toBe(8760);
+    // The agency's rounding widens every interval it is compared with.
+    expect(report.agency!.constants).toHaveLength(4);
+    for (const d of report.agency!.constants)
+      expect(d.amplitudeInterval).toBeGreaterThanOrEqual(0.0005);
   });
 
   test("scores TICON's constants and this database's re-fits under their own labels", () => {

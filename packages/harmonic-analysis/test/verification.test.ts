@@ -252,9 +252,51 @@ describe("agency comparison", () => {
     ]);
   });
 
+  test("doesn't count the agency's rounding as a difference", () => {
+    const ours = [
+      {
+        name: "M4",
+        amplitude: 0.00276,
+        phase: 10,
+        amplitudeInterval: 0.0002,
+        phaseInterval: 5,
+      },
+    ];
+    const theirs = [{ name: "M4", amplitude: 0.003, phase: 10 }];
+    expect(compareConstants(ours, theirs)[0]!.ratio).toBeGreaterThan(1);
+    expect(
+      compareConstants(ours, theirs, { amplitude: 0.0005, phase: 0.05 })[0]!
+        .ratio,
+    ).toBeLessThan(1);
+  });
+
   test("compares curves on another datum by shape", () => {
     const a = [1, 2, 3].map((x, i) => ({ t: i, level: x }));
     const b = [1, 2, 3].map((x, i) => ({ t: i, level: x + 5 }));
     expect(compareCurves(a, b)).toEqual({ n: 3, rms: 0, max: 0 });
+  });
+});
+
+describe("nodal corrections", () => {
+  test("a set of constants is scored with the corrections it declares", () => {
+    const tide = [...TIDE, { name: "M1", amplitude: 0.05, phase: 30 }];
+    const p = createTidePredictor(tide, {
+      offset: false,
+      nodeCorrections: "schureman",
+    });
+    const observed = Array.from({ length: 24 * 120 }, (_, h) => ({
+      t: START + h * HOUR,
+      level: p.getWaterLevelAtTime({ time: new Date(START + h * HOUR) }).level,
+    }));
+    const { others } = scoreHeldOut(observed, tide, {
+      schureman: {
+        constituents: tide,
+        seen: false,
+        nodeCorrections: "schureman",
+      },
+      iho: { constituents: tide, seen: false },
+    });
+    expect(others["schureman"]!.rms).toBeLessThan(1e-9);
+    expect(others["iho"]!.rms).toBeGreaterThan(1e-4);
   });
 });

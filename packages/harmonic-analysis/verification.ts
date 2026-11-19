@@ -50,10 +50,14 @@ function runningMean(xs: number[], width: number, lead: number): number[] {
 export function tidalResiduals(
   constituents: HarmonicConstituent[],
   samples: readonly Sample[],
+  nodeCorrections: NodeCorrections = "iho",
 ): Map<number, number> {
   const out = new Map<number, number>();
   if (!samples.length) return out;
-  const predictor = createTidePredictor(constituents, { offset: false });
+  const predictor = createTidePredictor(constituents, {
+    offset: false,
+    nodeCorrections,
+  });
   const first = Math.floor(
     samples.reduce((m, s) => Math.min(m, s.t), Infinity) / HOUR_MS,
   );
@@ -342,8 +346,12 @@ export function gaugeMinRange(observed: readonly Sample[]): number {
 export function predictAt(
   constituents: HarmonicConstituent[],
   samples: readonly Sample[],
+  nodeCorrections: NodeCorrections = "iho",
 ): Sample[] {
-  const predictor = createTidePredictor(constituents, { offset: false });
+  const predictor = createTidePredictor(constituents, {
+    offset: false,
+    nodeCorrections,
+  });
   const predicted = samples.map(({ t }) => ({
     t,
     level: predictor.getWaterLevelAtTime({ time: new Date(t) }).level,
@@ -353,6 +361,9 @@ export function predictAt(
     samples.length;
   return predicted.map(({ t, level }) => ({ t, level: level + shift }));
 }
+
+/** The nodal correction formulas a set of constants was analyzed with. */
+export type NodeCorrections = "iho" | "schureman";
 
 /** One set of constants scored on the held-out year. */
 export interface HeldOutScore {
@@ -380,7 +391,12 @@ export function scoreHeldOut(
   fitted: HarmonicConstituent[],
   others: Record<
     string,
-    { constituents: HarmonicConstituent[]; seen: boolean }
+    {
+      constituents: HarmonicConstituent[];
+      seen: boolean;
+      /** The nodal corrections the constants were analyzed with; IHO's by default. */
+      nodeCorrections?: NodeCorrections | undefined;
+    }
   >,
 ): {
   minRange: number;
@@ -389,8 +405,11 @@ export function scoreHeldOut(
 } {
   const minRange = gaugeMinRange(observed);
   const observedTurns = pickTurns(observed, minRange);
-  const score = (constituents: HarmonicConstituent[]) => {
-    const residuals = tidalResiduals(constituents, observed);
+  const score = (
+    constituents: HarmonicConstituent[],
+    nodeCorrections?: NodeCorrections,
+  ) => {
+    const residuals = tidalResiduals(constituents, observed, nodeCorrections);
     return {
       residuals,
       score: {
@@ -398,7 +417,10 @@ export function scoreHeldOut(
         bands: bandRms(residuals),
         turns: compareTurns(
           observedTurns,
-          pickTurns(predictAt(constituents, observed), minRange),
+          pickTurns(
+            predictAt(constituents, observed, nodeCorrections),
+            minRange,
+          ),
         ),
       } satisfies HeldOutScore,
     };
@@ -408,19 +430,21 @@ export function scoreHeldOut(
     minRange,
     fit: ours.score,
     others: Object.fromEntries(
-      Object.entries(others).map(([label, { constituents, seen }]) => {
-        const theirs = score(constituents);
-        const se = varianceDifferenceSE(ours.residuals, theirs.residuals);
-        return [
-          label,
-          {
-            ...theirs.score,
-            se,
-            verdict: verdict(ours.score.rms, theirs.score.rms, se),
-            seen,
-          },
-        ];
-      }),
+      Object.entries(others).map(
+        ([label, { constituents, seen, nodeCorrections }]) => {
+          const theirs = score(constituents, nodeCorrections);
+          const se = varianceDifferenceSE(ours.residuals, theirs.residuals);
+          return [
+            label,
+            {
+              ...theirs.score,
+              se,
+              verdict: verdict(ours.score.rms, theirs.score.rms, se),
+              seen,
+            },
+          ];
+        },
+      ),
     ),
   };
 }
@@ -633,7 +657,7 @@ export interface ConstantDifference {
   /** Ours minus theirs, in metres and degrees (phase wrapped to ±180). */
   amplitude: number;
   phase: number;
-  /** Our 95% intervals' half-widths. */
+  /** Our 95% intervals' half-widths, widened by the agency's rounding. */
   amplitudeInterval: number | null;
   phaseInterval: number | null;
   /** The larger of |amplitude| / amplitudeInterval and |phase| / phaseInterval:
@@ -641,10 +665,17 @@ export interface ConstantDifference {
   ratio: number | null;
 }
 
-/** Our fitted constants against an agency's, name for name. */
+/**
+ * Our fitted constants against an agency's, name for name. `rounding` is half
+ * the last digit the agency publishes, in metres and degrees: its constants
+ * are uncertain by that much at least, so it widens our intervals in
+ * quadrature before the ratio is taken, and a difference that is only the
+ * agency's rounding isn't counted as one.
+ */
 export function compareConstants(
   ours: readonly FittedConstituent[],
   theirs: readonly HarmonicConstituent[],
+  rounding = { amplitude: 0, phase: 0 },
 ): ConstantDifference[] {
   const byName = new Map(theirs.map((c) => [c.name, c]));
   return ours.flatMap((c) => {
@@ -652,8 +683,14 @@ export function compareConstants(
     if (!t) return [];
     const amplitude = c.amplitude - t.amplitude;
     const phase = ((((c.phase - t.phase) % 360) + 540) % 360) - 180;
-    const ai = c.amplitudeInterval ?? null;
-    const pi = c.phaseInterval ?? null;
+    const ai =
+      c.amplitudeInterval == null
+        ? null
+        : Math.hypot(c.amplitudeInterval, rounding.amplitude);
+    const pi =
+      c.phaseInterval == null
+        ? null
+        : Math.hypot(c.phaseInterval, rounding.phase);
     return [
       {
         name: c.name,

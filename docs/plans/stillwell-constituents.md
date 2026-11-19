@@ -194,7 +194,7 @@ Before the pipeline publishes anything, three sets of gauges tune and test it wh
 - **Kartverket and JCG.** The same with published constants, on other coasts and regimes.
 - **RWS and PEGELONLINE.** Compare with RWS's astronomical tide and BSH's tables. This sets the shallow-water expansion trigger and checks HRoI against harmonics.
 
-The calibration report is checked in and run again whenever the fitter changes.
+The calibration report is checked in at [docs/calibration](../calibration/README.md) and run again whenever the fitter changes. It covers Kartverket and NOAA; JCG, RWS and BSH follow.
 
 ## Operations
 

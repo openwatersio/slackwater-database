@@ -1,7 +1,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
-import { fit as engineFit, type FitOptions } from "@slackwater/engine";
+import {
+  constituents as catalog,
+  fit as engineFit,
+  type FitOptions,
+} from "@slackwater/engine";
 import { hasMislabeledClock } from "../../sources/ticon/samples.ts";
 import {
   fitSelected,
@@ -21,6 +25,7 @@ import {
   compareConstants,
   compareCurves,
   conditioning,
+  type NodeCorrections,
   hourly,
   predictAt,
   rmsOf,
@@ -37,10 +42,58 @@ import {
 const DATA = join(import.meta.dirname, "..", "..", "data");
 const HOUR_MS = 3_600_000;
 
+/** The fastest constituent an hourly fit takes, in degrees an hour: past
+ *  the eighth-diurnal band, which ends near 8.5 cycles a day. */
+const MAX_HOURLY_SPEED = 127.5;
+
 /** A record in data/, as much of it as verification reads. */
-interface DataRecord {
+export interface DataRecord {
   harmonic_constituents: HarmonicConstituent[];
   epoch?: { start?: string; end?: string };
+}
+
+/**
+ * The nodal corrections each agency analyzes with, so its constants are
+ * scored as it predicts from them: NOAA uses Schureman's (Schureman 1958,
+ * Manual of Harmonic Analysis and Prediction of Tides; Parker 2007, Tidal
+ * Analysis and Prediction, NOAA Special Publication NOS CO-OPS 3).
+ */
+const NODE_CORRECTIONS: Record<string, NodeCorrections> = {
+  noaa: "schureman",
+  kartverket: "iho",
+};
+
+/**
+ * Half the last digit each agency publishes, in metres and degrees, which
+ * PUBLISHED_PRECISION's comments give. Its digits are the ones stored, which
+ * for some sources carry a time-zone shift's further digits, so each agency
+ * compared with is declared here: NOAA publishes millimetres and 0.1°, and
+ * Kartverket 0.1 mm and 0.01°.
+ */
+const ROUNDING: Record<string, { amplitude: number; phase: number }> = {
+  noaa: { amplitude: 0.0005, phase: 0.05 },
+  kartverket: { amplitude: 0.00005, phase: 0.005 },
+};
+const rounding = (dir: string) => {
+  const r = ROUNDING[dir];
+  if (!r)
+    throw new Error(
+      `declare the precision ${dir} publishes in ROUNDING before comparing with it`,
+    );
+  return r;
+};
+
+/** An agency's record as verification compares with it: the constants it
+ *  determined, and its rounding. NOAA's amplitude 0 with phase 0 marks a
+ *  constituent it didn't determine. */
+export function agencyConstants(dir: string, record: DataRecord) {
+  return {
+    constants: record.harmonic_constituents.filter(
+      (c) => dir !== "noaa" || c.amplitude !== 0 || c.phase !== 0,
+    ),
+    rounding: rounding(dir),
+    nodeCorrections: NODE_CORRECTIONS[dir] ?? "iho",
+  };
 }
 
 const readRecord = (dir: string, id: string): DataRecord | undefined => {
@@ -68,6 +121,10 @@ export interface VerifyOptions {
     label: string;
     constants: HarmonicConstituent[];
     epoch?: { start?: string; end?: string };
+    /** Half the last digit the agency publishes (see compareConstants). */
+    rounding?: { amplitude: number; phase: number };
+    /** The nodal corrections the agency analyzes with; IHO's by default. */
+    nodeCorrections?: NodeCorrections;
   };
   /** Decisions on Stillwell's `kept` errata, by id. */
   errata?: ErrataDecisions;
@@ -86,7 +143,8 @@ export interface VerificationReport {
     hours: number;
     /** RMS residual of the fit, in metres. */
     rms: number;
-    /** Names the record couldn't separate from earlier ones, left out. */
+    /** Names left out: in an exact list, those past the eighth-diurnal band
+     *  an hourly fit stops at; or those not separable from earlier ones. */
     dropped: string[];
     conditioning: Conditioning;
     yearly: YearlyScatter;
@@ -144,7 +202,14 @@ const yearRange = (y: number) => ({
 export async function verifyFit(
   options: VerifyOptions,
 ): Promise<VerificationReport> {
-  const { series, start, end, names } = options;
+  const { series, start, end } = options;
+  // The plan's Sampling rule: an hourly fit stops at the eighth-diurnal
+  // band. Selection (fitSelected) adds catalog lines of its own, so the rule
+  // applies to exact lists here.
+  const tooFast = options.exact
+    ? options.names.filter((n) => (catalog[n]?.speed ?? 0) > MAX_HOURLY_SPEED)
+    : [];
+  const names = options.names.filter((n) => !tooFast.includes(n));
   const station = await stillwellStation(series);
   if (!station) throw new Error(`${series} is not in Stillwell`);
   if (
@@ -197,10 +262,7 @@ export async function verifyFit(
         throw new Error(`${series} has under half of ${year}'s hours to score`);
       continue;
     }
-    const others: Record<
-      string,
-      { constituents: HarmonicConstituent[]; seen: boolean }
-    > = {};
+    const others: Parameters<typeof scoreHeldOut>[2] = {};
     const ticon = station.same_as
       .filter((id) => id.startsWith("gesla/"))
       .map((id) => id.slice("gesla/".length))
@@ -221,6 +283,7 @@ export async function verifyFit(
       others[options.agency.label] = {
         constituents: options.agency.constants,
         seen: sawYear(options.agency.epoch, span.start, span.end),
+        nodeCorrections: options.agency.nodeCorrections,
       };
     const scores = scoreHeldOut(samples, published, others);
     const ticonScores = Object.entries(scores.others).filter(
@@ -246,7 +309,11 @@ export async function verifyFit(
       const times = hourly(start, end).map((t) => ({ t, level: 0 }));
       curve = compareCurves(
         predictAt(published, times),
-        predictAt(options.agency.constants, times),
+        predictAt(
+          options.agency.constants,
+          times,
+          options.agency.nodeCorrections,
+        ),
       );
     }
     agency = {
@@ -254,6 +321,7 @@ export async function verifyFit(
       constants: compareConstants(
         fitted.constituents,
         options.agency.constants,
+        options.agency.rounding,
       ),
       curve,
     };
@@ -267,7 +335,7 @@ export async function verifyFit(
       end: isoDate(fitSamples.at(-1)!.t),
       hours: fitSamples.length,
       rms: fitted.rms,
-      dropped: fitted.dropped,
+      dropped: [...tooFast, ...fitted.dropped],
       conditioning: conditioning(fitSamples, fittedNames),
       // Largest first, so a pair a year can't separate keeps its larger member.
       yearly: yearlyScatter(
@@ -319,7 +387,7 @@ if (import.meta.main) {
     (values.agency !== undefined && !agencyPath)
   )
     throw new Error(
-      "usage: verify-fit.ts <series> --fit <first year>-<last year> --names <data record or comma-separated names> [--exact] [--held-out <year>] [--agency <data dir>/<id>] [--keep <erratum>] [--drop <erratum>]",
+      "usage: verify-fit.ts <series> --fit <first year>-<last year> --names <data record or comma-separated names> [--exact] [--held-out <year>] [--agency noaa/<id> | kartverket/<id>] [--keep <erratum>] [--drop <erratum>]",
     );
   const [from, to] = [Number(fit[1]), Number(fit[2])];
   const both = (values.keep ?? []).filter((e) => values.drop?.includes(e));
@@ -329,7 +397,15 @@ if (import.meta.main) {
         JSON.parse(
           readFileSync(join(DATA, "..", values.names), "utf8"),
         ) as DataRecord
-      ).harmonic_constituents.map((c) => c.name)
+      ).harmonic_constituents
+        // NOAA's amplitude 0 with phase 0 marks a constituent it didn't determine.
+        .filter(
+          (c) =>
+            !values.names!.includes("noaa/") ||
+            c.amplitude !== 0 ||
+            c.phase !== 0,
+        )
+        .map((c) => c.name)
     : values.names.split(",");
   const [, dir, id] = agencyPath ?? [];
   const agency = dir && id ? readRecord(dir, id) : undefined;
@@ -346,7 +422,7 @@ if (import.meta.main) {
       ? {
           agency: {
             label: values.agency!,
-            constants: agency.harmonic_constituents,
+            ...agencyConstants(dir!, agency),
             // A record's epoch can be its datum epoch, as NOAA's is, so the
             // CLI leaves the agency's analysis period unknown: maybe seen.
           },
