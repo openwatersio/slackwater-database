@@ -106,7 +106,10 @@ export function sameConstituents(a: Constituents, b: Constituents) {
 }
 
 /** The lines a re-fit may drop: each is a perigee cycle from N2 or L2. */
-const PERIGEE_PAIRED = new Set(["3N2", "3L2"]);
+const PERIGEE_PAIRED = new Map([
+  ["3N2", "N2"],
+  ["3L2", "L2"],
+]);
 
 /**
  * Fit TICON's constituents to a station's record, once its clock is fixed.
@@ -131,7 +134,9 @@ export function refitConstituents(
     { candidates: names.map((name) => ({ name })), minSnr: 0 },
   );
   const lost = selection.filter(
-    (s) => !s.kept && !(s.reason === "rayleigh" && PERIGEE_PAIRED.has(s.name)),
+    (s) =>
+      !s.kept &&
+      !(s.reason === "rayleigh" && PERIGEE_PAIRED.get(s.name) === s.conflict),
   );
   if (lost.length)
     throw new Error(

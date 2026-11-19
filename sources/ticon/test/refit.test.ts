@@ -63,6 +63,15 @@ describe("refitConstituents", () => {
     expect(() => refitConstituents(samples, ["M2", "XYZ9"])).toThrow(
       "re-fit would drop XYZ9 (unknown)",
     );
+    // Where the record keeps 3N2, a duplicate conflicts with it, not with N2.
+    expect(() =>
+      refitConstituents(synthetic(24 * 365 * 9, [["M2", 1, 0]], 6), [
+        "M2",
+        "N2",
+        "3N2",
+        "3N2",
+      ]),
+    ).toThrow("re-fit would drop 3N2 (rayleigh)");
     // S2 and T2 need 365.26 days.
     expect(() =>
       refitConstituents(synthetic(24 * 365.25 + 1, [["M2", 1, 0]]), [
