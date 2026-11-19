@@ -23,9 +23,9 @@ export const HARMONIC_REDUCTION_NOTICE =
   "Harmonic datums retain every predicted turning point without prominence filtering.";
 
 export const OBSERVED_DATUM_NOTICE =
-  "Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights.";
+  "Mean datums use one continuous observation window of whole years. Gaps shorter than 24 hours may contain model-assisted inferred hourly heights.";
 export const HARMONIC_DATUM_NOTICE =
-  "Datums derived from harmonic prediction; observations do not support a mean-datum reduction over twelve continuous whole months after bounded short-gap reconstruction. Datum values carry higher uncertainty.";
+  "Datums derived from harmonic prediction; observations do not support a mean-datum reduction over twelve continuous whole months after bounded reconstruction of gaps shorter than 24 hours. Datum values carry higher uncertainty.";
 export const OBSERVED_OFFSET_NOTICE =
   "A calendar-balanced mean of complete prepared observation months supplies the vertical offset; the months may span a different period from the pinned prediction.";
 export const CONSTITUENT_FRAME_NOTICE =

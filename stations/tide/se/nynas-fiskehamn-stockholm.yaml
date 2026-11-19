@@ -8,10 +8,9 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/nynas_fiskehamn-35112-swe-smhi
+        reason: datum
         seasonal_dominant: true
-        score: 52
+        score: 0
         factors:
           epoch: 0.322
           recency: 0.99
@@ -20,4 +19,6 @@ computed:
           amplitude: 1
           coverage: 0.004
         issues:
+          - MLWS (0.106) > MLW (0.096)
+          - MHW (0.118) <= MSL (0.118)
           - "Seasonal curve peak (0.120m) exceeds the principal tide M2+S2+K1+O1 (0.024m): the yearly swing exceeds the daily one"

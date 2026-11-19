@@ -29,7 +29,8 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: range
+        reason: superseded
+        redundant: noaa/8655151
         seasonal_dominant: true
         score: 0
         factors:
@@ -40,7 +41,7 @@ computed:
           amplitude: 1
           coverage: 0.008
         issues:
-          - MHWS (0.133) < MHW (0.136)
-          - Tidal range 1.70cm < 2cm threshold
+          - MLWS (0.158) > MLW (0.155)
+          - MHWS (0.174) < MHW (0.179)
           - Superseded by noaa/8655151, its operator's own record
           - "Seasonal curve peak (0.124m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"

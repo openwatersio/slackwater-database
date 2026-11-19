@@ -7,19 +7,17 @@ computed:
       position: [58.228001, 24.1185]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: duplicate
-        redundant: ticon/munalaiu-mun-est-cmems
+        accepted: true
         seasonal_dominant: true
-        score: 48
+        score: 57
         factors:
           epoch: 0.159
           recency: 0.99
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 0.56
         issues:
-          - MLWS (-0.005) > MLW (-0.018)
-          - MHWS (0.005) < MHW (0.02)
+          - MLWS (0.08) > MLW (0.057)
+          - MHWS (0.09) < MHW (0.092)
           - "Seasonal curve peak (0.209m) exceeds the principal tide M2+S2+K1+O1 (0.036m): the yearly swing exceeds the daily one"

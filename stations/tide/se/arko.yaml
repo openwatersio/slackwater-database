@@ -21,7 +21,7 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.096) > MLW (0.093)
+          - MLWS (0.11) > MLW (0.106)
           - "Seasonal curve peak (0.116m) exceeds the principal tide M2+S2+K1+O1 (0.026m): the yearly swing exceeds the daily one"
     ticon/arko-ark-swe-cmems:
       position: [58.484299, 16.960699]
@@ -40,5 +40,5 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.127) > MLW (0.12)
+          - MLWS (0.107) > MLW (0.103)
           - "Seasonal curve peak (0.115m) exceeds the principal tide M2+S2+K1+O1 (0.026m): the yearly swing exceeds the daily one"

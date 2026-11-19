@@ -13,14 +13,14 @@ computed:
       quality:
         accepted: true
         seasonal_dominant: true
-        score: 89
+        score: 91
         factors:
           epoch: 1
           recency: 0.75
           source: 1
           quality: 1
           amplitude: 1
-          coverage: 0.44
+          coverage: 0.535
         issues:
           - "Seasonal curve peak (0.186m) exceeds the principal tide M2+S2+K1+O1 (0.174m): the yearly swing exceeds the daily one"
     ticon/sargent-8772985-usa-noaa:
@@ -39,5 +39,5 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
-          - MHWS (9.803) < MHW (9.832)
+          - MHWS (9.813) < MHW (9.832)
           - Superseded by noaa/8772985, its operator's own record

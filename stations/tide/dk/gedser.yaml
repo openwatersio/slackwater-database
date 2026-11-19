@@ -58,7 +58,8 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
-          - MLWS (0.055) > MLW (0.048)
+          - MLWS (0.095) > MLW (0.093)
+          - MHWS (0.201) < MHW (0.207)
     ticon/gedser-ged-dnk-dmi:
       position: [54.566666, 11.933333]
       coastline: unverifiable

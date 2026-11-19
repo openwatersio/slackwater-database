@@ -16,25 +16,25 @@
     "commercial_use": true,
     "url": "https://creativecommons.org/licenses/by/4.0/"
   },
-  "disclaimers": "No obvious issues Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering.",
+  "disclaimers": "No obvious issues Mean datums use one continuous observation window of whole years. Gaps shorter than 24 hours may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering.",
   "datums": {
-    "MSL": 0.088,
-    "MHHW": 0.301,
-    "MHW": 0.229,
-    "MTL": 0.084,
-    "MLW": -0.061,
-    "MLLW": -0.136,
-    "HAT": 0.474,
-    "LAT": -0.384,
-    "MHWS": 0.106,
-    "MLWS": 0.07
+    "MSL": 0.069,
+    "MHHW": 0.287,
+    "MHW": 0.213,
+    "MTL": 0.066,
+    "MLW": -0.08,
+    "MLLW": -0.16,
+    "HAT": 0.455,
+    "LAT": -0.403,
+    "MHWS": 0.087,
+    "MLWS": 0.051
   },
   "datums_source": "observed",
   "datum_frame": "gauge",
   "datum_coverage": {
     "months": 12,
-    "observed_hours": 8757,
-    "inferred_hours": 3
+    "observed_hours": 8752,
+    "inferred_hours": 32
   },
   "chart_datum": "MLLW",
   "type": "reference",
@@ -291,8 +291,8 @@
     }
   ],
   "datum_epoch": {
-    "start": "2022-03-01",
-    "end": "2023-02-28"
+    "start": "2023-10-01",
+    "end": "2024-09-30"
   },
   "epoch": {
     "start": "2006-06-09",

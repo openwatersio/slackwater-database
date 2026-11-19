@@ -17,21 +17,26 @@
     "url": "https://creativecommons.org/licenses/by-nc/4.0/",
     "notes": "Upstream GESLA data provider restricts commercial use. See https://gesla787883612.wordpress.com/license/"
   },
-  "disclaimers": "Possible quality control issues Datums derived from harmonic prediction; observations do not support a mean-datum reduction over twelve continuous whole months after bounded short-gap reconstruction. Datum values carry higher uncertainty. Complete prepared observations do not cover every calendar month of the year for a balanced gauge mean; datums remain in the constituent frame (MSL = 0). Harmonic datums retain every predicted turning point without prominence filtering.",
+  "disclaimers": "Possible quality control issues Mean datums use one continuous observation window of whole years. Gaps shorter than 24 hours may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering.",
   "datums": {
-    "HAT": 0.086,
-    "MHHW": 0.006,
-    "MHW": -0.004,
-    "MSL": 0,
-    "MTL": -0.008,
-    "MLW": -0.011,
-    "MLLW": -0.008,
-    "LAT": -0.122,
-    "MHWS": 0.003,
-    "MLWS": -0.003
+    "MSL": -0.15,
+    "MHHW": -0.121,
+    "MHW": -0.144,
+    "MTL": -0.153,
+    "MLW": -0.163,
+    "MLLW": -0.178,
+    "HAT": -0.064,
+    "LAT": -0.272,
+    "MHWS": -0.147,
+    "MLWS": -0.153
   },
-  "datums_source": "harmonic",
-  "datum_frame": "constituent",
+  "datums_source": "observed",
+  "datum_frame": "gauge",
+  "datum_coverage": {
+    "months": 12,
+    "observed_hours": 8391,
+    "inferred_hours": 369
+  },
   "chart_datum": "LAT",
   "type": "reference",
   "harmonic_constituents": [
@@ -286,6 +291,10 @@
       "phase": 306.791743
     }
   ],
+  "datum_epoch": {
+    "start": "2021-10-01",
+    "end": "2022-09-30"
+  },
   "epoch": {
     "start": "2014-08-04",
     "end": "2024-03-01"
