@@ -3,6 +3,7 @@ import {
   fit,
   selectConstituents,
   type Candidate,
+  type FitOptions,
   type FittedConstituent,
   type HarmonicFit,
   type HarmonicSample,
@@ -148,11 +149,13 @@ export function publishedConstants(
  * below its SNR cut stays: its small amplitude is a measured value, not a
  * missing one. Throws on a name in `names` the engine doesn't know or the
  * sampling can't resolve. With `extras` false, only `names` are candidates.
+ * `options` go to the final fit.
  */
 export function fitSelected(
   samples: readonly HarmonicSample[],
   names: readonly string[],
   extras = true,
+  options: FitOptions = {},
 ): HarmonicFit {
   const given = new Set(names);
   const { selection } = selectConstituents(samples, {
@@ -171,5 +174,5 @@ export function fitSelected(
   const chosen = selection
     .filter((s) => s.kept || (s.reason === "snr" && given.has(s.name)))
     .map((s) => s.name);
-  return fit(samples, chosen, { dropDependent: true });
+  return fit(samples, chosen, { ...options, dropDependent: true });
 }
