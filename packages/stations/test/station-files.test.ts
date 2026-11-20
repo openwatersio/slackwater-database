@@ -739,3 +739,13 @@ describe("chs_fit", () => {
     expect(merged.write.text).toContain("chs_fit:\n  tier: final");
   });
 });
+
+
+test("Maizuru's Coast Guard gauge carries its sourced western location", () => {
+  const files = readStationFiles();
+  const west = files.find((file) => file.kind === "tide" && file.country === "JP" && file.slug === "maizuru");
+  const east = files.find((file) => file.kind === "tide" && file.country === "JP" && file.slug === "maizuru-kyoto");
+  expect(west?.sources).toContain("ticon/maizuru-hd24-jpn-jodc_jcg");
+  expect(west?.context).toBe("Nishimaizuru");
+  expect(east?.sources).toContain("jma/MZ");
+});
