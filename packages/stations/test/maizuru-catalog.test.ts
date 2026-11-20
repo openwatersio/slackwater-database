@@ -9,7 +9,9 @@ test("Maizuru gauges retain separate accepted routes and western context", async
   expect(east?.quality?.accepted).toBe(true);
   expect(west?.context).toBe("Nishimaizuru");
   expect(west?.context_derived).toBe(false);
-  expect(east?.context).not.toBe(west?.context);
+  const eastLabel = east?.context ?? east?.region;
+  expect(eastLabel).toBeTruthy();
+  expect(eastLabel).not.toBe(west?.context);
   expect(
     db
       .stationRoutes("tide")
