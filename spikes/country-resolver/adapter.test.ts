@@ -8,6 +8,10 @@ import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { countryByName, countryByIso, countryRegistry } from "./adapter.ts";
 import { createCountryLookup, countryInfo } from "./lookup.ts";
+import evidence from "./noaa-virgin-islands.json" with { type: "json" };
+import { resolutionCounts } from "./report-summary.ts";
+import { groupCountryInputs, sourceCountryInput } from "./source-country.ts";
+import { winsOnAuthority } from "../../packages/stations/filtering.ts";
 import { getChartDatum, pruneDatums } from "../../packages/stations/station.ts";
 
 test("resolves normalized names and alpha-3 codes without claiming verification", () => {
@@ -44,6 +48,32 @@ test("the report runs on source records and exposes metadata differences", () =>
     assert.equal(run.status, 0, run.stdout + run.stderr);
     const report = JSON.parse(readFileSync(output, "utf8"));
     assert.ok(report.records > 0);
+    const virgin = report.cases.find((c: any) => c.input === "Virgin Islands");
+    assert.equal(virgin.records, 26);
+    assert.equal(virgin.lookupInput, "United States Virgin Islands");
+    assert.equal(virgin.actual.iso2, "VI");
+    assert.equal(virgin.jurisdictionPolicyReview, true);
+    const subordinate = JSON.parse(
+      readFileSync(
+        new URL("../../data/noaa/9751540.json", import.meta.url),
+        "utf8",
+      ),
+    );
+    assert.equal(winsOnAuthority(subordinate), true);
+    assert.equal(
+      winsOnAuthority({ ...subordinate, country: virgin.actual.country }),
+      false,
+    );
+    assert.equal(virgin.source.preferred.id, "Q11703");
+    assert.equal(virgin.sourceMappings.length, 26);
+    assert.equal(
+      new Set(virgin.sourceMappings.map((m: any) => m.stationId)).size,
+      26,
+    );
+    assert.ok(
+      virgin.sourceMappings.every((m: any) => m.issue.endsWith("/148")),
+    );
+    assert.equal(countryByName("Virgin Islands"), null);
     assert.equal(report.verifiedInputs, 0);
     assert.equal(
       report.binarySha256,
@@ -56,9 +86,11 @@ test("the report runs on source records and exposes metadata differences", () =>
         .digest("hex"),
     );
     assert.equal(report.outcomes["code-difference"], undefined);
-    assert.ok(report.tentativeResolvedInputs > 0);
+    assert.ok(report.tentativeResolvedGroups > 0);
+    assert.equal(report.resolvedGroups, report.resolvedInputs);
+    assert.equal(report.tentativeResolvedInputs, undefined);
     assert.ok(report.tentativeResolvedRecords > 0);
-    assert.equal(report.resolvedInputsWithoutContinent, 0);
+    assert.equal(report.resolvedGroupsWithoutContinent, 0);
     const china = report.cases.find((c: any) => c.input === "China");
     assert.equal(china.nameChanged, true);
     assert.equal(china.datumPolicyReview, true);
@@ -217,4 +249,97 @@ test("source and target acceptance rejects every unsupported applicability", () 
       );
     }
   }
+});
+
+test("NOAA context resolves only the researched Virgin Islands stations", () => {
+  const source = {
+    name: "US National Oceanic and Atmospheric Administration",
+    id: "9751419",
+  };
+  const mapped = (name: string, context?: { name?: string; id?: string }) =>
+    countryByName(sourceCountryInput(name, context).input);
+  assert.deepEqual(mapped("Virgin Islands", source), {
+    iso2: "VI",
+    country: "United States Virgin Islands",
+    continent: "North America",
+  });
+  assert.equal(countryByName("Virgin Islands"), null);
+  assert.equal(mapped("Virgin Islands", { ...source, id: "9999999" }), null);
+  assert.equal(
+    mapped("Virgin Islands", { ...source, name: "Other provider" }),
+    null,
+  );
+  assert.equal(mapped("Virgin Islands", { name: source.name }), null);
+  assert.deepEqual(
+    mapped("British Virgin Islands", source),
+    countryByName("British Virgin Islands"),
+  );
+});
+
+test("provider context stays separate when the same spelling has multiple meanings", () => {
+  const known = evidence.records.map((record) => ({
+    country: "Virgin Islands",
+    source: { name: evidence.sourceName, id: record.id },
+  }));
+  for (const record of known)
+    assert.equal(
+      countryByName(sourceCountryInput(record.country, record.source).input)
+        ?.iso2,
+      "VI",
+    );
+  const groups = groupCountryInputs([
+    ...known,
+    {
+      country: "Virgin Islands",
+      source: { name: "Other provider", id: "9751419" },
+    },
+  ]);
+  assert.equal(groups.length, 2);
+  const mapped = groups.find(
+    (group) => group.lookupInput === "United States Virgin Islands",
+  )!;
+  assert.equal(mapped.records, 26);
+  assert.equal(mapped.sourceMappings.length, 26);
+  const unknown = groups.find(
+    (group) => group.lookupInput === "Virgin Islands",
+  )!;
+  assert.equal(unknown.records, 1);
+  assert.deepEqual(unknown.sourceMappings, []);
+  assert.equal(countryByName(unknown.lookupInput), null);
+  const summary = resolutionCounts(
+    groups.map((group) => ({
+      ...group,
+      actual: countryByName(group.lookupInput),
+      tentative: Boolean(
+        countryRegistry.convert(group.lookupInput, {
+          from: "name",
+          to: "iso-alpha2",
+        }).target.preferred?.tentative,
+      ),
+    })),
+  );
+  assert.equal(summary.resolvedInputs, 0);
+  assert.equal(summary.resolvedGroups, 1);
+  assert.equal(summary.tentativeResolvedGroups, 1);
+  assert.equal(summary.resolvedRecords, 26);
+});
+
+test("NOAA mapping evidence has unique identities and retained source passages", () => {
+  assert.equal(
+    new Set(evidence.records.map((record) => record.id)).size,
+    evidence.records.length,
+  );
+  for (const record of evidence.records) {
+    assert.match(record.sha256, /^[a-f0-9]{64}$/);
+    assert.match(record.benchmarkSha256, /^[a-f0-9]{64}$/);
+    assert.ok(record.benchmarkPassage.includes(record.id));
+    if (record.id !== "9751373") {
+      assert.equal(record.benchmarkState, "VI");
+      assert.match(record.benchmarkPassage, /\n\s+VI\r?\n/);
+    }
+  }
+  const coral = evidence.records.find((record) => record.id === "9751373")!;
+  assert.equal(coral.benchmarkState, null);
+  assert.match(coral.benchmarkPassage, /WESTERN ST JOHN/);
+  assert.match(coral.benchmarkPassage, /Cruz Bay/);
 });

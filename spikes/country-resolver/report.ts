@@ -1,9 +1,13 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import type { Result } from "@openwaters/c5y-n8r";
+import { loadSources } from "../../packages/stations/sources.ts";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
 import { countryByName as baselineCountryByName } from "../../packages/stations/country.ts";
+
+import { resolutionCounts } from "./report-summary.ts";
+import { groupCountryInputs, type CountrySource } from "./source-country.ts";
 
 function snapshot(result: Result) {
   return {
@@ -38,6 +42,7 @@ const { countryByName, countryRegistry, countryBinarySha256 } =
 const openAndIndexMs = performance.now() - started;
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const counts = new Map<string, number>();
+const sourceRecords: { country: string; source?: CountrySource }[] = [];
 function walk(dir: string) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
@@ -54,21 +59,41 @@ function walk(dir: string) {
       )
         throw new Error(`Invalid country: ${path}`);
       counts.set(row.country, (counts.get(row.country) ?? 0) + 1);
+      sourceRecords.push({
+        country: row.country,
+        ...(row.source ? { source: row.source } : {}),
+      });
     }
   }
 }
 walk(join(root, "data"));
-const cases = [...counts]
-  .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-  .map(([input, records]) => {
+const groups = groupCountryInputs(sourceRecords);
+const jurisdictionNames = new Set(
+  [...loadSources().values()].flatMap((source) => source.jurisdiction ?? []),
+);
+const cases = groups
+  .sort((a, b) =>
+    a.input < b.input
+      ? -1
+      : a.input > b.input
+        ? 1
+        : a.lookupInput < b.lookupInput
+          ? -1
+          : a.lookupInput > b.lookupInput
+            ? 1
+            : 0,
+  )
+  .map(({ input, lookupInput, records, sourceMappings }) => {
     const old = baselineCountryByName(input);
-    const result = countryRegistry.convert(input, {
+    const result = countryRegistry.convert(lookupInput, {
       from: "name",
       to: "iso-alpha2",
     });
-    const actual = countryByName(input);
+    const actual = countryByName(lookupInput);
     return {
       input,
+      lookupInput,
+      sourceMappings,
       records,
       expected: old && {
         iso2: old.iso2,
@@ -82,6 +107,12 @@ const cases = [...counts]
       ),
       datumPolicyReview: Boolean(
         old && actual && old.country !== actual.country,
+      ),
+      jurisdictionPolicyReview: Boolean(
+        old &&
+        actual &&
+        old.country !== actual.country &&
+        jurisdictionNames.has(old.country),
       ),
       tentative: Boolean(
         result.source.preferred?.tentative ||
@@ -102,8 +133,8 @@ const cases = [...counts]
     };
   });
 const lookupStarted = performance.now();
-for (const [input, records] of counts)
-  for (let i = 0; i < records; i++) countryByName(input);
+for (const group of groups)
+  for (let i = 0; i < group.records; i++) countryByName(group.lookupInput);
 const lookupMs = performance.now() - lookupStarted;
 const report = {
   package: "@openwaters/c5y-n8r",
@@ -111,33 +142,29 @@ const report = {
   binarySha256: countryBinarySha256,
   records: [...counts.values()].reduce((a, b) => a + b, 0),
   inputs: counts.size,
+  comparisonGroups: cases.length,
+  sourceMappedRecords: cases.reduce(
+    (total, c) => total + c.sourceMappings.length,
+    0,
+  ),
   openAndIndexMs,
   lookupMs,
-  outcomes: cases.reduce<Record<string, { inputs: number; records: number }>>(
+  outcomes: cases.reduce<Record<string, { groups: number; records: number }>>(
     (out, c) => {
-      const value = (out[c.outcome] ??= { inputs: 0, records: 0 });
-      value.inputs++;
+      const value = (out[c.outcome] ??= { groups: 0, records: 0 });
+      value.groups++;
       value.records += c.records;
       return out;
     },
     {},
   ),
-  resolvedInputs: cases.filter((c) => c.actual !== null).length,
-  resolvedRecords: cases.reduce(
-    (total, c) => total + (c.actual ? c.records : 0),
-    0,
-  ),
-  resolvedInputsWithoutContinent: cases.filter(
-    (c) => c.actual && !c.actual.continent?.trim(),
+  ...resolutionCounts(cases),
+  nameDifferenceGroups: cases.filter((c) => c.nameChanged).length,
+  continentDifferenceGroups: cases.filter((c) => c.continentChanged).length,
+  datumPolicyReviewGroups: cases.filter((c) => c.datumPolicyReview).length,
+  jurisdictionPolicyReviewGroups: cases.filter(
+    (c) => c.jurisdictionPolicyReview,
   ).length,
-  tentativeResolvedInputs: cases.filter((c) => c.actual && c.tentative).length,
-  tentativeResolvedRecords: cases.reduce(
-    (total, c) => total + (c.actual && c.tentative ? c.records : 0),
-    0,
-  ),
-  nameDifferenceInputs: cases.filter((c) => c.nameChanged).length,
-  continentDifferenceInputs: cases.filter((c) => c.continentChanged).length,
-  datumPolicyReviewInputs: cases.filter((c) => c.datumPolicyReview).length,
   verifiedInputs: 0,
   limitation:
     "Compatibility baselines are not verified facts. This partial unreviewed corpus cannot replace the production dependency. Timing includes package loading and validated registry opening and measures this machine only. Tentative preferred codes remain unverified and are reported with their uncertainty.",
