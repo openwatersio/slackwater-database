@@ -73,14 +73,14 @@ The Swift job additionally regenerates the committed Swift and fails on drift:
 npm run generate -w swift && git diff --exit-code -- packages/swift/Sources
 ```
 
-CI runs Gradle on JDK 25 with a JDK 17 compilation toolchain and also runs the source consumer with Gradle on JDK 17.
-
 The Kotlin job does the same for the committed Kotlin, then builds a [separate consumer](packages/kotlin/smoke) through a composite build:
 
 ```sh
 npm run generate -w kotlin && git diff --exit-code -- packages/kotlin/src
 cd packages/kotlin && ./gradlew -p smoke run --args="$PWD/src/test/fixture.tcdb"
 ```
+
+CI runs Gradle on JDK 25; the JDK 17 toolchain compiles the code and runs the tests and consumer. CI also runs the consumer with Gradle on JDK 17.
 
 ## Releases
 
