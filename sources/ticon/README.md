@@ -58,7 +58,7 @@ For changes to observation reduction or refreshed raw observations, regenerate f
 FORCE_DATUMS=1 npm run import -w sources/ticon
 ```
 
-Legacy reductions without the current period/method notices and matching frame and coverage metadata are recomputed. Otherwise, without `FORCE_DATUMS`, the importer reuses each station's cached datums when its constituents match, and recomputes the derived metadata (`chart_datum`, pruning, disclaimers). Constituent changes also recompute the observation reduction because inferred heights depend on the model. `FORCE_DATUMS` also accepts a comma-separated list of source suffixes to recompute only those sources, for example `FORCE_DATUMS=uhslc_rq`.
+Legacy reductions without the current period/method notices and matching frame and coverage metadata are recomputed. Otherwise, without `FORCE_DATUMS`, the importer reuses each station's cached datums when its constituents match, and recomputes the derived metadata (`chart_datum`, pruning, disclaimers). When a reusable cache is missing the harmonic datum owned by its country, the importer calculates that datum in the stored vertical frame using the cached MSL. If that MSL is unavailable, it recomputes the reduction. Constituent changes also recompute the observation reduction because inferred heights depend on the model. `FORCE_DATUMS` also accepts a comma-separated list of source suffixes to recompute only those sources, for example `FORCE_DATUMS=uhslc_rq`.
 
 Refreshing raw observations alone does not invalidate an otherwise valid datum cache. Use `FORCE_DATUMS` after replacing GESLA or refreshing UHSLC data.
 

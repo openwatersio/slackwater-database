@@ -71,6 +71,12 @@ const COUNTRY_SPECIFIC_DATUMS: Record<string, string> = {
   ALLW: "KR",
 };
 
+export function countrySpecificDatum(countryCode: string): string | undefined {
+  return Object.keys(COUNTRY_SPECIFIC_DATUMS).find(
+    (datum) => COUNTRY_SPECIFIC_DATUMS[datum] === countryCode,
+  );
+}
+
 /**
  * Drop country-specific datums (LLWLT/TLT/NLLW/ALLW) from stations that don't
  * use them as their chart datum, so a UK station never carries a stray TLT.

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   checkCorrections,
   correctPosition,
+  correctCountry,
   matchMetadata,
   POSITION_CORRECTIONS,
   type Position,
@@ -210,4 +211,10 @@ describe("checkCorrections", () => {
       "alotau-069a-png-uhslc_rq: TICON now places the gauge at -10.3, 150.45",
     );
   });
+});
+
+it("assigns the Taiwan research records without changing unrelated gauges", () => {
+  expect(correctCountry("keelung-341a-chn-uhslc_rq", "China")).toBe("Taiwan");
+  expect(correctCountry("kaohsiung-340a-chn-uhslc_rq", "China")).toBe("Taiwan");
+  expect(correctCountry("dalian", "China")).toBe("China");
 });

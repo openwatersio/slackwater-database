@@ -588,6 +588,12 @@ describe("gauge deduplication", () => {
   });
 
   test("Roseau's mislabelled fast-delivery record has its UHSLC gauge key", () => {
+    expect(gaugeKey("kaohsiung-340a-chn-uhslc_rq")).toBe(
+      gaugeKey("kaohsiung-340-twn-uhslc_fd"),
+    );
+    expect(gaugeKey("keelung-341a-chn-uhslc_rq")).toBe(
+      gaugeKey("keelung-341-twn-uhslc_fd"),
+    );
     expect(gaugeKey("roseau-786-dom-uhslc_fd")).toBe("roseau-786-dma");
     expect(gaugeKey("roseau-786a-dma-uhslc_rq")).toBe("roseau-786-dma");
   });
