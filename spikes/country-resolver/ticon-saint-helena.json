@@ -1,0 +1,57 @@
+{
+  "issue": "https://github.com/openwatersio/c5y-n8r/issues/150",
+  "sourceName": "TICON-4",
+  "originalCountry": "Saint Helena",
+  "countryCode": "SHN",
+  "entity": "Q192184",
+  "islandEntity": "Q34497",
+  "dataset": "https://www.seanoe.org/data/00980/109129/data/122848.csv",
+  "datasetSha256": "cea4a8d11cea3d7a5db02d3b75662c32a1459c262c4427b0eb28bb4fca5de366",
+  "retrieved": "2026-11-19",
+  "attribution": "Hart-Davis, Dettmering and Seitz (2025), TICON-4, https://doi.org/10.17882/109129. Modified extract: country identifiers and series/date summaries only; no harmonics redistributed.",
+  "scope": "Only these three stored SHN series. The separate st_helena-sth-gbr-noc series publishes GBR and is not mapped. The island name is not a country-code alias.",
+  "sources": [
+    "https://www.wikidata.org/w/index.php?title=Q192184&oldid=2558478385",
+    "https://psmsl.org/data/high_frequency/stations/264.php",
+    "https://unstats.un.org/unsd/methodology/m49/",
+    "https://www.legislation.gov.uk/uksi/2009/1751/article/4"
+  ],
+  "records": [
+    {
+      "id": "st_helena-292-shn-uhslc_fd",
+      "countryCode": "SHN",
+      "rows": 50,
+      "startDate": "24/01/2011",
+      "endDate": "26/02/2013",
+      "license": {
+        "type": "cc-by-4.0",
+        "commercial_use": true,
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    },
+    {
+      "id": "st_helena-292a-shn-uhslc_rq",
+      "countryCode": "SHN",
+      "rows": 50,
+      "startDate": "05/06/1993",
+      "endDate": "14/12/2006",
+      "license": {
+        "type": "cc-by-4.0",
+        "commercial_use": true,
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    },
+    {
+      "id": "st_helena-292b-shn-uhslc_rq",
+      "countryCode": "SHN",
+      "rows": 50,
+      "startDate": "24/01/2011",
+      "endDate": "26/02/2013",
+      "license": {
+        "type": "cc-by-4.0",
+        "commercial_use": true,
+        "url": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  ]
+}
