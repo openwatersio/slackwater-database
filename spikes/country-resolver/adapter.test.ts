@@ -2,13 +2,14 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { countryByName, countryByIso, countryRegistry } from "./adapter.ts";
 import { createCountryLookup, countryInfo } from "./lookup.ts";
 import evidence from "./noaa-virgin-islands.json" with { type: "json" };
+import ticonEvidence from "./ticon-saint-helena.json" with { type: "json" };
 import { resolutionCounts } from "./report-summary.ts";
 import { groupCountryInputs, sourceCountryInput } from "./source-country.ts";
 import { winsOnAuthority } from "../../packages/stations/filtering.ts";
@@ -48,6 +49,17 @@ test("the report runs on source records and exposes metadata differences", () =>
     assert.equal(run.status, 0, run.stdout + run.stderr);
     const report = JSON.parse(readFileSync(output, "utf8"));
     assert.ok(report.records > 0);
+    assert.equal(report.resolvedInputs, report.inputs);
+    assert.equal(report.resolvedRecords, report.records);
+    assert.equal(report.outcomes.unresolved, undefined);
+    assert.equal(
+      report.cases.filter((c: any) => c.input === "Saint Helena").length,
+      1,
+    );
+    assert.equal(
+      report.cases.find((c: any) => c.input === "Myanmar (Burma)").actual.iso2,
+      "MM",
+    );
     const virgin = report.cases.find((c: any) => c.input === "Virgin Islands");
     assert.equal(virgin.records, 26);
     assert.equal(virgin.lookupInput, "United States Virgin Islands");
@@ -74,6 +86,15 @@ test("the report runs on source records and exposes metadata differences", () =>
       virgin.sourceMappings.every((m: any) => m.issue.endsWith("/148")),
     );
     assert.equal(countryByName("Virgin Islands"), null);
+    const saint = report.cases.find((c: any) => c.input === "Saint Helena");
+    assert.equal(saint.records, 3);
+    assert.equal(saint.lookupInput, "SHN");
+    assert.equal(saint.lookupNamespace, "iso-alpha3");
+    assert.ok(saint.actual);
+    assert.equal(saint.actual.iso2, "SH");
+    assert.equal(saint.source.preferred.id, "Q192184");
+    assert.equal(saint.sourceMappings.length, 3);
+    assert.equal(countryByName("Saint Helena"), null);
     assert.equal(report.verifiedInputs, 0);
     assert.equal(
       report.binarySha256,
@@ -342,4 +363,73 @@ test("NOAA mapping evidence has unique identities and retained source passages",
   assert.equal(coral.benchmarkState, null);
   assert.match(coral.benchmarkPassage, /WESTERN ST JOHN/);
   assert.match(coral.benchmarkPassage, /Cruz Bay/);
+});
+
+test("Saint Helena uses only the three TICON SHN series, preserving island and GBR meanings", () => {
+  const sourceName = "TICON-4";
+  const other = JSON.parse(
+    readFileSync(
+      new URL("../../data/ticon/st_helena-sth-gbr-noc.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  assert.equal(countryByName(other.country)?.iso2, "GB");
+  assert.equal(
+    sourceCountryInput(other.country, other.source).input,
+    other.country,
+  );
+  for (const id of [
+    "st_helena-292-shn-uhslc_fd",
+    "st_helena-292a-shn-uhslc_rq",
+    "st_helena-292b-shn-uhslc_rq",
+  ]) {
+    const mapped = sourceCountryInput("Saint Helena", { name: sourceName, id });
+    assert.equal(mapped.input, "SHN");
+    assert.equal(mapped.namespace, "iso-alpha3");
+    assert.equal(mapped.mapping?.entity, "Q192184");
+  }
+  for (const source of [
+    undefined,
+    { name: "Other provider", id: "st_helena-292-shn-uhslc_fd" },
+    { name: sourceName, id: "st_helena-sth-gbr-noc" },
+  ]) {
+    assert.equal(
+      sourceCountryInput("Saint Helena", source).input,
+      "Saint Helena",
+    );
+  }
+});
+
+test("the TICON context extract matches stored series, licenses and observation epochs", () => {
+  const directory = new URL("../../data/ticon/", import.meta.url);
+  const records = readdirSync(directory)
+    .filter((name) => name.endsWith(".json") && !name.endsWith(".geo.json"))
+    .map((name) => JSON.parse(readFileSync(new URL(name, directory), "utf8")))
+    .filter(
+      (record) =>
+        record.country === ticonEvidence.originalCountry &&
+        record.source.name === ticonEvidence.sourceName,
+    );
+  assert.deepEqual(
+    records.map((record) => record.source.id).sort(),
+    ticonEvidence.records.map((record) => record.id).sort(),
+  );
+  assert.equal(
+    new Set(ticonEvidence.records.map((record) => record.id)).size,
+    ticonEvidence.records.length,
+  );
+  for (const entry of ticonEvidence.records) {
+    const stored = records.find((record) => record.source.id === entry.id)!;
+    assert.deepEqual(entry.license, stored.license);
+    assert.equal(entry.rows, stored.harmonic_constituents.length);
+    assert.equal(
+      entry.startDate.split("/").reverse().join("-"),
+      stored.epoch.start,
+    );
+    assert.equal(
+      entry.endDate.split("/").reverse().join("-"),
+      stored.epoch.end,
+    );
+    assert.equal(entry.countryCode, "SHN");
+  }
 });

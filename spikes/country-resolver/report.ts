@@ -6,6 +6,7 @@ import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
 import { countryByName as baselineCountryByName } from "../../packages/stations/country.ts";
 
+import { countryInfo } from "./lookup.ts";
 import { resolutionCounts } from "./report-summary.ts";
 import { groupCountryInputs, type CountrySource } from "./source-country.ts";
 
@@ -37,8 +38,7 @@ function snapshot(result: Result) {
 }
 
 const started = performance.now();
-const { countryByName, countryRegistry, countryBinarySha256 } =
-  await import("./adapter.ts");
+const { countryRegistry, countryBinarySha256 } = await import("./adapter.ts");
 const openAndIndexMs = performance.now() - started;
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const counts = new Map<string, number>();
@@ -81,18 +81,23 @@ const cases = groups
           ? -1
           : a.lookupInput > b.lookupInput
             ? 1
-            : 0,
+            : a.lookupNamespace < b.lookupNamespace
+              ? -1
+              : a.lookupNamespace > b.lookupNamespace
+                ? 1
+                : 0,
   )
-  .map(({ input, lookupInput, records, sourceMappings }) => {
+  .map(({ input, lookupInput, lookupNamespace, records, sourceMappings }) => {
     const old = baselineCountryByName(input);
     const result = countryRegistry.convert(lookupInput, {
-      from: "name",
+      from: lookupNamespace,
       to: "iso-alpha2",
     });
-    const actual = countryByName(lookupInput);
+    const actual = countryInfo(result);
     return {
       input,
       lookupInput,
+      lookupNamespace,
       sourceMappings,
       records,
       expected: old && {
@@ -134,7 +139,13 @@ const cases = groups
   });
 const lookupStarted = performance.now();
 for (const group of groups)
-  for (let i = 0; i < group.records; i++) countryByName(group.lookupInput);
+  for (let i = 0; i < group.records; i++)
+    countryInfo(
+      countryRegistry.convert(group.lookupInput, {
+        from: group.lookupNamespace,
+        to: "iso-alpha2",
+      }),
+    );
 const lookupMs = performance.now() - lookupStarted;
 const report = {
   package: "@openwaters/c5y-n8r",
