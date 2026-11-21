@@ -1,0 +1,12 @@
+{
+  "name": "country-resolver-consumer-spike",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc -p tsconfig.json && node --test adapter.test.ts",
+    "report": "node report.ts"
+  },
+  "dependencies": {
+    "@openwaters/c5y-n8r": "git+https://github.com/openwatersio/c5y-n8r.git#ea6fe2e59e2e829242fd3640eb58b23913624cb7"
+  }
+}
