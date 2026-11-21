@@ -49,6 +49,14 @@ test("the report runs on source records and exposes metadata differences", () =>
     assert.equal(run.status, 0, run.stdout + run.stderr);
     const report = JSON.parse(readFileSync(output, "utf8"));
     assert.ok(report.records > 0);
+    assert.equal(report.identityAudit.matchedRecords, report.records);
+    for (const key of [
+      "missingCodes",
+      "invalidCodes",
+      "unresolved",
+      "changedCodes",
+    ])
+      assert.deepEqual(report.identityAudit[key], []);
     assert.equal(report.resolvedInputs, report.inputs);
     assert.equal(report.resolvedRecords, report.records);
     assert.equal(report.outcomes.unresolved, undefined);
@@ -64,7 +72,7 @@ test("the report runs on source records and exposes metadata differences", () =>
     assert.equal(virgin.records, 26);
     assert.equal(virgin.lookupInput, "United States Virgin Islands");
     assert.equal(virgin.actual.iso2, "VI");
-    assert.equal(virgin.jurisdictionPolicyReview, true);
+    assert.equal(virgin.jurisdictionPolicyReview, false);
     const subordinate = JSON.parse(
       readFileSync(
         new URL("../../data/noaa/9751540.json", import.meta.url),
@@ -74,7 +82,7 @@ test("the report runs on source records and exposes metadata differences", () =>
     assert.equal(winsOnAuthority(subordinate), true);
     assert.equal(
       winsOnAuthority({ ...subordinate, country: virgin.actual.country }),
-      false,
+      true,
     );
     assert.equal(virgin.source.preferred.id, "Q11703");
     assert.equal(virgin.sourceMappings.length, 26);
@@ -114,13 +122,13 @@ test("the report runs on source records and exposes metadata differences", () =>
     assert.equal(report.resolvedGroupsWithoutContinent, 0);
     const china = report.cases.find((c: any) => c.input === "China");
     assert.equal(china.nameChanged, true);
-    assert.equal(china.datumPolicyReview, true);
-    assert.equal(getChartDatum(china.expected.country, { TLT: 0 }), "TLT");
-    assert.equal(getChartDatum(china.actual.country, { TLT: 0 }), "LAT");
-    assert.deepEqual(pruneDatums(china.expected.country, { TLT: 0 }), {
+    assert.equal(china.datumPolicyReview, false);
+    assert.equal(getChartDatum(china.expected.iso2, { TLT: 0 }), "TLT");
+    assert.equal(getChartDatum(china.actual.iso2, { TLT: 0 }), "TLT");
+    assert.deepEqual(pruneDatums(china.expected.iso2, { TLT: 0 }), {
       TLT: 0,
     });
-    assert.deepEqual(pruneDatums(china.actual.country, { TLT: 0 }), {});
+    assert.deepEqual(pruneDatums(china.actual.iso2, { TLT: 0 }), { TLT: 0 });
     const stored = JSON.parse(
       readFileSync(
         new URL(
@@ -132,8 +140,11 @@ test("the report runs on source records and exposes metadata differences", () =>
     );
     assert.equal(stored.chart_datum, "TLT");
     assert.equal(stored.datums.TLT, 0.333);
-    const renamedDatums = pruneDatums(china.actual.country, stored.datums);
-    assert.equal(renamedDatums[stored.chart_datum], undefined);
+    const renamedDatums = pruneDatums(china.actual.iso2, stored.datums);
+    assert.equal(
+      renamedDatums[stored.chart_datum],
+      stored.datums[stored.chart_datum],
+    );
     const turkey = report.cases.find((c: any) => c.input === "Turkiye");
     for (const stage of [turkey.source, turkey.target]) {
       assert.equal(stage.evidenceStatus, "unreviewed-spike");

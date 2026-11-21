@@ -1,3 +1,4 @@
+import { countryForRecord } from "./country.ts";
 /**
  * Shared utilities for station filtering and deduplication
  */
@@ -124,6 +125,7 @@ type SourcedRecord = {
   source?: { name: string };
   type?: string;
   country?: string;
+  country_code?: string;
 };
 
 /** Whether a record's authority holds when choosing among duplicates. An
@@ -134,7 +136,9 @@ export function winsOnAuthority(record: SourcedRecord): boolean {
   if (!isAuthoritative(record)) return false;
   if (record.type !== "subordinate") return true;
   const { jurisdiction } = sourceMetadata(record.source!.name);
-  return !jurisdiction || jurisdiction.includes(record.country ?? "");
+  return (
+    !jurisdiction || jurisdiction.includes(countryForRecord(record)?.iso2 ?? "")
+  );
 }
 
 /** Prefer the authoritative record when exactly one duplicate wins on authority. */

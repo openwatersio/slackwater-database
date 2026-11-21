@@ -1,6 +1,6 @@
 import type { StationData } from "@slackwater/database";
 import { find as findTz } from "geo-tz/all";
-import { countryByNameOrCode } from "./country.ts";
+import { countryForRecord } from "./country.ts";
 import { join, dirname } from "path";
 import { mkdir, writeFile, readFile } from "fs/promises";
 import sortObject from "sort-object-keys";
@@ -12,6 +12,7 @@ export const DATA_DIR = join(__dirname, "..", "..", "data");
 const sortOrder: (keyof StationData)[] = [
   "name",
   "region",
+  "country_code",
   "country",
   "continent",
   "latitude",
@@ -124,8 +125,7 @@ export type PartialStationData = Omit<StationData, OptionalProperties> &
   Partial<Pick<StationData, OptionalProperties>>;
 
 export function normalize(station: PartialStationData): StationData {
-  const { iso2, continent, country } =
-    countryByNameOrCode(station.country) || {};
+  const { iso2, continent, country } = countryForRecord(station) || {};
 
   if (!iso2 || !continent || !country) {
     throw new Error(
@@ -150,6 +150,7 @@ export function normalize(station: PartialStationData): StationData {
       timezone,
       continent,
       country,
+      country_code: iso2,
       ...(datums ? { datums } : {}),
       chart_datum:
         station.chart_datum ??

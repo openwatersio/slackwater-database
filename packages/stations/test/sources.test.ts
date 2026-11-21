@@ -61,3 +61,16 @@ test("constituent definitions and node corrections are checked where they're dec
     )().get("X"),
   ).toMatchObject({ node_corrections: "schureman" });
 });
+
+test.each(["United States", "ZZ", "us"])(
+  "jurisdiction rejects a non-ISO identity: %s",
+  (country) => {
+    const dir = mkdtempSync(join(tmpdir(), "sources-"));
+    mkdirSync(join(dir, "x"));
+    writeFileSync(
+      join(dir, "x", "metadata.yaml"),
+      `name: X\nauthoritative: true\ncredit: null\njurisdiction:\n  - ${country}\n`,
+    );
+    expect(() => loadSources(dir)).toThrow(/ISO alpha-2/);
+  },
+);

@@ -10,7 +10,7 @@ import {
   OBSERVED_KEYS,
   storedDatumNotice,
 } from "../../sources/ticon/datums.ts";
-import { countryByNameOrCode } from "./country.ts";
+import { countryForRecord } from "./country.ts";
 import { DATA_DIR, pruneDatums } from "./station.ts";
 
 export type HarmonicDatumSource = "ticon" | "dmi" | "linz" | "jhod" | "jma";
@@ -23,8 +23,11 @@ export function mergeHarmonicDatums(
 ): Datums {
   if (!SOURCES.includes(source))
     throw new Error(`Unsupported source: ${source}`);
-  const countryCode =
-    station.country_code || countryByNameOrCode(station.country)?.iso2 || "";
+  const countryCode = countryForRecord(station)?.iso2;
+  if (!countryCode)
+    throw new Error(
+      `${source}/${station.source.id}: no ISO country code for ${station.country}`,
+    );
   const requireDatum = (key: string) => {
     const value = station.datums?.[key];
     if (value === undefined || !Number.isFinite(value))
@@ -120,6 +123,7 @@ export async function regenerateDirectory(
     source: HarmonicDatumSource;
     path: string;
     station: StationData;
+    addCountryCode: boolean;
   }[] = [];
   for (const file of files) {
     const station = JSON.parse(
@@ -128,10 +132,27 @@ export async function regenerateDirectory(
     if (station.type !== "reference" || !station.harmonic_constituents?.length)
       throw new Error(`${file.path}: expected a harmonic reference station`);
     mergeHarmonicDatums(file.source, station, {});
-    records.push({ ...file, station });
+    const countryCode = countryForRecord(station)!.iso2;
+    records.push({
+      ...file,
+      station:
+        station.country_code !== undefined
+          ? station
+          : (Object.fromEntries(
+              Object.entries(station).flatMap(([key, value]) =>
+                key === "country"
+                  ? [
+                      ["country_code", countryCode],
+                      [key, value],
+                    ]
+                  : [[key, value]],
+              ),
+            ) as StationData),
+      addCountryCode: station.country_code === undefined,
+    });
   }
   let changed = 0;
-  for (const { source, path, station } of records) {
+  for (const { source, path, station, addCountryCode } of records) {
     const { datums: computed } = computeDatums(
       station.harmonic_constituents,
       {},
@@ -145,7 +166,8 @@ export async function regenerateDirectory(
         : station.disclaimers;
     if (
       isDeepStrictEqual(datums, station.datums) &&
-      disclaimers === station.disclaimers
+      disclaimers === station.disclaimers &&
+      !addCountryCode
     )
       continue;
     await writeFile(
