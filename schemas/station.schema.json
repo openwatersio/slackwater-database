@@ -8,6 +8,7 @@
     "name",
     "continent",
     "country",
+    "country_code",
     "type",
     "latitude",
     "longitude",
@@ -86,6 +87,11 @@
       "type": "string",
       "description": "Full country name (e.g., `United States`)",
       "minLength": 1
+    },
+    "country_code": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$",
+      "description": "Stable ISO 3166-1 alpha-2 country identity, independent of display name"
     },
     "region": {
       "type": "string",

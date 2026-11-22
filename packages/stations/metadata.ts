@@ -1,5 +1,5 @@
 import countryLookup from "country-code-lookup";
-import { countryByName } from "./country.ts";
+import { countryByName, countryForRecord } from "./country.ts";
 import { find as findTimezone } from "geo-tz/all";
 import { parse } from "yaml";
 import type { ChsFitData, StationInput } from "@slackwater/database";
@@ -347,38 +347,34 @@ export function resolveMetadata(
   const nearest = nearby[0] ?? geocoder.nearest(position[0], position[1], 100);
   const explicitLocation = registry?.location ?? correction?.location;
   const zoneCountry = maritimeZones?.country(position[0], position[1]);
-  const countryName =
-    explicitLocation?.country ??
+  const explicitCountry = explicitLocation?.country
+    ? countryByName(explicitLocation.country)
+    : null;
+  if (explicitLocation?.country && !explicitCountry)
+    throw new Error(
+      `${station.id}: no ISO country code for ${explicitLocation.country}`,
+    );
+  const country =
+    explicitCountry ??
     (explicitLocation?.countryCode
-      ? countryLookup.byIso(explicitLocation.countryCode)?.country
-      : undefined) ??
-    (zoneCountry ? countryLookup.byIso(zoneCountry)?.country : undefined) ??
-    station.country ??
-    (station.country_code
-      ? countryLookup.byIso(station.country_code)?.country
-      : undefined) ??
-    nearest?.country;
-  if (!nonEmpty(countryName)) throw new Error(`${station.id}: no country`);
-  const country = countryByName(countryName);
+      ? countryForRecord({ country_code: explicitLocation.countryCode })
+      : null) ??
+    (zoneCountry ? countryLookup.byIso(zoneCountry) : null) ??
+    (station.country || station.country_code !== undefined
+      ? countryForRecord(station)
+      : nearest
+        ? countryLookup.byIso(nearest.place.countryCode)
+        : null);
   if (!country?.iso2)
-    throw new Error(`${station.id}: no ISO country code for ${countryName}`);
+    throw new Error(
+      `${station.id}: no ISO country code for ${station.country ?? "unknown country"}`,
+    );
   if (
     explicitLocation?.countryCode &&
     explicitLocation.countryCode !== country.iso2
   )
     throw new Error(
       `${station.id}: country does not match ${explicitLocation.countryCode}`,
-    );
-  if (
-    station.country_code &&
-    !registry &&
-    !correction?.location?.country &&
-    !correction?.location?.countryCode &&
-    zoneCountry !== country.iso2 &&
-    station.country_code !== country.iso2
-  )
-    throw new Error(
-      `${station.id}: country does not match ${station.country_code}`,
     );
 
   // Across a strait the ten nearest places can all be foreign. When the

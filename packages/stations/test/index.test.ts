@@ -1,3 +1,4 @@
+import { countryForRecord } from "../country.ts";
 import { describe, test, expect } from "vitest";
 import { readFile } from "fs/promises";
 import { join } from "path";
@@ -450,11 +451,11 @@ describe("gauge deduplication", () => {
     });
   });
 
-  test("NOAA's jurisdiction names countries its records use", () => {
+  test("NOAA's jurisdiction codes match countries its records use", () => {
     const countries = new Set(
       allTideStations
         .filter((s) => s.id.startsWith("noaa/"))
-        .map((s) => s.country),
+        .map((s) => countryForRecord(s)?.iso2),
     );
     const { jurisdiction } = sourceMetadata(
       "US National Oceanic and Atmospheric Administration",

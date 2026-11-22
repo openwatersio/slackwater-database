@@ -194,6 +194,7 @@ async function main() {
       const candidate: PartialStationData = {
         name: gesla["SITE NAME"],
         country,
+        country_code: countryCode,
         latitude: lat,
         longitude: lon,
         type: "reference",

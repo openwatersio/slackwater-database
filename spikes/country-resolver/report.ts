@@ -8,7 +8,11 @@ import { countryByName as baselineCountryByName } from "../../packages/stations/
 
 import { countryInfo } from "./lookup.ts";
 import { resolutionCounts } from "./report-summary.ts";
-import { groupCountryInputs, type CountrySource } from "./source-country.ts";
+import {
+  groupCountryInputs,
+  sourceCountryInput,
+  type CountrySource,
+} from "./source-country.ts";
 
 function snapshot(result: Result) {
   return {
@@ -38,11 +42,23 @@ function snapshot(result: Result) {
 }
 
 const started = performance.now();
-const { countryRegistry, countryBinarySha256 } = await import("./adapter.ts");
+const { countryRegistry, countryBinarySha256, countryByIso } =
+  await import("./adapter.ts");
 const openAndIndexMs = performance.now() - started;
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const counts = new Map<string, number>();
-const sourceRecords: { country: string; source?: CountrySource }[] = [];
+const sourceRecords: {
+  country: string;
+  source?: CountrySource;
+}[] = [];
+const identityAudit = {
+  records: 0,
+  matchedRecords: 0,
+  missingCodes: [] as string[],
+  invalidCodes: [] as string[],
+  unresolved: [] as string[],
+  changedCodes: [] as { file: string; stored: string; actual: string }[],
+};
 function walk(dir: string) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
@@ -58,6 +74,31 @@ function walk(dir: string) {
         row.country.length > 1024
       )
         throw new Error(`Invalid country: ${path}`);
+      identityAudit.records++;
+      if (row.country_code === undefined) identityAudit.missingCodes.push(path);
+      else if (
+        typeof row.country_code !== "string" ||
+        !/^[A-Z]{2}$/.test(row.country_code)
+      )
+        identityAudit.invalidCodes.push(path);
+      else {
+        const input = sourceCountryInput(row.country, row.source);
+        const actual = countryInfo(
+          countryRegistry.convert(input.input, {
+            from: input.namespace,
+            to: "iso-alpha2",
+          }),
+        );
+        const coded = countryByIso(row.country_code);
+        if (!actual || !coded) identityAudit.unresolved.push(path);
+        else if (actual.iso2 !== row.country_code)
+          identityAudit.changedCodes.push({
+            file: path,
+            stored: row.country_code,
+            actual: actual.iso2,
+          });
+        else identityAudit.matchedRecords++;
+      }
       counts.set(row.country, (counts.get(row.country) ?? 0) + 1);
       sourceRecords.push({
         country: row.country,
@@ -110,14 +151,12 @@ const cases = groups
       continentChanged: Boolean(
         old && actual && old.continent !== actual.continent,
       ),
-      datumPolicyReview: Boolean(
-        old && actual && old.country !== actual.country,
-      ),
+      datumPolicyReview: Boolean(old && actual && old.iso2 !== actual.iso2),
       jurisdictionPolicyReview: Boolean(
         old &&
         actual &&
-        old.country !== actual.country &&
-        jurisdictionNames.has(old.country),
+        old.iso2 !== actual.iso2 &&
+        jurisdictionNames.has(old.iso2),
       ),
       tentative: Boolean(
         result.source.preferred?.tentative ||
@@ -154,6 +193,7 @@ const report = {
   records: [...counts.values()].reduce((a, b) => a + b, 0),
   inputs: counts.size,
   comparisonGroups: cases.length,
+  identityAudit,
   sourceMappedRecords: cases.reduce(
     (total, c) => total + c.sourceMappings.length,
     0,
