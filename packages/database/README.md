@@ -222,6 +222,7 @@ The module reads a single [FlatBuffers](https://flatbuffers.dev) file built from
 - All code in this package is licensed under the [MIT License](./LICENSE).
 - The `license` field of each station specifies the license for that station's data, as a `type`, a `url`, and a `commercial_use` flag you can filter on.
 - Unless otherwise noted, all other data is licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license. Some stations are CC BY-NC 4.0 and are marked `commercial_use: false`.
+- Because the package mixes these licenses, its npm `license` field is `SEE LICENSE IN NOTICE`. [NOTICE](./NOTICE) lists each license and the credits the bundled GeoNames, OpenStreetMap and Marine Regions data require.
 
 ## Attribution
 

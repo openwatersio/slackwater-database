@@ -1,6 +1,16 @@
 @slackwater/database
-Copyright (c) Sailing Naturali
-Licensed under the MIT License (see LICENSE).
+
+This package holds code and data under different licenses.
+
+The code is licensed under the MIT License. See LICENSE for the license and
+its copyright holders.
+
+The station data is not covered by the MIT License. Each station carries the
+license of its source in its `license` field: public domain, CC BY 4.0,
+Japan's Government Standard Terms of Use 2.0, or CC BY-NC 4.0. Stations under
+CC BY-NC 4.0 are marked `commercial_use: false` and must not be used
+commercially. Each station's `attribution` field holds the credit its license
+requires; display it wherever the station's data is shown.
 
 This repository uses GeoNames cities500 data under CC BY 4.0 to derive station
 location fields. This product includes data created by GeoNames

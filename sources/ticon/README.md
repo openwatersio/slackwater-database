@@ -6,7 +6,7 @@
 
 - **Source:** [TICON-4 @ SEANOE](https://www.seanoe.org/data/00980/109129/)
 - **Manual:** [TICON Documentation](https://www.seanoe.org/data/00980/109129/data/122852.pdf)
-- **License:** CC BY 4.0 ([Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/)), which permits redistribution, including commercially, with attribution
+- **License:** TICON-4 is published under CC BY 4.0 ([Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/)). Records from the GESLA sources that restrict commercial use (`cmems`, `cv` and `uz`, listed in `NON_COMMERCIAL_SOURCES` in [packages/stations/filtering.ts](../../packages/stations/filtering.ts)) are imported as CC BY-NC 4.0 with `commercial_use: false`; the rest are CC BY 4.0 and can be redistributed commercially with attribution
 - **Citation:** Hart-Davis, Michael; Dettmering, Denise; Seitz, Florian (2025). _TICON-4: TIdal CONstants based on GESLA-4 sea-level records._ SEANOE. https://doi.org/10.17882/109129
 - **Coverage:** Global tide stations with harmonic constituent analysis from GESLA-4 observations
 
