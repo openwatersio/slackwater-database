@@ -8,12 +8,15 @@ computed:
       position: [26.173056, -81.784444]
       coastline: unverifiable
       quality:
-        accepted: true
-        score: 76
+        accepted: false
+        reason: timing
+        score: 0
         factors:
           epoch: 1
           recency: 0.98
           source: 0.566
           quality: 1
           amplitude: 1
-          coverage: 0.023
+          coverage: 0.053
+        issues:
+          - "Suspected timing error: phases differ from nearby NOAA gauges (issue #444)"

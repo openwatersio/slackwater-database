@@ -8,8 +8,9 @@ computed:
       position: [29.4543, -89.72993]
       coastline: unverifiable
       quality:
-        accepted: true
-        score: 78
+        accepted: false
+        reason: timing
+        score: 0
         factors:
           epoch: 1
           recency: 0.99
@@ -20,3 +21,4 @@ computed:
         issues:
           - MLWS (0.128) > MLW (0.049)
           - MHWS (0.158) < MHW (0.272)
+          - "Suspected timing error: phases differ from nearby NOAA gauges (issue #444)"

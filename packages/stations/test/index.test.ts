@@ -464,6 +464,25 @@ describe("gauge deduplication", () => {
       expect(countries.has(country), country).toBe(true);
   });
 
+  test("withholds reported TICON timing outliers while retaining other gauges", () => {
+    for (const id of [
+      "ticon/biscaynebay_s20f_t-s20f-usa-sfwmd",
+      "ticon/miami_s25bm_t_navd88-s25bm-usa-sfwmd",
+      "ticon/crms4529-crms4529-usa-crms",
+      "ticon/coyote_creek_tam_valley-coy-usa-cm",
+      "ticon/laguna_bahia_mosquito_no1_vieques_pr-50231500-usa-usgs",
+    ]) {
+      expect(
+        quality.find((r) => r.id === id),
+        id,
+      ).toMatchObject({
+        accepted: false,
+        reason: "timing",
+      });
+    }
+    expect(quality.find((r) => r.id === "noaa/8723423")?.accepted).toBe(true);
+  });
+
   test("rejects Harris County's records for their clock error", () => {
     const hct = quality.filter((r) => r.id.endsWith("-hct"));
     expect(hct).toHaveLength(17);
@@ -708,8 +727,8 @@ describe("seasonal dominance", () => {
   });
 
   test("labels independently of the rejection verdict", () => {
-    expect(labelled.filter((q) => q.accepted)).toHaveLength(507);
-    expect(labelled.filter((q) => !q.accepted)).toHaveLength(495);
+    expect(labelled.filter((q) => q.accepted)).toHaveLength(505);
+    expect(labelled.filter((q) => !q.accepted)).toHaveLength(497);
   });
 
   test("is a different question from the contamination gate", () => {
