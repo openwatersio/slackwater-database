@@ -1,4 +1,4 @@
-import countryLookup from "country-code-lookup";
+import { countryByIso } from "./country.ts";
 
 export interface CleanNameResult {
   name: string;
@@ -230,7 +230,7 @@ export function cleanName(
 ): CleanNameResult {
   const original = raw;
   if (/^[A-Z]{2,3}$/.test(country))
-    country = countryLookup.byIso(country)?.country ?? country;
+    country = countryByIso(country)?.country ?? country;
   let name = raw;
   let region: string | undefined;
 

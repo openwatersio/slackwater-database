@@ -232,5 +232,10 @@ jobs:
           npm install --package-lock-only --ignore-scripts
           git diff --exit-code -- package-lock.json
 
-      - name: Check every package resolves from the npm registry
-        run: npx -y lockfile-lint@5.0.1 --path package-lock.json --allowed-hosts npm --validate-https --validate-integrity --validate-package-names
+      - name: Test the immutable country dependency exception
+        run: node --test .github/scripts/country-dependency-url.test.mjs
+
+      - name: Check registry packages and the pinned country dependency
+        run: |
+          country_url="$(node .github/scripts/country-dependency-url.mjs)"
+          npx -y lockfile-lint@5.0.1 --path package-lock.json --allowed-hosts npm --allowed-urls "$country_url" --allowed-schemes https: git+https: git+ssh: --validate-integrity --validate-package-names

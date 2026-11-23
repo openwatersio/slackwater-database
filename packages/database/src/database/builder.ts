@@ -24,7 +24,7 @@ import {
   TideOffsets,
 } from "../generated/fbs/slackwater.ts";
 import * as flatbuffers from "flatbuffers";
-import countryLookup from "country-code-lookup";
+import { countryMatchesCode } from "../country.ts";
 import { attributionWithCredit } from "../attribution.ts";
 import { FORMAT_VERSION } from "./format.ts";
 import {
@@ -673,8 +673,7 @@ function requireIdentity(station: StationInput): void {
       `Station ${station.id} has invalid country_code ${JSON.stringify(station.country_code)}`,
     );
 
-  const country = countryLookup.byIso(station.country_code!);
-  if (!country || country.country !== station.country)
+  if (!countryMatchesCode(station.country, station.country_code!))
     throw new Error(
       `Station ${station.id} country ${station.country} does not match ${station.country_code}`,
     );

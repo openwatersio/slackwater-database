@@ -1,4 +1,4 @@
-import countryLookup from "country-code-lookup";
+import { countryByIso } from "./country.ts";
 import { countryByName, countryForRecord } from "./country.ts";
 import { find as findTimezone } from "geo-tz/all";
 import { parse } from "yaml";
@@ -279,7 +279,7 @@ function validateLocation(
   ) {
     if (
       !/^[A-Z]{2}$/.test(location.countryCode) ||
-      !countryLookup.byIso(location.countryCode)
+      !countryByIso(location.countryCode)
     )
       problems.push(
         `${id}: location.countryCode must be a recognized ISO 3166-1 alpha-2 code`,
@@ -359,11 +359,11 @@ export function resolveMetadata(
     (explicitLocation?.countryCode
       ? countryForRecord({ country_code: explicitLocation.countryCode })
       : null) ??
-    (zoneCountry ? countryLookup.byIso(zoneCountry) : null) ??
+    (zoneCountry ? countryByIso(zoneCountry) : null) ??
     (station.country || station.country_code !== undefined
       ? countryForRecord(station)
       : nearest
-        ? countryLookup.byIso(nearest.place.countryCode)
+        ? countryByIso(nearest.place.countryCode)
         : null);
   if (!country?.iso2)
     throw new Error(

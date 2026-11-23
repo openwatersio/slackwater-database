@@ -16,7 +16,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import countryLookup from "country-code-lookup";
+import { countryByIso } from "./country.ts";
 import { simplify } from "@slackwater/datums";
 import { readStationFiles } from "./station-files.ts";
 
@@ -123,7 +123,7 @@ async function main() {
     const { geoname, pol_type, iso_ter1, iso_ter2, iso_sov1 } = zone.properties;
     // Alaska and Hawaii carry only their sovereign's code.
     const iso3 = iso_ter1 ?? iso_sov1;
-    const country = iso3 ? countryLookup.byIso(iso3)?.iso2 : undefined;
+    const country = iso3 ? countryByIso(iso3)?.iso2 : undefined;
     if (pol_type !== "200NM" || iso_ter2 || !country) {
       console.log(`Skipping ${geoname} (${pol_type})`);
       continue;

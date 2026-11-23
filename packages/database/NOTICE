@@ -21,3 +21,10 @@ metadata/maritime-zones.geojson, an extract of the Marine Regions Maritime
 Boundaries Geodatabase (Exclusive Economic Zones) by the Flanders Marine
 Institute (marineregions.org), licensed under CC BY 4.0:
 https://creativecommons.org/licenses/by/4.0/
+
+Country names and continent metadata derive from the pinned c5y-n8r binary,
+using Wikidata structured data under CC0 1.0:
+https://www.wikidata.org/wiki/Wikidata:Licensing
+The distribution includes countries.crdb, country-evidence.json and
+country-release.json under dist/generated/, with the upstream data terms
+and MIT code license in COUNTRY_DATA_LICENSE.md and C5Y_N8R_LICENSE.

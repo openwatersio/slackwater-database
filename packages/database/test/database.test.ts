@@ -398,6 +398,22 @@ describe("buildDatabase", () => {
     ).toThrow(/test\/nameless has no name/);
   });
 
+  test("accepts old display labels with their explicit country identity", () => {
+    const { region_code: _region, ...base } = inputs[0]!;
+    for (const [country, country_code] of [
+      ["China", "CN"],
+      ["Virgin Islands", "VI"],
+      ["Saint Helena", "SH"],
+    ]) {
+      expect(() =>
+        build([{ ...base, country: country!, country_code: country_code! }]),
+      ).not.toThrow();
+    }
+    expect(() =>
+      build([{ ...base, country: "Virgin Islands", country_code: "VG" }]),
+    ).toThrow(/does not match/);
+  });
+
   test("rejects missing, unknown, and mismatched country codes by station id", () => {
     const missing = { ...inputs[0]!, id: "test/missing" };
     delete missing.country_code;
