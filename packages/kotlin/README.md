@@ -69,7 +69,7 @@ Opening checks the file identifier and format version, and nothing else. Bytes w
 
 Most stations are CC BY, so showing them carries an obligation to the original source, not only to this project. `station.attribution` is that notice, assembled in the database file itself, so this library keeps no table of sources and neither does your app.
 
-**Display `station.attribution`.** That is the whole of the rule. The [Swift reader's README](../swift/README.md#attribution) shows a complete notice and explains what it carries. To make a decision in code rather than show a string, read `station.license` for `type`, `url`, and `commercialUse`.
+**Display `station.attribution`.** That covers the station's source. The geocoded location fields and `context` also draw on GeoNames, OpenStreetMap and Marine Regions; credit them once wherever the data is shown, such as an app's credits screen, with the lines in [NOTICE](../database/NOTICE). The [Swift reader's README](../swift/README.md#attribution) shows a complete notice and explains what it carries. To make a decision in code rather than show a string, read `station.license` for `type`, `url`, and `commercialUse`.
 
 ## Use from source
 

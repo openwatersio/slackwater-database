@@ -5,12 +5,21 @@ This package holds code and data under different licenses.
 The code is licensed under the MIT License. See LICENSE for the license and
 its copyright holders.
 
-The station data is not covered by the MIT License. Each station carries the
-license of its source in its `license` field: public domain, CC BY 4.0,
-Japan's Government Standard Terms of Use 2.0, or CC BY-NC 4.0. Stations under
-CC BY-NC 4.0 are marked `commercial_use: false` and must not be used
-commercially. Each station's `attribution` field holds the credit its license
-requires; display it wherever the station's data is shown.
+The station data is licensed per station, not by LICENSE as a whole. Each
+station carries its license in its `license` field: public domain, CC BY 4.0,
+Japan's Government Standard Terms of Use 2.0 or CC BY-NC 4.0 from its source,
+or MIT, the license this project gives its own registry records and the
+Canadian Hydrographic Service station identities. Stations under CC BY-NC 4.0 are
+marked `commercial_use: false`. The readers return them like any other station,
+so a commercial use has to filter them out. Each station's `attribution` field
+holds the credit its source requires; display it wherever the station's data is
+shown. The release's .tcd file has no such fields: each station names its
+license in its `restriction` field, "CC BY-NC 4.0" for the non-commercial
+ones, and carries any credit it needs in its notes.
+
+The location fields and `context` are derived from GeoNames, the OpenStreetMap
+water bodies and Marine Regions, credited below. Pass those credits on wherever
+the data is shown, for example in an app's credits screen.
 
 This repository uses GeoNames cities500 data under CC BY 4.0 to derive station
 location fields. This product includes data created by GeoNames
