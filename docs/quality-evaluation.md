@@ -44,7 +44,7 @@ These checks are pass or fail. A record that fails any of them is rejected and g
 | Check                  | Rejects a record when                                        | Basis                    |
 | ---------------------- | ------------------------------------------------------------ | ------------------------ |
 | Position               | it sits at the (0°, 0°) placeholder                          | Engineering choice       |
-| Clock error            | its source's times are off by a measured amount              | Measured on this data    |
+| Clock error            | its source or record has a known or suspected timing error   | Gauge comparisons        |
 | Datum consistency      | its datums contradict their definitions                      | NOAA and IHO definitions |
 | Tidal range            | its mean range is under 2 cm                                 | Engineering choice       |
 | Superseded relay       | it relays a gauge whose operator publishes its own constants | Editorial choice         |
@@ -63,13 +63,15 @@ These checks are pass or fail. A record that fails any of them is rejected and g
 
 **What it catches.** A source whose record times are wrong. A harmonic analysis of records stamped in the wrong time zone, or in local time that shifts with daylight saving, fits the right tide at the wrong time, and its predictions put high and low water early or late by that amount.
 
-**Rejected** when a TICON record comes from a source listed in `CLOCK_ERROR_SOURCES`, with the measurement that put it there:
+**Rejected** when a TICON record comes from a source listed in `CLOCK_ERROR_SOURCES`, or appears in the precautionary record list below. The known source is:
 
 - Harris County Flood Control District (`hct`). Against the nearest NOAA or USGS gauge within 5 km, its 9 comparable records run a median 44 minutes late on M2 (23 to 71 minutes) and about 30 minutes late on K1 and O1. USGS (591 pairs) and California's Department of Water Resources (97 pairs) run within a minute by the same comparison. The other 8 Harris County records have no NOAA or USGS gauge within 5 km to compare with and are rejected with their source. Every Harris County record has a NOAA harmonic station within 15 km with about the same range.
 
-**Basis.** A comparison against independent gauges on this data. A source is listed by hand, from evidence such as the flags described under [Disagreeing duplicates](#disagreeing-duplicates).
+**Precautionary record holds.** `SUSPECT_TIMING_RECORDS` withholds the TICON records identified in [#444](https://github.com/openwatersio/slackwater-database/issues/444), plus three nearby SFWMD records with closely matching principal phases. The issue compares five constituents against nearby NOAA gauges and finds common shifts close to local standard time; some fits are weaker and hydraulic lag may also contribute. These are suspected timing errors, not proof of a clock fault. Remove a hold when observations or a validated replacement establish that predictions are reliable.
 
-**Limitations.** A clock error in a single record, rather than a whole source, is caught only when it is merged with a record that has the right time, and the flag does not say which of the two is wrong.
+**Basis.** Source and record holds are listed by hand from comparisons against nearby gauges, including the flags described under [Disagreeing duplicates](#disagreeing-duplicates).
+
+**Limitations.** This is not a general clock-error detector. An unlisted single-record error can pass, and differences between gauges can reflect real tide propagation as well as clock errors.
 
 ### Datum consistency
 
@@ -342,6 +344,7 @@ npm run report:quality -w packages/stations
 | `MAX_OFFSET_TIME_DELTA`               | 10 min                                                             | Duplicate subordinates                              |
 | `MAX_PROVENANCE_KM`                   | 10 km                                                              | Superseded relay, merge report                      |
 | `CLOCK_ERROR_SOURCES`                 | `hct`                                                              | Clock error                                         |
+| `SUSPECT_TIMING_RECORDS`              | TICON record IDs under precautionary hold                          | Clock error                                         |
 | `jurisdiction` (in `metadata.yaml`)   | NOAA: US and its territories                                       | Choosing the record to keep                         |
 | `SAME_GAUGE_M2_DIFFERENCE`            | 0.15                                                               | Disagreeing duplicates                              |
 

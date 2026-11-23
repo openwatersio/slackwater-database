@@ -1,4 +1,5 @@
 import { countryForRecord } from "../country.ts";
+import { SUSPECT_TIMING_RECORDS } from "../evaluate-quality.ts";
 import { describe, test, expect } from "vitest";
 import { readFile } from "fs/promises";
 import { join } from "path";
@@ -468,6 +469,8 @@ describe("gauge deduplication", () => {
     for (const id of [
       "ticon/biscaynebay_s20f_t-s20f-usa-sfwmd",
       "ticon/miami_s25bm_t_navd88-s25bm-usa-sfwmd",
+      "ticon/miamiriver_mrms4-mrms4-usa-sfwmd",
+      "ticon/miami_north_s28_t-s28_t-usa-sfwmd",
       "ticon/crms4529-crms4529-usa-crms",
       "ticon/coyote_creek_tam_valley-coy-usa-cm",
       "ticon/laguna_bahia_mosquito_no1_vieques_pr-50231500-usa-usgs",
@@ -481,6 +484,17 @@ describe("gauge deduplication", () => {
       });
     }
     expect(quality.find((r) => r.id === "noaa/8723423")?.accepted).toBe(true);
+  });
+
+  test("every timing hold matches a rejected record", () => {
+    const byRecordId = new Map(quality.map((r) => [r.id, r]));
+    expect(SUSPECT_TIMING_RECORDS.size).toBe(38);
+    for (const id of SUSPECT_TIMING_RECORDS) {
+      expect(byRecordId.get(id), id).toMatchObject({
+        accepted: false,
+        reason: "timing",
+      });
+    }
   });
 
   test("rejects Harris County's records for their clock error", () => {

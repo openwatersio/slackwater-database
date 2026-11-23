@@ -17,6 +17,6 @@ computed:
           source: 0.566
           quality: 1
           amplitude: 1
-          coverage: 0.159
+          coverage: 0.162
         issues:
-          - "Suspected timing error: phases differ from nearby NOAA gauges (issue #444)"
+          - "Suspected timing error: phases consistent with nearby timing outliers (issue #444)"

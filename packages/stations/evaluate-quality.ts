@@ -254,9 +254,9 @@ function checkCoordinates(station: Station): string | null {
   return null;
 }
 
-// Phase comparisons in #444 flag these records; hold them pending checks
-// against observations. A phase difference alone does not prove a clock error.
-const SUSPECT_TIMING_RECORDS = new Set([
+// Issue #444 flags 35 records; S25BM, MRMS4 and S28 match held gauges.
+// Hold them pending observation checks: phase differences do not prove a clock error.
+export const SUSPECT_TIMING_RECORDS = new Set([
   "ticon/biscaynebay_s20f_t-s20f-usa-sfwmd",
   "ticon/biscaynebay_s20g_t-s20g-usa-sfwmd",
   "ticon/biscaynebay_s21a_t-s21a-usa-sfwmd",
@@ -266,8 +266,10 @@ const SUSPECT_TIMING_RECORDS = new Set([
   "ticon/miami_s25b_t-s25b-usa-sfwmd",
   "ticon/miami_s25bm_t_navd88-s25bm-usa-sfwmd",
   "ticon/miamiriver_mrms1-mrms1-usa-sfwmd",
+  "ticon/miamiriver_mrms4-mrms4-usa-sfwmd",
   "ticon/miamiriver_s26_t-s26_t-usa-sfwmd",
   "ticon/miami_north_s27_t-s27_t-usa-sfwmd",
+  "ticon/miami_north_s28_t-s28_t-usa-sfwmd",
   "ticon/mdts-mdts-usa-sfwmd",
   "ticon/s197_t-s197-usa-sfwmd",
   "ticon/s36_t-s36_t-usa-sfwmd",
@@ -295,10 +297,10 @@ const SUSPECT_TIMING_RECORDS = new Set([
   "ticon/laguna_bahia_mosquito_no1_vieques_pr-50231500-usa-usgs",
 ]);
 
-/** Reject a record from a source whose times are off by a measured amount. */
+/** Reject records with known or suspected timing errors. */
 function checkTiming(station: Station): string | null {
   if (SUSPECT_TIMING_RECORDS.has(station.id))
-    return "Suspected timing error: phases differ from nearby NOAA gauges (issue #444)";
+    return "Suspected timing error: phases consistent with nearby timing outliers (issue #444)";
   if (!station.id.startsWith("ticon/")) return null;
   const suffix = getSourceSuffix(station.source.id);
   const error = CLOCK_ERROR_SOURCES[suffix];
