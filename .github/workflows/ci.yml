@@ -113,10 +113,10 @@ jobs:
         with:
           node-version: "24"
 
-      # The Swift tests need only the fixture generator, which imports the
-      # builder source; skip the root package's prepare build.
+      # The fixture builder imports the Git-pinned country reader, which
+      # needs its prepare lifecycle before Swift fixtures can be generated.
       - name: Install dependencies
-        run: npm install --ignore-scripts
+        run: npm ci
 
       # The generated Swift is committed (SwiftPM consumers can't run flatc),
       # so fail when it drifts from the schema.
@@ -161,10 +161,10 @@ jobs:
             packages/kotlin/**/*.gradle.kts
             packages/kotlin/gradle/wrapper/gradle-wrapper.properties
 
-      # The Kotlin tests need only the fixture generator, which imports the
-      # builder source; skip the root package's prepare build.
+      # The fixture builder imports the Git-pinned country reader, which
+      # needs its prepare lifecycle before Kotlin fixtures can be generated.
       - name: Install dependencies
-        run: npm install --ignore-scripts
+        run: npm ci
 
       # The generated Kotlin is committed (a composite build can't run flatc),
       # so fail when it drifts from the schema.
