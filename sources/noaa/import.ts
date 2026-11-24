@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import createFetch from "make-fetch-happen";
+import { fetchNoaa } from "./fetch.ts";
 import {
   backfillLatHat,
   normalize,
@@ -102,40 +103,9 @@ async function main() {
   );
 }
 
-const DETAILS_ATTEMPTS = 5;
-// Unpaced runs get a 403 from NOAA a few thousand requests in.
-// The noaa-current import paces the same API at 300ms and completes.
-const PACE_MS = 300;
-
 async function fetchDetails(id: string): Promise<any> {
   const url = `https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/${id}.json?expand=details,datums,harcon,disclaimers,notices&units=metric`;
-  let res: any;
-  for (let attempt = 1; attempt <= DETAILS_ATTEMPTS; attempt++) {
-    // NOAA occasionally answers 200 with an error body and no stations array,
-    // and a retry has to bypass the cache or it reads that same body back.
-    // It also throttles with a 403 whose body may not be JSON.
-    const r = await fetch(url, attempt > 1 ? { cache: "reload" } : {});
-    const text = await r.text();
-    // Only a request that reached NOAA counts against its limit; `hit` and
-    // `stale` are answered from the local cache.
-    const cacheStatus = r.headers.get("x-local-cache-status");
-    if (cacheStatus !== "hit" && cacheStatus !== "stale") {
-      await new Promise((resolve) => setTimeout(resolve, PACE_MS));
-    }
-    try {
-      res = JSON.parse(text);
-    } catch {
-      res = { status: r.status, body: text };
-    }
-    if (r.ok && res.stations?.[0]) return res.stations[0];
-    // Back off 2s, 4s, 8s, 16s so a throttle has time to lift.
-    if (attempt < DETAILS_ATTEMPTS) {
-      await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt));
-    }
-  }
-  throw new Error(
-    `No data for station ${id} after ${DETAILS_ATTEMPTS} attempts: ${JSON.stringify(res).slice(0, 200)}`,
-  );
+  return fetchNoaa(url, (json) => json.stations?.[0], { fetch });
 }
 
 async function buildStation(meta: any): Promise<StationData> {

@@ -16,7 +16,8 @@ const store = mkdtempSync(join(tmpdir(), "stillwell-"));
 const cache = mkdtempSync(join(tmpdir(), "stillwell-cache-"));
 process.env["STILLWELL_URL"] = "https://stillwell.test";
 process.env["STILLWELL_CACHE"] = cache;
-const { verifyFit } = await import("../verify-fit.ts");
+const { shortYears, vectorAverage, verifyFit } =
+  await import("../verify-fit.ts");
 
 beforeAll(async () => {
   const db = await (await DuckDBInstance.create()).connect();
@@ -192,6 +193,54 @@ describe("verifyFit", () => {
     ).rejects.toThrow("in the fit's window");
   });
 
+  test("averages one-year fits, takes long-period lines from their own years, and holds none of those years out", async () => {
+    const yearly = await verifyFit({
+      series: "src/g",
+      start: new Date("2019-01-01"),
+      end: new Date("2021-01-01"),
+      names: ["M2", "S2", "K1", "O1"],
+      exact: true,
+      yearly: true,
+      longPeriod: [{ names: ["O1"], years: [2019, 2020, 2021, 2022] }],
+    });
+    expect(yearly.fit.years).toEqual([2019, 2020]);
+    expect(yearly.fit.shortYears).toEqual([]);
+    // 2022 has every other hour, under the two thirds a year needs.
+    expect(yearly.fit.longPeriod).toEqual([
+      { names: ["O1"], years: [2019, 2020, 2021, 2022], shortYears: [2022] },
+    ]);
+    const m2 = yearly.fit.constituents.find((c) => c.name === "M2")!;
+    // The series has no nodal modulation, so the fit's f leaves it within 1%.
+    expect(m2.amplitude).toBeCloseTo(1, 1);
+    // 2021 and 2022 are in the long-period fit, so no year is left to hold out.
+    expect(yearly.heldOut).toBeNull();
+    await expect(
+      verifyFit({
+        series: "src/g",
+        start: new Date("2019-01-01"),
+        end: new Date("2021-01-01"),
+        names: ["M2", "O1"],
+        exact: true,
+        yearly: true,
+        longPeriod: [{ names: ["O1"], years: [2019, 2020, 2021] }],
+        heldOut: 2021,
+      }),
+    ).rejects.toThrow("the held-out year 2021 is in the long-period fit");
+  });
+
+  test("lists a joint fit's short years, which it reads in part", async () => {
+    const joint = await verifyFit({
+      series: "src/g",
+      start: new Date("2021-01-01"),
+      end: new Date("2023-01-01"),
+      names: ["M2", "S2", "K1", "O1"],
+      exact: true,
+    });
+    expect(joint.fit.years).toBeUndefined();
+    expect(joint.fit.shortYears).toEqual([2022]);
+    expect(joint.fit.hours).toBe(8760 + 4380);
+  });
+
   test("holds no agency curve, extreme or table", () => {
     const json = JSON.stringify(report);
     for (const c of AGENCY) {
@@ -215,5 +264,42 @@ describe("verifyFit", () => {
         }
     };
     walk(report, "report");
+  });
+});
+
+describe("vectorAverage", () => {
+  test("averages each constituent as a vector over the years that fit it", () => {
+    const c = (name: string, amplitude: number, phase: number) => ({
+      name,
+      amplitude,
+      phase,
+      amplitudeInterval: 0.02,
+      phaseInterval: 2,
+    });
+    const [m2, k1] = vectorAverage(
+      [
+        { constituents: [c("M2", 1, 350), c("K1", 0.5, 90)] },
+        { constituents: [c("M2", 1, 10)] },
+      ],
+      ["M2", "K1"],
+    );
+    expect(m2!.amplitude).toBeCloseTo(Math.cos((10 * Math.PI) / 180), 12);
+    expect(m2!.phase).toBeCloseTo(0, 9);
+    // A mean of two independent years: the root sum of squares over two.
+    expect(m2!.amplitudeInterval).toBeCloseTo(Math.SQRT2 * 0.01, 12);
+    expect(k1).toMatchObject({ amplitude: 0.5, phase: 90, phaseInterval: 2 });
+  });
+});
+
+describe("shortYears", () => {
+  test("counts each hour once, however often it was read", () => {
+    const hours = (year: number, n: number) =>
+      Array.from({ length: n }, (_, i) => ({
+        t: Date.UTC(year, 0, 1) + i * 3_600_000,
+        level: 0,
+      }));
+    const half = hours(2020, 4400);
+    expect(shortYears([...half, ...half], [2020])).toEqual([2020]);
+    expect(shortYears(hours(2021, 6000), [2021, 2022])).toEqual([2022]);
   });
 });

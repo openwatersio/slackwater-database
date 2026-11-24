@@ -18,6 +18,8 @@ permissions:
 jobs:
   noaa:
     runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.pr.outputs.pull-request-branch }}
 
     steps:
       - name: Checkout repository
@@ -74,6 +76,7 @@ jobs:
           fi
 
       - name: Create Pull Request
+        id: pr
         if: steps.changes.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
@@ -81,3 +84,70 @@ jobs:
           title: "Update NOAA Stations"
           body-path: /tmp/noaa-summary.md
           branch: update-noaa-stations-${{ github.run_number }}
+          # The calibration job marks it ready once the PR carries a report for
+          # its constants. A push with GITHUB_TOKEN starts no checks on the PR,
+          # so the draft is what keeps it from merging without one.
+          draft: true
+
+  calibration:
+    # Its own job, so a calibration that can't be refreshed fails here without
+    # holding back the station data the import's PR carries.
+    needs: noaa
+    if: needs.noaa.outputs.branch
+    runs-on: ubuntu-latest
+    # Six 10-minute waits on Stillwell, plus fitting and NOAA's API.
+    timeout-minutes: 120
+    env:
+      BRANCH: ${{ needs.noaa.outputs.branch }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+    steps:
+      - name: Checkout the import's branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.noaa.outputs.branch }}
+
+      - name: Setup mise (flatc)
+        uses: jdx/mise-action@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Refresh the calibration
+        # Fits the calibration gauges again from Stillwell, with NOAA's analysis
+        # years read from its API, so the PR carries a report computed from the
+        # constants it imports. A gauge that can't be fitted, or a NOAA comment
+        # the refresh can't read, fails the job.
+        run: npm run refresh:calibration -w packages/harmonic-analysis
+
+      - name: Push the report
+        run: |
+          if [[ -n $(git status --porcelain docs/calibration/) ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add docs/calibration/
+            git commit -m "chore: refresh the calibration"
+            git push
+          fi
+
+      - name: Test the report
+        # A push with GITHUB_TOKEN starts no checks on the PR, so the tests
+        # that read the report run here, before the PR is marked ready.
+        run: npm test -w packages/harmonic-analysis
+
+      - name: Mark the PR ready
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr ready "$BRANCH"
+
+      - name: Say why the PR stays a draft
+        if: failure() || cancelled()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "$BRANCH" --body "The calibration job failed, so this PR stays a draft: $RUN_URL. Fix the cause, run \`npm run refresh:calibration -w packages/harmonic-analysis\` and \`npm test -w packages/harmonic-analysis\` on this branch, and push the report before marking it ready."

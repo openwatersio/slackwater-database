@@ -298,5 +298,10 @@ describe("nodal corrections", () => {
     });
     expect(others["schureman"]!.rms).toBeLessThan(1e-9);
     expect(others["iho"]!.rms).toBeGreaterThan(1e-4);
+    // The fitted constants too, when the fit used that set.
+    expect(scoreHeldOut(observed, tide, {}, "schureman").fit.rms).toBeLessThan(
+      1e-9,
+    );
+    expect(scoreHeldOut(observed, tide, {}).fit.rms).toBeGreaterThan(1e-4);
   });
 });

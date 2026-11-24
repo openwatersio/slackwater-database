@@ -6,11 +6,15 @@ import {
   codeDigest,
   constantsDigest,
   gauges,
+  installedEngine,
+  methodOf,
   type Gauge,
+  type NoaaAnalysis,
   KARTVERKET,
   kartverket,
   record,
   ROOT,
+  reportRounding,
 } from "./calibration-inputs.ts";
 import {
   agencyConstants,
@@ -29,9 +33,15 @@ import {
 const OUT = join(ROOT, "docs", "calibration");
 
 const MARKER = "<!-- calibration results -->";
-const template = readFileSync(join(OUT, "README.md"), "utf8");
-if (!template.includes(MARKER))
-  throw new Error(`docs/calibration/README.md has no ${MARKER} line`);
+// Read now to fail early, and again before writing, so an edit made while the
+// refresh runs is kept.
+const readTemplate = () => {
+  const text = readFileSync(join(OUT, "README.md"), "utf8");
+  if (!text.includes(MARKER))
+    throw new Error(`docs/calibration/README.md has no ${MARKER} line`);
+  return text;
+};
+readTemplate();
 
 const DAY_MS = 86_400_000;
 
@@ -48,27 +58,41 @@ const isoDate = (d: Date) => d.toISOString().slice(0, 10);
 const longPeriod = (name: string) => (catalog[name]?.speed ?? 0) < 5;
 
 interface Result {
-  gauge: Gauge;
+  gauge: Gauge & { analysis?: NoaaAnalysis };
+  /** Constituents left out of the comparison, with the reason. */
+  notCompared?: { names: string[]; reason: string }[];
   /** A digest of the agency constants fitted against. */
   constants?: string;
   report?: VerificationReport;
   error?: string;
 }
 
-const results: Result[] = [];
-for (const gauge of gauges) {
+/** Constituents a gauge's comparison leaves out, with the reason. */
+function notComparedIn(
+  gauge: Result["gauge"],
+  report: VerificationReport,
+): { names: string[]; reason: string }[] {
+  const out = gauge.unstated ? [gauge.unstated] : [];
+  // Without a year the agency averaged, nothing but the long-period lines
+  // could be compared, so the gauge fails rather than drop out unseen. A
+  // joint fit reads the hours a short year has, as the agency's did, and the
+  // report lists the year.
+  if (report.fit.years && report.fit.shortYears.length)
+    throw new Error(
+      `Stillwell has under two thirds of the hours in ${report.fit.shortYears.join(", ")}, which the agency's average includes`,
+    );
+  for (const g of report.fit.longPeriod ?? [])
+    if (g.shortYears.length)
+      out.push({
+        names: g.names,
+        reason: `Stillwell has under two thirds of the hours in ${g.shortYears.join(", ")}, which the agency's long-period analysis includes`,
+      });
+  return out;
+}
+
+async function calibrate(gauge: Result["gauge"]): Promise<Result> {
   const [dir, id] = gauge.agency.split("/") as [string, string];
   const agency = record(dir, id);
-  if (
-    gauge.digest &&
-    constantsDigest(agency.harmonic_constituents) !== gauge.digest
-  ) {
-    results.push({
-      gauge,
-      error: `data/${gauge.agency}.json has changed since its analysis years were read; read NOAA's harcon comments again`,
-    });
-    continue;
-  }
   const { constants, rounding, nodeCorrections } = agencyConstants(dir, agency);
   try {
     const report = await verifyFit({
@@ -77,29 +101,57 @@ for (const gauge of gauges) {
       end: gauge.end,
       names: constants.map((c) => c.name),
       exact: true,
+      ...gauge.method,
       agency: {
         label: gauge.agency,
         constants,
         rounding,
         nodeCorrections,
+        ...(gauge.method.gain && { gain: gauge.method.gain }),
         epoch: {
           start: isoDate(gauge.start),
           end: isoDate(new Date(+gauge.end - DAY_MS)),
         },
       },
     });
-    results.push({
-      gauge,
-      constants: constantsDigest(agency.harmonic_constituents),
-      report,
-    });
+    // Left out of the comparison: what the agency doesn't say how it
+    // determined, and what Stillwell lacks a year of that the agency's
+    // average includes.
+    const notCompared = notComparedIn(gauge, report);
+    report.agency!.constants = report.agency!.constants.filter(
+      (d) => !notCompared.some((n) => n.names.includes(d.name)),
+    );
     console.error(
       `${gauge.series}: ${summarize(report).outside}/${summarize(report).compared} outside`,
     );
+    return {
+      gauge,
+      constants: constantsDigest(agency.harmonic_constituents),
+      notCompared,
+      report,
+    };
   } catch (err) {
-    results.push({ gauge, error: (err as Error).message });
     console.error(`${gauge.series}: ${(err as Error).message}`);
+    return { gauge, error: (err as Error).message };
   }
+}
+
+const results: Result[] = [];
+for (const gauge of await gauges()) results.push(await calibrate(gauge));
+// Stillwell marks a station while it rewrites its year files and asks to read
+// again later, so those gauges are fitted again after the rest, every ten
+// minutes for an hour. Any other failure stops the refresh.
+const WRITING = "Stillwell is writing its year files";
+for (let attempt = 1; attempt <= 6; attempt++) {
+  const waiting = results.flatMap((r, i) =>
+    r.error?.includes(WRITING) ? [i] : [],
+  );
+  if (!waiting.length) break;
+  console.error(
+    `${waiting.length} gauges are being written; trying again in 10 minutes`,
+  );
+  await new Promise((resolve) => setTimeout(resolve, 600_000));
+  for (const i of waiting) results[i] = await calibrate(results[i]!.gauge);
 }
 
 const failed = results.filter((r) => r.error);
@@ -209,6 +261,7 @@ const frequent = [...byName]
       `| ${name} | ${e.outside} of ${e.compared} | ${fixed(median(e.ratios), 2)} |`,
   );
 // Both files are written as Prettier would, so a refresh passes `npm run lint`.
+const template = readTemplate();
 const readme = await format(
   template.slice(0, template.indexOf(MARKER) + MARKER.length) +
     "\n\n" +
@@ -225,25 +278,22 @@ const readme = await format(
     "\n",
   { parser: "markdown" },
 );
-// Six significant digits keep the file reviewable and every score's precision.
-const round = (_: string, v: unknown) =>
-  typeof v === "number" ? Number(v.toPrecision(6)) : v;
 const json = await format(
   JSON.stringify(
     {
       // The fitter's version, so a stale report can be told from a fresh one.
-      engine: JSON.parse(
-        readFileSync(
-          join(ROOT, "node_modules", "@slackwater", "engine", "package.json"),
-          "utf8",
-        ),
-      ).version,
+      engine: installedEngine(),
       // What else it was computed from, which npm test checks.
       code: codeDigest(),
-      gauges: results.map(({ gauge, constants, report }) => ({
+      gauges: results.map(({ gauge, constants, notCompared, report }) => ({
         series: gauge.series,
         agency: gauge.agency,
         constants,
+        // How the gauge was fitted, which npm test checks for Kartverket's.
+        method: methodOf(gauge),
+        ...(notCompared?.length && { notCompared }),
+        // NOAA's comment, and the method read from it.
+        ...(gauge.analysis && { analysis: gauge.analysis }),
         period: {
           start: isoDate(gauge.start),
           end: isoDate(new Date(+gauge.end - DAY_MS)),
@@ -251,7 +301,7 @@ const json = await format(
         report,
       })),
     },
-    round,
+    reportRounding,
   ),
   { parser: "json" },
 );

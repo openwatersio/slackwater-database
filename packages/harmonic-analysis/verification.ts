@@ -398,6 +398,8 @@ export function scoreHeldOut(
       nodeCorrections?: NodeCorrections | undefined;
     }
   >,
+  /** The nodal corrections to predict the fitted constants with; IHO's by default. */
+  fittedCorrections?: NodeCorrections,
 ): {
   minRange: number;
   fit: HeldOutScore;
@@ -425,7 +427,7 @@ export function scoreHeldOut(
       } satisfies HeldOutScore,
     };
   };
-  const ours = score(fitted);
+  const ours = score(fitted, fittedCorrections);
   return {
     minRange,
     fit: ours.score,
