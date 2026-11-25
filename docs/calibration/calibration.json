@@ -38617,7 +38617,7 @@
             {
               "name": "MP1",
               "amplitude": 0.0655892,
-              "phase": 157.26,
+              "phase": 67.2603,
               "amplitudeInterval": 0.00184642,
               "phaseInterval": 1.59944,
               "snr": 4847.5
@@ -38688,11 +38688,11 @@
             },
             {
               "name": "MLN2S2",
-              "amplitude": 0.0433816,
-              "phase": 19.8077,
-              "amplitudeInterval": 0.00221441,
+              "amplitude": 0.0390077,
+              "phase": 201.664,
+              "amplitudeInterval": 0.00200456,
               "phaseInterval": 2.92172,
-              "snr": 1474.37
+              "snr": 1454.71
             },
             {
               "name": "2ML2S2",
@@ -38721,7 +38721,7 @@
             {
               "name": "MKL2S2",
               "amplitude": 0.00323495,
-              "phase": 285.819,
+              "phase": 105.819,
               "amplitudeInterval": 0.00262633,
               "phaseInterval": 23.6076,
               "snr": 5.82837
@@ -38809,7 +38809,7 @@
             {
               "name": "ML4",
               "amplitude": 0.0284406,
-              "phase": 252.628,
+              "phase": 72.6283,
               "amplitudeInterval": 0.00220306,
               "phaseInterval": 4.43168,
               "snr": 640.234
@@ -38857,18 +38857,18 @@
             {
               "name": "MSK5",
               "amplitude": 0.0292529,
-              "phase": 54.6263,
+              "phase": 324.626,
               "amplitudeInterval": 0.00177382,
               "phaseInterval": 3.46874,
               "snr": 1044.79
             },
             {
               "name": "3KM5",
-              "amplitude": 0.00940378,
-              "phase": 126.252,
-              "amplitudeInterval": 0.00214913,
+              "amplitude": 0.00980311,
+              "phase": 305.94,
+              "amplitudeInterval": 0.00224137,
               "phaseInterval": 13.3016,
-              "snr": 73.5515
+              "snr": 73.4877
             },
             {
               "name": "2MP5",
@@ -38928,11 +38928,11 @@
             },
             {
               "name": "2NMLS6",
-              "amplitude": 0.0242628,
-              "phase": 117.971,
-              "amplitudeInterval": 0.00144674,
+              "amplitude": 0.0245056,
+              "phase": 297.788,
+              "amplitudeInterval": 0.00145274,
               "phaseInterval": 3.42511,
-              "snr": 1080.48
+              "snr": 1093.12
             },
             {
               "name": "2NM6",
@@ -38968,19 +38968,19 @@
             },
             {
               "name": "2MLNS6",
-              "amplitude": 0.0316757,
-              "phase": 145.471,
-              "amplitudeInterval": 0.00145708,
+              "amplitude": 0.0311589,
+              "phase": 325.207,
+              "amplitudeInterval": 0.00146312,
               "phaseInterval": 2.63814,
-              "snr": 1815.5
+              "snr": 1742.26
             },
             {
               "name": "3MLS6",
-              "amplitude": 0.0312301,
-              "phase": 355.971,
-              "amplitudeInterval": 0.00150093,
+              "amplitude": 0.0299901,
+              "phase": 176.252,
+              "amplitudeInterval": 0.00146291,
               "phaseInterval": 2.76653,
-              "snr": 1663.17
+              "snr": 1614.47
             },
             {
               "name": "2MK6",
@@ -39072,16 +39072,16 @@
             },
             {
               "name": "4MLS8",
-              "amplitude": 0.0144618,
-              "phase": 308.396,
-              "amplitudeInterval": 0.00124054,
+              "amplitude": 0.0139645,
+              "phase": 128.487,
+              "amplitudeInterval": 0.00119159,
               "phaseInterval": 4.96193,
-              "snr": 522.075
+              "snr": 527.609
             },
             {
               "name": "3ML8",
               "amplitude": 0.00768295,
-              "phase": 170.37,
+              "phase": 350.37,
               "amplitudeInterval": 0.00122983,
               "phaseInterval": 10.5816,
               "snr": 149.927
@@ -39113,7 +39113,7 @@
             {
               "name": "RP1",
               "amplitude": 0.0082671,
-              "phase": 142.007,
+              "phase": 322.007,
               "amplitudeInterval": 0.00190035,
               "phaseInterval": 14.4807,
               "snr": 72.7029
@@ -39156,21 +39156,21 @@
           "year": 2025,
           "minRange": 0.533767,
           "fit": {
-            "rms": 0.179154,
+            "rms": 0.179711,
             "hours": 8406,
             "bands": {
-              "D1": 0.0698156,
-              "D2": 0.120082,
-              "D4": 0.0348909,
-              "D6": 0.0267677
+              "D1": 0.0698168,
+              "D2": 0.120818,
+              "D4": 0.0349059,
+              "D6": 0.0268833
             },
             "turns": {
               "matched": 1408,
               "unmatched": 0,
-              "timeMean": -4.68361,
-              "timeRms": 8.4328,
-              "heightMean": 0.0599856,
-              "heightRms": 0.246453
+              "timeMean": -4.39747,
+              "timeRms": 8.15423,
+              "heightMean": 0.0604931,
+              "heightRms": 0.247066
             }
           },
           "others": {
@@ -39191,29 +39191,29 @@
                 "heightMean": 0.0806194,
                 "heightRms": 0.305993
               },
-              "se": 0.00154552,
+              "se": 0.001551,
               "verdict": "better",
               "seen": true
             },
             "noaa/9455920": {
-              "rms": 0.21612,
+              "rms": 0.175666,
               "hours": 8406,
               "bands": {
-                "D1": 0.102268,
-                "D2": 0.134243,
-                "D4": 0.0514579,
-                "D6": 0.0489494
+                "D1": 0.0696282,
+                "D2": 0.121125,
+                "D4": 0.0348818,
+                "D6": 0.0267946
               },
               "turns": {
                 "matched": 1408,
                 "unmatched": 0,
-                "timeMean": -5.27483,
-                "timeRms": 10.4042,
-                "heightMean": 0.0662741,
-                "heightRms": 0.278026
+                "timeMean": -3.33881,
+                "timeRms": 7.62013,
+                "heightMean": 0.046423,
+                "heightRms": 0.242416
               },
-              "se": 0.000886569,
-              "verdict": "better",
+              "se": 0.000145322,
+              "verdict": "worse",
               "seen": false
             }
           },
@@ -39489,10 +39489,10 @@
             {
               "name": "MP1",
               "amplitude": -0.000410762,
-              "phase": 90.0603,
+              "phase": 0.0603171,
               "amplitudeInterval": 0.00191292,
               "phaseInterval": 1.60022,
-              "ratio": 56.2798
+              "ratio": 0.214731
             },
             {
               "name": "CHI1",
@@ -39560,11 +39560,11 @@
             },
             {
               "name": "MLN2S2",
-              "amplitude": 0.0043816,
-              "phase": 178.308,
-              "amplitudeInterval": 0.00227016,
+              "amplitude": 0.00000771881,
+              "phase": 0.16408,
+              "amplitudeInterval": 0.00206597,
               "phaseInterval": 2.92215,
-              "ratio": 61.0194
+              "ratio": 0.0561506
             },
             {
               "name": "2ML2S2",
@@ -39593,10 +39593,10 @@
             {
               "name": "MKL2S2",
               "amplitude": 0.000234946,
-              "phase": 177.319,
+              "phase": -2.68054,
               "amplitudeInterval": 0.0026735,
               "phaseInterval": 23.6077,
-              "ratio": 7.51109
+              "ratio": 0.113545
             },
             {
               "name": "M2KS2",
@@ -39681,10 +39681,10 @@
             {
               "name": "ML4",
               "amplitude": 0.000440594,
-              "phase": -179.972,
+              "phase": 0.0282885,
               "amplitudeInterval": 0.00225908,
               "phaseInterval": 4.43196,
-              "ratio": 40.6077
+              "ratio": 0.195032
             },
             {
               "name": "N4",
@@ -39729,18 +39729,18 @@
             {
               "name": "MSK5",
               "amplitude": 0.000252879,
-              "phase": 90.0263,
+              "phase": 0.0262627,
               "amplitudeInterval": 0.00184294,
               "phaseInterval": 3.4691,
-              "ratio": 25.9509
+              "ratio": 0.137215
             },
             {
               "name": "3KM5",
-              "amplitude": -0.000596225,
-              "phase": -179.248,
-              "amplitudeInterval": 0.00220653,
+              "amplitude": -0.000196891,
+              "phase": 0.440028,
+              "amplitudeInterval": 0.00229646,
               "phaseInterval": 13.3017,
-              "ratio": 13.4756
+              "ratio": 0.0857368
             },
             {
               "name": "2MP5",
@@ -39800,11 +39800,11 @@
             },
             {
               "name": "2NMLS6",
-              "amplitude": 0.000262798,
-              "phase": -179.729,
-              "amplitudeInterval": 0.0015307,
+              "amplitude": 0.000505626,
+              "phase": 0.0884024,
+              "amplitudeInterval": 0.00153638,
               "phaseInterval": 3.42548,
-              "ratio": 52.4682
+              "ratio": 0.329102
             },
             {
               "name": "2NM6",
@@ -39840,19 +39840,19 @@
             },
             {
               "name": "2MLNS6",
-              "amplitude": 0.000675659,
-              "phase": -179.629,
-              "amplitudeInterval": 0.00154048,
+              "amplitude": 0.000158863,
+              "phase": 0.107258,
+              "amplitudeInterval": 0.0015462,
               "phaseInterval": 2.63861,
-              "ratio": 68.0771
+              "ratio": 0.102744
             },
             {
               "name": "3MLS6",
-              "amplitude": 0.00123008,
-              "phase": 179.871,
-              "amplitudeInterval": 0.00158202,
+              "amplitude": -0.00000990705,
+              "phase": 0.151882,
+              "amplitudeInterval": 0.001546,
               "phaseInterval": 2.76698,
-              "ratio": 65.0062
+              "ratio": 0.0548907
             },
             {
               "name": "2MK6",
@@ -39944,19 +39944,19 @@
             },
             {
               "name": "4MLS8",
-              "amplitude": 0.00046175,
-              "phase": 179.996,
-              "amplitudeInterval": 0.00133751,
+              "amplitude": -0.0000354538,
+              "phase": 0.08687,
+              "amplitudeInterval": 0.00129224,
               "phaseInterval": 4.96218,
-              "ratio": 36.2737
+              "ratio": 0.0274359
             },
             {
               "name": "3ML8",
               "amplitude": -0.000317049,
-              "phase": 179.77,
+              "phase": -0.229636,
               "amplitudeInterval": 0.00132758,
               "phaseInterval": 10.5817,
-              "ratio": 16.9888
+              "ratio": 0.238817
             },
             {
               "name": "3MK8",
@@ -39985,10 +39985,10 @@
             {
               "name": "RP1",
               "amplitude": 0.000267104,
-              "phase": 179.907,
+              "phase": -0.0933696,
               "amplitudeInterval": 0.00196503,
               "phaseInterval": 14.4808,
-              "ratio": 12.4238
+              "ratio": 0.135929
             },
             {
               "name": "KP1",
@@ -40023,7 +40023,7 @@
               "ratio": 0.0216782
             }
           ],
-          "curve": { "n": 8760, "rms": 0.127904, "max": 0.399322 }
+          "curve": { "n": 8760, "rms": 0.0423822, "max": 0.176997 }
         }
       }
     },

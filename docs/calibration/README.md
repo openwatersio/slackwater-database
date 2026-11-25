@@ -41,8 +41,8 @@ Gauges fitted: 44 of 44.
 | Source      | Compared | Without an interval | Outside our 95% interval | Long-period | Outside and over 1 mm apart | Median ratio outside |
 | ----------- | -------: | ------------------: | -----------------------: | ----------: | --------------------------: | -------------------: |
 | Kartverket  |     1320 |                   0 |                11 (0.8%) |           0 |                           0 |                 1.13 |
-| NOAA CO-OPS |      698 |                   0 |                29 (4.2%) |           0 |                           6 |                 1.30 |
-| All         |     2018 |                   0 |                40 (2.0%) |           0 |                           6 |                 1.16 |
+| NOAA CO-OPS |      698 |                   0 |                17 (2.4%) |           0 |                           4 |                 1.07 |
+| All         |     2018 |                   0 |                28 (1.4%) |           0 |                           4 |                 1.12 |
 
 ### Kartverket
 
@@ -94,7 +94,7 @@ Gauges fitted: 44 of 44.
 | coops/9410170 | 2017-01-01 to 2021-12-31 |       32 |                 0 (0) | T2 0.9        |          2025 |         23.4 |            23.5 | tie           | better (seen), better (seen), better         |            1.5 |
 | coops/9435380 | 2007-01-01 to 2012-12-31 |       34 |                 2 (0) | M2 1.2        |          2025 |         35.8 |            36.0 | better        | better (seen), better (seen), better         |            1.6 |
 | coops/9449880 | 2011-01-01 to 2016-12-31 |       37 |                 0 (0) | MS4 1.0       |          2025 |         57.9 |            57.6 | worse         | better (seen)                                |            2.9 |
-| coops/9455920 | 2012-01-01 to 2016-12-31 |      100 |                13 (0) | 2MLNS6 68.1   |          2025 |        179.2 |           216.1 | better        | better (seen)                                |          127.9 |
+| coops/9455920 | 2012-01-01 to 2016-12-31 |      100 |                 1 (0) | SIGMA1 3.0    |          2025 |        179.7 |           175.7 | worse         | better (seen)                                |           42.4 |
 | coops/9462620 | 2020-01-01 to 2024-12-31 |       34 |                 1 (0) | R2 1.0        |          2025 |         39.0 |            39.1 | tie           | better (seen), better, better, better (seen) |            1.0 |
 | coops/9751639 | 2007-01-01 to 2012-12-31 |       27 |                 0 (0) | MU2 1.0       |          2025 |         17.5 |            17.4 | tie           | tie, tie (seen)                              |            2.9 |
 
@@ -106,19 +106,19 @@ Gauges fitted: 44 of 44.
 | 2MK3        | 2 of 18 |         1.07 |
 | R2          | 2 of 42 |         1.04 |
 | M2          | 2 of 44 |         1.14 |
-| 2MLNS6      |  1 of 1 |        68.08 |
-| 2NMLS6      |  1 of 1 |        52.47 |
-| 3KM5        |  1 of 1 |        13.48 |
-| 3ML8        |  1 of 1 |        16.99 |
-| 3MLS6       |  1 of 1 |        65.01 |
-| 4MLS8       |  1 of 1 |        36.27 |
-| MKL2S2      |  1 of 1 |         7.51 |
-| ML4         |  1 of 1 |        40.61 |
-| MLN2S2      |  1 of 1 |        61.02 |
-| MP1         |  1 of 1 |        56.28 |
-| MSK5        |  1 of 1 |        25.95 |
-| RP1         |  1 of 1 |        12.42 |
 | SIGMA1      |  1 of 1 |         3.05 |
 | S6          | 1 of 12 |         1.16 |
 | gamma2      | 1 of 19 |         1.37 |
 | OQ2_KV      | 1 of 19 |         1.42 |
+| S1          | 1 of 20 |         1.56 |
+| MKS2        | 1 of 21 |         1.08 |
+| alpha2      | 1 of 24 |         1.16 |
+| mu2         | 1 of 24 |         1.13 |
+| nu2         | 1 of 24 |         1.12 |
+| S4          | 1 of 40 |         1.05 |
+| OO1         | 1 of 41 |         1.04 |
+| M6          | 1 of 42 |         1.06 |
+| 2N2         | 1 of 43 |         1.26 |
+| K1          | 1 of 43 |         1.30 |
+| L2          | 1 of 43 |         1.34 |
+| M4          | 1 of 43 |         1.02 |
