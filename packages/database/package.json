@@ -1,6 +1,6 @@
 {
   "name": "@slackwater/database",
-  "version": "1.0.2-beta.0",
+  "version": "1.0.3-beta.0",
   "description": "A public database of tide and current stations",
   "keywords": [
     "tides",
@@ -57,14 +57,22 @@
     "kdbush": "^4.0.2",
     "minisearch": "^7.2.0"
   },
+  "peerDependencies": {
+    "@slackwater/engine": ">=1.0.0-beta.14 || >=1.0.1-0"
+  },
+  "peerDependenciesMeta": {
+    "@slackwater/engine": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@slackwater/stations": "*",
     "@types/geokdbush": "^2.1.0",
-    "@types/node": "^26.6.5",
-    "tsdown": "^0.23.3",
+    "@types/node": "^26.6.6",
+    "tsdown": "^0.23.7",
     "typescript": "^7.0.2",
-    "unplugin-macros": "^0.23.3",
+    "unplugin-macros": "^0.23.4",
     "unrun": "^0.3.1",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.1"
   }
 }

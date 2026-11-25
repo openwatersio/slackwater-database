@@ -1,6 +1,7 @@
 {
   "name": "Keelung",
-  "country": "China",
+  "country_code": "TW",
+  "country": "Taiwan",
   "continent": "Asia",
   "latitude": 25.155,
   "longitude": 121.752,
@@ -25,10 +26,9 @@
     "MLW": -0.128,
     "MLLW": -0.411,
     "HAT": 0.758,
-    "LAT": -0.91,
+    "LAT": -0.908,
     "MHWS": 0.362,
-    "MLWS": -0.2,
-    "TLT": -0.851
+    "MLWS": -0.2
   },
   "datums_source": "observed",
   "datum_frame": "gauge",
@@ -37,7 +37,7 @@
     "observed_hours": 8751,
     "inferred_hours": 9
   },
-  "chart_datum": "TLT",
+  "chart_datum": "LAT",
   "type": "reference",
   "harmonic_constituents": [
     {

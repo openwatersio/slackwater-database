@@ -1,3 +1,4 @@
+import { countryByNameOrCode } from "./country.ts";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
@@ -16,7 +17,7 @@ export interface SourceMetadata {
   authoritative: boolean;
   /** The provider's own credit line, or null when it requires none. */
   credit: string | null;
-  /** The countries, as records write `country`, whose gauges an authoritative
+  /** The ISO alpha-2 countries whose gauges an authoritative
    *  provider operates. Absent means everywhere it publishes. */
   jurisdiction?: string[];
   /** The nodal correction formulas the provider's constants were analyzed with. Absent means IHO. */
@@ -51,10 +52,17 @@ export function loadSources(dir = SOURCES_DIR): Map<string, SourceMetadata> {
       source.jurisdiction !== undefined &&
       !(
         Array.isArray(source.jurisdiction) &&
-        source.jurisdiction.every((c) => typeof c === "string" && c)
+        source.jurisdiction.every(
+          (c) =>
+            typeof c === "string" &&
+            /^[A-Z]{2}$/.test(c) &&
+            countryByNameOrCode(c)?.iso2 === c,
+        )
       )
     )
-      throw new Error(`${path}: jurisdiction must be a list of countries`);
+      throw new Error(
+        `${path}: jurisdiction must be a list of ISO alpha-2 country codes`,
+      );
     if (
       source.node_corrections !== undefined &&
       source.node_corrections !== "iho" &&

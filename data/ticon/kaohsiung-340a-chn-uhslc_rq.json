@@ -1,6 +1,7 @@
 {
   "name": "Kaohsiung",
-  "country": "China",
+  "country_code": "TW",
+  "country": "Taiwan",
   "continent": "Asia",
   "latitude": 22.615,
   "longitude": 120.288,
@@ -24,11 +25,10 @@
     "MTL": 0.164,
     "MLW": -0.027,
     "MLLW": -0.151,
-    "HAT": 0.961,
-    "LAT": -0.5,
+    "HAT": 0.95,
+    "LAT": -0.498,
     "MHWS": 0.424,
-    "MLWS": -0.072,
-    "TLT": -0.463
+    "MLWS": -0.072
   },
   "datums_source": "observed",
   "datum_frame": "gauge",
@@ -37,7 +37,7 @@
     "observed_hours": 35064,
     "inferred_hours": 0
   },
-  "chart_datum": "TLT",
+  "chart_datum": "LAT",
   "type": "reference",
   "harmonic_constituents": [
     {

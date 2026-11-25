@@ -1,5 +1,6 @@
 {
   "name": "NorthCormorantTG",
+  "country_code": "GB",
   "country": "United Kingdom",
   "continent": "Europe",
   "latitude": 61.34,
@@ -19,14 +20,14 @@
   },
   "disclaimers": "No obvious issues Datums derived from harmonic prediction; observations do not support a mean-datum reduction over twelve continuous whole months after bounded short-gap reconstruction. Datum values carry higher uncertainty. Complete prepared observations do not cover every calendar month of the year for a balanced gauge mean; datums remain in the constituent frame (MSL = 0). Harmonic datums retain every predicted turning point without prominence filtering.",
   "datums": {
-    "HAT": 1,
+    "HAT": 1.002,
     "MHHW": 0.607,
     "MHW": 0.543,
     "MSL": 0,
     "MTL": 0.002,
     "MLW": -0.539,
     "MLLW": -0.589,
-    "LAT": -1.111,
+    "LAT": -1.115,
     "MHWS": 0.7,
     "MLWS": -0.7
   },

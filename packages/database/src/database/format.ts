@@ -3,7 +3,7 @@
  * (`Root.format_version` in schemas/database.fbs). Raise it only for a change
  * an older reader would misread, together with the Swift and Kotlin readers'.
  */
-export const FORMAT_VERSION = 1;
+export const FORMAT_VERSION = 2;
 
 /** The file is a station database in a newer format than this package reads. */
 export class UnsupportedStationDatabaseError extends Error {

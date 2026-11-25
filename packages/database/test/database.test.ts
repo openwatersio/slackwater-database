@@ -42,10 +42,12 @@ describe("the shipped database file", () => {
     expect(shipped.version()).toBeTruthy();
   });
 
-  // No source defines its own constituents yet, so readers released before
-  // source definitions still open the shipped file.
-  test("is written at version 1 while no source changes its predictions", () => {
-    expect(shipped.formatVersion()).toBe(1);
+  // Version 2: the shipped M1 and MP1 constants follow engine beta.14's
+  // conventions, which a version-1 reader paired with an older engine would
+  // misread.
+  test("is written at version 2", () => {
+    expect(shipped.formatVersion()).toBe(2);
+    expect(FORMAT_VERSION).toBe(2);
     expect(shipped.constituentDefinitionsLength()).toBeGreaterThan(0);
   });
 
