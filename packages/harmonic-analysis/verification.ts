@@ -576,19 +576,67 @@ export interface YearlyScatter {
   years: number;
   /** Standard deviation of amplitude (m) and circular standard deviation of phase (°). */
   constituents: Record<string, { amplitude: number; phase: number }>;
+  /** Sa and Ssa across the same years, from each year's fit with them added
+   *  (SEASONAL); absent with fewer than two years. */
+  seasonal?: Record<string, SeasonalSpread>;
+}
+
+/** The annual and semiannual lines, under the engine catalog's names. */
+export const SEASONAL = ["SA", "SSA"] as const;
+
+/**
+ * One seasonal line across the yearly fits: the mean of the yearly vectors
+ * a·(cos g, sin g), and the spread about it. `scatter` is the standard
+ * deviation of one component of the yearly vectors about their mean, the
+ * spread along any one direction, such as the mean's own, so it is how far
+ * one year's cycle strays from the mean in amplitude; `se` is `scatter`
+ * divided by the square root of `years`, the standard error of the mean
+ * (Parker 2007, §3.7.2: the mean over many years is the best estimate).
+ */
+export interface SeasonalSpread {
+  years: number;
+  amplitude: number;
+  phase: number;
+  scatter: number;
+  se: number;
+}
+
+export function seasonalSpread(
+  yearly: readonly { amplitude: number; phase: number }[],
+): SeasonalSpread | undefined {
+  const n = yearly.length;
+  if (n < 2) return undefined;
+  const rad = Math.PI / 180;
+  const v = yearly.map((c) => [
+    c.amplitude * Math.cos(c.phase * rad),
+    c.amplitude * Math.sin(c.phase * rad),
+  ]);
+  const mx = v.reduce((s, [x]) => s + x!, 0) / n;
+  const my = v.reduce((s, [, y]) => s + y!, 0) / n;
+  const ss = v.reduce((s, [x, y]) => s + (x! - mx) ** 2 + (y! - my) ** 2, 0);
+  // Two components share the sum of squares, each with n - 1 degrees of freedom.
+  const scatter = Math.sqrt(ss / (2 * (n - 1)));
+  return {
+    years: n,
+    amplitude: Math.hypot(mx, my),
+    phase: ((Math.atan2(my, mx) / rad) % 360 + 360) % 360,
+    scatter,
+    se: scatter / Math.sqrt(n),
+  };
 }
 
 /**
  * Fit each calendar year with the fixed yearlySet of `names` and measure the
- * scatter of M2, S2, K1 and O1 between years (Parker 2007, p. 86).
+ * scatter of M2, S2, K1 and O1 between years (Parker 2007, p. 86). With
+ * `seasonal`, also the spread of Sa and Ssa (seasonalSpread).
  */
 export function yearlyScatter(
   samples: readonly Sample[],
   names: readonly string[],
-  options: FitOptions = {},
+  options: FitOptions & { seasonal?: boolean } = {},
 ): YearlyScatter {
   // Weights belong to the whole record's samples, not one year's.
-  const { weights: _, ...yearOptions } = options;
+  const { weights: _, seasonal: __, ...yearOptions } = options;
   const set = yearlySet(names);
   const byYear = new Map<number, Sample[]>();
   for (const s of samples) {
@@ -597,6 +645,14 @@ export function yearlyScatter(
     byYear.get(y)!.push(s);
   }
   const fits: FittedConstituent[][] = [];
+  const seasonalFits: FittedConstituent[][] = [];
+  // The seasonal lines join a year's set for their own estimate only, so
+  // they don't move the other constituents' scatter; the set leaves out any
+  // line too close to them for a year to separate.
+  const seasonalSet = [
+    ...SEASONAL,
+    ...set.filter((name) => !SEASONAL.includes(name as never)),
+  ];
   for (const [year, rows] of byYear) {
     const hours = (Date.UTC(year + 1, 0, 1) - Date.UTC(year, 0, 1)) / HOUR_MS;
     if (rows.length < (2 / 3) * hours) continue;
@@ -604,6 +660,20 @@ export function yearlyScatter(
       fit(harmonicSamples(rows), set, { ...yearOptions, dropDependent: true })
         .constituents,
     );
+    if (options.seasonal)
+      seasonalFits.push(
+        fit(harmonicSamples(rows), seasonalSet, {
+          ...yearOptions,
+          dropDependent: true,
+        }).constituents,
+      );
+  }
+  const seasonal: Record<string, SeasonalSpread> = {};
+  for (const name of SEASONAL) {
+    const spread = seasonalSpread(
+      seasonalFits.flatMap((f) => f.filter((c) => c.name === name)),
+    );
+    if (spread) seasonal[name] = spread;
   }
   const constituents: YearlyScatter["constituents"] = {};
   if (fits.length >= 2)
@@ -624,7 +694,11 @@ export function yearlyScatter(
         phase: (Math.sqrt(-2 * Math.log(Math.min(R, 1))) * 180) / Math.PI,
       };
     }
-  return { years: fits.length, constituents };
+  return {
+    years: fits.length,
+    constituents,
+    ...(Object.keys(seasonal).length ? { seasonal } : {}),
+  };
 }
 
 /** One constituent of ours against the agency's, as differences only. */

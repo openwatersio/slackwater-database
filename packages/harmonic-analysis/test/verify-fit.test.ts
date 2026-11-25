@@ -24,6 +24,8 @@ beforeAll(async () => {
   mkdirSync(join(store, "stations/years"), { recursive: true });
   await db.run(`COPY (SELECT 'src/g' AS id, 'src' AS source, 'g' AS source_id,
       'CD' AS datum, 'src/g' AS preferred,
+      'Gauge G' AS name, 60.4 AS lat, 5.3 AS lon, 'NO' AS country_code,
+      'CC-BY-4.0' AS license, true AS commercial_use, 'Agency G' AS attribution,
       ['gesla/bergen-bgo-nor-nhs', 'gesla/altengamme-5930070-deu-wsv'] AS same_as,
       '2019-01-01 00:00:00+00'::TIMESTAMPTZ AS first,
       '2022-12-31 22:00:00+00'::TIMESTAMPTZ AS last,

@@ -1,0 +1,11 @@
+# Must match `source.name` on every record this source writes: Slackwater's
+# fits of SMHI's observed sea levels, read from Stillwell (sources/stillwell).
+name: SMHI
+# Our analysis of SMHI's observations, not SMHI's own constants, so these
+# records rank as relays do.
+authoritative: false
+# SMHI's data is CC BY 4.0 and asks for credit; about half its gauges belong to
+# others (the Swedish Maritime Administration, the Port of Gothenburg, the Ports
+# of Stockholm, Chalmers), which SMHI publishes under the same terms. Stillwell's
+# data is CC BY 4.0, Open Waters.
+credit: "Source: Swedish Meteorological and Hydrological Institute (SMHI), https://www.smhi.se; via Stillwell, Open Waters, https://stillwell.openwaters.io. Harmonic constants fitted and datums derived by Slackwater"

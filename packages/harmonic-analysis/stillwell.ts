@@ -54,6 +54,10 @@ export interface StillwellStation {
   id: string;
   source: string;
   source_id: string;
+  name: string | null;
+  lat: number | null;
+  lon: number | null;
+  country_code: string | null;
   datum: string;
   first: Date | null;
   last: Date | null;
@@ -61,6 +65,11 @@ export interface StillwellStation {
   same_as: string[];
   /** Preliminary values before this are final; null when Stillwell doesn't know such a point. */
   source_qc_start: Date | null;
+  /** The station's terms: an SPDX-style id such as `CC-BY-4.0`, whether
+   *  they allow commercial use, and the credit its data requires. */
+  license: string | null;
+  commercial_use: boolean | null;
+  attribution: string | null;
   epochs: StillwellEpoch[];
 }
 
@@ -159,7 +168,8 @@ export function stillwellStations(): Promise<Map<string, StillwellStation>> {
     const reader = await (
       await db()
     ).runAndReadAll(`
-      SELECT id, source, source_id, datum, preferred, same_as,
+      SELECT id, source, source_id, name, lat, lon, country_code, datum,
+        preferred, same_as, license, commercial_use, attribution,
         epoch_ms(first) AS first, epoch_ms(last) AS last,
         epoch_ms(source_qc_start) AS source_qc_start,
         [{id: e.id, since: epoch_ms(e.since), until: epoch_ms(e.until),
@@ -173,9 +183,16 @@ export function stillwellStations(): Promise<Map<string, StillwellStation>> {
           id: row.id,
           source: row.source,
           source_id: row.source_id,
+          name: row.name ?? null,
+          lat: row.lat ?? null,
+          lon: row.lon ?? null,
+          country_code: row.country_code ?? null,
           datum: row.datum,
           preferred: row.preferred ?? row.id,
           same_as: row.same_as ?? [],
+          license: row.license ?? null,
+          commercial_use: row.commercial_use ?? null,
+          attribution: row.attribution ?? null,
           source_qc_start: toDate(row.source_qc_start),
           first: toDate(row.first),
           last: toDate(row.last),
@@ -354,11 +371,23 @@ export interface ReadInputs {
   >[];
   source_qc_start?: Date | null;
   errata: Record<string, Pick<Erratum, "handling" | "since" | "until">>;
+  /** For a source that doesn't finalize, the instant before which its
+   *  measured values were read as final (ReadOptions.settled). */
+  settled_before?: Date;
 }
 
 export interface ReadOptions {
   /** Decisions on the period's `kept` errata. */
   errata?: ErrataDecisions;
+  /**
+   * For a source that doesn't finalize its values, the instant before which
+   * the caller takes its measured values (MEASURED_FLAGS) as final: the
+   * caller's own rule for when the source stops revising them, until
+   * Stillwell publishes the source's revision window
+   * (https://github.com/openwatersio/stillwell/issues/526). With FINAL_FLAGS,
+   * a read of such a source needs it, and its period must end by it.
+   */
+  settled?: Date;
   /** Only values stamped on the hour, picked before they reach JavaScript. */
   hourly?: boolean;
   /** Filled with what the read used, added to what it holds already. */
@@ -388,9 +417,9 @@ export async function stillwellSource(
  * one before it share a time, the latter wins, as Stillwell's own query does.
  * Throws on a `kept` erratum in the period that `options.errata` doesn't
  * decide, so a read never uses values Stillwell knows are wrong without
- * saying so. FINAL_FLAGS is refused for a source that doesn't finalize its
- * values, whose final values depend on a revision window Stillwell doesn't
- * publish yet.
+ * saying so. For a source that doesn't finalize its values, whose revision
+ * window Stillwell doesn't publish yet, FINAL_FLAGS reads its measured values
+ * only with `options.settled`, and only before it.
  */
 export async function readStillwellSamples(
   id: string,
@@ -402,13 +431,19 @@ export async function readStillwellSamples(
   await refreshStations();
   const station = await stillwellStation(id);
   if (!station) throw new Error(`${id} is not in Stillwell's public store`);
-  if (
-    flags === FINAL_FLAGS &&
-    !(await stillwellSource(station.source)).finalizes
-  )
-    throw new Error(
-      `${station.source} doesn't finalize its values, and Stillwell doesn't publish its revision window yet`,
-    );
+  // Only final values depend on whether the source finalizes.
+  const finalizes =
+    flags !== FINAL_FLAGS || (await stillwellSource(station.source)).finalizes;
+  if (!finalizes) {
+    if (!options.settled)
+      throw new Error(
+        `${station.source} doesn't finalize its values, and Stillwell doesn't publish its revision window yet; say when its values settle`,
+      );
+    if (+period.end > +options.settled)
+      throw new Error(
+        `${id}: values after ${options.settled.toISOString().slice(0, 10)} haven't settled`,
+      );
+  }
   const touching = errataFor(await stillwellErrata(), station, period);
   const dropped = touching.filter((e) => {
     if (e.handling !== "kept") return false;
@@ -434,7 +469,9 @@ export async function readStillwellSamples(
   const where =
     flags !== FINAL_FLAGS
       ? `flag IN (${flags.join(", ")})`
-      : qcStart
+      : !finalizes
+        ? `flag IN (${MEASURED_FLAGS.join(", ")})`
+        : qcStart
         ? `(flag IN (${VERIFIED_FLAGS.join(", ")}) OR (flag = 2 AND time < make_timestamptz(${+qcStart}::BIGINT * 1000)))`
         : `flag IN (${VERIFIED_FLAGS.join(", ")})`;
 
@@ -521,6 +558,7 @@ export async function readStillwellSamples(
       );
     options.inputs.epochs = used;
     options.inputs.source_qc_start = station.source_qc_start;
+    if (!finalizes) options.inputs.settled_before = options.settled!;
     for (const { id, handling, since, until } of touching)
       options.inputs.errata[id] = { handling, since, until };
   }
@@ -535,16 +573,24 @@ export async function readStillwellSamples(
  * source: the latest year before the current one in which most of its
  * stations with values that year have no preliminary ones, over all their
  * epochs. A station whose year files are being written, or whose count of
- * preliminary values is missing, votes for no year. Only sources that
- * finalize their values have one; for the others, final values depend on a
- * revision window Stillwell doesn't publish yet.
+ * preliminary values is missing, votes for no year. For a source that
+ * doesn't finalize, whose revision window Stillwell doesn't publish yet, it
+ * is the last whole year before `settled` (ReadOptions.settled), which the
+ * caller must give.
  */
-export async function sourceFinalYear(source: string): Promise<number> {
+export async function sourceFinalYear(
+  source: string,
+  settled?: Date,
+): Promise<number> {
   const entry = await stillwellSource(source);
-  if (!entry.finalizes)
-    throw new Error(
-      `${source} doesn't finalize its values, and Stillwell doesn't publish its revision window yet`,
-    );
+  if (!entry.finalizes) {
+    if (!settled)
+      throw new Error(
+        `${source} doesn't finalize its values, and Stillwell doesn't publish its revision window yet; say when its values settle`,
+      );
+    // The year ending by `settled`: January 1 of the next one is at or before it.
+    return settled.getUTCFullYear() - 1;
+  }
   const path = `stations/years/${source}.parquet`;
   const years = await cachedStillwellFile(path);
   if (!years) throw new Error(`${STILLWELL_URL}/${path} is missing`);
@@ -568,3 +614,35 @@ export async function sourceFinalYear(source: string): Promise<number> {
   if (!rows.length) throw new Error(`${source} has no year of final values`);
   return Number(rows[0]!.year);
 }
+
+/** Two Stillwell series compared by their hourly levels, from
+ *  `stations/matches.parquet`
+ *  (https://github.com/openwatersio/stillwell/blob/main/docs/stations.md#gauges-in-more-than-one-source). */
+export interface StillwellMatch {
+  a: string;
+  b: string;
+  months: number;
+  /** RMS difference in the median month once each month's mean difference is removed, in metres. */
+  rms_m: number;
+  /** Whole hours one series' times had to move to agree best; 0 for none. */
+  lag_h: number;
+}
+
+/** Every pair Stillwell compared, keyed by both ids in code-point order,
+ *  joined by a space; revalidated on each call. */
+export async function stillwellMatches(): Promise<Map<string, StillwellMatch>> {
+  const file = await cachedStillwellFile("stations/matches.parquet");
+  if (!file)
+    throw new Error(`${STILLWELL_URL}/stations/matches.parquet is missing`);
+  const rows = (
+    await (
+      await db()
+    ).runAndReadAll(
+      `SELECT a, b, months, rms_m, lag_h FROM read_parquet(${sqlString(file)})`,
+    )
+  ).getRowObjectsJS() as unknown as StillwellMatch[];
+  return new Map(rows.map((m) => [matchKey(m.a, m.b), m]));
+}
+
+export const matchKey = (a: string, b: string) =>
+  a < b ? `${a} ${b}` : `${b} ${a}`;

@@ -4,7 +4,9 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
-    "./stillwell": "./stillwell.ts"
+    "./stillwell": "./stillwell.ts",
+    "./verify-fit": "./verify-fit.ts",
+    "./verification": "./verification.ts"
   },
   "scripts": {
     "test": "vitest run",

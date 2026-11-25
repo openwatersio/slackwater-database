@@ -1,0 +1,12 @@
+# Must match `source.name` on every record this source writes: Slackwater's
+# fits of the WSV's PEGELONLINE water levels, read from Stillwell
+# (sources/stillwell).
+name: Wasserstraßen- und Schifffahrtsverwaltung des Bundes
+# Our analysis of the WSV's raw values, not its own constants, so these
+# records rank as relays do.
+authoritative: false
+# PEGELONLINE's data is DL-DE-Zero-2.0, which asks for no credit; Stillwell's
+# is CC BY 4.0, Open Waters, and asks for it, along with each station's
+# attribution. Hamburg's Elbe gauges come from the Hamburg Port Authority via
+# kuestendaten.de under the same license.
+credit: "Source: Wasserstraßen- und Schifffahrtsverwaltung des Bundes (WSV), PEGELONLINE, https://www.pegelonline.wsv.de; Hamburg's Elbe gauges: Hamburg Port Authority, via WSV, https://www.kuestendaten.de; via Stillwell, Open Waters, https://stillwell.openwaters.io. Harmonic constants fitted and datums derived by Slackwater"

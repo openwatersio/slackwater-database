@@ -4,11 +4,12 @@ import { parseArgs } from "node:util";
 import { fit as engineFit, type FitOptions } from "@slackwater/engine";
 import { hasMislabeledClock } from "../../sources/ticon/samples.ts";
 import {
-  fitSelected,
   harmonicSamples,
   publishedConstants,
+  selectNames,
   type HarmonicConstituent,
 } from "./index.ts";
+import type { ConstituentSelection } from "@slackwater/engine";
 import {
   FINAL_FLAGS,
   readStillwellSamples,
@@ -26,15 +27,22 @@ import {
   rmsOf,
   sawYear,
   scoreHeldOut,
+  SEASONAL,
   tidalResiduals,
   yearlyScatter,
   type Conditioning,
   type ConstantDifference,
   type HeldOutScore,
+  type SeasonalSpread,
   type YearlyScatter,
 } from "./verification.ts";
 
 const DATA = join(import.meta.dirname, "..", "..", "data");
+
+/** How many standard errors of the yearly mean a seasonal line's amplitude
+ *  must reach to publish: the plan's rule for Sa and Ssa, read as a
+ *  two-sided test near the 95% level, as UTide's SNR ≥ 2 is. */
+export const SEASONAL_SIGNIFICANCE = 2;
 const HOUR_MS = 3_600_000;
 
 /** A record in data/, as much of it as verification reads. */
@@ -58,6 +66,21 @@ export interface VerifyOptions {
   names: string[];
   /** Fit exactly `names` (an agency's list) rather than select from them and the catalog. */
   exact?: boolean;
+  /** With false, select from `names` alone, without the rest of the catalog. */
+  extras?: boolean;
+  /**
+   * Fit Sa and Ssa over the whole window whatever their SNR, and publish them
+   * only where the yearly fits show the mean significant: amplitude at least
+   * SEASONAL_SIGNIFICANCE times its standard error (seasonalSpread). They
+   * leave the selection, since weather sets their size, not the record's
+   * resolution.
+   */
+  seasonal?: boolean;
+  /** TICON records (ids in data/ticon) to score on the held-out year; by
+   *  default, every GESLA series in the Stillwell station's `same_as`. */
+  ticon?: readonly string[];
+  /** For a source that doesn't finalize, when its values settle (ReadOptions.settled). */
+  settled?: Date;
   fitOptions?: FitOptions;
   /** The held-out year; the source's last whole year of final values by default. */
   heldOut?: number;
@@ -99,6 +122,21 @@ export interface VerificationReport {
       phaseInterval: number | null;
       snr: number | null;
     }[];
+    /** The constants as published: rounded, with Sa and Ssa only where they publish. */
+    published: HarmonicConstituent[];
+    /** The engine's verdict on every candidate, in candidate order; absent for an exact fit. */
+    selection?: ConstituentSelection[];
+    /** Sa and Ssa with `seasonal`: the whole window's fit, the yearly
+     *  spread, and whether they publish. */
+    seasonal?: Record<
+      string,
+      {
+        amplitude: number;
+        phase: number;
+        spread: SeasonalSpread | null;
+        published: boolean;
+      }
+    >;
   };
   /** Null when no year after the fit's window has half its hours scored. */
   heldOut: {
@@ -169,22 +207,69 @@ export async function verifyFit(
       errata: decisions,
       hourly: true,
       inputs,
+      ...(options.settled ? { settled: options.settled } : {}),
     });
   const fitSamples = await read({ start, end });
   if (!fitSamples.length)
     throw new Error(`${series} has no final values to fit`);
   const fitOptions: FitOptions = { ...options.fitOptions, confidence: true };
-  const fitted = options.exact
-    ? engineFit(harmonicSamples(fitSamples), names, {
-        ...fitOptions,
-        dropDependent: true,
-      })
-    : fitSelected(harmonicSamples(fitSamples), names, true, fitOptions);
+  const seasonalNames: readonly string[] = SEASONAL;
+  const candidates = options.seasonal
+    ? names.filter((n) => !seasonalNames.includes(n.toUpperCase()))
+    : names;
+  const selected = options.exact
+    ? undefined
+    : selectNames(
+        harmonicSamples(fitSamples),
+        candidates,
+        options.extras ?? true,
+      );
+  const fitted = engineFit(
+    harmonicSamples(fitSamples),
+    [
+      ...(selected?.chosen ?? candidates),
+      ...(options.seasonal ? SEASONAL : []),
+    ],
+    { ...fitOptions, dropDependent: true },
+  );
   const fittedNames = fitted.constituents.map((c) => c.name);
-  const published = publishedConstants(fitted.constituents, names);
+  // Largest first, so a pair a year can't separate keeps its larger member.
+  const yearly = yearlyScatter(
+    fitSamples,
+    [...fitted.constituents]
+      .sort((a, b) => b.amplitude - a.amplitude)
+      .map((c) => c.name),
+    { ...options.fitOptions, seasonal: options.seasonal ?? false },
+  );
+  let seasonal: VerificationReport["fit"]["seasonal"];
+  if (options.seasonal) {
+    seasonal = {};
+    for (const name of SEASONAL) {
+      const c = fitted.constituents.find((x) => x.name === name);
+      if (!c) continue;
+      const spread = yearly.seasonal?.[name] ?? null;
+      seasonal[name] = {
+        amplitude: c.amplitude,
+        phase: c.phase,
+        spread,
+        published:
+          !!spread && c.amplitude >= SEASONAL_SIGNIFICANCE * spread.se,
+      };
+    }
+  }
+  const kept = fitted.constituents.filter(
+    (c) => !seasonal?.[c.name] || seasonal[c.name]!.published,
+  );
+  const published = publishedConstants(
+    kept,
+    options.seasonal
+      ? [...names, ...SEASONAL.filter((n) => seasonal?.[n]?.published)]
+      : names,
+  );
 
   let heldOut: VerificationReport["heldOut"] = null;
-  const first = options.heldOut ?? (await sourceFinalYear(station.source));
+  const first =
+    options.heldOut ?? (await sourceFinalYear(station.source, options.settled));
   for (let year = first; +yearRange(year).start >= +end; year--) {
     const span = yearRange(year);
     const samples = await read(span);
@@ -201,9 +286,12 @@ export async function verifyFit(
       string,
       { constituents: HarmonicConstituent[]; seen: boolean }
     > = {};
-    const ticon = station.same_as
-      .filter((id) => id.startsWith("gesla/"))
-      .map((id) => id.slice("gesla/".length))
+    const ticon = (
+      options.ticon ??
+      station.same_as
+        .filter((id) => id.startsWith("gesla/"))
+        .map((id) => id.slice("gesla/".length))
+    )
       // An id from Stillwell names a file in data/ticon and nothing outside it.
       .filter((id) => /^[\w.-]+$/.test(id) && !id.startsWith("."))
       .flatMap((id) => {
@@ -267,16 +355,10 @@ export async function verifyFit(
       end: isoDate(fitSamples.at(-1)!.t),
       hours: fitSamples.length,
       rms: fitted.rms,
+      published,
       dropped: fitted.dropped,
       conditioning: conditioning(fitSamples, fittedNames),
-      // Largest first, so a pair a year can't separate keeps its larger member.
-      yearly: yearlyScatter(
-        fitSamples,
-        [...fitted.constituents]
-          .sort((a, b) => b.amplitude - a.amplitude)
-          .map((c) => c.name),
-        options.fitOptions,
-      ),
+      yearly,
       constituents: fitted.constituents.map((c) => ({
         name: c.name,
         amplitude: c.amplitude,
@@ -285,6 +367,8 @@ export async function verifyFit(
         phaseInterval: c.phaseInterval ?? null,
         snr: c.snr ?? null,
       })),
+      ...(selected ? { selection: selected.selection } : {}),
+      ...(seasonal ? { seasonal } : {}),
     },
     heldOut,
     agency,

@@ -40,6 +40,8 @@ beforeAll(async () => {
   const q = (path: string) => `'${join(store, path)}'`;
   await db.run(`COPY (SELECT 'src/a b' AS id, 'src' AS source, 'a b' AS source_id,
       'NAP' AS datum, 'src/a b' AS preferred, ['gesla/x'] AS same_as,
+      'Gauge A' AS name, 52.1 AS lat, 4.2 AS lon, 'NL' AS country_code,
+      'CC-BY-4.0' AS license, true AS commercial_use, 'Agency A' AS attribution,
       '2019-01-01 00:00:00+00'::TIMESTAMPTZ AS first,
       '2021-12-31 23:00:00+00'::TIMESTAMPTZ AS last,
       '2020-03-01 02:30:00+00'::TIMESTAMPTZ AS source_qc_start,
@@ -172,6 +174,14 @@ describe("readStillwellSamples", () => {
       [2, 0],
     ]);
     expect(station?.last).toEqual(new Date("2021-12-31T23:00:00Z"));
+    expect(station).toMatchObject({
+      name: "Gauge A",
+      lat: 52.1,
+      lon: 4.2,
+      license: "CC-BY-4.0",
+      commercial_use: true,
+      attribution: "Agency A",
+    });
   });
 
   test("puts every epoch in the current datum and keeps verified values only", async () => {

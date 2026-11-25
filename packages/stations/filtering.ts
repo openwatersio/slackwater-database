@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 /**
  * Shared utilities for station filtering and deduplication
  */
@@ -291,6 +292,20 @@ export function scoresWorse(rms: number, other: number, se: number): boolean {
     Number((rms ** 2 - other ** 2).toFixed(12)) >
     Math.max(AMPLITUDE_TOLERANCE ** 2 / 2, 2 * se)
   );
+}
+
+/** A short digest of a record's constants, stored beside a held-out score so
+ *  the score counts only while the constants it was taken against are
+ *  unchanged. */
+export function constituentsDigest(
+  constituents: readonly { name: string; amplitude: number; phase: number }[],
+): string {
+  return createHash("sha256")
+    .update(
+      JSON.stringify(constituents.map((c) => [c.name, c.amplitude, c.phase])),
+    )
+    .digest("hex")
+    .slice(0, 16);
 }
 
 /** Project screening allowance for observed means versus harmonic bounds from

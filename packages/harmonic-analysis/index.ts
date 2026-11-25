@@ -3,6 +3,7 @@ import {
   fit,
   selectConstituents,
   type Candidate,
+  type ConstituentSelection,
   type FitOptions,
   type FittedConstituent,
   type HarmonicFit,
@@ -157,6 +158,19 @@ export function fitSelected(
   extras = true,
   options: FitOptions = {},
 ): HarmonicFit {
+  const { chosen } = selectNames(samples, names, extras);
+  return fit(samples, chosen, { ...options, dropDependent: true });
+}
+
+/**
+ * The names `fitSelected` fits, in candidate order, with the engine's
+ * verdict on every candidate.
+ */
+export function selectNames(
+  samples: readonly HarmonicSample[],
+  names: readonly string[],
+  extras = true,
+): { chosen: string[]; selection: ConstituentSelection[] } {
   const given = new Set(names);
   const { selection } = selectConstituents(samples, {
     candidates: extras
@@ -174,5 +188,5 @@ export function fitSelected(
   const chosen = selection
     .filter((s) => s.kept || (s.reason === "snr" && given.has(s.name)))
     .map((s) => s.name);
-  return fit(samples, chosen, { ...options, dropDependent: true });
+  return { chosen, selection };
 }
