@@ -69,6 +69,12 @@ export interface VerifyOptions {
   /** With false, select from `names` alone, without the rest of the catalog. */
   extras?: boolean;
   /**
+   * `names` is a candidate list rather than an agency's: a name below its
+   * SNR cut is left out, and a fitted constituent that rounds to 0 mm isn't
+   * published (plan, Precision).
+   */
+  candidates?: boolean;
+  /**
    * Fit Sa and Ssa over the whole window whatever their SNR, and publish them
    * only where the yearly fits show the mean significant: amplitude at least
    * SEASONAL_SIGNIFICANCE times its standard error (seasonalSpread). They
@@ -223,6 +229,7 @@ export async function verifyFit(
         harmonicSamples(fitSamples),
         candidates,
         options.extras ?? true,
+        !options.candidates,
       );
   const fitted = engineFit(
     harmonicSamples(fitSamples),
@@ -261,9 +268,11 @@ export async function verifyFit(
   );
   const published = publishedConstants(
     kept,
-    options.seasonal
-      ? [...names, ...SEASONAL.filter((n) => seasonal?.[n]?.published)]
-      : names,
+    options.candidates
+      ? []
+      : options.seasonal
+        ? [...names, ...SEASONAL.filter((n) => seasonal?.[n]?.published)]
+        : names,
   );
 
   let heldOut: VerificationReport["heldOut"] = null;

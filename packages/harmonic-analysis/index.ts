@@ -164,12 +164,15 @@ export function fitSelected(
 
 /**
  * The names `fitSelected` fits, in candidate order, with the engine's
- * verdict on every candidate.
+ * verdict on every candidate. With `keepGiven` false, a name in `names`
+ * below its SNR cut is left out like any other: for a candidate list, not an
+ * agency's own.
  */
 export function selectNames(
   samples: readonly HarmonicSample[],
   names: readonly string[],
   extras = true,
+  keepGiven = true,
 ): { chosen: string[]; selection: ConstituentSelection[] } {
   const given = new Set(names);
   const { selection } = selectConstituents(samples, {
@@ -186,7 +189,9 @@ export function selectNames(
       `can't fit ${lost.map((s) => `${s.name} (${s.reason})`).join(", ")}`,
     );
   const chosen = selection
-    .filter((s) => s.kept || (s.reason === "snr" && given.has(s.name)))
+    .filter(
+      (s) => s.kept || (keepGiven && s.reason === "snr" && given.has(s.name)),
+    )
     .map((s) => s.name);
   return { chosen, selection };
 }

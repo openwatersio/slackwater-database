@@ -181,6 +181,7 @@ export async function importStation(
     end,
     names: candidateList(catalog),
     extras: false,
+    candidates: true,
     seasonal: true,
     fitOptions: { robust: true },
     heldOut,

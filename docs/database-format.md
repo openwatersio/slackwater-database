@@ -134,6 +134,10 @@ Subordinate timelines use the scalar reduction and the subordinate's published b
 
 Optional JS datum getters can exist on an object while returning `undefined`. Check their values rather than using key presence to infer provenance.
 
+## Fit provenance
+
+A record fitted from Stillwell observations ([sources/stillwell](../sources/stillwell/README.md)) keeps its provenance in its data file as `source.stillwell`, described in [schemas/station.schema.json](../schemas/station.schema.json): the Stillwell year file versions it read, the fit's window and engine version, every candidate's selection verdict, each constituent's intervals and SNR, the yearly scatter, the Sa and Ssa decision, the held-out scores and the level comparisons behind its TICON links. The file doesn't carry it. A station built from such a record publishes the constants and datums like any other, with `epoch` as the fit's window, `datum_epoch` as the observed reduction's, `datum_frame` as `gauge`, and a disclaimer naming the series, the window and the held-out year. The station's `attribution` credits the agency and Stillwell, and its license is CC BY 4.0, Stillwell's own and the more restrictive of the two for both sources so far.
+
 ## ESM only (no CJS build)
 
 `kdbush` and `geokdbush` are ESM-only packages (no `require` export), so a CJS build can't `require()` them without a double-wrapped-default interop bug (`KDBush.from is not a function`). All first-party consumers use ESM, so the package ships **ESM only**. Modern Node still lets `require()` load the ESM entry (require-of-ESM); older CJS-only tooling would need to `import()` it.
