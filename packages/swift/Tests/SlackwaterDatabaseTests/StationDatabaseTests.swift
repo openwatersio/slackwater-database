@@ -310,6 +310,21 @@ final class StationDatabaseTests: XCTestCase {
     XCTAssertEqual(db.station(id: "test/zfit-online")?.constituentDefinitions, [])
   }
 
+  func testReadsForemanCorrectionsWithTheLatitudeOfTheStationWhoseConstantsArePredicted() throws {
+    XCTAssertNil(try XCTUnwrap(open().station(id: "test/reference")).nodeCorrectionsLatitude)
+    let db = try StationDatabase(
+      contentsOf: Self.url.deletingLastPathComponent().appendingPathComponent("fixture-foreman.tcdb"))
+    let reference = try XCTUnwrap(db.station(id: "test/reference"))
+    XCTAssertEqual(reference.nodeCorrections, .foreman)
+    XCTAssertEqual(reference.source?.nodeCorrections, .foreman)
+    XCTAssertEqual(reference.nodeCorrectionsLatitude, 47.6)
+    // A subordinate takes its reference's latitude, not its own.
+    let subordinate = try XCTUnwrap(db.station(id: "test/subordinate"))
+    XCTAssertEqual(subordinate.latitude, 47.7)
+    XCTAssertEqual(subordinate.nodeCorrections, .foreman)
+    XCTAssertEqual(subordinate.nodeCorrectionsLatitude, 47.6)
+  }
+
   func testReadsAFileWrittenBeforeDefinitionsAsLeavingThemToTheEngine() throws {
     let url = Self.url.deletingLastPathComponent()
       .appendingPathComponent("../../../database/test/fixtures/pre-minor-current.tcdb")

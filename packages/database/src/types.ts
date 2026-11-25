@@ -30,8 +30,11 @@ export interface ConstituentDefinition {
   aliases?: string[];
 }
 
-/** The nodal correction formulas a source's constants were analyzed with. */
-export type NodeCorrections = "iho" | "schureman";
+/**
+ * The nodal correction formulas a source's constants were analyzed with.
+ * Foreman's take the latitude of the station whose constants are predicted.
+ */
+export type NodeCorrections = "iho" | "schureman" | "foreman";
 
 /** How a source's constants differ from the database's shared definitions. */
 export interface SourceConstituents {
@@ -303,6 +306,13 @@ export interface Station extends StationData {
   constituent_definitions?: ConstituentDefinition[];
   /** The nodal correction formulas to predict with: `@slackwater/engine`'s `nodeCorrections` option. */
   node_corrections: NodeCorrections;
+  /**
+   * The latitude Foreman's formulas take, `@slackwater/engine`'s `latitude`
+   * option: the station's own, or its reference's for a subordinate, whose
+   * constants it predicts with. Present only when `node_corrections` is
+   * `"foreman"`, since the engine refuses a latitude with another set.
+   */
+  node_corrections_latitude?: number;
 }
 
 // The light fields the search/geo/list paths need. Used at build time to

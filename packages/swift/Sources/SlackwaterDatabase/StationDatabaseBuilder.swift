@@ -299,10 +299,11 @@ extension StationDatabase {
   /// from the reference's record, so its own constituents are not checked.
   /// No two of a source's definitions may replace one shared definition, and
   /// speeds aren't checked against coefficients. With an empty shared set and no
-  /// source that has its own definitions or Schureman's corrections, names
-  /// aren't checked and the file has no definitions, as one written before
-  /// them. Stations whose sources share a name must carry the same definitions
-  /// and node corrections.
+  /// source that has its own definitions or nodal corrections other than IHO's,
+  /// names aren't checked and the file has no definitions, as one written
+  /// before them. Stations whose sources share a name must carry the same
+  /// definitions and node corrections. A subordinate of a source with Foreman's
+  /// corrections needs its tide reference in the file, whose latitude they take.
   ///
   /// Throws `StationDatabaseBuildError` for what `buildDatabase` refuses, with
   /// these differences: `country` is not matched against `countryCode`, integer
@@ -558,8 +559,7 @@ private struct DatabaseWriter {
     Slackwater_Source.add(publishedHarmonics: source.publishedHarmonics, &fbb)
     Slackwater_Source.addVectorOf(
       constituentDefinitions: definitionOffsets[source.constituentDefinitions] ?? Offset(), &fbb)
-    Slackwater_Source.add(
-      nodeCorrections: source.nodeCorrections == .schureman ? .schureman : .iho, &fbb)
+    Slackwater_Source.add(nodeCorrections: source.nodeCorrections.raw, &fbb)
     let offset = Slackwater_Source.endSource(&fbb, start: start)
     sourceOffsets[source] = offset
     return offset
@@ -948,16 +948,26 @@ private func requireIdentity(_ station: StationInput) throws {
 
 /// The TypeScript reader predicts a subordinate whose tide reference is absent
 /// from the subordinate's own record, and throws when that record is empty.
+/// Under Foreman's corrections that record's latitude is the subordinate's, so
+/// such a subordinate is refused.
 /// Current offsets and `tideReference` are not checked: neither reader resolves
 /// them, and a current's tide reference can live in another file.
 private func requireReferencedData(_ stations: [StationInput]) throws {
   let ids = Set(stations.map(\.id))
   for station in stations where station.type == .subordinate {
-    guard let reference = station.tideOffsets?.reference, !ids.contains(reference),
-      station.constituents.isEmpty, station.datums.isEmpty
-    else { continue }
-    throw StationDatabaseBuildError(
-      "Station \(station.id) references missing station \(reference) and has no prediction data of its own")
+    guard let reference = station.tideOffsets?.reference, !ids.contains(reference) else {
+      continue
+    }
+    if station.constituents.isEmpty, station.datums.isEmpty {
+      throw StationDatabaseBuildError(
+        "Station \(station.id) references missing station \(reference) and has no prediction data of its own")
+    }
+    // Its own record would be predicted at its own latitude, not the one the
+    // constants were analyzed at.
+    if station.source?.nodeCorrections == .foreman {
+      throw StationDatabaseBuildError(
+        "Station \(station.id) references missing station \(reference), and Foreman's nodal corrections take the reference's latitude")
+    }
   }
 }
 

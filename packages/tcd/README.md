@@ -6,6 +6,15 @@ The TCD file includes the predictable tide and current stations in the tide data
 
 Current stations are named `<Name>, <Region> Current`, with the NOAA station id appended where several stations share a name (for example, different depths at one location). Speeds are in knots. A few stations can't be represented in the format and are left out: reference currents without harmonic constants, and subordinate currents with a speed ratio of zero, which libtcd would read as "no ratio".
 
+### Nodal corrections
+
+A TCD file holds one table of node factors and equilibrium arguments per constituent, which every station shares, so it can't give each source the nodal corrections its constants were analyzed with. The export computes those tables with `@slackwater/engine`'s IHO formulas, from the catalog's line for each name, and leaves out a source's own definitions. Two sources analyze with other formulas:
+
+- NOAA analyzes with Schureman's, and defines SIGMA1 with O1's correction applied twice. Over January and July 2026 and December 2030, at 20 NOAA reference stations, IHO's formulas move hourly heights 0.0 to 1.0 mm RMS further from NOAA's own predictions than Schureman's.
+- Kartverket analyzes with Foreman's. Against Kartverket's own predictions at its 33 stations, hourly RMS is 5 to 10 mm with IHO's formulas and 0.5 to 6.8 mm with Foreman's.
+
+For predictions with each source's own formulas, read the `.tcdb` with `@slackwater/engine`, as [the database format](../../docs/database-format.md#constituent-definitions) describes.
+
 ## Usage
 
 Download the latest `slackwater-YYYYMMDD.tcd` from [releases](https://github.com/openwatersio/slackwater-database/releases).

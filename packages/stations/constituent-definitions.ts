@@ -1,6 +1,6 @@
 import {
   constituents as catalog,
-  defineConstituents,
+  createTidePredictor,
 } from "@slackwater/engine";
 import type {
   Coefficients,
@@ -23,7 +23,7 @@ import { sourceMetadata, type SourceMetadata } from "./sources.ts";
  * catalog line is stored once, under the catalog's name, with every alias the
  * catalog gives it, so a source's own definition of any spelling replaces it
  * whichever other stations the file holds. Throws on a name nothing defines, and
- * on a station whose definitions the engine would refuse.
+ * on a station whose definitions or nodal formulas the engine would refuse.
  */
 export function databaseConstituents(
   stations: StationInput[],
@@ -85,8 +85,9 @@ export function databaseConstituents(
         if (!mine.has(member)) needShared(member, d.name);
   }
 
-  // What each station's reader hands the engine, merged onto its catalog as
-  // the predictor does. One check per distinct set.
+  // What each station's reader hands the engine, with its source's nodal
+  // formulas, as an app predicts it. One check per distinct set; Foreman's
+  // refuse the same names at any valid latitude.
   const sharedIndex = definitionIndex(
     [...shared.values()],
     "shared definitions",
@@ -98,14 +99,24 @@ export function databaseConstituents(
     if (checked.has(key)) continue;
     checked.add(key);
     const mine = station.source ? own.get(station.source.name)! : new Map();
+    const nodeCorrections = station.source
+      ? sources.get(station.source.name)!.node_corrections
+      : undefined;
     try {
-      defineConstituents(stationDefinitions(names, mine, sharedIndex), catalog);
+      createTidePredictor(
+        names.map((name) => ({ name, amplitude: 1, phase: 0 })),
+        {
+          definitions: stationDefinitions(names, mine, sharedIndex),
+          ...(nodeCorrections ? { nodeCorrections } : {}),
+          ...(nodeCorrections === "foreman"
+            ? { latitude: station.latitude }
+            : {}),
+        },
+      );
     } catch (error) {
       throw new Error(
-        `${station.id}: the engine refuses its constituent definitions`,
-        {
-          cause: error,
-        },
+        `${station.id}: the engine refuses its constituent definitions or nodal formulas`,
+        { cause: error },
       );
     }
   }

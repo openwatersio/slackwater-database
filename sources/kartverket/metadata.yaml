@@ -5,3 +5,7 @@ authoritative: true
 # Kartverket's terms ask for "©Kartverket" with a link to kartverket.no. Keep in
 # step with the README's Attribution section.
 credit: "Source: © Kartverket / Norwegian Mapping Authority, Hydrographic Service, https://www.kartverket.no"
+# Kartverket analyzes with t_tide/UTide, whose nodal corrections are Foreman's,
+# taken at each gauge's latitude. Predicting with IHO's doubles the hourly RMS
+# against Kartverket's own predictions (sources/kartverket/validate.ts).
+node_corrections: foreman

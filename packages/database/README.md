@@ -31,21 +31,26 @@ Importing the package performs no database I/O or station decoding. `loadStation
 
 `db.byId(id)` binary-searches the database and caches the matching station's identity. `db.all` materializes every identity, including rejected records; `db.accepted` leaves out records rejected by quality evaluation. These collections reuse identities already decoded and are cached on first access. Every search function below takes `includeAll: true` to search the full catalog instead of the accepted subset.
 
-Prediction fields — `harmonic_constituents`, `constituent_definitions`, `node_corrections`, `datums`, `datums_source`, `datum_frame`, `datum_coverage`, `epoch`, and `datum_epoch` — remain getters that decode from the buffer on each access, without persistent caching. [See the format documentation](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md).
+Prediction fields — `harmonic_constituents`, `constituent_definitions`, `node_corrections`, `node_corrections_latitude`, `datums`, `datums_source`, `datum_frame`, `datum_coverage`, `epoch`, and `datum_epoch` — remain getters that decode from the buffer on each access, without persistent caching. [See the format documentation](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md).
 
 Predict with the station's own constituent definitions and nodal formulas, so each name means the line its source analyzed it on rather than whatever the engine's catalog holds:
 
 ```ts
 import { createTidePredictor } from "@slackwater/engine";
 
-const { constituent_definitions: definitions, node_corrections } = station;
+const {
+  constituent_definitions: definitions,
+  node_corrections,
+  node_corrections_latitude: latitude,
+} = station;
 const predictor = createTidePredictor(station.harmonic_constituents, {
   ...(definitions ? { definitions } : {}),
   nodeCorrections: node_corrections,
+  ...(latitude !== undefined ? { latitude } : {}),
 });
 ```
 
-`constituent_definitions` is undefined for a file written before definitions were stored. See [constituent definitions](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md#constituent-definitions).
+`node_corrections` is `"iho"`, `"schureman"` or `"foreman"`. Foreman's formulas take a latitude, `node_corrections_latitude`: the station's own, or its reference's for a subordinate. It is undefined for the other sets, which the engine refuses a latitude with. `constituent_definitions` is undefined for a file written before definitions were stored. See [constituent definitions](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md#constituent-definitions).
 
 The loader also accepts a source:
 

@@ -20,7 +20,10 @@ export interface SourceMetadata {
   /** The ISO alpha-2 countries whose gauges an authoritative
    *  provider operates. Absent means everywhere it publishes. */
   jurisdiction?: string[];
-  /** The nodal correction formulas the provider's constants were analyzed with. Absent means IHO. */
+  /**
+   * The nodal correction formulas the provider's constants were analyzed
+   * with. Absent means IHO. Foreman's take each station's latitude.
+   */
   node_corrections?: NodeCorrections;
   /**
    * Lines the provider means by a name that differ from `@slackwater/engine`'s
@@ -66,9 +69,12 @@ export function loadSources(dir = SOURCES_DIR): Map<string, SourceMetadata> {
     if (
       source.node_corrections !== undefined &&
       source.node_corrections !== "iho" &&
-      source.node_corrections !== "schureman"
+      source.node_corrections !== "schureman" &&
+      source.node_corrections !== "foreman"
     )
-      throw new Error(`${path}: node_corrections must be iho or schureman`);
+      throw new Error(
+        `${path}: node_corrections must be iho, schureman or foreman`,
+      );
     if (
       source.constituent_definitions !== undefined &&
       !Array.isArray(source.constituent_definitions)

@@ -200,6 +200,24 @@ final class StationDatabaseBuilderTests: XCTestCase {
     assertBuildFails(inputs, message)
   }
 
+  func testKeepsForemanCorrectionsAndRefusesASubordinateWithoutItsReference() throws {
+    var inputs = try fixture().map(StationInput.init)
+      .filter { ["test/reference", "test/subordinate"].contains($0.id) }
+    for i in inputs.indices { inputs[i].source?.nodeCorrections = .foreman }
+    let db = try StationDatabase(
+      data: StationDatabase.build(inputs, constituentDefinitions: Self.definitions))
+    XCTAssertEqual(try XCTUnwrap(db.station(id: "test/subordinate")).nodeCorrections, .foreman)
+    XCTAssertEqual(try XCTUnwrap(db.station(id: "test/subordinate")).nodeCorrectionsLatitude, 47.6)
+
+    // Alone, it would be predicted at its own latitude.
+    var subordinate = try XCTUnwrap(inputs.first { $0.id == "test/subordinate" })
+    subordinate.constituents = [Station.Constituent(name: "M2", amplitude: 1, phase: 0)]
+    assertBuildFails(
+      [subordinate],
+      "Station test/subordinate references missing station test/reference, and Foreman's nodal corrections take the reference's latitude"
+    )
+  }
+
   // Readers predict it from its reference's record, so its own constituents go unread.
   func testSkipsTheDefinitionCheckForASubordinateWhoseReferenceIsInTheFile() throws {
     let db = try fixture()

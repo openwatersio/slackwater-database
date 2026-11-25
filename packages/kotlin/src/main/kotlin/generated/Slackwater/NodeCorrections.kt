@@ -4,11 +4,14 @@ package Slackwater
 
 /**
  * The nodal correction formulas a source's constants were analyzed with.
+ * Foreman's take the latitude of the station whose constants are predicted:
+ * a subordinate's reference, otherwise the station itself.
  */
 @Suppress("unused")
 internal class NodeCorrections private constructor() {
     companion object {
         const val IHO: UByte = 0u
         const val Schureman: UByte = 1u
+        const val Foreman: UByte = 2u
     }
 }

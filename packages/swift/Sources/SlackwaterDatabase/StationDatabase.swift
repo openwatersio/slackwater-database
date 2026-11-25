@@ -607,7 +607,7 @@ public struct Station: Identifiable, @unchecked Sendable {
         constituentDefinitions: (0..<source.constituentDefinitionsCount).compactMap { index in
           source.constituentDefinitions(at: index).flatMap { ConstituentDefinition(raw: $0, root: root) }
         },
-        nodeCorrections: source.nodeCorrections == .schureman ? .schureman : .iho)
+        nodeCorrections: NodeCorrections(source.nodeCorrections))
     }
   }
 
@@ -820,9 +820,29 @@ public struct Station: Identifiable, @unchecked Sendable {
   }
 
   /// The nodal correction formulas a source's constants were analyzed with.
+  /// Foreman's take the latitude of the station whose constants are
+  /// predicted, `nodeCorrectionsLatitude`.
   public enum NodeCorrections: Hashable, Sendable {
     case iho
     case schureman
+    case foreman
+
+    /// A set this reader doesn't know reads as IHO's, as readers released before it did.
+    init(_ raw: Slackwater_NodeCorrections) {
+      switch raw {
+      case .schureman: self = .schureman
+      case .foreman: self = .foreman
+      default: self = .iho
+      }
+    }
+
+    var raw: Slackwater_NodeCorrections {
+      switch self {
+      case .iho: .iho
+      case .schureman: .schureman
+      case .foreman: .foreman
+      }
+    }
   }
 
   /// The definitions to hand the prediction engine for this station's
@@ -876,7 +896,14 @@ public struct Station: Identifiable, @unchecked Sendable {
   /// with, from its source; IHO when the file does not say. A subordinate
   /// reports its reference's.
   public var nodeCorrections: NodeCorrections {
-    predictionSource.raw.source?.nodeCorrections == .schureman ? .schureman : .iho
+    NodeCorrections(predictionSource.raw.source?.nodeCorrections ?? .iho)
+  }
+
+  /// The latitude Foreman's formulas take: the station's own, or its
+  /// reference's for a subordinate, whose constants it predicts with. Nil
+  /// unless `nodeCorrections` is `.foreman`.
+  public var nodeCorrectionsLatitude: Double? {
+    nodeCorrections == .foreman ? predictionSource.latitude : nil
   }
 
   var storedConstituents: [Constituent] {
