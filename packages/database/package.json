@@ -57,6 +57,14 @@
     "kdbush": "^4.0.2",
     "minisearch": "^7.2.0"
   },
+  "peerDependencies": {
+    "@slackwater/engine": ">=1.0.0-beta.14 || >=1.0.1-0"
+  },
+  "peerDependenciesMeta": {
+    "@slackwater/engine": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@slackwater/stations": "*",
     "@types/geokdbush": "^2.1.0",
