@@ -45,6 +45,8 @@ const predictor = createTidePredictor(station.harmonic_constituents, {
 });
 ```
 
+Use `@slackwater/engine` 1.0.0-beta.14 or later with this release, which the package declares as an optional peer dependency. Its M1 constants were fitted with that engine's M1 nodal correction, which the stored definitions don't carry; see [format version](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md#format-version).
+
 `constituent_definitions` is undefined for a file written before definitions were stored. See [constituent definitions](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md#constituent-definitions).
 
 The loader also accepts a source:

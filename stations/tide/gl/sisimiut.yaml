@@ -1,7 +1,7 @@
-# UHSLC 296A, Sisimiut in Greenland. TICON files it under Denmark.
-# DMI's Sisimiut fit is excluded on its height limits, so it has no record here to share.
+# UHSLC 296A, Sisimiut in Greenland. TICON files it under Denmark. It starts in September 1991, the month DMI's prediction header dates its observations from (09/1991 - 01/2002): https://ocean.dmi.dk/tides/2027/Sisimiut.t.txt
 sources:
   - ticon/sisimiut-296a-dnk-uhslc_rq
+  - dmi/2991460
 redirect_from:
   - /tides/dk/sisimiut/
 # Written by `npm run stations`. Do not edit.
@@ -12,11 +12,24 @@ computed:
       coastline: unverifiable
       quality:
         accepted: true
-        score: 82
+        score: 70
         factors:
           epoch: 0.393
           recency: 0.72
           source: 0.99
           quality: 1
           amplitude: 1
-          coverage: 0.809
+          coverage: 0.021
+    dmi/2991460:
+      position: [66.9418, -53.6753]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 45
+        factors:
+          epoch: 0
+          recency: 0
+          source: 0.495
+          quality: 1
+          amplitude: 1
+          coverage: 0.021

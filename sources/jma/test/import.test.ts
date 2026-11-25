@@ -9,11 +9,51 @@ import {
   refreshSnapshot,
 } from "../import.ts";
 import { createHash } from "node:crypto";
+import { createTidePredictor } from "@slackwater/engine";
+import { DATA_DIR } from "@slackwater/stations";
+import type { StationData } from "@slackwater/database";
 import { validate } from "../validate.ts";
+import { parsePredictions } from "../jma.ts";
 it("verifies all pinned constants and seasonal predictions", async () => {
   expect((await verifySnapshot()).harmonics).toHaveLength(70);
-  expect(await validate()).toHaveLength(16);
+  expect(await validate()).toHaveLength(24);
 });
+// Uno and Takamatsu carry 18 to 19 mm of MP1. Read against the engine's MP1
+// phase constant, their four pinned weeks differ from JMA's predictions by
+// about 12 mm RMS; with MP1 turned back 90°, as engines before beta.14 read
+// it, by about 25 mm.
+async function pinnedRms(id: string, mp1Turn: number) {
+  const { contents } = await verifySnapshot();
+  const station = JSON.parse(
+    await readFile(join(DATA_DIR, "jma", `${id}.json`), "utf8"),
+  ) as StationData;
+  const predictor = createTidePredictor(
+    station.harmonic_constituents.map((c) =>
+      c.name === "MP1" ? { ...c, phase: c.phase + mp1Turn } : c,
+    ),
+  );
+  const errors = [...contents]
+    .filter(
+      ([path]) =>
+        path.startsWith(`${id}-`) && path.endsWith("-predictions.html"),
+    )
+    .flatMap(([, html]) => parsePredictions(html))
+    .map(
+      (p) =>
+        predictor.getWaterLevelAtTime({ time: p.time }).level -
+        station.datums["CD"]! -
+        p.level,
+    );
+  expect(errors).toHaveLength(4 * 168);
+  return Math.sqrt(errors.reduce((s, e) => s + e * e, 0) / errors.length);
+}
+it.each(["UN", "TA"])(
+  "%s matches JMA's predictions only with MP1 on the engine's phase constant",
+  async (id) => {
+    expect(await pinnedRms(id, 0)).toBeLessThan(0.016);
+    expect(await pinnedRms(id, -90)).toBeGreaterThan(0.016);
+  },
+);
 it("preserves data when a page changes", async () => {
   const root = await mkdtemp(join(tmpdir(), "jma-test-"));
   try {
