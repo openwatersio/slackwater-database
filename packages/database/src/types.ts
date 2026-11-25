@@ -308,8 +308,8 @@ export interface Station extends StationData {
   node_corrections: NodeCorrections;
   /**
    * The latitude Foreman's formulas take, `@slackwater/engine`'s `latitude`
-   * option: the station's own, or its reference's for a subordinate, whose
-   * constants it predicts with. Present only when `node_corrections` is
+   * option: the station's own, or its reference's for a tide subordinate,
+   * whose constants it predicts with. Present only when `node_corrections` is
    * `"foreman"`, since the engine refuses a latitude with another set.
    */
   node_corrections_latitude?: number;

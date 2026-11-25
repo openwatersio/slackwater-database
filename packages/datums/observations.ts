@@ -1,8 +1,15 @@
 import {
   createTidePredictor,
   type HarmonicConstituent,
+  type TidePredictionOptions,
 } from "@slackwater/engine";
 import { resolveEpoch, type Sample } from "./datum.ts";
+
+/** Engine options for the predictions that fill gaps: definitions and nodal formulas. */
+export type GapPredictionOptions = Pick<
+  TidePredictionOptions,
+  "definitions" | "nodeCorrections" | "latitude"
+>;
 
 const HOUR_MS = 3600000;
 // Project eligibility limits, not an equivalence to NOAA's datum epoch.
@@ -25,8 +32,9 @@ export interface PreparedDatumObservations {
 export function prepareDatumObservations(
   samples: Sample[],
   constituents: HarmonicConstituent[],
+  options: GapPredictionOptions = {},
 ): PreparedDatumObservations | null {
-  const prepared = prepareHourlyObservations(samples, constituents);
+  const prepared = prepareHourlyObservations(samples, constituents, options);
   if (!prepared) return null;
   let runMonths = 0,
     bestMonths = 0,
@@ -75,8 +83,9 @@ export function prepareDatumObservations(
 export function observedMeanLevel(
   samples: Sample[],
   constituents: HarmonicConstituent[] = [],
+  options: GapPredictionOptions = {},
 ): number | undefined {
-  const prepared = prepareHourlyObservations(samples, constituents);
+  const prepared = prepareHourlyObservations(samples, constituents, options);
   if (!prepared) return undefined;
   const seasons = Array.from({ length: YEAR_MONTHS }, () => [] as number[]);
   for (const month of calendarMonths(prepared))
@@ -94,6 +103,7 @@ export function observedMeanLevel(
 function prepareHourlyObservations(
   samples: Sample[],
   constituents: HarmonicConstituent[],
+  options: GapPredictionOptions,
 ): HourlyPreparation | null {
   const hourly = hourlyWindow(samples);
   if (!hourly.length) return null;
@@ -126,7 +136,7 @@ function prepareHourlyObservations(
     const hour = Math.floor(+p.time / HOUR_MS);
     profiles.get(hour)?.push(+p.time - hour * HOUR_MS);
   }
-  const predictor = createTidePredictor(constituents),
+  const predictor = createTidePredictor(constituents, options),
     predictions = new Map<number, number>();
   const prediction = (time: number) => {
     if (!predictions.has(time))

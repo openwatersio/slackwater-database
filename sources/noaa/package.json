@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "import": "node import.ts"
+    "import": "node import.ts",
+    "report:predictions": "node report-predictions.ts"
   },
   "dependencies": {
     "@slackwater/stations": "*",

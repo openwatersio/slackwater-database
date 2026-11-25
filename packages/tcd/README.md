@@ -10,8 +10,8 @@ Current stations are named `<Name>, <Region> Current`, with the NOAA station id 
 
 A TCD file holds one table of node factors and equilibrium arguments per constituent, which every station shares, so it can't give each source the nodal corrections its constants were analyzed with. The export computes those tables with `@slackwater/engine`'s IHO formulas, from the catalog's line for each name, and leaves out a source's own definitions. Two sources analyze with other formulas:
 
-- NOAA analyzes with Schureman's, and defines SIGMA1 with O1's correction applied twice. Over January and July 2026 and December 2030, at 20 NOAA reference stations, IHO's formulas move hourly heights 0.0 to 1.0 mm RMS further from NOAA's own predictions than Schureman's.
-- Kartverket analyzes with Foreman's. Against Kartverket's own predictions at its 33 stations, hourly RMS is 5 to 10 mm with IHO's formulas and 0.5 to 6.8 mm with Foreman's.
+- NOAA analyzes with Schureman's. The database also gives NOAA's SIGMA1 O1's correction twice, as its one station with SIGMA1, Anchorage, fits best. Over January and July 2026 and December 2030, at 20 NOAA reference stations, IHO's formulas and the catalog put hourly heights 0.0 to 1.0 mm RMS further from NOAA's own predictions than NOAA's set does (`npm run report:predictions -w sources/noaa`).
+- Kartverket analyzes with Foreman's. Against Kartverket's own predictions at its 33 stations, hourly RMS is 5.0 to 10.3 mm with IHO's formulas and 0.5 to 6.8 mm with Foreman's (`npm run validate -w sources/kartverket`).
 
 For predictions with each source's own formulas, read the `.tcdb` with `@slackwater/engine`, as [the database format](../../docs/database-format.md#constituent-definitions) describes.
 

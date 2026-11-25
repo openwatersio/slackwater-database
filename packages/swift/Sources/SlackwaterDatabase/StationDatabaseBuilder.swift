@@ -303,7 +303,8 @@ extension StationDatabase {
   /// names aren't checked and the file has no definitions, as one written
   /// before them. Stations whose sources share a name must carry the same
   /// definitions and node corrections. A subordinate of a source with Foreman's
-  /// corrections needs its tide reference in the file, whose latitude they take.
+  /// corrections needs its tide reference in the file, whose latitude they take,
+  /// and such a source can't have current subordinates.
   ///
   /// Throws `StationDatabaseBuildError` for what `buildDatabase` refuses, with
   /// these differences: `country` is not matched against `countryCode`, integer
@@ -954,6 +955,13 @@ private func requireIdentity(_ station: StationInput) throws {
 /// them, and a current's tide reference can live in another file.
 private func requireReferencedData(_ stations: [StationInput]) throws {
   let ids = Set(stations.map(\.id))
+  // Readers don't resolve a current subordinate's reference, so Foreman's
+  // corrections would take its own latitude rather than its reference's.
+  for station in stations
+  where station.current?.offsets != nil && station.source?.nodeCorrections == .foreman {
+    throw StationDatabaseBuildError(
+      "Station \(station.id): a current subordinate can't take its reference's latitude, which Foreman's nodal corrections need")
+  }
   for station in stations where station.type == .subordinate {
     guard let reference = station.tideOffsets?.reference, !ids.contains(reference) else {
       continue

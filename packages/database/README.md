@@ -50,7 +50,7 @@ const predictor = createTidePredictor(station.harmonic_constituents, {
 });
 ```
 
-`node_corrections` is `"iho"`, `"schureman"` or `"foreman"`. Foreman's formulas take a latitude, `node_corrections_latitude`: the station's own, or its reference's for a subordinate. It is undefined for the other sets, which the engine refuses a latitude with. `constituent_definitions` is undefined for a file written before definitions were stored. See [constituent definitions](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md#constituent-definitions).
+`node_corrections` is `"iho"`, `"schureman"` or `"foreman"`. Foreman's formulas take a latitude, `node_corrections_latitude`: the station's own, or its reference's for a tide subordinate. It is undefined for the other sets, which the engine refuses a latitude with. Predicting with `"foreman"` needs an `@slackwater/engine` with Foreman prediction ([slackwater#564](https://github.com/openwatersio/slackwater/pull/564)); an older engine throws on it. `constituent_definitions` is undefined for a file written before definitions were stored. See [constituent definitions](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md#constituent-definitions).
 
 The loader also accepts a source:
 

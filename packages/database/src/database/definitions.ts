@@ -108,6 +108,16 @@ export function checkDefinitions(
     shared.size > 0 || sourcesChangePredictions(stations, constituents);
   const ids = new Set(stations.map((s) => s.id));
   for (const s of stations) {
+    // Readers don't resolve a current subordinate's reference, so Foreman's
+    // formulas would take its own latitude rather than its reference's.
+    if (
+      s.current?.offsets &&
+      constituents.sources?.get(s.source?.name ?? "")?.node_corrections ===
+        "foreman"
+    )
+      throw new Error(
+        `${s.id}: a current subordinate can't take its reference's latitude, which Foreman's nodal corrections need`,
+      );
     // Readers take a subordinate's constituents from its reference when the
     // reference is in the file, so its own record is never read for them.
     if (s.type === "subordinate" && s.offsets && ids.has(s.offsets.reference))

@@ -101,3 +101,29 @@ export function sourceMetadata(name: string | undefined): SourceMetadata {
     );
   return source;
 }
+
+/**
+ * The engine options that predict a station's constants as its source
+ * analyzed them: the source's own definitions over the engine's catalog, its
+ * nodal formulas, and the latitude Foreman's take. A subordinate's constants
+ * are its reference's, so pass the reference.
+ */
+export function predictionOptions(station: {
+  source: { name: string };
+  latitude: number;
+}): {
+  definitions?: ConstituentDefinition[];
+  nodeCorrections?: NodeCorrections;
+  latitude?: number;
+} {
+  const { node_corrections, constituent_definitions } = sourceMetadata(
+    station.source.name,
+  );
+  return {
+    ...(constituent_definitions?.length
+      ? { definitions: constituent_definitions }
+      : {}),
+    ...(node_corrections ? { nodeCorrections: node_corrections } : {}),
+    ...(node_corrections === "foreman" ? { latitude: station.latitude } : {}),
+  };
+}

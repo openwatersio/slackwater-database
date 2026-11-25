@@ -263,6 +263,32 @@ describe("constituent definitions", () => {
     );
   });
 
+  test("a current subordinate of a Foreman source is refused", () => {
+    expect(() =>
+      build(
+        [
+          station("k/ref", "Kartverket", ["M2"], { latitude: 60.4 }),
+          station("k/cur", "Kartverket", [], {
+            latitude: 61,
+            current: {
+              flood_direction: 90,
+              ebb_direction: 270,
+              offsets: { reference: "k/ref", flood_speed_ratio: 0.8 },
+            },
+          }),
+        ],
+        {
+          ...shared,
+          sources: new Map([
+            ["Kartverket", { node_corrections: "foreman" as const }],
+          ]),
+        },
+      ),
+    ).toThrow(
+      "k/cur: a current subordinate can't take its reference's latitude, which Foreman's nodal corrections need",
+    );
+  });
+
   test("a file written before definitions has none to read", async () => {
     const db = await loadStations(
       new Uint8Array(

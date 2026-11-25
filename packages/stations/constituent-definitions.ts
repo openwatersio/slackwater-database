@@ -86,8 +86,10 @@ export function databaseConstituents(
   }
 
   // What each station's reader hands the engine, with its source's nodal
-  // formulas, as an app predicts it. One check per distinct set; Foreman's
-  // refuse the same names at any valid latitude.
+  // formulas, as an app predicts it. One check per distinct set. The engine
+  // refuses a catalog line Foreman's formulas don't cover only when the line
+  // comes from its own catalog, not from a copy passed as a definition, so
+  // the formulas are checked again with only the source's own definitions.
   const sharedIndex = definitionIndex(
     [...shared.values()],
     "shared definitions",
@@ -95,24 +97,33 @@ export function databaseConstituents(
   const checked = new Set<string>();
   for (const station of stations) {
     const names = [...new Set(stored(station))].sort();
-    const key = `${station.source?.name}\0${names.join("\0")}`;
-    if (checked.has(key)) continue;
-    checked.add(key);
     const mine = station.source ? own.get(station.source.name)! : new Map();
     const nodeCorrections = station.source
       ? sources.get(station.source.name)!.node_corrections
       : undefined;
+    // Foreman's formulas also depend on the latitude.
+    const key = `${station.source?.name}\0${names.join("\0")}${nodeCorrections === "foreman" ? `\0${station.latitude}` : ""}`;
+    if (checked.has(key)) continue;
+    checked.add(key);
+    const formulas = {
+      ...(nodeCorrections ? { nodeCorrections } : {}),
+      ...(nodeCorrections === "foreman" ? { latitude: station.latitude } : {}),
+    };
+    const constituents = names.map((name) => ({
+      name,
+      amplitude: 1,
+      phase: 0,
+    }));
     try {
-      createTidePredictor(
-        names.map((name) => ({ name, amplitude: 1, phase: 0 })),
-        {
-          definitions: stationDefinitions(names, mine, sharedIndex),
-          ...(nodeCorrections ? { nodeCorrections } : {}),
-          ...(nodeCorrections === "foreman"
-            ? { latitude: station.latitude }
-            : {}),
-        },
-      );
+      createTidePredictor(constituents, {
+        definitions: stationDefinitions(names, mine, sharedIndex),
+        ...formulas,
+      });
+      if (nodeCorrections && nodeCorrections !== "iho")
+        createTidePredictor(constituents, {
+          definitions: [...new Set(mine.values())],
+          ...formulas,
+        });
     } catch (error) {
       throw new Error(
         `${station.id}: the engine refuses its constituent definitions or nodal formulas`,

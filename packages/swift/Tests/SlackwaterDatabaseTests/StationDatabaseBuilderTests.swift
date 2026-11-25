@@ -218,6 +218,15 @@ final class StationDatabaseBuilderTests: XCTestCase {
     )
   }
 
+  func testRefusesACurrentSubordinateOfAForemanSource() throws {
+    var inputs = try fixture().map(StationInput.init)
+    for i in inputs.indices { inputs[i].source?.nodeCorrections = .foreman }
+    assertBuildFails(
+      inputs,
+      "Station test/current: a current subordinate can't take its reference's latitude, which Foreman's nodal corrections need"
+    )
+  }
+
   // Readers predict it from its reference's record, so its own constituents go unread.
   func testSkipsTheDefinitionCheckForASubordinateWhoseReferenceIsInTheFile() throws {
     let db = try fixture()
