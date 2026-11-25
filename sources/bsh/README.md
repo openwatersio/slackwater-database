@@ -33,7 +33,7 @@ CI does not run it, because it needs the network. Responses are cached under `tm
 
 ## Findings
 
-For 2026, 96 gauges match. Every one of our stations predicts earlier than BSH on average; the median bias is −12.4 minutes and the median scatter is 15.8 minutes. Coastal and island gauges are within a few minutes, such as Helgoland at −4.5 ± 8.7 minutes. Upper estuary gauges are much worse, and almost entirely at low water: St. Pauli is −22.1 ± 20.2 minutes, and Herbrum on the Ems is −37.2 ± 49.2 with low waters 75 minutes early on average. These are differences from another prediction, not from observations. Against one month of Pegelonline observations at four gauges, BSH's scatter was 1.6–8.1 minutes smaller than ours at each, which suggests most of the gap is in our stations.
+For 2026, 96 gauges match. Every one of our stations predicts earlier than BSH on average; the median bias is −12.3 minutes and the median scatter is 15.8 minutes. Coastal and island gauges are within a few minutes, such as Helgoland at −4.5 ± 8.7 minutes. Upper estuary gauges are much worse, and almost entirely at low water: St. Pauli is −22.0 ± 20.2 minutes, and Herbrum on the Ems is −37.2 ± 49.2 with low waters 75 minutes early on average. These are differences from another prediction, not from observations. Against one month of Pegelonline observations at four gauges, BSH's scatter was 1.6–8.1 minutes smaller than ours at each, which suggests most of the gap is in our stations.
 
 ## Terms
 
