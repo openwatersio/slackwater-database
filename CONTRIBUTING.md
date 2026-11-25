@@ -4,7 +4,7 @@ The project layout, local setup, the checks CI runs, how a release is cut, and t
 
 Every change follows the org-wide [rigor rules](https://github.com/openwatersio/.github/blob/main/docs/agents/rigor.md). The first of them: when something fails or looks wrong, find the cause and fix it there instead of working around it.
 
-See the org-wide [writing style](https://github.com/openwatersio/github/blob/main/docs/agents/writing-style.md) for prose in commits, pull requests, issues, and docs.
+See the org-wide [writing style](https://github.com/openwatersio/.github/blob/main/docs/agents/writing-style.md) for prose in commits, pull requests, issues, and docs.
 
 ## Scientific accuracy
 
