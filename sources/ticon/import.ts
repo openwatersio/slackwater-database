@@ -4,6 +4,7 @@ import { readFile } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import {
+  countryByNameOrCode,
   parseCSV,
   groupBy,
   normalize,
@@ -34,10 +35,15 @@ import {
 import {
   checkCorrections,
   correctPosition,
+  correctCountry,
   matchMetadata,
   type TiconMetaRow,
 } from "./meta.ts";
-import { reduceTiconDatums, cachedDatumNotice } from "./datums.ts";
+import {
+  reduceTiconDatums,
+  cachedDatumNotice,
+  restoreCachedCountryDatum,
+} from "./datums.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const metaPath = join(__dirname, "..", "..", "tmp", "TICON-4", "meta.csv");
@@ -157,19 +163,27 @@ async function main() {
         360,
     }));
 
-    // WSV, RWS and the early Hong Kong gauges have GESLA times that are not
-    // UTC, so TICON's phases are not UTC-referenced; re-fit them from the raw
-    // water levels. See #96 and #360.
-    const harmonic_constituents = await getHarmonics(id, csvHarmonics);
-
     const epoch = {
       start: dayMonthYearToDate(rows[0].start_date),
       end: dayMonthYearToDate(rows[0].end_date),
     };
 
+    const country = correctCountry(id, rows[0].country);
+    const countryCode = countryByNameOrCode(country)?.iso2;
+    if (!countryCode) {
+      console.error(`\nError processing ${id}: Unknown country: ${country}`);
+      errors++;
+      process.stdout.write("x");
+      continue;
+    }
+
+    // Refit gauges whose published phases are not UTC-referenced.
+    const harmonic_constituents = await getHarmonics(id, csvHarmonics);
+
     try {
       const { datum_notice, ...datumResult } = await getDatums(
         id,
+        countryCode,
         epoch,
         harmonic_constituents,
       );
@@ -179,7 +193,8 @@ async function main() {
 
       const candidate: PartialStationData = {
         name: gesla["SITE NAME"],
-        country: rows[0].country,
+        country,
+        country_code: countryCode,
         latitude: lat,
         longitude: lon,
         type: "reference",
@@ -240,6 +255,7 @@ async function main() {
  */
 async function getDatums(
   id: string,
+  countryCode: string,
   obsEpoch: { start: Date; end: Date },
   harmonic_constituents: PartialStationData["harmonic_constituents"],
 ) {
@@ -274,8 +290,16 @@ async function getDatums(
           existing.harmonic_constituents,
           roundConstituents("ticon", harmonic_constituents),
         )
-      )
-        return { datums: existing.datums, ...cached, datum_notice };
+      ) {
+        if (existing.datums) {
+          const datums = restoreCachedCountryDatum(
+            countryCode,
+            existing.datums,
+            harmonic_constituents,
+          );
+          if (datums) return { datums, ...cached, datum_notice };
+        }
+      }
     }
   }
 

@@ -1,5 +1,9 @@
-import type { PartialStationData } from "@slackwater/stations";
 import {
+  countrySpecificDatum,
+  type PartialStationData,
+} from "@slackwater/stations";
+import {
+  computeDatums,
   computeDatumsFromObservations,
   observedMeanLevel,
   toFixed,
@@ -110,6 +114,21 @@ export function cachedDatumNotice(
   return notice && station.disclaimers?.includes(HARMONIC_REDUCTION_NOTICE)
     ? `${notice} ${HARMONIC_REDUCTION_NOTICE}`
     : undefined;
+}
+
+export function restoreCachedCountryDatum(
+  countryCode: string,
+  datums: Datums,
+  constituents: PartialStationData["harmonic_constituents"],
+): Datums | undefined {
+  const datum = countrySpecificDatum(countryCode);
+  if (!datum || Number.isFinite(datums[datum])) return datums;
+  const msl = datums["MSL"];
+  if (msl === undefined || !Number.isFinite(msl)) return undefined;
+  const harmonic = computeDatums(constituents, {}).datums[datum];
+  return harmonic === undefined
+    ? datums
+    : { ...datums, ...shiftHarmonicDatums({ [datum]: harmonic }, msl) };
 }
 
 export function storedDatumNotice(

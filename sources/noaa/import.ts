@@ -114,16 +114,18 @@ async function buildStation(meta: any): Promise<StationData> {
   // Territories are published as their own country, so they stay geocoded.
   const stateless =
     !meta.state || ["PR", "VI", "GU", "AS", "FM"].includes(meta.state);
+  const location = stateless ? geocoder.nearest(meta.lat, meta.lng) : null;
   const {
     country = "United States",
     continent = "North America",
     region = meta.state || undefined,
-  } = (stateless && geocoder.nearest(meta.lat, meta.lng)) || {};
+  } = location || {};
 
   const station: Partial<StationData> = {
     name: meta.name,
     continent,
     country,
+    country_code: location?.place.countryCode ?? "US",
     region,
     type: meta.type == "S" ? "subordinate" : "reference",
     latitude: meta.lat,

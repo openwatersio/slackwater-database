@@ -6,6 +6,12 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 5
     groups:
+      # Dependabot puts each dependency in the first group it matches, so this
+      # stays above npm-minor-and-patch. country-code-lookup ships breaking
+      # changes in patch releases and needs its own review.
+      country-code-lookup:
+        patterns:
+          - "country-code-lookup"
       npm-minor-and-patch:
         patterns:
           - "*"

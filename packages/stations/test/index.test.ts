@@ -1,3 +1,4 @@
+import { countryForRecord } from "../country.ts";
 import { describe, test, expect } from "vitest";
 import { readFile } from "fs/promises";
 import { join } from "path";
@@ -450,11 +451,11 @@ describe("gauge deduplication", () => {
     });
   });
 
-  test("NOAA's jurisdiction names countries its records use", () => {
+  test("NOAA's jurisdiction codes match countries its records use", () => {
     const countries = new Set(
       allTideStations
         .filter((s) => s.id.startsWith("noaa/"))
-        .map((s) => s.country),
+        .map((s) => countryForRecord(s)?.iso2),
     );
     const { jurisdiction } = sourceMetadata(
       "US National Oceanic and Atmospheric Administration",
@@ -588,6 +589,12 @@ describe("gauge deduplication", () => {
   });
 
   test("Roseau's mislabelled fast-delivery record has its UHSLC gauge key", () => {
+    expect(gaugeKey("kaohsiung-340a-chn-uhslc_rq")).toBe(
+      gaugeKey("kaohsiung-340-twn-uhslc_fd"),
+    );
+    expect(gaugeKey("keelung-341a-chn-uhslc_rq")).toBe(
+      gaugeKey("keelung-341-twn-uhslc_fd"),
+    );
     expect(gaugeKey("roseau-786-dom-uhslc_fd")).toBe("roseau-786-dma");
     expect(gaugeKey("roseau-786a-dma-uhslc_rq")).toBe("roseau-786-dma");
   });

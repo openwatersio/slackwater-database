@@ -20,16 +20,18 @@
     "report:chs-fit-age": "node check-chs-fit-age.ts",
     "report:merges": "node merge-report.ts",
     "report:quality": "node evaluate-quality.ts",
+    "refresh:country-codes": "node backfill-country-codes.ts",
     "refresh:lat-hat": "node backfill-lat-hat.ts",
     "refresh:harmonic-datums": "node regenerate-harmonic-datums.ts",
-    "merge": "node merge-report.ts --apply"
+    "merge": "node merge-report.ts --apply",
+    "report:country-resolver": "node ../../spikes/country-resolver/report.ts"
   },
   "dependencies": {
     "@slackwater/datums": "*",
     "@turf/boolean-point-in-polygon": "^7.4.0",
     "@turf/helpers": "^7.4.0",
     "country-code-lookup": "^0.2.1",
-    "geo-tz": "^8.1.10",
+    "geo-tz": "^8.1.11",
     "geokdbush": "^2.0.1",
     "kdbush": "^4.0.2",
     "make-fetch-happen": "^16.0.0",
@@ -42,7 +44,7 @@
     "@types/make-fetch-happen": "^10.0.4",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
-    "prettier": "^3.9.10",
-    "vitest": "^5.0.5"
+    "prettier": "^3.10.1",
+    "vitest": "^5.1.1"
   }
 }

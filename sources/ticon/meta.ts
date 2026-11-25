@@ -154,3 +154,13 @@ export function checkCorrections(positions: Map<string, Position>): void {
     correctPosition(id, published);
   }
 }
+
+export function correctCountry(id: string, published: string): string {
+  // IOC station catalogue: SSC-kaoh (UHSLC 340) and SSC-keel (UHSLC 341).
+  if (
+    id === "kaohsiung-340a-chn-uhslc_rq" ||
+    id === "keelung-341a-chn-uhslc_rq"
+  )
+    return "Taiwan";
+  return published;
+}

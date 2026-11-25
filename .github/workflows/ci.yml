@@ -153,7 +153,9 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: |
+            17
+            25
           cache: gradle
           cache-dependency-path: |
             packages/kotlin/**/*.gradle.kts
@@ -172,6 +174,11 @@ jobs:
           git diff --exit-code -- packages/kotlin/src
           test -z "$(git status --porcelain -- packages/kotlin/src)"
 
+      - name: Configure JDK 17 toolchain discovery
+        run: |
+          mkdir -p "$HOME/.gradle"
+          echo 'org.gradle.java.installations.fromEnv=JAVA_HOME_17_X64,JAVA_HOME_17_ARM64' >> "$HOME/.gradle/gradle.properties"
+
       - name: Run Kotlin tests
         run: npm run test:kotlin -w kotlin
         env:
@@ -180,6 +187,10 @@ jobs:
       - name: Test source consumer
         working-directory: packages/kotlin
         run: ./gradlew -p smoke run --args="$PWD/src/test/fixture.tcdb"
+
+      - name: Test source consumer with Gradle on JDK 17
+        working-directory: packages/kotlin
+        run: JAVA_HOME="${JAVA_HOME_17_X64:-${JAVA_HOME_17_ARM64:?JDK 17 not installed}}" ./gradlew -p smoke run --rerun-tasks --args="$PWD/src/test/fixture.tcdb"
 
   lint:
     runs-on: ubuntu-latest
