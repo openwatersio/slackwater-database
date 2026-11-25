@@ -71,7 +71,7 @@ const out = [
   "",
   "## Confident",
   "",
-  "Declared provenance, a CMEMS copy of the one station of its name within 50 m whose M2 agrees, a gauge code shared within 2 km whose M2 agrees, or a CHS record and the one provider station of its name within 1 km, or 25 km for a MEDS record, unless SEPARATE_TWINS lists the pair. `npm run merge` makes these.",
+  "Declared provenance, a Stillwell fit and a TICON record whose series Stillwell matched by hourly levels within 1 cm, a CMEMS copy of the one station of its name within 50 m whose M2 agrees, a gauge code shared within 2 km whose M2 agrees, or a CHS record and the one provider station of its name within 1 km, or 25 km for a MEDS record, unless SEPARATE_TWINS lists the pair. `npm run merge` makes these.",
   "",
   ...confident.groups.map(line),
   "",

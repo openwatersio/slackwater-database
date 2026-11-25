@@ -54,6 +54,9 @@ import {
   SEASONAL_OUTLIER_RATIO,
   SEASONAL_DOMINANCE_RATIO,
   PRINCIPAL_TIDAL_CONSTITUENTS,
+  constituentsDigest,
+  scoresWorse,
+  STILLWELL_AGENCIES,
 } from "./filtering.ts";
 import type { StationData } from "@slackwater/database";
 import {
@@ -592,11 +595,17 @@ export function scoreRecency(
 /** Source confidence: agency authority, DMI prediction-fit rank, or TICON provider priority. */
 export function scoreSource(station: Station): number {
   // Prediction fits have no gauge-authority claim; their midrank is independent of TICON suffixes.
+  // A fit from Stillwell ranks as its agency's own TICON relay does.
+  const agency = heldOutOf(station)
+    ? STILLWELL_AGENCIES[station.id.split("/")[0]!]
+    : undefined;
   const priority = isAuthoritative(station)
     ? 0
     : station.id.startsWith("dmi/")
       ? 50
-      : getSourcePriority(station.source.id);
+      : agency
+        ? getSourcePriority(`-${agency}`)
+        : getSourcePriority(station.source.id);
   return toFixed(Math.max(0, 1 - priority / 99));
 }
 
@@ -1042,6 +1051,72 @@ export function deduplicateByGauge(
   }
 }
 
+/** A Stillwell fit's held-out scores (sources/stillwell): its tidal-band
+ *  residual on a year it didn't see, and each TICON record's of the same
+ *  gauge, by TICON id, with the standard error of the difference (null where
+ *  the year can't measure it) and a digest of the constants scored. */
+interface HeldOut {
+  year: number;
+  rms: number;
+  ticon: Record<string, { rms: number; se: number | null; digest: string }>;
+}
+
+function heldOutOf(station: Station): HeldOut | null | undefined {
+  return (
+    station.source as { stillwell?: { held_out: HeldOut | null } }
+  ).stillwell?.held_out;
+}
+
+/**
+ * The held-out decision between a Stillwell fit and the TICON records of its
+ * gauge, which Stillwell links to it by matching levels. The fit replaces
+ * them only when it predicts the held-out year no worse than every one of
+ * them, beyond the measurement error (scoresWorse), measured for each. A
+ * record whose analysis covered that year still counts: the year favors it,
+ * so a fit that wins anyway replaces it. Where the error can't be measured,
+ * or a score was taken against constants that have since changed, TICON
+ * stays. Then the fit is a duplicate of the best-scored of them.
+ */
+export function decideHeldOut(
+  stationIds: string[],
+  stationMap: Map<string, Station>,
+  resultsMap: Map<string, QualityResult>,
+): void {
+  for (const id of stationIds) {
+    const heldOut = heldOutOf(stationMap.get(id)!);
+    if (!heldOut || !resultsMap.get(id)!.accepted) continue;
+    const result = resultsMap.get(id)!;
+    const scored = Object.entries(heldOut.ticon).flatMap(([ticon, score]) => {
+      const relay = stationMap.get(`ticon/${ticon}`);
+      if (!relay || !resultsMap.get(relay.id)!.accepted) return [];
+      const current =
+        score.digest === constituentsDigest(relay.harmonic_constituents);
+      if (!current)
+        result.issues.push(
+          `Held-out scores were taken against ${relay.id}'s constants as they were before; run the Stillwell import again`,
+        );
+      return [{ id: relay.id, ...score, current }];
+    });
+    if (!scored.length) continue;
+    const wins = scored.every(
+      (s) => s.current && s.se !== null && !scoresWorse(heldOut.rms, s.rms, s.se),
+    );
+    if (wins) {
+      for (const { id: relay } of scored)
+        markDuplicate(resultsMap, stationMap, relay, id);
+    } else {
+      const best = [...scored].sort((a, b) => a.rms - b.rms)[0]!;
+      const unmeasured = scored.filter((s) => s.se === null).map((s) => s.id);
+      result.issues.push(
+        unmeasured.length
+          ? `The held-out year ${heldOut.year} can't measure the difference from ${unmeasured.join(", ")}, so TICON stays`
+          : `Predicts the held-out year ${heldOut.year} worse than ${best.id} (${(heldOut.rms * 1000).toFixed(1)} mm against ${(best.rms * 1000).toFixed(1)} mm)`,
+      );
+      markDuplicate(resultsMap, stationMap, id, best.id);
+    }
+  }
+}
+
 /** Point every duplicate at the record that is published for its gauge. A
  *  gauge's best record can itself lose to a nearby record in the proximity
  *  pass, which would otherwise leave its own duplicates pointing at a record
@@ -1156,10 +1231,14 @@ export async function evaluateQuality(): Promise<QualityResult[]> {
   // Step 4: Deduplicate
   const subordinateCounts = countSubordinates(stations, resultsMap);
 
-  // 4a: Collapse same-gauge records (shared station code) regardless of distance.
+  // 4a: A Stillwell fit against the TICON records of its gauge, on a year
+  // the fit didn't see.
   const acceptedIds = stations
     .filter((s) => resultsMap.get(s.id)!.accepted)
     .map((s) => s.id);
+  decideHeldOut(acceptedIds, stationMap, resultsMap);
+
+  // 4b: Collapse same-gauge records (shared station code) regardless of distance.
   const gaugeIds = stations
     .filter((s) => {
       const result = resultsMap.get(s.id)!;
@@ -1168,7 +1247,7 @@ export async function evaluateQuality(): Promise<QualityResult[]> {
     .map((s) => s.id);
   deduplicateByGauge(gaugeIds, stationMap, resultsMap, subordinateCounts);
 
-  // 4b: Deduplicate the survivors by proximity and harmonic similarity.
+  // 4c: Deduplicate the survivors by proximity and harmonic similarity.
   const survivingIds = acceptedIds.filter((id) => resultsMap.get(id)!.accepted);
   const positions = new Map<string, Station[]>();
   for (const id of acceptedIds) {

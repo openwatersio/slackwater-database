@@ -36,6 +36,7 @@ import {
   isAuthoritative,
   m2Contradicts,
   MAX_PROVENANCE_KM,
+  sameGaugeLevels,
 } from "./filtering.ts";
 import { toSlug } from "./routes.ts";
 import type { ResolvedStation } from "./metadata.ts";
@@ -120,7 +121,7 @@ export const isCurated = (station: { source?: { name: string } }) =>
   station.source?.name === CHS;
 
 export type Evidence =
-  "provenance" | "copy" | "gauge" | "curated" | "proximity";
+  "provenance" | "stillwell" | "copy" | "gauge" | "curated" | "proximity";
 
 export interface MergeMember {
   id: string;
@@ -328,6 +329,31 @@ export function planMerges(
     else join(station.id, target, "provenance");
   }
 
+  // A Stillwell fit (sources/stillwell) and each TICON record whose GESLA
+  // series Stillwell found to hold the same hourly levels as the fitted one:
+  // one gauge's levels, analyzed twice. A link Stillwell didn't compare, or
+  // whose levels differ, waits for review.
+  for (const station of stations) {
+    const links = (
+      station.source as
+        | { stillwell?: { links?: Record<string, { rms_m: number; lag_h: number } | null> } }
+        | undefined
+    )?.stillwell?.links;
+    for (const [ticon, link] of Object.entries(links ?? {})) {
+      const target = `ticon/${ticon}`;
+      if (!byId.has(target)) continue;
+      if (sameGaugeLevels(link)) join(station.id, target, "stillwell");
+      else
+        refused.push({
+          id: station.id,
+          target,
+          reason: !link
+            ? "Stillwell hasn't compared their levels"
+            : `levels differ by ${(link.rms_m * 1000).toFixed(0)} mm RMS${link.lag_h ? ` at a ${link.lag_h} h lag` : ""}`,
+        });
+    }
+  }
+
   // A declared originator outranks an inferred duplicate: UHSLC 259B names
   // Ferry Reach even though quality pairs it with St George's 0.75 km away.
   // Quality supersedes a relay only under the tests above, so its link is
@@ -338,7 +364,8 @@ export function planMerges(
     if (!result.redundant) return [];
     if (result.reason !== "duplicate" && result.reason !== "superseded")
       return [];
-    if (evidence.get(id)?.evidence === "provenance") return [];
+    const known = evidence.get(id)?.evidence;
+    if (known === "provenance" || known === "stillwell") return [];
     const [station, target] = [byId.get(id), byId.get(result.redundant)];
     if (!station || !target) return [];
     // Quality points a superseded relay at the operator's record, unless

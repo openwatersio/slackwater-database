@@ -8,6 +8,7 @@ import {
   constituentsDigest,
   DATA_DIR,
   normalize,
+  sameGaugeLevels,
   save,
 } from "@slackwater/stations";
 import {
@@ -34,10 +35,6 @@ const MAX_FIT_YEARS = 19;
  *  separate P1 from K1 or K2 from S2, and they'd need inference from a
  *  neighbor, which the engine doesn't offer yet (plan, Constituent selection). */
 const MIN_FIT_DAYS = 183;
-/** Stillwell's own bound for two series of one gauge: hourly levels within
- *  1 cm RMS in the median month, with no lag
- *  (https://github.com/openwatersio/stillwell/blob/main/docs/stations.md#gauges-in-more-than-one-source). */
-export const SAME_GAUGE_RMS = 0.01;
 
 const year = (y: number) => ({
   start: new Date(Date.UTC(y, 0, 1)),
@@ -47,9 +44,9 @@ const year = (y: number) => ({
 /**
  * The TICON records Stillwell links a series to, each with Stillwell's level
  * comparison of the series against the record's GESLA copy, or null where
- * there is none. A link counts as the same gauge only with a comparison that
- * agrees within SAME_GAUGE_RMS at no lag: then the TICON record is analyzed
- * from the same levels, and its constants and ours describe one gauge.
+ * there is none. A link counts as the same gauge only where the comparison
+ * meets sameGaugeLevels: then the TICON record is analyzed from the same
+ * levels, and its constants and ours describe one gauge.
  */
 export function ticonLinks(
   station: Pick<StillwellStation, "id" | "same_as">,
@@ -68,9 +65,6 @@ export function ticonLinks(
   return links;
 }
 
-export const sameGauge = (
-  link: StillwellProvenance["links"][string] | undefined,
-): boolean => !!link && link.lag_h === 0 && link.rms_m <= SAME_GAUGE_RMS;
 
 /** The latest year, at or before `last`, with at least half its hours of
  *  final values: the gauge's held-out year. */
@@ -134,7 +128,7 @@ export async function importStation(
   const links = ticonLinks(station, context.matches, (t) =>
     existsSync(join(DATA_DIR, "ticon", `${t}.json`)),
   );
-  const ticon = Object.keys(links).filter((t) => sameGauge(links[t]));
+  const ticon = Object.keys(links).filter((t) => sameGaugeLevels(links[t]));
   const report = await verifyFit({
     series: station.id,
     start,

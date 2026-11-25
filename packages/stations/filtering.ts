@@ -301,6 +301,26 @@ export function scoresWorse(rms: number, other: number, se: number): boolean {
   );
 }
 
+/** The TICON suffix of each Stillwell source's agency (sources/stillwell
+ *  profiles), by data directory, so a fit of the agency's own series ranks
+ *  as the agency's TICON relay does in SOURCE_PRIORITY. */
+/** Stillwell's bound for two series of one gauge: hourly levels within 1 cm
+ *  RMS in the median month, once each month's mean difference is removed,
+ *  with no lag (https://github.com/openwatersio/stillwell/blob/main/docs/stations.md#gauges-in-more-than-one-source).
+ *  A Stillwell fit and a TICON record count as one gauge only where
+ *  Stillwell's comparison of their series meets it. */
+export const SAME_GAUGE_RMS = 0.01;
+
+/** Whether Stillwell's level comparison of two series shows one gauge. */
+export const sameGaugeLevels = (
+  link: { rms_m: number; lag_h: number } | null | undefined,
+): boolean => !!link && link.lag_h === 0 && link.rms_m <= SAME_GAUGE_RMS;
+
+export const STILLWELL_AGENCIES: Record<string, string> = {
+  smhi: "smhi",
+  pegelonline: "wsv",
+};
+
 /** A short digest of a record's constants, stored beside a held-out score so
  *  the score counts only while the constants it was taken against are
  *  unchanged. */
