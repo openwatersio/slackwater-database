@@ -204,8 +204,10 @@ final class StationDatabaseBuilderTests: XCTestCase {
     var inputs = try fixture().map(StationInput.init)
       .filter { ["test/reference", "test/subordinate"].contains($0.id) }
     for i in inputs.indices { inputs[i].source?.nodeCorrections = .foreman }
+    let credits: [String: String?] = ["Test Source": nil]
     let db = try StationDatabase(
-      data: StationDatabase.build(inputs, constituentDefinitions: Self.definitions))
+      data: StationDatabase.build(
+        inputs, credits: credits, constituentDefinitions: Self.definitions))
     XCTAssertEqual(try XCTUnwrap(db.station(id: "test/subordinate")).nodeCorrections, .foreman)
     XCTAssertEqual(try XCTUnwrap(db.station(id: "test/subordinate")).nodeCorrectionsLatitude, 47.6)
 
@@ -213,7 +215,7 @@ final class StationDatabaseBuilderTests: XCTestCase {
     var subordinate = try XCTUnwrap(inputs.first { $0.id == "test/subordinate" })
     subordinate.constituents = [Station.Constituent(name: "M2", amplitude: 1, phase: 0)]
     assertBuildFails(
-      [subordinate],
+      [subordinate], credits: credits,
       "Station test/subordinate references missing station test/reference, and Foreman's nodal corrections take the reference's latitude"
     )
   }
