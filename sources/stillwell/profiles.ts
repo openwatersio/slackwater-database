@@ -143,9 +143,9 @@ const NOAA = [
  * so a fit can be compared with either name for name. Each candidate is
  * tested by the Rayleigh criterion against every one kept before it.
  * Spellings the engine's catalog maps to one line count once, under the
- * first spelling. A line the catalog lacks can't be fitted and is left out:
- * Foreman's H1 and H2, M2's radiational neighbors, until
- * `@slackwater/engine` defines them.
+ * first spelling. The catalog has no entry under Foreman's names H1 and H2;
+ * it defines those lines as MA2 and MB2 (the same Doodson numbers), which
+ * join the list under TICON's names, after the NOAA names.
  */
 export function candidateList(
   catalog: Record<string, { name: string } | undefined>,

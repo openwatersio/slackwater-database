@@ -132,9 +132,9 @@ test("the candidate list names each catalog line once, all known to the engine",
   expect(lines.every(Boolean)).toBe(true);
   expect(new Set(lines).size).toBe(names.length);
   expect(names.slice(0, 4)).toEqual(["Sa", "Ssa", "MSm", "Mm"]);
-  // The engine's catalog lacks these two of Foreman's lines; when it adds
-  // them, this fails and they join the list.
-  expect(["H1", "H2"].filter((n) => !catalog[n])).toEqual(["H1", "H2"]);
+  // Foreman's H1 and H2 are the catalog's MA2 and MB2, fitted under those names.
+  expect(["H1", "H2"].filter((n) => catalog[n])).toEqual([]);
+  expect(names).toEqual(expect.arrayContaining(["MA2", "MB2"]));
 });
 
 test("a non-finalizing source's values settle twelve months after their year ends", () => {
