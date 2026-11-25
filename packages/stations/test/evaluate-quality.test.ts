@@ -522,6 +522,7 @@ describe("decideHeldOut", () => {
           accepted: i === 0 || accepted[i - 1]!,
           score: 80,
           issues: [] as string[],
+          redundant: undefined as string | undefined,
         },
       ]),
     );
