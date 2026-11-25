@@ -472,8 +472,8 @@ export async function readStillwellSamples(
       : !finalizes
         ? `flag IN (${MEASURED_FLAGS.join(", ")})`
         : qcStart
-        ? `(flag IN (${VERIFIED_FLAGS.join(", ")}) OR (flag = 2 AND time < make_timestamptz(${+qcStart}::BIGINT * 1000)))`
-        : `flag IN (${VERIFIED_FLAGS.join(", ")})`;
+          ? `(flag IN (${VERIFIED_FLAGS.join(", ")}) OR (flag = 2 AND time < make_timestamptz(${+qcStart}::BIGINT * 1000)))`
+          : `flag IN (${VERIFIED_FLAGS.join(", ")})`;
 
   const byTime = new Map<number, { level: number; rejected: boolean }>();
   const read: string[] = [];

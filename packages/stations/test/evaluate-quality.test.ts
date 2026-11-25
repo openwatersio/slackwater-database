@@ -12,8 +12,9 @@ import {
   scoreSource,
   tideConflict,
   deduplicateByGauge,
+  decideHeldOut,
 } from "../evaluate-quality.ts";
-import { exceeds, seasonalTerms } from "../filtering.ts";
+import { constituentsDigest, exceeds, seasonalTerms } from "../filtering.ts";
 
 type Station = Parameters<typeof checkConstituents>[0];
 type Constituent = { amplitude: number; phase?: number };
@@ -479,4 +480,142 @@ test("refuses a gauge group with conflicting superseded operator targets", () =>
       new Map(),
     ),
   ).toThrow(/operator/i);
+});
+
+describe("decideHeldOut", () => {
+  const ticonA = station(BASE, "ticon/kungsvik-2130-swe-smhi");
+  const ticonB = station({ ...BASE, M2: 0.49 }, "ticon/kungsvik-kun-swe-cmems");
+  const digest = (s: Station) => constituentsDigest(s.harmonic_constituents);
+  const fit = (
+    rms: number,
+    ticon: Record<string, { rms: number; se: number | null; digest?: string }>,
+  ) =>
+    ({
+      ...station(BASE, "smhi/2130"),
+      source: {
+        id: "2130",
+        name: "SMHI",
+        stillwell: {
+          held_out: {
+            year: 2025,
+            rms,
+            ticon: Object.fromEntries(
+              Object.entries(ticon).map(([id, t]) => [
+                id,
+                {
+                  digest: digest(id.endsWith("cmems") ? ticonB : ticonA),
+                  ...t,
+                },
+              ]),
+            ),
+          },
+        },
+      },
+    }) as unknown as Station;
+  const run = (f: Station, accepted = [true, true]) => {
+    const all = [f, ticonA, ticonB];
+    const results = new Map(
+      all.map((s, i) => [
+        s.id,
+        {
+          id: s.id,
+          accepted: i === 0 || accepted[i - 1]!,
+          score: 80,
+          issues: [] as string[],
+        },
+      ]),
+    );
+    decideHeldOut(
+      all.map((s) => s.id),
+      new Map(all.map((s) => [s.id, s])),
+      results as any,
+    );
+    return results;
+  };
+  const A = "kungsvik-2130-swe-smhi";
+  const B = "kungsvik-kun-swe-cmems";
+
+  test("a fit no worse than every TICON record, beyond the error, replaces them", () => {
+    const results = run(
+      fit(0.0578, {
+        [A]: { rms: 0.0601, se: 7.9e-5 },
+        [B]: { rms: 0.0601, se: 7.9e-5 },
+      }),
+    );
+    expect(results.get("smhi/2130")!.accepted).toBe(true);
+    for (const id of [A, B])
+      expect(results.get(`ticon/${id}`)).toMatchObject({
+        accepted: false,
+        reason: "duplicate",
+        redundant: "smhi/2130",
+      });
+  });
+
+  test("a tie within the error still replaces TICON", () => {
+    const results = run(fit(0.0601, { [A]: { rms: 0.06, se: 1e-4 } }));
+    expect(results.get("smhi/2130")!.accepted).toBe(true);
+    expect(results.get(`ticon/${A}`)!.accepted).toBe(false);
+  });
+
+  test("a fit worse than one record goes to the best-scored record", () => {
+    const results = run(
+      fit(0.07, {
+        [A]: { rms: 0.06, se: 1e-5 },
+        [B]: { rms: 0.065, se: 1e-5 },
+      }),
+    );
+    expect(results.get("smhi/2130")).toMatchObject({
+      accepted: false,
+      reason: "duplicate",
+      redundant: `ticon/${A}`,
+    });
+    expect(results.get(`ticon/${A}`)!.accepted).toBe(true);
+    expect(results.get(`ticon/${B}`)!.accepted).toBe(true);
+  });
+
+  test("an error the year can't measure keeps TICON", () => {
+    const results = run(fit(0.05, { [A]: { rms: 0.06, se: null } }));
+    expect(results.get("smhi/2130")).toMatchObject({
+      accepted: false,
+      redundant: `ticon/${A}`,
+    });
+    expect(results.get("smhi/2130")!.issues[0]).toContain("can't measure");
+  });
+
+  test("a score taken against constants that have since changed keeps TICON", () => {
+    const results = run(
+      fit(0.05, { [A]: { rms: 0.06, se: 1e-5, digest: "0000000000000000" } }),
+    );
+    expect(results.get("smhi/2130")!.accepted).toBe(false);
+    expect(results.get("smhi/2130")!.issues[0]).toContain(
+      "constants as they were before",
+    );
+  });
+
+  test("a rejected TICON record isn't compared", () => {
+    const results = run(
+      fit(0.07, { [A]: { rms: 0.06, se: 1e-5 }, [B]: { rms: 0.08, se: 1e-5 } }),
+      [false, true],
+    );
+    expect(results.get("smhi/2130")!.accepted).toBe(true);
+    expect(results.get(`ticon/${B}`)!.redundant).toBe("smhi/2130");
+  });
+
+  test("a fit with no held-out year decides nothing", () => {
+    const f = {
+      ...fit(0.05, {}),
+      source: { id: "2130", name: "SMHI", stillwell: { held_out: null } },
+    } as unknown as Station;
+    const results = run(f);
+    expect([...results.values()].every((r) => r.accepted)).toBe(true);
+  });
+
+  test("a Stillwell fit ranks as its agency's TICON relay", () => {
+    expect(scoreSource(fit(0.05, {}))).toBe(
+      scoreSource({
+        ...station(BASE, "ticon/kungsvik-2130-swe-smhi"),
+        source: { id: "kungsvik-2130-swe-smhi", name: "TICON-4" },
+      } as Station),
+    );
+  });
 });

@@ -44,18 +44,96 @@ export const TWELVE_MONTHS_AFTER_YEAR_END = (now: Date) =>
 
 /** TICON's 50 names (TICON-4 user manual, https://doi.org/10.17882/109129). */
 const TICON = [
-  "M2", "N2", "S2", "K2", "2N2", "S1", "K1", "P1", "O1", "Q1", "M1", "M4",
-  "MM", "MF", "SA", "SSA", "T2", "J1", "L2", "R2", "2Q1", "MSF", "MSQM",
-  "EP2", "M3", "MU2", "MTM", "NU2", "LAMBDA2", "MN4", "MS4", "MKS2", "N4",
-  "M6", "M8", "S4", "OO1", "S3", "MA2", "MB2", "T3", "R3", "RHO1", "SGM",
-  "3L2", "3N2", "2SM2", "2MS6", "2MK5", "2MO5",
+  "M2",
+  "N2",
+  "S2",
+  "K2",
+  "2N2",
+  "S1",
+  "K1",
+  "P1",
+  "O1",
+  "Q1",
+  "M1",
+  "M4",
+  "MM",
+  "MF",
+  "SA",
+  "SSA",
+  "T2",
+  "J1",
+  "L2",
+  "R2",
+  "2Q1",
+  "MSF",
+  "MSQM",
+  "EP2",
+  "M3",
+  "MU2",
+  "MTM",
+  "NU2",
+  "LAMBDA2",
+  "MN4",
+  "MS4",
+  "MKS2",
+  "N4",
+  "M6",
+  "M8",
+  "S4",
+  "OO1",
+  "S3",
+  "MA2",
+  "MB2",
+  "T3",
+  "R3",
+  "RHO1",
+  "SGM",
+  "3L2",
+  "3N2",
+  "2SM2",
+  "2MS6",
+  "2MK5",
+  "2MO5",
 ];
 /** NOAA CO-OPS's 37, in the order its harmonic constituents pages list them. */
 const NOAA = [
-  "M2", "S2", "N2", "K1", "M4", "O1", "M6", "MK3", "S4", "MN4", "NU2", "S6",
-  "MU2", "2N2", "OO1", "LAM2", "S1", "M1", "J1", "MM", "SSA", "SA", "MSF",
-  "MF", "RHO", "Q1", "T2", "R2", "2Q1", "P1", "2SM2", "M3", "L2", "2MK3",
-  "K2", "M8", "MS4",
+  "M2",
+  "S2",
+  "N2",
+  "K1",
+  "M4",
+  "O1",
+  "M6",
+  "MK3",
+  "S4",
+  "MN4",
+  "NU2",
+  "S6",
+  "MU2",
+  "2N2",
+  "OO1",
+  "LAM2",
+  "S1",
+  "M1",
+  "J1",
+  "MM",
+  "SSA",
+  "SA",
+  "MSF",
+  "MF",
+  "RHO",
+  "Q1",
+  "T2",
+  "R2",
+  "2Q1",
+  "P1",
+  "2SM2",
+  "M3",
+  "L2",
+  "2MK3",
+  "K2",
+  "M8",
+  "MS4",
 ];
 
 /**
@@ -65,7 +143,9 @@ const NOAA = [
  * so a fit can be compared with either name for name. Each candidate is
  * tested by the Rayleigh criterion against every one kept before it.
  * Spellings the engine's catalog maps to one line count once, under the
- * first spelling.
+ * first spelling. A line the catalog lacks can't be fitted and is left out:
+ * Foreman's H1 and H2, M2's radiational neighbors, until
+ * `@slackwater/engine` defines them.
  */
 export function candidateList(
   catalog: Record<string, { name: string } | undefined>,
@@ -77,8 +157,8 @@ export function candidateList(
     ...NOAA,
     ...TICON,
   ]) {
-    const line = catalog[name]?.name ?? name;
-    if (seen.has(line)) continue;
+    const line = catalog[name]?.name;
+    if (!line || seen.has(line)) continue;
     seen.add(line);
     names.push(name);
   }

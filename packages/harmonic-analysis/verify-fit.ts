@@ -252,8 +252,7 @@ export async function verifyFit(
         amplitude: c.amplitude,
         phase: c.phase,
         spread,
-        published:
-          !!spread && c.amplitude >= SEASONAL_SIGNIFICANCE * spread.se,
+        published: !!spread && c.amplitude >= SEASONAL_SIGNIFICANCE * spread.se,
       };
     }
   }

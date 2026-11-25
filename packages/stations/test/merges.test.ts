@@ -1086,3 +1086,101 @@ describe("staleSeparations", () => {
     ).toEqual(["chs-b noaa/2", "chs-c ticon/c-3-can-meds"]);
   });
 });
+
+describe("Stillwell fits", () => {
+  const ticon = (id: string, latitude: number) =>
+    station(`ticon/${id}`, latitude, 0.09, "Göteborg");
+  const fit = {
+    ...station("smhi/2109", 57.6847, 0.091, "Göteborg-Torshamnen"),
+    source: {
+      name: "SMHI",
+      id: "2109",
+      stillwell: {
+        links: {
+          "goteborg_torshamnen-2109-swe-smhi": {
+            rms_m: 0,
+            lag_h: 0,
+            months: 25,
+          },
+          "goteborgorsh-819-swe-uhslc_fd": {
+            rms_m: 0.0032,
+            lag_h: 0,
+            months: 25,
+          },
+          "goteborgtorshamnen-got-swe-cmems": null,
+          "goteborg_eriksberg-33096-swe-smhi": {
+            rms_m: 0.0167,
+            lag_h: 0,
+            months: 25,
+          },
+        },
+      },
+    },
+  } as unknown as ResolvedStation;
+  const records = [
+    fit,
+    ticon("goteborg_torshamnen-2109-swe-smhi", 57.6847),
+    // UHSLC's copy, published apart today and 50 km off in TICON's position.
+    ticon("goteborgorsh-819-swe-uhslc_fd", 58.13),
+    ticon("goteborgtorshamnen-got-swe-cmems", 57.6847),
+    ticon("goteborg_eriksberg-33096-swe-smhi", 57.7),
+  ];
+  const routes = {
+    tide: [
+      { slug: "goteborg-torshamnen-smhi", station_ids: ["smhi/2109"] },
+      {
+        slug: "goteborg-torshamnen",
+        station_ids: [
+          "ticon/goteborg_torshamnen-2109-swe-smhi",
+          "ticon/goteborgtorshamnen-got-swe-cmems",
+        ],
+      },
+      {
+        slug: "goteborgorsh",
+        station_ids: ["ticon/goteborgorsh-819-swe-uhslc_fd"],
+      },
+      {
+        slug: "goteborg-eriksberg",
+        station_ids: ["ticon/goteborg_eriksberg-33096-swe-smhi"],
+      },
+    ],
+    current: [],
+  };
+  const quality = new Map(records.map((r) => [r.id, accepted(r.id)] as const));
+  const plan = planMerges(records, routes, quality, { confident: true });
+
+  test("joins the stations of every TICON record whose levels Stillwell matched, wherever they sit", () => {
+    const group = plan.groups.find((g) =>
+      g.slugs.includes("goteborg-torshamnen-smhi"),
+    );
+    expect(group?.slugs.sort()).toEqual([
+      "goteborg-torshamnen",
+      "goteborg-torshamnen-smhi",
+      "goteborgorsh",
+    ]);
+    expect(
+      group?.members.find((m) => m.id === "smhi/2109")?.evidence ??
+        group?.members.find((m) => m.target === "smhi/2109")?.evidence,
+    ).toBe("stillwell");
+  });
+
+  test("refuses a link Stillwell didn't compare, or whose levels differ", () => {
+    expect(plan.refused).toEqual(
+      expect.arrayContaining([
+        {
+          id: "smhi/2109",
+          target: "ticon/goteborgtorshamnen-got-swe-cmems",
+          reason: "Stillwell hasn't compared their levels",
+        },
+        {
+          id: "smhi/2109",
+          target: "ticon/goteborg_eriksberg-33096-swe-smhi",
+          reason: "levels differ by 17 mm RMS",
+        },
+      ]),
+    );
+    expect(
+      plan.groups.some((g) => g.slugs.includes("goteborg-eriksberg")),
+    ).toBe(false);
+  });
+});

@@ -53,7 +53,10 @@ beforeAll(async () => {
     FROM (VALUES ('src/lost'), ('src/busy'), ('src/moved'), ('unlisted/x')) v(id)
     UNION ALL BY NAME
     SELECT 'src/new' AS id, 'src' AS source, 'new' AS source_id, 'NAP' AS datum,
-      'src/new' AS preferred, '2024-01-01 00:00:00+00'::TIMESTAMPTZ AS first)
+      'src/new' AS preferred, '2024-01-01 00:00:00+00'::TIMESTAMPTZ AS first
+    UNION ALL BY NAME
+    SELECT 'nf/a' AS id, 'nf' AS source, 'a' AS source_id, 'NN' AS datum,
+      'nf/a' AS preferred, '2023-06-01 00:00:00+00'::TIMESTAMPTZ AS first)
     TO ${q("stations.parquet")}`);
   const { mkdirSync } = await import("node:fs");
   mkdirSync(join(store, "stations/years"), { recursive: true });
@@ -86,6 +89,17 @@ beforeAll(async () => {
     "obs/src/a%20b/2/2022.parquet",
     `('2022-01-01 00:00:00+00', 3.0, 0)`,
   );
+  // A source that never finalizes: every value preliminary or suspect.
+  await year(
+    "obs/nf/a/2023.parquet",
+    `('2023-06-01 00:00:00+00', 1.0, 2), ('2023-06-01 01:00:00+00', 1.1, 0),
+     ('2023-06-01 02:00:00+00', 9.0, 3)`,
+  );
+  await year("obs/nf/a/2024.parquet", `('2024-06-01 00:00:00+00', 2.0, 2)`);
+  await db.run(`COPY (SELECT * FROM (VALUES
+      ('nf/a', 1, 2023, 'n1', 2), ('nf/a', 1, 2024, 'n2', 1))
+      v(id, epoch, year, version, preliminary))
+    TO ${q("stations/years/nf.parquet")}`);
   // 2019 and 2021 have no files and aren't listed: a gap, not an error.
   writeFileSync(
     join(store, "sources.json"),
@@ -510,5 +524,50 @@ describe("cachedStillwellFile", () => {
     rmSync(join(store, "gone.txt"));
     expect(await cachedStillwellFile("gone.txt")).toBeUndefined();
     expect(() => readFileSync(local!)).toThrow();
+  });
+});
+
+describe("a source that doesn't finalize", () => {
+  const y2023 = { start: new Date("2023-01-01"), end: new Date("2024-01-01") };
+  const settled = new Date("2024-01-01T00:00:00Z");
+
+  test("reads no final values until the caller says when they settle", async () => {
+    await expect(
+      readStillwellSamples("nf/a", y2023, FINAL_FLAGS),
+    ).rejects.toThrow("say when its values settle");
+  });
+
+  test("reads measured values before the cutoff as final, and records the cutoff", async () => {
+    const inputs: import("../stillwell.ts").ReadInputs = {
+      versions: {},
+      errata: {},
+    };
+    const samples = await readStillwellSamples("nf/a", y2023, FINAL_FLAGS, {
+      settled,
+      inputs,
+    });
+    expect(samples).toEqual([
+      { t: at("2023-06-01T00:00:00Z"), level: 1 },
+      { t: at("2023-06-01T01:00:00Z"), level: 1.1 },
+    ]);
+    expect(inputs.settled_before).toEqual(settled);
+  });
+
+  test("refuses a period past the cutoff", async () => {
+    await expect(
+      readStillwellSamples(
+        "nf/a",
+        { start: new Date("2023-01-01"), end: new Date("2025-01-01") },
+        FINAL_FLAGS,
+        { settled },
+      ),
+    ).rejects.toThrow("haven't settled");
+  });
+
+  test("its final year is the last whole year before the cutoff", async () => {
+    expect(await sourceFinalYear("nf", settled)).toBe(2023);
+    expect(await sourceFinalYear("nf", new Date("2025-03-01T00:00:00Z"))).toBe(
+      2024,
+    );
   });
 });

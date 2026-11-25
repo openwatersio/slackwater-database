@@ -1063,8 +1063,8 @@ interface HeldOut {
 
 function heldOutOf(station: Station): HeldOut | null | undefined {
   return (
-    station.source as { stillwell?: { held_out: HeldOut | null } }
-  ).stillwell?.held_out;
+    station.source as { stillwell?: { held_out: HeldOut | null } } | undefined
+  )?.stillwell?.held_out;
 }
 
 /**
@@ -1099,7 +1099,8 @@ export function decideHeldOut(
     });
     if (!scored.length) continue;
     const wins = scored.every(
-      (s) => s.current && s.se !== null && !scoresWorse(heldOut.rms, s.rms, s.se),
+      (s) =>
+        s.current && s.se !== null && !scoresWorse(heldOut.rms, s.rms, s.se),
     );
     if (wins) {
       for (const { id: relay } of scored)

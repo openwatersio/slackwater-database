@@ -2,11 +2,12 @@ import { existsSync, readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
-import { constituents as catalog } from "@slackwater/engine";
+import { constituents as catalog, fit } from "@slackwater/engine";
 import { computeDatums } from "@slackwater/datums";
 import {
   constituentsDigest,
   DATA_DIR,
+  MIN_TIDAL_RANGE,
   normalize,
   sameGaugeLevels,
   save,
@@ -24,6 +25,7 @@ import {
   type StillwellStation,
 } from "@slackwater/harmonic-analysis/stillwell";
 import { verifyFit } from "@slackwater/harmonic-analysis/verify-fit";
+import { harmonicSamples } from "@slackwater/harmonic-analysis";
 import { reduceTiconDatums } from "../ticon/datums.ts";
 import { candidateList, PROFILES, type Profile } from "./profiles.ts";
 import { buildRecord, type StillwellProvenance } from "./record.ts";
@@ -57,14 +59,12 @@ export function ticonLinks(
   for (const link of station.same_as) {
     if (!link.startsWith("gesla/")) continue;
     const id = link.slice("gesla/".length);
-    if (!/^[\w.-]+$/.test(id) || id.startsWith(".") || !hasTicon(id))
-      continue;
+    if (!/^[\w.-]+$/.test(id) || id.startsWith(".") || !hasTicon(id)) continue;
     const m = matches.get(matchKey(station.id, link));
     links[id] = m ? { rms_m: m.rms_m, lag_h: m.lag_h, months: m.months } : null;
   }
   return links;
 }
-
 
 /** The latest year, at or before `last`, with at least half its hours of
  *  final values: the gauge's held-out year. */
@@ -80,6 +80,35 @@ async function heldOutYear(
     if ((await read({ start, end })).length >= hours / 2) return y;
   }
   return undefined;
+}
+
+/** The constituents a one-year screen fits: the main lines of each species
+ *  a year separates. */
+const SCREEN = ["M2", "S2", "N2", "K2", "K1", "O1", "P1", "Q1", "M4", "MS4"];
+
+/**
+ * The mean range (MHW − MLW) a one-year fit of `samples` predicts, the
+ * quantity the quality evaluation's tidal range gate (MIN_TIDAL_RANGE)
+ * judges, so a gauge the gate would reject isn't given a full fit. Null
+ * when the year has under half its hours.
+ */
+export function screenRange(
+  samples: readonly { t: number; level: number }[],
+  hours: number,
+): number | null {
+  if (samples.length < hours / 2) return null;
+  const { constituents } = fit(harmonicSamples(samples), SCREEN, {
+    dropDependent: true,
+  });
+  const { datums } = computeDatums(
+    constituents.map(({ name, amplitude, phase }) => ({
+      name,
+      amplitude,
+      phase,
+    })),
+    {},
+  );
+  return datums["MHW"]! - datums["MLW"]!;
 }
 
 export interface ImportResult {
@@ -113,7 +142,11 @@ export async function importStation(
   if (!station.first) return { id, status: "skipped", reason: "no values" };
   const heldOut = await heldOutYear(station, context.lastYear, readFinal);
   if (heldOut === undefined)
-    return { id, status: "skipped", reason: "no year with half its hours final" };
+    return {
+      id,
+      status: "skipped",
+      reason: "no year with half its hours final",
+    };
   const start = new Date(
     Math.max(+station.first, +year(heldOut - MAX_FIT_YEARS).start),
   );
@@ -123,6 +156,19 @@ export async function importStation(
       id,
       status: "skipped",
       reason: `under ${MIN_FIT_DAYS} days before ${heldOut}`,
+    };
+
+  // The last year of the window: the screen never reads the held-out year.
+  const last = year(heldOut - 1);
+  const range = screenRange(
+    await readFinal(last),
+    (+last.end - +last.start) / HOUR_MS,
+  );
+  if (range !== null && range < MIN_TIDAL_RANGE)
+    return {
+      id,
+      status: "skipped",
+      reason: `mean range ${(range * 100).toFixed(1)} cm in ${heldOut - 1}, under the ${MIN_TIDAL_RANGE * 100} cm gate`,
     };
 
   const links = ticonLinks(station, context.matches, (t) =>
@@ -209,7 +255,10 @@ if (import.meta.main) {
   // Every kept erratum of the source has a decision, so a new one stops the
   // import rather than one gauge's read.
   const undecided = (await stillwellErrata()).filter(
-    (e) => e.source === profile.source && e.handling === "kept" && !profile.errata[e.id],
+    (e) =>
+      e.source === profile.source &&
+      e.handling === "kept" &&
+      !profile.errata[e.id],
   );
   if (undecided.length)
     throw new Error(
@@ -220,7 +269,15 @@ if (import.meta.main) {
   const matches = await stillwellMatches();
   const engine = JSON.parse(
     await readFile(
-      join(import.meta.dirname, "..", "..", "node_modules", "@slackwater", "engine", "package.json"),
+      join(
+        import.meta.dirname,
+        "..",
+        "..",
+        "node_modules",
+        "@slackwater",
+        "engine",
+        "package.json",
+      ),
       "utf8",
     ),
   ).version as string;
@@ -228,9 +285,7 @@ if (import.meta.main) {
     .filter((s) => s.source === profile.source)
     .filter((s) => !only.length || only.includes(s.id))
     .sort((a, b) => (a.id < b.id ? -1 : 1))
-    .filter(
-      (_, i) => !shard || i % Number(shard[2]) === Number(shard[1]) - 1,
-    );
+    .filter((_, i) => !shard || i % Number(shard[2]) === Number(shard[1]) - 1);
   for (const station of stations) {
     try {
       const result = await importStation(profile, station, {
@@ -242,7 +297,11 @@ if (import.meta.main) {
       console.log(JSON.stringify(result));
     } catch (err) {
       console.log(
-        JSON.stringify({ id: station.id, status: "failed", reason: (err as Error).message }),
+        JSON.stringify({
+          id: station.id,
+          status: "failed",
+          reason: (err as Error).message,
+        }),
       );
     }
   }

@@ -18,6 +18,7 @@ import {
   varianceDifferenceSE,
   verdict,
   yearlyScatter,
+  seasonalSpread,
   yearlySet,
 } from "../verification.ts";
 
@@ -256,5 +257,38 @@ describe("agency comparison", () => {
     const a = [1, 2, 3].map((x, i) => ({ t: i, level: x }));
     const b = [1, 2, 3].map((x, i) => ({ t: i, level: x + 5 }));
     expect(compareCurves(a, b)).toEqual({ n: 3, rms: 0, max: 0 });
+  });
+});
+
+describe("seasonalSpread", () => {
+  test("gives the yearly vectors' mean and the standard error of one component", () => {
+    // Three years of Sa at 0.10 m, phases 80°, 90° and 100°.
+    const spread = seasonalSpread([
+      { amplitude: 0.1, phase: 80 },
+      { amplitude: 0.1, phase: 90 },
+      { amplitude: 0.1, phase: 100 },
+    ])!;
+    expect(spread.phase).toBeCloseTo(90, 6);
+    // The mean of three unit vectors 10° apart is cos 10°·(1 + 2)/3 shorter.
+    const mean = (0.1 * (1 + 2 * Math.cos(Math.PI / 18))) / 3;
+    expect(spread.amplitude).toBeCloseTo(mean, 9);
+    const ss =
+      2 * (0.1 * Math.sin(Math.PI / 18)) ** 2 +
+      2 * (0.1 * Math.cos(Math.PI / 18) - mean) ** 2 +
+      (0.1 - mean) ** 2;
+    expect(spread.scatter).toBeCloseTo(Math.sqrt(ss / 4), 12);
+    expect(spread.se).toBeCloseTo(spread.scatter / Math.sqrt(3), 12);
+  });
+
+  test("needs two years", () => {
+    expect(seasonalSpread([{ amplitude: 0.1, phase: 0 }])).toBeUndefined();
+  });
+
+  test("a cycle whose phase wanders from year to year has a small mean and a large error", () => {
+    const spread = seasonalSpread(
+      [0, 90, 180, 270].map((phase) => ({ amplitude: 0.1, phase })),
+    )!;
+    expect(spread.amplitude).toBeLessThan(1e-12);
+    expect(spread.amplitude).toBeLessThan(2 * spread.se);
   });
 });

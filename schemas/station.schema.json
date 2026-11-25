@@ -139,6 +139,171 @@
           "type": "string",
           "format": "uri",
           "description": "URL to this station's data or information in the source's website"
+        },
+        "stillwell": {
+          "type": "object",
+          "description": "For a fit of a Stillwell series (sources/stillwell): what it was fitted from, how, and how it scored. Kept in the data file only; the database doesn't carry it.",
+          "additionalProperties": false,
+          "required": ["series", "inputs", "final", "fit", "held_out", "links"],
+          "properties": {
+            "series": {
+              "type": "string",
+              "description": "The Stillwell series, `<source>/<source id>`."
+            },
+            "inputs": {
+              "type": "object",
+              "description": "What the fit read: each year file's version by `<epoch> <year>`, the station's epochs and QC start, the errata in the years read, the decisions on kept ones, and for a source that doesn't finalize, the settle cutoff.",
+              "required": ["versions", "errata", "decisions"]
+            },
+            "final": {
+              "enum": ["verified", "settled"],
+              "description": "`verified`: the source's verified values, and preliminary ones from before its QC start. `settled`: measured values from before this project's settle cutoff, for a source that never marks values final."
+            },
+            "fit": {
+              "type": "object",
+              "required": [
+                "start",
+                "end",
+                "hours",
+                "rms",
+                "robust",
+                "nodal",
+                "engine",
+                "selection",
+                "constituents",
+                "conditioning",
+                "yearly",
+                "seasonal"
+              ],
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "end": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "hours": {
+                  "type": "integer"
+                },
+                "rms": {
+                  "type": "number"
+                },
+                "robust": {
+                  "const": true
+                },
+                "nodal": {
+                  "const": "iho"
+                },
+                "engine": {
+                  "type": "string",
+                  "description": "The @slackwater/engine version the fit ran on."
+                },
+                "selection": {
+                  "type": "array",
+                  "description": "Every candidate, in priority order: kept, or the engine's reason not (rayleigh, snr, rankDeficient, nyquist, unknown).",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "kept"]
+                  }
+                },
+                "constituents": {
+                  "type": "array",
+                  "description": "Each fitted constituent's 95% amplitude and phase intervals and SNR, unrounded.",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "amplitude_interval",
+                      "phase_interval",
+                      "snr"
+                    ]
+                  }
+                },
+                "conditioning": {
+                  "type": "object"
+                },
+                "yearly": {
+                  "type": "object",
+                  "description": "Year-to-year scatter of M2, S2, K1 and O1, and of Sa and Ssa."
+                },
+                "seasonal": {
+                  "type": "object",
+                  "description": "Sa and Ssa: the whole window's fit, the spread of the yearly fits, and whether they publish (amplitude at least twice the standard error of the yearly mean).",
+                  "additionalProperties": {
+                    "type": "object",
+                    "required": ["amplitude", "phase", "spread", "published"]
+                  }
+                }
+              }
+            },
+            "held_out": {
+              "type": ["object", "null"],
+              "required": ["year", "hours", "rms", "ticon"],
+              "additionalProperties": false,
+              "properties": {
+                "year": {
+                  "type": "integer"
+                },
+                "hours": {
+                  "type": "integer"
+                },
+                "rms": {
+                  "type": "number",
+                  "description": "The fit's tidal-band residual RMS on the held-out year, in metres."
+                },
+                "ticon": {
+                  "type": "object",
+                  "description": "By TICON id, the scores of the TICON records Stillwell matched to this series by levels.",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["rms", "se", "digest", "seen"],
+                    "properties": {
+                      "rms": {
+                        "type": "number",
+                        "description": "This TICON record's tidal-band residual RMS on the held-out year, in metres."
+                      },
+                      "se": {
+                        "type": ["number", "null"],
+                        "description": "Standard error, in m², of the fit's residual variance minus this record's, from 30-day blocks; null where the year has too few to measure it."
+                      },
+                      "digest": {
+                        "type": "string",
+                        "description": "constituentsDigest of this record's constants as scored. A score counts only while it still matches."
+                      },
+                      "seen": {
+                        "type": "boolean",
+                        "description": "Whether this record's analysis covered the held-out year."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "links": {
+              "type": "object",
+              "description": "Every TICON record Stillwell links this series to, by TICON id.",
+              "additionalProperties": {
+                "type": ["object", "null"],
+                "additionalProperties": false,
+                "required": ["rms_m", "lag_h", "months"],
+                "properties": {
+                  "rms_m": {
+                    "type": "number"
+                  },
+                  "lag_h": {
+                    "type": "integer"
+                  },
+                  "months": {
+                    "type": "integer"
+                  }
+                },
+                "description": "Stillwell's comparison of this series' hourly levels with the TICON record's GESLA series (stations/matches.parquet), or null where Stillwell has none."
+              }
+            }
+          }
         }
       }
     },
@@ -225,7 +390,11 @@
       "required": ["months", "observed_hours", "inferred_hours"],
       "additionalProperties": false,
       "properties": {
-        "months": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+        "months": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967295
+        },
         "observed_hours": {
           "type": "integer",
           "minimum": 1,

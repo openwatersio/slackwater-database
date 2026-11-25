@@ -336,7 +336,11 @@ export function planMerges(
   for (const station of stations) {
     const links = (
       station.source as
-        | { stillwell?: { links?: Record<string, { rms_m: number; lag_h: number } | null> } }
+        | {
+            stillwell?: {
+              links?: Record<string, { rms_m: number; lag_h: number } | null>;
+            };
+          }
         | undefined
     )?.stillwell?.links;
     for (const [ticon, link] of Object.entries(links ?? {})) {

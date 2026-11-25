@@ -619,7 +619,7 @@ export function seasonalSpread(
   return {
     years: n,
     amplitude: Math.hypot(mx, my),
-    phase: ((Math.atan2(my, mx) / rad) % 360 + 360) % 360,
+    phase: (((Math.atan2(my, mx) / rad) % 360) + 360) % 360,
     scatter,
     se: scatter / Math.sqrt(n),
   };

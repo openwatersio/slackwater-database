@@ -123,7 +123,10 @@ export interface StillwellProvenance {
   } | null;
   /** Stillwell's level comparison between this series and each TICON
    *  record's GESLA series: the evidence a merge reads. */
-  links: Record<string, { rms_m: number; lag_h: number; months: number } | null>;
+  links: Record<
+    string,
+    { rms_m: number; lag_h: number; months: number } | null
+  >;
 }
 
 export interface RecordInputs {
@@ -133,7 +136,11 @@ export interface RecordInputs {
   constituents: StationData["harmonic_constituents"];
   datums: Pick<
     PartialStationData,
-    "datums" | "datums_source" | "datum_frame" | "datum_epoch" | "datum_coverage"
+    | "datums"
+    | "datums_source"
+    | "datum_frame"
+    | "datum_epoch"
+    | "datum_coverage"
   >;
   datumNotice: string;
   engine: string;
