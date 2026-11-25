@@ -98,17 +98,95 @@ export const SOURCE_PRIORITY: Record<string, number> = {
 /** Default priority for unknown sources */
 export const DEFAULT_PRIORITY = 50;
 
-/** TICON sources whose record times are off by a measured amount, with the
- *  measurement. A record from one is rejected: its predictions would publish
- *  high and low water at the wrong time. */
+/** The constituents a record's clock is measured on: the largest semidiurnal
+ *  and diurnal lines, so a 12-hour error, invisible in a semidiurnal tide,
+ *  still shows in K1 and O1. */
+export const CLOCK_CONSTITUENTS = ["M2", "S2", "N2", "K1", "O1"];
+
+/** Minutes either way a time shift is searched: past the 12.42-hour period
+ *  of M2, so a half-day error has a shift to land on. */
+export const CLOCK_MAX_SHIFT = 13 * 60;
+
+/** Degrees of phase a time shift may leave unexplained, as an
+ *  amplitude-weighted root mean square, and still time a record. Every pair
+ *  from a source with a measured clock error is within 6.4°, and 99% of pairs
+ *  from NOAA, UHSLC, JMA, CMEMS and NHS records within 11.3°. This project's
+ *  definition. */
+export const CLOCK_MAX_RESIDUAL = 12;
+
+/** How far an authoritative gauge can be from a record and still time it.
+ *  Engineering choice: within 10 km, the median time shift of NOAA, UHSLC,
+ *  JMA, CMEMS and NHS records against such gauges is within a minute. */
+export const CLOCK_NEIGHBOR_KM = 10;
+
+/** The smaller M2, and the smaller K1, of a record and the gauge timing it,
+ *  as a share of the larger. Water that weakens the tide by more than this
+ *  between two gauges also delays it, so the shift is not the clock's. This
+ *  project's definition. */
+export const CLOCK_AMPLITUDE_RATIO = 0.8;
+
+/** Minutes a gauge's time shift must reach to count against its source's
+ *  clock. Of 831 NOAA, UHSLC, JMA, CMEMS and NHS gauges, one reaches 20
+ *  minutes in the direction of its source's median. This project's
+ *  definition. */
+export const SOURCE_CLOCK_SHIFT = 20;
+
+/** The share of a source's timed gauges that must run off the same way by
+ *  SOURCE_CLOCK_SHIFT for its clock to be off. Real delays up creeks and
+ *  marshes reach at most 38% of a source's gauges (NC DEM), and every gauge
+ *  of a source with a measured clock error, Harris County's or South
+ *  Florida's, reaches it. This project's definition. */
+export const SOURCE_CLOCK_SHARE = 2 / 3;
+
+/** The fewest timed gauges a source's clock is judged on: with two, a pair
+ *  of creek gauges both delayed past SOURCE_CLOCK_SHIFT would condemn every
+ *  record of their source. This project's definition. */
+export const SOURCE_CLOCK_GAUGES = 3;
+
+/** TICON sources whose clocks are measured as off, with the evidence the
+ *  gauges timing them don't give, which clockErrors adds. Their records are
+ *  rejected whatever those gauges say, so a reference gauge withdrawn or
+ *  re-analyzed can't clear them. */
 export const CLOCK_ERROR_SOURCES: Record<string, string> = {
-  // Harris County Flood Control District. Against the nearest NOAA or USGS
-  // gauge within 5 km, its 9 comparable records run a median 44 minutes late
-  // on M2 and about 30 on K1 and O1; USGS (591 pairs) and California DWR (97)
-  // run within a minute by the same comparison. Every one of its records has
-  // a NOAA harmonic station within 15 km.
-  hct: "runs 23 to 71 minutes behind every NOAA and USGS gauge near it",
+  // California, TICON's `cm`. Only two of its gauges have an authoritative
+  // gauge close enough to time them.
+  cm:
+    "its Napa River, Guadalupe River and Sunnyvale records run 390 to 450 min early " +
+    "against USGS and California DWR gauges within 25 km, near Pacific Standard Time",
+  hct:
+    "against the nearest NOAA or USGS gauge within 5 km, its 9 comparable records run " +
+    "a median 44 min late on M2 and about 30 on K1 and O1",
+  sfwmd:
+    "22 of its records run 280 to 300 min early against their own gauges' 2019 " +
+    "observations in Stillwell, Eastern Standard Time labeled UTC",
 };
+
+/** TICON sources whose constants don't match their own gauges' observations,
+ *  with the measurement. Their records are rejected. */
+export const OBSERVATION_ERROR_SOURCES: Record<string, string> = {
+  // Louisiana's Coastwide Reference Monitoring System. GESLA's series, which
+  // TICON analyzed, are CPRA's values at the same UTC hours.
+  crms:
+    "against a year of each gauge's own hourly observations in Stillwell, 13 of the 111 " +
+    "records with a tide whose gauge has a 2015 series come within 25% of the gauge's " +
+    "M2, S2, K1 and O1; the rest run from 13 hours early to 11 hours late, with " +
+    "amplitudes off by up to a factor of 100, and 82 of the 87 with a diurnal tide " +
+    "of 5 cm or more run within 30 min of the same shift against 2019",
+};
+
+/** Minutes a single record's time shift must reach, near its time zone's
+ *  standard offset, for local time labeled UTC. Of the records not known to
+ *  have a clock error or wrong constants, the largest shift is 96 minutes either way (USGS's
+ *  Manatee Bay Creek late, TICON's analysis of NOAA's Lake Worth Pier early);
+ *  UHSLC's Apia 401a, at 115, is a known clock error (#290). This project's
+ *  definition. */
+export const RECORD_CLOCK_SHIFT = 120;
+
+/** Minutes a record's shift may stray from its time zone's standard offset
+ *  and still be local time labeled UTC: the tide's own delay between the
+ *  record and the gauges timing it, and daylight saving time. This project's
+ *  definition. */
+export const ZONE_CLOCK_WINDOW = 60;
 
 /** GESLA sources that restrict commercial/consultancy use */
 export const NON_COMMERCIAL_SOURCES = ["cmems", "cv", "uz"];

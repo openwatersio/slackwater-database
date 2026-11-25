@@ -8,8 +8,9 @@ computed:
       position: [38.2976, -122.2828]
       coastline: unverifiable
       quality:
-        accepted: true
-        score: 62
+        accepted: false
+        reason: timing
+        score: 0
         factors:
           epoch: 0.333
           recency: 0.98
@@ -19,3 +20,4 @@ computed:
           coverage: 0.005
         issues:
           - MLWS (0.541) > MLW (0.46)
+          - "Clock error in source cm: its Napa River, Guadalupe River and Sunnyvale records run 390 to 450 min early against USGS and California DWR gauges within 25 km, near Pacific Standard Time; 2 of its 2 gauges timed against authoritative gauges within 10 km run 20 min or more early, a median 444 min early"

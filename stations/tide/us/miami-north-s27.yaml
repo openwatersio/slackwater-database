@@ -8,12 +8,15 @@ computed:
       position: [25.850833, -80.188333]
       coastline: unverifiable
       quality:
-        accepted: true
-        score: 77
+        accepted: false
+        reason: timing
+        score: 0
         factors:
           epoch: 1
           recency: 0.98
           source: 0.566
           quality: 1
           amplitude: 1
-          coverage: 0.051
+          coverage: 0.082
+        issues:
+          - "Clock error in source sfwmd: 22 of its records run 280 to 300 min early against their own gauges' 2019 observations in Stillwell, Eastern Standard Time labeled UTC; 26 of its 26 gauges timed against authoritative gauges within 10 km run 20 min or more early, a median 277 min early; this record runs 251 min early"

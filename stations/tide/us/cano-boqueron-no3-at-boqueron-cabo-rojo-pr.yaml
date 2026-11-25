@@ -10,8 +10,9 @@ computed:
       position: [18.013213, -67.169568]
       coastline: unverifiable
       quality:
-        accepted: true
-        score: 58
+        accepted: false
+        reason: timing
+        score: 0
         factors:
           epoch: 0.063
           recency: 0.9
@@ -22,3 +23,4 @@ computed:
         issues:
           - MLWS (-0.069) > MLW (-0.079)
           - MHWS (0.069) < MHW (0.08)
+          - "Clock error: runs 226 min early against 2 authoritative gauges within 10 km, near its standard time (UTC−4): local time labeled UTC"

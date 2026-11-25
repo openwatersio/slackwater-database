@@ -6,8 +6,9 @@
  *
  * Pipeline (docs/quality-evaluation.md describes each rule):
  *   1. Load every record under data/
- *   2. Apply the rejection checks (position, datum ordering, tidal range,
- *      superseded relay, constituents, seasonal contamination)
+ *   2. Apply the rejection checks (position, observed tide, clock error,
+ *      datum ordering, tidal range, superseded relay, constituents, seasonal
+ *      contamination)
  *   3. Compute the scored factors and the composite score
  *   4. Deduplicate: TICON records of one gauge, then records of every source
  *      by position and tide
@@ -41,8 +42,8 @@ import {
   OBSERVED_BOUND_ALLOWANCE,
   hasObservedMeanDatums,
   SAME_GAUGE_M2_DIFFERENCE,
-  CLOCK_ERROR_SOURCES,
   MAX_PROVENANCE_KM,
+  OBSERVATION_ERROR_SOURCES,
   m2Contradicts,
   RESOLVED_P1,
   seasonalPeak,
@@ -56,6 +57,7 @@ import {
   PRINCIPAL_TIDAL_CONSTITUENTS,
 } from "./filtering.ts";
 import type { StationData } from "@slackwater/database";
+import { clockErrors } from "./clock.ts";
 import {
   declaredOriginator,
   hasUhslcMetadata,
@@ -254,14 +256,6 @@ function checkCoordinates(station: Station): string | null {
   return null;
 }
 
-/** Reject a record from a source whose times are off by a measured amount. */
-function checkTiming(station: Station): string | null {
-  if (!station.id.startsWith("ticon/")) return null;
-  const suffix = getSourceSuffix(station.source.id);
-  const error = CLOCK_ERROR_SOURCES[suffix];
-  return error ? `Clock error in source ${suffix}: ${error}` : null;
-}
-
 /** Each TICON gauge's declared originator, for the records of the gauge that
  *  have no UHSLC metadata of their own: UHSLC's metadata covers only its
  *  research-quality series, so its fast-delivery series follows a
@@ -330,6 +324,17 @@ function checkSuperseded(
   };
 }
 
+/** Reject a TICON record from a source whose constants don't match their
+ *  own gauges' observations. */
+function checkObservations(station: Station): string | null {
+  if (!station.id.startsWith("ticon/")) return null;
+  const suffix = getSourceSuffix(station.source.id);
+  const fault = OBSERVATION_ERROR_SOURCES[suffix];
+  return fault
+    ? `Constants of source ${suffix} don't match their gauges' observations: ${fault}`
+    : null;
+}
+
 interface Gate {
   reason: string;
   issues: string[];
@@ -344,13 +349,15 @@ function checkGates(
   station: Station,
   stationMap: Map<string, Station>,
   stations: Station[],
+  clocks: Map<string, string>,
 ): { failures: Gate[]; warnings: string[] } {
   const failures: Gate[] = [];
   const fail = (reason: string, issue: string | null) => {
     if (issue) failures.push({ reason, issues: [issue] });
   };
   fail("coordinates", checkCoordinates(station));
-  fail("timing", checkTiming(station));
+  fail("observations", checkObservations(station));
+  fail("timing", clocks.get(station.id) ?? null);
   const datum = checkDatumOrdering(station, stationMap);
   if (datum.fatal.length > 0)
     failures.push({ reason: "datum", issues: datum.fatal });
@@ -1068,8 +1075,9 @@ export async function evaluateQuality(): Promise<QualityResult[]> {
   // Step 1: Compute factors and apply gates
   const resultsMap = new Map<string, QualityResult>();
 
+  const clocks = clockErrors(stations, (s) => !checkConstituents(s));
   const gates = new Map(
-    stations.map((s) => [s.id, checkGates(s, stationMap, stations)]),
+    stations.map((s) => [s.id, checkGates(s, stationMap, stations, clocks)]),
   );
   const failures = new Map(
     [...gates].map(([id, { failures }]) => [id, failures]),

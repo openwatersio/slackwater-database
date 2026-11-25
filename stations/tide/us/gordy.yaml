@@ -8,9 +8,10 @@ computed:
       position: [27.402778, -80.398611]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: timing
         seasonal_dominant: true
-        score: 79
+        score: 0
         factors:
           epoch: 1
           recency: 0.98
@@ -21,4 +22,5 @@ computed:
         issues:
           - MLW (0.204) < MLLW (0.206)
           - MLWS (0.288) > MLW (0.204)
+          - "Clock error in source sfwmd: 22 of its records run 280 to 300 min early against their own gauges' 2019 observations in Stillwell, Eastern Standard Time labeled UTC; 26 of its 26 gauges timed against authoritative gauges within 10 km run 20 min or more early, a median 277 min early"
           - "Seasonal curve peak (0.317m) exceeds the principal tide M2+S2+K1+O1 (0.073m): the yearly swing exceeds the daily one"
