@@ -3,16 +3,16 @@
 name: US National Oceanic and Atmospheric Administration
 # A national hydrographic office: its records win duplicates against relays.
 authoritative: true
-# The waters whose gauges NOAA operates, as records write `country`. NOAA also
+# The waters whose gauges NOAA operates, as ISO alpha-2 codes. NOAA also
 # publishes subordinate stations abroad from legacy foreign tide tables,
 # predicted from a US reference often 1,000 km or more away; outside these
 # waters its subordinates do not win a duplicate on authority.
 jurisdiction:
-  - United States
-  - Puerto Rico
-  - Virgin Islands
-  - Guam
-  - Northern Mariana Islands
-  - American Samoa
+  - US
+  - PR
+  - VI
+  - GU
+  - MP
+  - AS
 # Public domain: credit is welcome, so not imposed on consumers.
 credit: null

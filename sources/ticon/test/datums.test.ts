@@ -1,10 +1,13 @@
 import { describe, expect, test } from "vitest";
+import { computeDatums, toFixed } from "@slackwater/datums";
+import { getChartDatum } from "@slackwater/stations";
 import { createTidePredictor } from "@slackwater/engine";
 import {
   reduceTiconDatums,
   OBSERVED_OFFSET_NOTICE,
   CONSTITUENT_FRAME_NOTICE,
   cachedDatumNotice,
+  restoreCachedCountryDatum,
   OBSERVED_DATUM_NOTICE,
   HARMONIC_DATUM_NOTICE,
   HARMONIC_REDUCTION_NOTICE,
@@ -12,6 +15,22 @@ import {
 } from "../datums.ts";
 
 const constituents = [{ name: "S2", amplitude: 1, phase: 0 }];
+test("restores a missing cached China TLT in the stored gauge frame", () => {
+  const cached = { MSL: 2.123, LAT: 1.12, MLLW: 1.4 };
+  const restored = restoreCachedCountryDatum("CN", cached, constituents);
+  const tlt = computeDatums(constituents, {}).datums["TLT"]!;
+  expect(restored).toEqual({ ...cached, TLT: toFixed(tlt + cached.MSL, 3) });
+  expect(getChartDatum("CN", restored!)).toBe("TLT");
+  expect(cached).not.toHaveProperty("TLT");
+  expect(restoreCachedCountryDatum("CN", restored!, constituents)).toBe(
+    restored,
+  );
+  expect(restoreCachedCountryDatum("GB", cached, constituents)).toBe(cached);
+  expect(
+    restoreCachedCountryDatum("CN", { LAT: 1.12 }, constituents),
+  ).toBeUndefined();
+});
+
 const harmonic = {
   MSL: 0,
   MHHW: 1.2,

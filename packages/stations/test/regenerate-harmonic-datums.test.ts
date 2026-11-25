@@ -246,7 +246,10 @@ test("regenerates selected sorted files only, preserving other fields and unchan
     expect(await readFile(join(root, "linz", "b.json"), "utf8")).toBe(text);
     const afterText = await readFile(join(root, "linz", "a.json"), "utf8");
     const after = JSON.parse(afterText) as StationData;
-    expect({ ...after, datums: input.datums }).toEqual(input);
+    expect(after.country_code).toBe("NZ");
+    expect({ ...after, country_code: undefined, datums: input.datums }).toEqual(
+      input,
+    );
     expect(after.datums["MSL"]).toBe(1.2345);
     expect(after.datums["CD"]).toBe(0);
     const beforeTime = (await stat(join(root, "linz", "a.json"))).mtimeMs;
@@ -282,6 +285,7 @@ test("marks migrated TICON reductions once while leaving NOAA and observation pr
     );
     expect({
       ...result,
+      country_code: undefined,
       datums: input.datums,
       disclaimers: input.disclaimers,
     }).toEqual(input);
