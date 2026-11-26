@@ -4,6 +4,7 @@ import {
   checkCorrections,
   correctPosition,
   correctCountry,
+  ticonCountryCodes,
   matchMetadata,
   POSITION_CORRECTIONS,
   type Position,
@@ -217,4 +218,33 @@ it("assigns the Taiwan research records without changing unrelated gauges", () =
   expect(correctCountry("keelung-341a-chn-uhslc_rq", "China")).toBe("Taiwan");
   expect(correctCountry("kaohsiung-340a-chn-uhslc_rq", "China")).toBe("Taiwan");
   expect(correctCountry("dalian", "China")).toBe("China");
+});
+
+it("preserves TICON ISO identities and its explicit Taiwan correction", () => {
+  for (const [id, published, code] of [
+    ["st_helena-292-shn-uhslc_fd", "SHN", "SH"],
+    ["st_helena-sth-gbr-noc", "GBR", "GB"],
+    ["dalian", "CHN", "CN"],
+    ["kaohsiung-340a-chn-uhslc_rq", "CHN", "TW"],
+    ["keelung-341a-chn-uhslc_rq", "CHN", "TW"],
+  ]) {
+    expect(
+      ticonCountryCodes({ [id!]: [{ country: published! }] }).get(id!),
+    ).toBe(code);
+  }
+});
+
+it("rejects an unsupported TICON country before producing an import map", () => {
+  expect(() =>
+    ticonCountryCodes({
+      known: [{ country: "USA" }],
+      unknown: [{ country: "ZZZ" }],
+    }),
+  ).toThrow(/unknown: unsupported TICON country ZZZ/);
+});
+
+it("rejects conflicting country values within one TICON gauge", () => {
+  expect(() =>
+    ticonCountryCodes({ mixed: [{ country: "USA" }, { country: "CAN" }] }),
+  ).toThrow(/mixed: conflicting TICON country values/);
 });

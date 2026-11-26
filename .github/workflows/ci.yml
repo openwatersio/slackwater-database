@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   npm:
+    needs: lockfile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -68,6 +69,7 @@ jobs:
         run: npm run report:chs-fit-age -w packages/stations
 
   tcd:
+    needs: lockfile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -100,6 +102,7 @@ jobs:
           path: packages/tcd/dist/
 
   swift:
+    needs: lockfile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -131,6 +134,7 @@ jobs:
           SLACKWATER_TCDB: ${{ github.workspace }}/packages/database/src/generated/slackwater.tcdb
 
   kotlin:
+    needs: lockfile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -193,6 +197,7 @@ jobs:
         run: JAVA_HOME="${JAVA_HOME_17_X64:-${JAVA_HOME_17_ARM64:?JDK 17 not installed}}" ./gradlew -p smoke run --rerun-tasks --args="$PWD/src/test/fixture.tcdb"
 
   lint:
+    needs: lockfile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -233,7 +238,14 @@ jobs:
           git diff --exit-code -- package-lock.json
 
       - name: Test the immutable country dependency exception
-        run: node --test .github/scripts/country-dependency-url.test.mjs
+        run: node --test .github/scripts/*.test.mjs
+
+      - name: Check the country reader's build dependencies
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node .github/scripts/fetch-country-build-lock.mjs "$RUNNER_TEMP/country-build/package-lock.json"
+          npx -y lockfile-lint@5.0.1 --path "$RUNNER_TEMP/country-build/package-lock.json" --allowed-hosts npm --validate-https --validate-integrity --validate-package-names
 
       - name: Check registry packages and the pinned country dependency
         run: |

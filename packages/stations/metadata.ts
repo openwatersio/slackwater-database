@@ -1,5 +1,4 @@
-import { countryByIso } from "./country.ts";
-import { countryByName, countryForRecord } from "./country.ts";
+import { countryByIso, countryByName, countryForRecord } from "./country.ts";
 import { find as findTimezone } from "geo-tz/all";
 import { parse } from "yaml";
 import type { ChsFitData, StationInput } from "@slackwater/database";
@@ -354,13 +353,26 @@ export function resolveMetadata(
     throw new Error(
       `${station.id}: no ISO country code for ${explicitLocation.country}`,
     );
+  const zoneIdentity = zoneCountry ? countryByIso(zoneCountry) : null;
+  const hasSourceCountry =
+    Boolean(station.country) || station.country_code !== undefined;
+  if (
+    !explicitCountry &&
+    !explicitLocation?.countryCode &&
+    zoneCountry &&
+    !zoneIdentity &&
+    !hasSourceCountry
+  )
+    throw new Error(
+      `${station.id}: unsupported maritime-zone country code ${zoneCountry}`,
+    );
   const country =
     explicitCountry ??
     (explicitLocation?.countryCode
       ? countryForRecord({ country_code: explicitLocation.countryCode })
       : null) ??
-    (zoneCountry ? countryByIso(zoneCountry) : null) ??
-    (station.country || station.country_code !== undefined
+    zoneIdentity ??
+    (hasSourceCountry
       ? countryForRecord(station)
       : nearest
         ? countryByIso(nearest.place.countryCode)
@@ -410,7 +422,7 @@ export function resolveMetadata(
         : undefined));
   const cleaned = cleanName(
     station.name ?? registry?.name ?? "",
-    country.country,
+    country.iso2,
     authoritativeRegionCode ??
       (isTicon ? station.region : (placeRegionCode ?? station.region)),
     station.source?.name === "Canadian Hydrographic Service",
@@ -456,10 +468,7 @@ export function resolveMetadata(
   setOptional(
     result,
     "continent",
-    explicitLocation?.continent ??
-      station.continent ??
-      place?.continent ??
-      country.continent,
+    explicitLocation?.continent ?? country.continent,
   );
   setOptional(
     result,

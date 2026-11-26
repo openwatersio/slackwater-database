@@ -45,3 +45,33 @@ test("ISO namespaces accept alpha-2, alpha-3 and numeric codes without guessing 
   for (const code of ["CS", "AN", "ZZ", "United States", "123", " "])
     expect(countryByIso(code)).toBeNull();
 });
+
+test("the geocoder's only missing continent is the tracked Åland source gap", () => {
+  const places = JSON.parse(
+    readFileSync(
+      new URL("../../../metadata/places.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  const codes = [
+    ...new Set<string>(
+      places.map((p: { countryCode: string }) => p.countryCode),
+    ),
+  ];
+  expect(codes.filter((code) => !countryByIso(code)?.continent).sort()).toEqual(
+    ["AX"],
+  );
+});
+
+test("the pinned country set covers every committed maritime-zone identity", () => {
+  const zones = JSON.parse(
+    readFileSync(
+      new URL("../../../metadata/maritime-zones.geojson", import.meta.url),
+      "utf8",
+    ),
+  );
+  for (const feature of zones.features)
+    expect(countryByIso(feature.properties.country)?.iso2).toBe(
+      feature.properties.country,
+    );
+});

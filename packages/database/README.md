@@ -76,6 +76,8 @@ The geographic and text indexes initialize on first use. Bundled data uses prebu
 
 Pure helpers such as `qualityFilter`, `routePath`, `positionToPoint`, attribution helpers, `credits`, and `buildDatabase` remain direct exports.
 
+The TypeScript `buildDatabase` validates country codes against the pinned Slackwater country corpus. Valid ISO countries outside that corpus are unsupported and require a dataset expansion; see [country resolution](../../docs/country-resolver.md).
+
 Each station has separate `locality`, `region`, and `country` display fields. `country_code` is an ISO 3166-1 alpha-2 code; `region_code`, when available, is an ISO 3166-2 subdivision code. Consumers can therefore omit country or region text when the surrounding page already supplies it.
 
 ### Harmonic current vectors
@@ -189,7 +191,7 @@ console.log("US harbor stations:", usStations);
 // Combine multiple filters
 const referenceStations = db.search("island", {
   filter: (station) =>
-    station.type === "reference" && station.continent === "Americas",
+    station.type === "reference" && station.continent === "North America",
   maxResults: 20,
 });
 console.log("Reference stations:", referenceStations);

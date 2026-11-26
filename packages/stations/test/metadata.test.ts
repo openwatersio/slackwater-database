@@ -41,6 +41,41 @@ const baseStation: StationInput = {
 };
 
 describe("metadata resolution", () => {
+  test("rejects an unsupported maritime-zone code instead of using a fallback country", () => {
+    const { country: _country, country_code: _code, ...uncoded } = baseStation;
+    expect(() =>
+      resolveMetadata(uncoded, {
+        geocoder,
+        maritimeZones: { country: () => "ZZ" },
+      }),
+    ).toThrow(/unsupported maritime-zone country code ZZ/);
+  });
+  test("retains an explicitly curated continent instead of the country default", () => {
+    const result = resolveMetadata(
+      {
+        ...baseStation,
+        country: "Russia",
+        country_code: "RU",
+        continent: "Europe",
+      },
+      { geocoder, correction: { location: { continent: "Asia" } } },
+    );
+    expect(result.continent).toBe("Asia");
+  });
+
+  test("uses the pinned country's continent instead of cached library metadata", () => {
+    const result = resolveMetadata(
+      { ...baseStation, continent: "Americas" },
+      {
+        geocoder: {
+          nearest: () => ({ ...everett, continent: "Americas" }),
+          near: () => [{ ...everett, continent: "Americas" }],
+        },
+      },
+    );
+    expect(result.continent).toBe("North America");
+  });
+
   test("keeps the geocoder's region spelling for a raw TICON name", () => {
     const result = resolveMetadata(
       { ...baseStation, id: "ticon/everett", name: "Everett" },

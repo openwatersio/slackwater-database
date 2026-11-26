@@ -48,12 +48,19 @@ export function countryByIso(input: string) {
   return null;
 }
 
+// Exact display labels from country-code-lookup 0.2.1 retain only their original ISO identity.
+const legacyLabels: Readonly<Record<string, string>> = {
+  FK: "Falkland Islands (Islas Malvinas)",
+  RE: "Reunion",
+  MF: "Saint Martin",
+  AX: "Åland Islands",
+  BQ: "Bonaire",
+  VI: "Virgin Islands",
+  SH: "Saint Helena",
+};
+
 export function countryMatchesCode(name: string, code: string): boolean {
   if (!countryByIso(code)) return false;
   if (countryByName(name)?.iso2 === code) return true;
-  // Stored labels identify these territories only when paired with their explicit ISO identity.
-  return (
-    (code === "VI" && name === "Virgin Islands") ||
-    (code === "SH" && name === "Saint Helena")
-  );
+  return legacyLabels[code] === name;
 }
