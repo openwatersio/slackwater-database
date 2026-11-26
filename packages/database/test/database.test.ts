@@ -801,7 +801,7 @@ describe("format version", () => {
 test("the builder accepts every cached source country label with its stored identity", () => {
   const root = fileURLToPath(new URL("../../../data/", import.meta.url));
   let checked = 0;
-  for (const path of readdirSync(root, { recursive: true })) {
+  for (const path of readdirSync(root, { recursive: true, encoding: "utf8" })) {
     if (!path.endsWith(".json")) continue;
     const record = JSON.parse(readFileSync(join(root, path), "utf8"));
     if (typeof record.country !== "string") continue;
