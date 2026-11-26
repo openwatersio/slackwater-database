@@ -117,7 +117,8 @@ jobs:
           RELEASE_VERSION: ${{ needs.build.outputs.version }}
         run: |
           shopt -s nullglob
-          packages=(release/*.tgz)
+          # The ./ keeps npm from reading release/<file> as a GitHub owner/repo.
+          packages=(./release/*.tgz)
           test "${#packages[@]}" -eq 1
           if [[ "$RELEASE_VERSION" == *-* ]]; then
             npm publish "${packages[0]}" --ignore-scripts --tag beta
