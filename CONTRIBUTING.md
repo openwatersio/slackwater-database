@@ -2,7 +2,9 @@
 
 The project layout, local setup, the checks CI runs, how a release is cut, and the traps that have cost someone real time.
 
-See the org-wide [writing style](https://github.com/openwatersio/github/blob/main/docs/agents/writing-style.md) for prose in commits, pull requests, issues, and docs.
+Every change follows the org-wide [rigor rules](https://github.com/openwatersio/.github/blob/main/docs/agents/rigor.md). The first of them: when something fails or looks wrong, find the cause and fix it there instead of working around it.
+
+See the org-wide [writing style](https://github.com/openwatersio/.github/blob/main/docs/agents/writing-style.md) for prose in commits, pull requests, issues, and docs.
 
 ## Scientific accuracy
 
@@ -40,6 +42,8 @@ npm run check
 `.mise.toml` pins Node 24, npm 11.19.0 and `flatc` 25.9.23; CI selects the same Node with `actions/setup-node` and gets `flatc` from `jdx/mise-action`. A fresh checkout or worktree needs `mise trust` before anything builds, or `pretest` dies with `spawnSync flatc ENOENT`.
 
 ## Commands
+
+Run `gh actions-lock` after adding, removing, or renaming a workflow or changing an action reference, and commit the generated lockfile with the workflow changes. Install it with `gh extension install github/gh-actions-lock`; Dependabot updates entries for action version bumps in onboarded workflows.
 
 From the repo root:
 

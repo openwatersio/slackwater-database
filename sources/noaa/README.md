@@ -42,11 +42,11 @@ NOAA publishes LAT and HAT for most, but not all, of its reference stations. For
 remainder, [`packages/stations/backfill-lat-hat.ts`](../../packages/stations/backfill-lat-hat.ts) synthesizes the
 two from the station's own harmonic constituents over the pinned `DATUM_EPOCH` — the same
 method [`packages/datums/datum.ts`](../../packages/datums/datum.ts) already uses for TICON and IOC — and shifts
-the result onto NOAA's scale by the station's published MSL. 61 stations are filled this way. Every other datum in those
+the result onto NOAA's scale by the station's published MSL. 59 stations are filled this way. Every other datum in those
 records stays exactly as NOAA published it, so the `datums` object is mixed: observed means,
 synthesized extremes. `datums_source` remains absent on NOAA stations under the published-source convention; it must not be set to `harmonic` for the whole table. Where a source supplies that flag, it describes the mean-datum family rather than every key in a mixed table. Quality checks recognize NOAA’s published means as observed despite that absent flag, and apply the same 5 cm cross-period bound allowance as other observed reductions.
 
-Run `npm run refresh:lat-hat -w packages/stations` after every `npm run import -w sources/noaa`, as the update workflow does: the import rewrites `datums` wholesale from NOAA's API and drops the synthesized LAT and HAT. The backfill is idempotent, and leaves a station alone once NOAA publishes its own LAT and HAT.
+Run `npm run refresh:lat-hat -w packages/stations` after every `npm run import -w sources/noaa`, as the update workflow does: the import rewrites `datums` wholesale from NOAA's API and drops the synthesized LAT and HAT. The backfill is idempotent, and leaves a station alone once NOAA publishes its own LAT and HAT. It also leaves alone a station whose LAT and HAT it synthesized before, so after an engine upgrade that changes predictions, recompute those values. Nothing in the files marks them: tell them apart by checking which stations NOAA's metadata API (`/mdapi/prod/webapi/stations/<id>/datums.json`) gives no LAT or HAT for, since a published value can equal the synthesized one to the millimetre.
 
 Two kinds of station are deliberately left without LAT/HAT. Three (`8519024`, `8764311`,
 `9450623`) publish no MSL, so there is no frame to put a constituent-space result onto. Eight

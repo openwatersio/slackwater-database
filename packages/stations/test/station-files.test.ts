@@ -1,8 +1,9 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, expect, test } from "vitest";
+import YAML from "yaml";
 import type { ResolvedStation } from "../metadata.ts";
 import {
   chsFitProblems,
@@ -17,6 +18,26 @@ import {
   renderStationFile,
   storedQuality,
 } from "../station-files.ts";
+
+test("online gate refreshes keep curated water context", () => {
+  const contexts = {
+    "arran-rapids": "rapids",
+    "dent-rapids": "rapids",
+    "nakwakto-rapids": "rapids",
+    "sechelt-rapids": "rapids",
+    "juan-de-fuca-east": "slow_reversal",
+    "tillicum-bridge": "tidal_falls",
+  };
+  for (const [slug, context] of Object.entries(contexts)) {
+    const path = new URL(
+      `../../../stations/current/ca/${slug}.yaml`,
+      import.meta.url,
+    );
+    const station = YAML.parse(readFileSync(path, "utf8"));
+    if (station.chs_fit.tier === "online")
+      expect(station.chs_fit.miss_context, slug).toBe(context);
+  }
+});
 
 const everett = `# Port Gardner is what boaters call it.
 name: Everett
