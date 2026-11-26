@@ -1,3 +1,4 @@
+import { countryByNameOrCode } from "../../packages/stations/country.ts";
 import { distance, indexBy } from "@slackwater/stations";
 
 export type TiconMetaRow = {
@@ -163,4 +164,26 @@ export function correctCountry(id: string, published: string): string {
   )
     return "Taiwan";
   return published;
+}
+
+/** Resolve the full source inventory before any shard writes station data. */
+export function ticonCountryCodes(
+  gauges: Record<string, readonly { country: string }[]>,
+): Map<string, string> {
+  return new Map(
+    Object.entries(gauges).map(([id, rows]) => {
+      const published = rows[0]?.country;
+      if (typeof published !== "string" || !published.trim())
+        throw new Error(`${id}: missing TICON country`);
+      if (rows.some((row) => row.country !== published))
+        throw new Error(`${id}: conflicting TICON country values`);
+      const country = correctCountry(id, published);
+      const code = countryByNameOrCode(country)?.iso2;
+      if (!code)
+        throw new Error(
+          `${id}: unsupported TICON country ${country}; extend the pinned country dataset before importing`,
+        );
+      return [id, code];
+    }),
+  );
 }

@@ -4,7 +4,6 @@ import { readFile } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import {
-  countryByNameOrCode,
   parseCSV,
   groupBy,
   normalize,
@@ -35,7 +34,7 @@ import {
 import {
   checkCorrections,
   correctPosition,
-  correctCountry,
+  ticonCountryCodes,
   matchMetadata,
   type TiconMetaRow,
 } from "./meta.ts";
@@ -65,6 +64,7 @@ const metadata = matchMetadata(
   positions,
 );
 checkCorrections(positions);
+const countryCodes = ticonCountryCodes(gauges);
 // FORCE_DATUMS=1 recomputes every station's datums; a comma-separated list of
 // source suffixes (e.g. FORCE_DATUMS=uhslc_rq) recomputes only those sources.
 const FORCE_DATUMS = process.env["FORCE_DATUMS"] ?? "";
@@ -168,14 +168,7 @@ async function main() {
       end: dayMonthYearToDate(rows[0].end_date),
     };
 
-    const country = correctCountry(id, rows[0].country);
-    const countryCode = countryByNameOrCode(country)?.iso2;
-    if (!countryCode) {
-      console.error(`\nError processing ${id}: Unknown country: ${country}`);
-      errors++;
-      process.stdout.write("x");
-      continue;
-    }
+    const countryCode = countryCodes.get(id)!;
 
     // Refit gauges whose published phases are not UTC-referenced.
     const harmonic_constituents = await getHarmonics(id, csvHarmonics);
@@ -193,7 +186,7 @@ async function main() {
 
       const candidate: PartialStationData = {
         name: gesla["SITE NAME"],
-        country,
+        country: countryCode,
         country_code: countryCode,
         latitude: lat,
         longitude: lon,

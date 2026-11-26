@@ -937,7 +937,7 @@ private func requireIdentity(_ station: StationInput) throws {
       "Station \(id) has invalid country_code \"\(station.countryCode)\"")
   }
   // builder.ts also checks country against country_code with the JS-only
-  // country-code-lookup package; this package carries no country table, so it skips that match.
+  // c5y-n8r country dataset; this package carries no country table, so it skips that match.
   if let regionCode = station.regionCode, !regionCode.isEmpty,
     !isRegionCode(regionCode) || !regionCode.hasPrefix("\(station.countryCode)-")
   {

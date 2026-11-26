@@ -7,6 +7,7 @@
     "report": "node report.ts"
   },
   "dependencies": {
-    "@openwaters/c5y-n8r": "git+https://github.com/openwatersio/c5y-n8r.git#ea6fe2e59e2e829242fd3640eb58b23913624cb7"
+    "@openwaters/c5y-n8r": "git+https://github.com/openwatersio/c5y-n8r.git#ea6fe2e59e2e829242fd3640eb58b23913624cb7",
+    "country-code-lookup": "0.2.1"
   }
 }
