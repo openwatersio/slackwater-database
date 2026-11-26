@@ -45,7 +45,7 @@ The package requires Swift 6. `StationDatabase`, `Station`, and their typed meta
 
 A subordinate station's record holds no constituents or datums of its own, only the offsets that correct its reference's. Reading `constituents`, `datums`, `chartDatumShift`, `astronomicalBounds`, `constituentDefinitions`, or `nodeCorrections` on one resolves the reference for you, so both station types answer the same questions.
 
-`station.constituentDefinitions` is the line behind each constituent name the station stores, and behind every member a compound names, as `Station.ConstituentDefinition` values that map field for field to the engine's `ConstituentDefinition`. A source can define a name its own way, such as a different phase constant, and its stations read that definition in place of the shared one. `station.nodeCorrections` is the nodal correction formulas the source's constants were analyzed with, `.iho` or `.schureman`. Pass both to the engine (its `definitions` and node-correction options) so predictions match the analysis. `constituentDefinitions` is nil for a file written before definitions, which leaves every name to the engine's own catalog.
+`station.constituentDefinitions` is the line behind each constituent name the station stores, and behind every member a compound names, as `Station.ConstituentDefinition` values that map field for field to the engine's `ConstituentDefinition`. A source can define a name its own way, such as a different phase constant, and its stations read that definition in place of the shared one. `station.nodeCorrections` is the nodal correction formulas the source's constants were analyzed with, `.iho` or `.schureman`. Pass both to the engine (its `definitions` and node-correction options) so predictions match the analysis. `constituentDefinitions` is nil for a file written before definitions, which leaves every name to the engine's own catalog. Predict with an engine that counts M1's lunar perigee once and takes MP1's phase constant from its members, as the TypeScript `@slackwater/engine` does from 1.0.0-beta.14: this release's M1 and MP1 constants follow those conventions, and the definitions can't carry M1's nodal correction. See [format version](../../docs/database-format.md#format-version).
 
 ### Bytes you didn't ship
 
@@ -117,7 +117,7 @@ Get the database file from the [latest release](https://github.com/openwatersio/
 
 Most stations are CC BY, so showing them carries an obligation to the original source, not only to this project. `station.attribution` is that notice, assembled in the database file itself, so this package keeps no table of sources and neither does your app.
 
-**Display `station.attribution`.** That is the whole of the rule.
+**Display `station.attribution`.** That covers the station's source. The geocoded location fields and `context` also draw on GeoNames, OpenStreetMap and Marine Regions; credit them once wherever the data is shown, such as an app's credits screen, with the lines in [NOTICE](../database/NOTICE).
 
 ```
 Slackwater database (https://github.com/openwatersio/slackwater-database). Source:
@@ -127,7 +127,7 @@ Licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified:
 see https://github.com/openwatersio/slackwater-database#modifications-to-source-data
 ```
 
-Under a CC licence the string carries the creator credit, the licence and its URI, and an indication that the material was modified — the three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.org/licenses/by/4.0/) requires a redistributor to pass on. The licence follows the station, not its source, because it varies within one source: TICON stations relayed from CMEMS are CC BY-NC while the rest are CC BY. A station whose licence imposes no notice, such as a public-domain NOAA record, gets the project credit alone.
+Under a CC licence the string carries the creator credit, the licence and its URI, and an indication that the material was modified — the three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.org/licenses/by/4.0/) requires a redistributor to pass on. The licence follows the station, not its source, because it varies within one source: TICON stations from CMEMS and two other GESLA sources that restrict commercial use are CC BY-NC while the rest are CC BY. A station whose licence imposes no notice, such as a public-domain NOAA record, gets the project credit alone.
 
 To make a decision in code rather than show a string, read `station.license` for `type`, `url`, and `commercialUse`.
 

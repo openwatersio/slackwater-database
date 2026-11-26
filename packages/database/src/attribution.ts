@@ -22,12 +22,15 @@ export const LICENSE_NAMES: Record<string, string> = {
 };
 
 /**
- * Assemble a station's complete notice, so displaying it is the whole of a
- * consumer's obligation. Under a Creative Commons licence that means the
+ * Assemble a station's notice for its source, so displaying it meets what the
+ * source's licence asks. Under a Creative Commons licence that means the
  * creator credit, the licence and its URI, and an indication that the material
  * was modified — the three things CC BY 4.0 section 3(a)(1) requires be passed
- * on. Licence is taken per station rather than per source because it varies
- * within one source: TICON stations relayed from CMEMS are CC BY-NC while the
+ * on. The geocoded location fields and `context` draw on GeoNames,
+ * OpenStreetMap and Marine Regions, whose credits are in NOTICE and are passed
+ * on separately. Licence is taken per station rather than per source because
+ * it varies within one source: TICON stations from the GESLA sources that
+ * restrict commercial use (`NON_COMMERCIAL_SOURCES`) are CC BY-NC while the
  * rest are CC BY. `credit` is the source's own line from its
  * `sources/<name>/metadata.yaml`, or null when it requires none.
  */

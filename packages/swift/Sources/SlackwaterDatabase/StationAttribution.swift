@@ -18,7 +18,7 @@ public enum StationAttribution {
     "Government Standard Terms of Use 2.0": "Government Standard Terms of Use 2.0",
   ]
 
-  /// A station's complete notice: the project credit, the source's own
+  /// A station's notice for its source: the project credit, the source's own
   /// `credit` line when it has one, and for a licence in `licenseNames` the
   /// licence, its URI, and a pointer to what was modified.
   public static func notice(credit: String?, license: StationLicense?) -> String {

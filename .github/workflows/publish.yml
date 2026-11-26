@@ -12,12 +12,12 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Setup mise (flatc)
-        uses: jdx/mise-action@v5
+        uses: jdx/mise-action@v5.3.0
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: "24"
 
@@ -82,9 +82,12 @@ jobs:
         run: cp packages/database/dist/generated/slackwater.tcdb "packages/database/dist/generated/slackwater-${ASSET_DATE}.tcdb"
 
       - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.21.0
         with:
           tag: v${{ env.RELEASE_VERSION }}
           generateReleaseNotes: true
           prerelease: ${{ contains(env.RELEASE_VERSION, '-') }}
-          artifacts: "packages/tcd/dist/*.tcd,packages/database/dist/generated/slackwater-*.tcdb"
+          # NOTICE explains the per-station licences and carries the GeoNames,
+          # OpenStreetMap and Marine Regions credits; LICENSE is the MIT text
+          # and copyright NOTICE points to, which also covers authored records.
+          artifacts: "packages/tcd/dist/*.tcd,packages/database/dist/generated/slackwater-*.tcdb,packages/database/NOTICE,packages/database/LICENSE"

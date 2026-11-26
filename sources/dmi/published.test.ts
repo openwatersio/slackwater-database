@@ -109,6 +109,12 @@ test.each([
     "dmi/2991140",
     "/tides/dk/qaqortoq/",
   ],
+  [
+    "/tides/gl/sisimiut/",
+    "ticon/sisimiut-296a-dnk-uhslc_rq",
+    "dmi/2991460",
+    "/tides/dk/sisimiut/",
+  ],
 ])(
   "%s shows %s and holds DMI's record of the same gauge",
   (path, lead, dmi, absorbed) => {

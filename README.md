@@ -124,20 +124,20 @@ Releases of this database use [Semantic Versioning](https://semver.org/), with t
 
 ## Releasing
 
-Releases are created by [running the Publish action](https://github.com/openwatersio/slackwater-database/actions/workflows/publish.yml) on GitHub Actions. The action takes the `version` in `packages/database/package.json` as a floor and replaces its last segment with the current date, so the version always names the data vintage: `1.0.1-beta.0` publishes as `1.0.1-beta.<date>` under the `beta` dist-tag (and a prerelease GitHub release), and `1.0.0` publishes as `1.0.<date>` to `latest`. Release assets are named `slackwater-<date>.*` to match. During prereleases, the numeric base can advance to isolate a consumer compatibility update: npm ranges such as `^1.0.0-beta.20261102` do not accept `1.0.1-beta.*`. This does not pin the floating `beta` tag or SwiftPM ranges, and old npm ranges may accept a later stable release. Use exact pins for a controlled rollout.
+Releases are created by [running the Publish action](https://github.com/openwatersio/slackwater-database/actions/workflows/publish.yml) on GitHub Actions. The action takes the `version` in `packages/database/package.json` as a floor and replaces its last segment with the current date, so the version always names the data vintage: `1.0.1-beta.0` publishes as `1.0.1-beta.<date>` under the `beta` dist-tag (and a prerelease GitHub release), and `1.0.0` publishes as `1.0.<date>` to `latest`. The `.tcd` and `.tcdb` release assets are named `slackwater-<date>.*` to match, and the package's `NOTICE` and `LICENSE` are attached beside them. During prereleases, the numeric base can advance to isolate a consumer compatibility update: npm ranges such as `^1.0.0-beta.20261102` do not accept `1.0.1-beta.*`. This does not pin the floating `beta` tag or SwiftPM ranges, and old npm ranges may accept a later stable release. Use exact pins for a controlled rollout.
 
 ## License
 
 - All code in this repository is licensed under the [MIT License](./LICENSE).
 - The `license` field of each station's JSON file specifies the license for that station, and the `source` field names where the station came from.
-- Unless otherwise noted, all other data is licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license.
+- Unless otherwise noted, all other data is licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license. The OpenStreetMap extracts in `metadata/` are ODbL, and the location fields and `context` keep their sources' credits; see [packages/database/NOTICE](./packages/database/NOTICE) and [metadata/PROVENANCE.md](./metadata/PROVENANCE.md).
 - A few stations are CC BY-NC 4.0, carried from sources that do not permit commercial use. They are marked `"commercial_use": false` and can be filtered out.
 
 ### Attribution
 
 Most stations here are CC BY, which obliges anyone redistributing them to credit the original source — not only this project. That applies to downstream software bundling this database too.
 
-Every station carries the notice it needs as `attribution`, already assembled, so the rule for a consumer is one sentence: **display the station's `attribution`.** Nothing downstream needs its own table of sources, or its own reading of what a licence requires.
+Every station carries the notice it needs as `attribution`, already assembled, so the rule for a consumer is one sentence: **display the station's `attribution`.** Nothing downstream needs its own table of sources, or its own reading of what a licence requires. That notice credits the station's source. The geocoded location fields and `context` also draw on GeoNames, OpenStreetMap and Marine Regions; credit them once wherever the data is shown, such as an app's credits screen, with the lines in [packages/database/NOTICE](./packages/database/NOTICE).
 
 ```typescript
 import { loadStations } from "@slackwater/database";
@@ -153,7 +153,7 @@ console.log(db.byId("ticon/newlyn-new-gbr-bodc")?.attribution);
 
 The Swift and Kotlin readers expose the same string as `station.attribution`.
 
-Under a CC licence that string carries all three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.org/licenses/by/4.0/) asks a redistributor to pass on: who created the material, the licence and its URI, and an indication that it was modified. A station whose licence imposes no notice, such as a public-domain NOAA record, gets the project credit alone. The licence comes from the station rather than its source, because it varies within one source — the TICON stations relayed from CMEMS are CC BY-NC while the rest are CC BY — so `attribution` names the licence that actually applies to the station in hand. `license` still carries the same terms as structured fields if you need to filter on them.
+Under a CC licence that string carries all three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.org/licenses/by/4.0/) asks a redistributor to pass on: who created the material, the licence and its URI, and an indication that it was modified. A station whose licence imposes no notice, such as a public-domain NOAA record, gets the project credit alone. The licence comes from the station rather than its source, because it varies within one source — the TICON stations from CMEMS and two other GESLA sources that restrict commercial use are CC BY-NC while the rest are CC BY — so `attribution` names the licence that actually applies to the station in hand. `license` still carries the same terms as structured fields if you need to filter on them.
 
 The sources and what each one asks for:
 

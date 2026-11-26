@@ -912,10 +912,12 @@ public struct Station: Identifiable, @unchecked Sendable {
 
   // MARK: Attribution
 
-  /// The complete notice to display when showing or redistributing this
+  /// The source's notice to display when showing or redistributing this
   /// station: the creator credit and, where a Creative Commons licence
-  /// applies, the licence and a pointer to what was modified. Displaying it is
-  /// the whole of the obligation. Written into the file by the builder, so
+  /// applies, the licence and a pointer to what was modified. Displaying it
+  /// covers the station's source; the location fields and `context` also need
+  /// the GeoNames, OpenStreetMap and Marine Regions credits in the database
+  /// package's NOTICE. Written into the file by the builder, so
   /// this package keeps no table of sources; a file predating the field falls
   /// back to the project credit.
   public var attribution: String {
