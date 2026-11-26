@@ -43,6 +43,8 @@ npm run check
 
 ## Commands
 
+Run `gh actions-lock` after adding, removing, or renaming a workflow or changing an action reference, and commit the generated lockfile with the workflow changes. Install it with `gh extension install github/gh-actions-lock`; Dependabot updates entries for action version bumps in onboarded workflows.
+
 From the repo root:
 
 | Command                              | Does                                                                                                                            |
