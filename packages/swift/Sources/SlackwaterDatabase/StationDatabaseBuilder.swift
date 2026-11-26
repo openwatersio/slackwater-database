@@ -35,7 +35,7 @@ public struct StationInput: Sendable, Equatable {
   public var source: StationSource?
   public var license: StationLicense?
   public var disclaimers: String?
-  /// The complete notice. Nil composes one at build time from `license` and
+  /// The source's notice. Nil composes one at build time from `license` and
   /// the source's entry in `build`'s `credits`. A given notice must start with
   /// the project credit and carry the licence clause `license` requires (none
   /// for a licence `StationAttribution.licenseNames` doesn't list), and then:

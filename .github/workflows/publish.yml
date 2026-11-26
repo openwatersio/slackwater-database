@@ -87,4 +87,7 @@ jobs:
           tag: v${{ env.RELEASE_VERSION }}
           generateReleaseNotes: true
           prerelease: ${{ contains(env.RELEASE_VERSION, '-') }}
-          artifacts: "packages/tcd/dist/*.tcd,packages/database/dist/generated/slackwater-*.tcdb"
+          # NOTICE explains the per-station licences and carries the GeoNames,
+          # OpenStreetMap and Marine Regions credits; LICENSE is the MIT text
+          # and copyright NOTICE points to, which also covers authored records.
+          artifacts: "packages/tcd/dist/*.tcd,packages/database/dist/generated/slackwater-*.tcdb,packages/database/NOTICE,packages/database/LICENSE"

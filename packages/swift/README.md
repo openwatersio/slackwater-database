@@ -117,7 +117,7 @@ Get the database file from the [latest release](https://github.com/openwatersio/
 
 Most stations are CC BY, so showing them carries an obligation to the original source, not only to this project. `station.attribution` is that notice, assembled in the database file itself, so this package keeps no table of sources and neither does your app.
 
-**Display `station.attribution`.** That is the whole of the rule.
+**Display `station.attribution`.** That covers the station's source. The geocoded location fields and `context` also draw on GeoNames, OpenStreetMap and Marine Regions; credit them once wherever the data is shown, such as an app's credits screen, with the lines in [NOTICE](../database/NOTICE).
 
 ```
 Slackwater database (https://github.com/openwatersio/slackwater-database). Source:
@@ -127,7 +127,7 @@ Licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified:
 see https://github.com/openwatersio/slackwater-database#modifications-to-source-data
 ```
 
-Under a CC licence the string carries the creator credit, the licence and its URI, and an indication that the material was modified — the three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.org/licenses/by/4.0/) requires a redistributor to pass on. The licence follows the station, not its source, because it varies within one source: TICON stations relayed from CMEMS are CC BY-NC while the rest are CC BY. A station whose licence imposes no notice, such as a public-domain NOAA record, gets the project credit alone.
+Under a CC licence the string carries the creator credit, the licence and its URI, and an indication that the material was modified — the three things [CC BY 4.0 section 3(a)(1)](https://creativecommons.org/licenses/by/4.0/) requires a redistributor to pass on. The licence follows the station, not its source, because it varies within one source: TICON stations from CMEMS and two other GESLA sources that restrict commercial use are CC BY-NC while the rest are CC BY. A station whose licence imposes no notice, such as a public-domain NOAA record, gets the project credit alone.
 
 To make a decision in code rather than show a string, read `station.license` for `type`, `url`, and `commercialUse`.
 

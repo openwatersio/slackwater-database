@@ -117,7 +117,7 @@ Passing means each consumer's bump is ready to open, not that its failures match
 
 Dispatch `publish.yml` only when both bumps are ready. Don't commit either consumer's install of the tarball; they pin the published version once it is out.
 
-`packages/database/package.json` holds a **floor** version such as `1.0.1-beta.0`. The workflow replaces its last segment with today's date to derive `1.0.1-beta.20261103`, publishes to npm, then tags and creates the GitHub release with the `.tcd` and `.tcdb` assets.
+`packages/database/package.json` holds a **floor** version such as `1.0.1-beta.0`. The workflow replaces its last segment with today's date to derive `1.0.1-beta.20261103`, publishes to npm, then tags and creates the GitHub release with the `.tcd` and `.tcdb` assets and the package's `NOTICE` and `LICENSE`.
 
 During npm prerelease publishing, a data release that needs a consumer compatibility change starts a new prerelease base in a reviewed PR, such as `1.0.0-beta.0` to `1.0.1-beta.0`. An existing dependency range such as `^1.0.0-beta.20261102` rejects `1.0.1-beta.*`; coordinated consumers opt in with new pins after the required preflight. Each derived release version must sort above the last published version. For stable releases, the `X.Y.0` floor derives `X.Y.<date>`, which sorts above prereleases on the same major and minor version.
 
