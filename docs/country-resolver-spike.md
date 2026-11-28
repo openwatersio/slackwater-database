@@ -1,6 +1,6 @@
-# Country resolver comparison
+# Historical country resolver comparison
 
-This diagnostic evaluates `@openwaters/c5y-n8r` against Slackwater’s source-country inputs. The separately installed public GitHub dependency is pinned to commit `ea6fe2e59e2e829242fd3640eb58b23913624cb7`. Production uses the binary-backed c5y-n8r lookup. The diagnostic keeps `country-code-lookup` 0.2.1 as a separately installed, frozen migration baseline; it never substitutes unresolved answers or rewrites station data.
+This standalone diagnostic preserves the comparison that informed the [released country resolver](country-resolver.md). It evaluates the earlier c5y-n8r dataset 5 at commit `ea6fe2e59e2e829242fd3640eb58b23913624cb7` against the frozen `country-code-lookup` 0.2.1 baseline. The published database uses dataset 6. The comparison reports unresolved inputs and leaves station data untouched.
 
 Faithful ingestion of Wikidata labels, aliases and claims is trusted for data admission, with source revisions, statement identities and qualifiers preserved in provenance. Independent certification and complete upstream references are optional quality signals, pursued asynchronously. They do not block admission of faithfully mapped upstream facts. Local aliases, territory interpretations and other project policy decisions still need explicit provenance and compatibility decisions.
 
@@ -44,11 +44,11 @@ Of the 48 comparison groups with metadata differences, nine change names and 41 
 
 The Node adapter loads the binary and injects the registry into the browser-safe `lookup.ts` helper. The contextual station evidence is imported only by the Node report, separately from that helper. The helper calls the library’s `convert` API directly; it does not enumerate possible codes or maintain a separate country table. Missing, ambiguous, retired and deprecated sources or targets remain unresolved. Tentative undated source and target assignments remain usable, with their temporal uncertainty and upstream provenance retained in the report. Missing temporal bounds are not replaced with invented dates.
 
-The `countryByIso` helper compares alphabetic alpha-2 and alpha-3 codes; numeric ISO callers remain outside this comparison. The diagnostic projects results into the existing caller fields. The report additionally retains selection, uncertainty, evidence status and candidate evidence. The projection is diagnostic; production activation still requires the integration and compatibility work described here. The pinned dataset retains its existing certification-status labels, independently of whether a faithful upstream fact is admissible. The summary counts tentative resolutions separately, and the corpus is selected around these Slackwater inputs; these figures do not measure general name coverage.
+The `countryByIso` helper compares alphabetic alpha-2 and alpha-3 codes; numeric ISO callers remain outside this comparison. The diagnostic projects results into the existing caller fields. The report additionally retains selection, uncertainty, evidence status and candidate evidence. The projection is diagnostic; production compatibility is covered separately in [Country resolution](country-resolver.md). The pinned dataset retains its existing certification-status labels, independently of whether a faithful upstream fact is admissible. The summary counts tentative resolutions separately, and the corpus is selected around these Slackwater inputs; these figures do not measure general name coverage.
 
 Timings include package loading and validated binary opening. A local dataset-5 run took about 18 ms to open/import and 111 ms for 8,728 conversion lookups after contextual interpretation. That lookup loop excludes source-context mapping time. These are single-machine measurements, not comparative performance claims.
 
-The production builder is exported to Node, browser and worker consumers. Adopting a static Node filesystem loader there would break browser/worker use. Consumers must supply bytes appropriately before adoption; the library reader already accepts bytes.
+The production builder is exported to Node, browser and worker consumers. Adopting a static Node filesystem loader there would break browser/worker use. The shipped database embeds the bytes for each target. See [Country resolution](country-resolver.md).
 
 ## Review work
 
@@ -60,13 +60,13 @@ The diagnostic uses the conversion API and package preparation in [code PR 273](
 - [Required-country coverage](https://github.com/openwatersio/c5y-n8r/issues/139), including additional consumer surfaces.
 - [Turkiye display name](https://github.com/openwatersio/c5y-n8r/issues/140).
 - [Curaçao continent classification](https://github.com/openwatersio/c5y-n8r/issues/141).
-- [Entity-to-code API](https://github.com/openwatersio/c5y-n8r/issues/142): implemented in merged code PR 273; production adoption and compatibility decisions remain open.
+- [Entity-to-code API](https://github.com/openwatersio/c5y-n8r/issues/142): implemented in merged code PR 273; the production integration is documented in [Country resolution](country-resolver.md).
 - [Script-disabled package installation](https://github.com/openwatersio/c5y-n8r/issues/143): prepared tarballs are checked in merged code PR 273; the Git install uses its prepare lifecycle.
 - [Recording optional quality reviews and explicit local-policy exceptions](https://github.com/openwatersio/c5y-n8r/issues/144).
 - [Browser/worker binary loading](https://github.com/openwatersio/c5y-n8r/issues/145).
 - [Referenced name statements](https://github.com/openwatersio/c5y-n8r/issues/146): Wikidata references attach to statements, not label/alias fields. A faithfully ingested label or alias remains admissible without a separate referenced statement.
 
-Adoption requires faithful source mapping and reproducible provenance, compatibility coverage, explicit decisions for local territory policy and metadata behavior, a usable conversion API and distribution path, browser-safe loading, and passing production builds and consumer checks. Optional factual-quality reviews can continue asynchronously. The production migration remains separate from this diagnostic.
+Database [#442](https://github.com/openwatersio/slackwater-database/pull/442) completed the production migration. Open source-evidence and metadata follow-ups are tracked in c5y-n8r.
 
 ## TICON Saint Helena scope
 
@@ -74,6 +74,6 @@ The [TICON extract](../spikes/country-resolver/ticon-saint-helena.json) records 
 
 The ISO-bearing territory is admitted by [c5y-n8r #280](https://github.com/openwatersio/c5y-n8r/pull/280). The dependency pins that PR's exact public commit; a merge is not implied by the pin. Its dataset 5 also includes the Myanmar compatibility alias from merged #278. The bare library name Saint Helena remains the island with no country-code target. Unknown assignment dates remain unknown; the diagnostic uses undated current-code selection, not a claim about which official territory name or code applied during a record's measurement epoch. Missing territory references are tracked asynchronously in [#279](https://github.com/openwatersio/c5y-n8r/issues/279).
 
-The TICON importer passes the original CSV alpha-3 value into `normalize` in `packages/stations/station.ts`, which resolves that code and stores only the display name. Preserve the ISO identity at that step as part of #422; changing only geocoding or resolveMetadata does not fix the TICON writer. Merge library PR280 before adopting this diagnostic pin; keep the reviewed commit reachable and re-pin to the merged lineage if the upstream branch is rewritten.
+The production TICON importer now preserves the ISO identity from the original CSV alpha-3 value. The three-record extract retains the evidence for interpreting the cached display label during the earlier comparison.
 
-The consumer extract is modified TICON-4 data under CC BY 4.0 for these three records, with Hart-Davis, Dettmering and Seitz (2025) attribution, DOI and source license links preserved in the file. The separate Wikidata runtime country dataset remains CC0. Full CSV bytes are not redistributed in the spike; the recorded hash does not authenticate a partial excerpt without the original response. Production adoption still requires preserving ISO identity through the callers and the migration work in #422 and #423.
+The consumer extract is modified TICON-4 data under CC BY 4.0 for these three records, with Hart-Davis, Dettmering and Seitz (2025) attribution, DOI and source license links preserved in the file. The separate Wikidata runtime country dataset remains CC0. Full CSV bytes are not redistributed in the spike; the recorded hash does not authenticate a partial excerpt without the original response.
