@@ -11,14 +11,14 @@ computed:
       coastline: unverifiable
       quality:
         accepted: true
-        score: 69
+        score: 67
         factors:
           epoch: 1
           recency: 0.97
           source: 0.788
           quality: 0
           amplitude: 1
-          coverage: 0.252
+          coverage: 0.131
     ticon/stellendam_buiten-stelldbtn-nld-rws_hist:
       position: [51.827026, 4.033445]
       coastline: unverifiable
@@ -29,9 +29,9 @@ computed:
         factors:
           epoch: 0.664
           recency: 0.7
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
-          coverage: 0.252
+          coverage: 0.131
         issues:
           - "Superseded source: rws_hist"

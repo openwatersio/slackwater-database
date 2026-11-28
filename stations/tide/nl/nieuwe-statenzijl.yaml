@@ -1,5 +1,9 @@
+# Same gauge: these records are RWS location `nieuwestatenzijl.dollard` (sources/rws/README.md#historical-series), with M2 within 0.3 cm and 2.4°.
 sources:
   - ticon/nieuwe_statenzijl-nieuwstzl-nld-rws_hist
+  - ticon/nieuwestatenzijltg-nie-nld-cmems
+redirect_from:
+  - /tides/nl/nieuwe-statenzijl-lower-saxony/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -7,15 +11,27 @@ computed:
       position: [53.231559, 7.207423]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: superseded
-        score: 0
+        accepted: true
+        score: 67
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
           coverage: 0.003
-        issues:
-          - "Superseded source: rws_hist"
+    ticon/nieuwestatenzijltg-nie-nld-cmems:
+      position: [53.232677, 7.208]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/nieuwe_statenzijl-nieuwstzl-nld-rws_hist
+        score: 57
+        factors:
+          epoch: 0.587
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.003

@@ -1,5 +1,9 @@
+# Same gauge: these records are RWS location `huibertgat` (sources/rws/README.md#historical-series), with M2 within 1.2 cm and 1.1°.
 sources:
   - ticon/huibertgat-huibgt-nld-rws_hist
+  - ticon/huibertgattg-hui-nld-cmems
+redirect_from:
+  - /tides/nl/huibertgat-friesland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -7,15 +11,27 @@ computed:
       position: [53.573748, 6.398433]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: superseded
-        score: 0
+        accepted: true
+        score: 67
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
           coverage: 0.009
-        issues:
-          - "Superseded source: rws_hist"
+    ticon/huibertgattg-hui-nld-cmems:
+      position: [53.57, 6.4]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/huibertgat-huibgt-nld-rws_hist
+        score: 57
+        factors:
+          epoch: 0.595
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.009

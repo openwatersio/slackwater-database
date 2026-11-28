@@ -24,14 +24,13 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: superseded
-        score: 0
+        reason: duplicate
+        redundant: ticon/euro_platform-eurpfm-nld-rws
+        score: 65
         factors:
           epoch: 0.923
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
           coverage: 0.006
-        issues:
-          - "Superseded source: rws_hist"

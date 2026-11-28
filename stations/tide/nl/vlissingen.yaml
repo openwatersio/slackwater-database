@@ -1,13 +1,48 @@
+# Same gauge: these records are RWS location `vlissingen` (sources/rws/README.md#historical-series). M2 agrees within 0.2 cm between the two long series; the 2023-25 fit is too short to separate its constituents.
 sources:
+  - ticon/vlissingen-vlissgn-nld-rws_hist
+  - ticon/vlissingentg-vli-nld-cmems
   - ticon/vlissingen-vlis-nld-rws
+redirect_from:
+  - /tides/nl/vlissingen-ticon-vlissingen-vlissgn-nld-rws-hist/
+  - /tides/nl/vlissingen-westerzicht-zeeland/
+  - /tides/nl/vlissingen-zeeland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    ticon/vlissingen-vlissgn-nld-rws_hist:
+      position: [51.442308, 3.596057]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 67
+        factors:
+          epoch: 1
+          recency: 0.92
+          source: 0.131
+          quality: 1
+          amplitude: 1
+          coverage: 0.002
+    ticon/vlissingentg-vli-nld-cmems:
+      position: [51.450001, 3.6]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 57
+        factors:
+          epoch: 0.586
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.016
     ticon/vlissingen-vlis-nld-rws:
       position: [51.442961, 3.5974]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: ticon/vlissingen-vlissgn-nld-rws_hist
         score: 63
         factors:
           epoch: 0.121
@@ -15,4 +50,4 @@ computed:
           source: 0.788
           quality: 1
           amplitude: 1
-          coverage: 0.016
+          coverage: 0.002

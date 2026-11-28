@@ -7,17 +7,15 @@ computed:
       position: [51.735846, 5.124738]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: superseded
+        accepted: true
         seasonal_dominant: true
-        score: 0
+        score: 70
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
-          coverage: 0.244
+          coverage: 0.243
         issues:
-          - "Superseded source: rws_hist"
           - "Seasonal curve peak (0.327m) exceeds the principal tide M2+S2+K1+O1 (0.169m): the yearly swing exceeds the daily one"

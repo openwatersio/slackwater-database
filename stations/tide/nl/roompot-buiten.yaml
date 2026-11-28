@@ -1,18 +1,37 @@
+# Same gauge: these records are RWS location `oosterschelde.roompotsluis.buiten` (sources/rws/README.md#historical-series), with M2 within 0.2 cm and 0.5°.
 sources:
+  - ticon/roompot_buiten-roompbtn-nld-rws_hist
   - ticon/roompotbuitentg-roo-nld-cmems
+redirect_from:
+  - /tides/nl/roompot-buiten-zeeland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    ticon/roompot_buiten-roompbtn-nld-rws_hist:
+      position: [51.619592, 3.682065]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 67
+        factors:
+          epoch: 1
+          recency: 0.92
+          source: 0.131
+          quality: 1
+          amplitude: 1
+          coverage: 0.003
     ticon/roompotbuitentg-roo-nld-cmems:
       position: [51.619999, 3.68]
       coastline: unverifiable
       quality:
-        accepted: true
-        score: 61
+        accepted: false
+        reason: duplicate
+        redundant: ticon/roompot_buiten-roompbtn-nld-rws_hist
+        score: 57
         factors:
           epoch: 0.595
           recency: 0.99
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0.226
+          coverage: 0.003

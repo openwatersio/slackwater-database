@@ -1,41 +1,40 @@
 sources:
-  - ticon/keizersveertg-kei-nld-cmems
   - ticon/keizersveer-keizvr-nld-rws_hist
+  - ticon/keizersveertg-kei-nld-cmems
 redirect_from:
   - /tides/nl/keizersveer-north-brabant/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    ticon/keizersveer-keizvr-nld-rws_hist:
+      position: [51.720183, 4.894437]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 67
+        factors:
+          epoch: 1
+          recency: 0.92
+          source: 0.131
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
     ticon/keizersveertg-kei-nld-cmems:
       position: [51.720001, 4.895]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: duplicate
+        redundant: ticon/keizersveer-keizvr-nld-rws_hist
         seasonal_dominant: true
-        score: 59
+        score: 56
         factors:
           epoch: 0.538
           recency: 0.99
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0.193
+          coverage: 0.001
         issues:
           - MLWS (0.406) > MLW (0.401)
           - "Seasonal curve peak (0.209m) exceeds the principal tide M2+S2+K1+O1 (0.188m): the yearly swing exceeds the daily one"
-    ticon/keizersveer-keizvr-nld-rws_hist:
-      position: [51.720183, 4.894437]
-      coastline: unverifiable
-      quality:
-        accepted: false
-        reason: superseded
-        score: 0
-        factors:
-          epoch: 1
-          recency: 0.92
-          source: 0.495
-          quality: 1
-          amplitude: 1
-          coverage: 0.001
-        issues:
-          - "Superseded source: rws_hist"

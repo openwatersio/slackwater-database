@@ -1,21 +1,37 @@
+# Same gauge: these records are RWS location `dordrecht.oudemaas.benedenmerwede` (sources/rws/README.md#historical-series), with M2 within 1.5 cm and 3.5°.
 sources:
+  - ticon/dordrechttg-dor-nld-cmems
   - ticon/dordrecht-dordt-nld-rws_hist
+redirect_from:
+  - /tides/nl/dordrecht-south-holland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
+    ticon/dordrechttg-dor-nld-cmems:
+      position: [51.82, 4.671]
+      coastline: unverifiable
+      quality:
+        accepted: true
+        score: 56
+        factors:
+          epoch: 0.538
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.001
     ticon/dordrecht-dordt-nld-rws_hist:
       position: [51.819523, 4.670715]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: superseded
-        score: 0
+        reason: duplicate
+        redundant: ticon/dordrechttg-dor-nld-cmems
+        score: 52
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 0
           amplitude: 1
           coverage: 0.001
-        issues:
-          - "Superseded source: rws_hist"

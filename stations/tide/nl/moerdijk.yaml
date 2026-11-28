@@ -18,20 +18,19 @@ computed:
           source: 0.788
           quality: 1
           amplitude: 1
-          coverage: 0.265
+          coverage: 0.264
     ticon/moerdijk-moerdk-nld-rws_hist:
       position: [51.704701, 4.622478]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: superseded
-        score: 0
+        reason: duplicate
+        redundant: ticon/moerdijk-moerdk-nld-rws
+        score: 71
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
-          coverage: 0.265
-        issues:
-          - "Superseded source: rws_hist"
+          coverage: 0.264

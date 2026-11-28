@@ -1,5 +1,9 @@
+# Same gauge: these records are RWS location `hoekvanholland` (sources/rws/README.md#historical-series), with M2 within 0.2 cm and 0.6°.
 sources:
   - ticon/hoek_van_holland-hoekvhld-nld-rws_hist
+  - ticon/hoekvanhollandtg-hoe-nld-cmems
+redirect_from:
+  - /tides/nl/hoek-van-holland-south-holland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -7,15 +11,27 @@ computed:
       position: [51.977572, 4.119881]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: superseded
-        score: 0
+        accepted: true
+        score: 67
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
           coverage: 0.005
-        issues:
-          - "Superseded source: rws_hist"
+    ticon/hoekvanhollandtg-hoe-nld-cmems:
+      position: [51.98, 4.12]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/hoek_van_holland-hoekvhld-nld-rws_hist
+        score: 58
+        factors:
+          epoch: 0.617
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.005

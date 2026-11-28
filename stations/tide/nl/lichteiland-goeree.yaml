@@ -26,17 +26,16 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: superseded
-        score: 0
+        reason: duplicate
+        redundant: ticon/lichteiland_goeree-lichtelgre-nld-rws
+        score: 65
         factors:
           epoch: 0.923
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
           coverage: 0
-        issues:
-          - "Superseded source: rws_hist"
     ticon/lichteilandgoeree2tg-lic-nld-cmems:
       position: [51.925835, 3.669722]
       coastline: unverifiable
@@ -51,4 +50,4 @@ computed:
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0.003
+          coverage: 0

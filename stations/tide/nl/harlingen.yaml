@@ -1,5 +1,9 @@
+# Same gauge: these records are RWS location `harlingen.waddenzee` (sources/rws/README.md#historical-series), with M2 within 0.0 cm and 1.3°.
 sources:
   - ticon/harlingen-harlgn-nld-rws_hist
+  - ticon/harlingentg-har-nld-cmems
+redirect_from:
+  - /tides/nl/harlingen-friesland/
 # Written by `npm run stations`. Do not edit.
 computed:
   sources:
@@ -7,15 +11,27 @@ computed:
       position: [53.175632, 5.409342]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: superseded
-        score: 0
+        accepted: true
+        score: 67
         factors:
           epoch: 1
           recency: 0.92
-          source: 0.495
+          source: 0.131
           quality: 1
           amplitude: 1
           coverage: 0.01
-        issues:
-          - "Superseded source: rws_hist"
+    ticon/harlingentg-har-nld-cmems:
+      position: [53.18, 5.41]
+      coastline: unverifiable
+      quality:
+        accepted: false
+        reason: duplicate
+        redundant: ticon/harlingen-harlgn-nld-rws_hist
+        score: 57
+        factors:
+          epoch: 0.595
+          recency: 0.99
+          source: 0.02
+          quality: 1
+          amplitude: 1
+          coverage: 0.01
