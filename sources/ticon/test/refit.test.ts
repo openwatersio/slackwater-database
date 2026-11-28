@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { astro, constituents } from "@slackwater/engine";
 import type { Sample } from "@slackwater/datums";
+import { SAME_GAUGE_M2_DIFFERENCE } from "@slackwater/stations";
 import { refitConstituents } from "../samples.ts";
 
 const DEG = Math.PI / 180;
@@ -158,4 +159,27 @@ test("re-fit TICON stations store each constituent on the line TICON means by it
   });
   expect(refit.length).toBeGreaterThan(0);
   expect(mismatched).toEqual([]);
+});
+
+test("Venezia ISPRA phases agree with the City record of the same gauge", () => {
+  const read = (id: string) =>
+    JSON.parse(
+      readFileSync(
+        new URL(`../../../data/ticon/${id}.json`, import.meta.url),
+        "utf8",
+      ),
+    ).harmonic_constituents as { name: string; phase: number }[];
+  const byName = (id: string) =>
+    new Map(read(id).map(({ name, phase }) => [name, phase]));
+  const ispra = byName("venezia-ven-ita-ispra");
+  const city = byName("venezia-vene-ita-cv");
+  // SAME_GAUGE_M2_DIFFERENCE allows this angular difference at equal amplitudes.
+  const phaseTolerance = (2 * Math.asin(SAME_GAUGE_M2_DIFFERENCE / 2)) / DEG;
+
+  for (const name of ["M2", "K1", "O1"]) {
+    const difference = Math.abs(ispra.get(name)! - city.get(name)!);
+    expect(Math.min(difference, 360 - difference), name).toBeLessThanOrEqual(
+      phaseTolerance,
+    );
+  }
 });
