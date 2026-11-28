@@ -18,20 +18,21 @@
     "url": "https://creativecommons.org/licenses/by-nc/4.0/",
     "notes": "Upstream GESLA data provider restricts commercial use. See https://gesla787883612.wordpress.com/license/"
   },
-  "disclaimers": "Possible quality control issues Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering.",
+  "disclaimers": "Possible quality control issues Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights. Datums use the shared Slackwater calculator.",
   "datums": {
     "MSL": 1.605,
-    "MHHW": 2.09,
-    "MHW": 1.921,
-    "MTL": 1.594,
-    "MLW": 1.266,
-    "MLLW": 0.814,
+    "MHHW": 2.057,
+    "MHW": 1.98,
+    "MTL": 1.458,
+    "MLW": 0.936,
+    "MLLW": 0.822,
     "HAT": 2.526,
     "LAT": 0.056,
     "MHWS": 2.197,
     "MLWS": 1.013
   },
   "datums_source": "observed",
+  "harmonic_mean_range": 0.654,
   "datum_frame": "gauge",
   "datum_coverage": {
     "months": 24,

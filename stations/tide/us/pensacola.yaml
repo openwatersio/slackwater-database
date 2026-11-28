@@ -40,8 +40,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (2.92) > MLW (2.838)
-          - MHWS (2.97) < MHW (3.07)
+          - MLWS (2.92) > MLW (2.767)
+          - MHWS (2.97) < MHW (3.13)
           - Superseded by noaa/8729840, its operator's own record
     ticon/pensacola_fl-762-usa-uhslc_fd:
       position: [30.403, -87.213]
@@ -59,8 +59,8 @@ computed:
           amplitude: 1
           coverage: 0.005
         issues:
-          - MLWS (2.886) > MLW (2.818)
-          - MHWS (2.936) < MHW (3.025)
+          - MLWS (2.891) > MLW (2.752)
+          - MHWS (2.941) < MHW (3.087)
           - Superseded by noaa/8729840, its operator's own record
     ticon/pensacola_fl-762a-usa-uhslc_rq:
       position: [30.403, -87.213]
@@ -78,6 +78,6 @@ computed:
           amplitude: 1
           coverage: 0.005
         issues:
-          - MLWS (2.882) > MLW (2.814)
-          - MHWS (2.932) < MHW (3.019)
+          - MLWS (2.882) > MLW (2.746)
+          - MHWS (2.932) < MHW (3.074)
           - Superseded by noaa/8729840, its operator's own record

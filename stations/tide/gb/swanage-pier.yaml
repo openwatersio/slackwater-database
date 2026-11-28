@@ -19,6 +19,8 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0
+        issues:
+          - MLWS (1.123) > MLW (1.032)
     ticon/swanagepiertg-swa-gbr-cmems:
       position: [50.609333, -1.949177]
       coastline: unverifiable
@@ -34,3 +36,5 @@ computed:
           quality: 0
           amplitude: 1
           coverage: 0
+        issues:
+          - MLWS (1.123) > MLW (1.032)

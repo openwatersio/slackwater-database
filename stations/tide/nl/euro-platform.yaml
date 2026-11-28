@@ -19,6 +19,8 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.008
+        issues:
+          - MHWS (0.946) < MHW (0.95)
     ticon/euro_platform-eurpfm-nld-rws_hist:
       position: [51.998611, 3.276389]
       coastline: unverifiable
@@ -34,4 +36,5 @@ computed:
           amplitude: 1
           coverage: 0.006
         issues:
+          - MHWS (0.945) < MHW (0.947)
           - "Superseded source: rws_hist"

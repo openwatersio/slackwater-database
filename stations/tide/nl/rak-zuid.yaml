@@ -8,7 +8,7 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: range
+        reason: superseded
         score: 0
         factors:
           epoch: 1
@@ -18,5 +18,5 @@ computed:
           amplitude: 1
           coverage: 0.314
         issues:
-          - Tidal range 1.30cm < 2cm threshold
+          - MHHW (0.079) < MHW (0.083)
           - "Superseded source: rws_hist"

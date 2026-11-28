@@ -4,7 +4,7 @@ import { countryForRecord } from "./country.ts";
 import { join, dirname } from "path";
 import { mkdir, writeFile, readFile } from "fs/promises";
 import sortObject from "sort-object-keys";
-import { isBaltic } from "@slackwater/datums";
+import { isBaltic } from "@slackwater/datum-data";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 export const DATA_DIR = join(__dirname, "..", "..", "data");
@@ -23,6 +23,7 @@ const sortOrder: (keyof StationData)[] = [
   "disclaimers",
   "datums",
   "datums_source",
+  "harmonic_mean_range",
   "datum_frame",
   "datum_coverage",
   "chart_datum",
@@ -30,6 +31,20 @@ const sortOrder: (keyof StationData)[] = [
   "harmonic_constituents",
   "offsets",
 ];
+
+export function meanTidalRange(
+  datums: Record<string, number>,
+): number | undefined {
+  const high = datums["MHW"];
+  const low = datums["MLW"];
+  if (high === undefined || low === undefined) return undefined;
+  const range = high - low;
+  return Number.isFinite(range) ? Number(range.toFixed(9)) : undefined;
+}
+
+export function isValidHarmonicRange(range: unknown): range is number {
+  return typeof range === "number" && Number.isFinite(range) && range >= 0;
+}
 
 // Preferred chart datum by ISO alpha-2 country code.
 // Countries not listed default to LAT (the IHO international recommendation).
@@ -79,7 +94,7 @@ export function countrySpecificDatum(countryCode: string): string | undefined {
 }
 
 /**
- * Drop country-specific datums (LLWLT/TLT/NLLW/ALLW) from stations that don't
+ * Drop country-specific datums (HHWLT/LLWLT/TLT/NLLW/ALLW) from stations that don't
  * use them as their chart datum, so a UK station never carries a stray TLT.
  */
 export function pruneDatums(
@@ -88,7 +103,7 @@ export function pruneDatums(
 ): Record<string, number> {
   const out: Record<string, number> = {};
   for (const [name, value] of Object.entries(datums)) {
-    const owner = COUNTRY_SPECIFIC_DATUMS[name];
+    const owner = name === "HHWLT" ? "CA" : COUNTRY_SPECIFIC_DATUMS[name];
     if (owner && owner !== countryCode) continue;
     out[name] = value;
   }

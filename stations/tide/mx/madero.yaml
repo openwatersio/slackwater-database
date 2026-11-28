@@ -37,8 +37,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (3.629) > MLW (3.575)
-          - MHWS (3.821) < MHW (3.868)
+          - MLWS (3.646) > MLW (3.533)
+          - MHWS (3.838) < MHW (3.909)
           - Superseded by noaa/9500966, its operator's own record
     ticon/madero_tampico-277a-mex-uhslc_rq:
       position: [22.262, -97.795]
@@ -56,5 +56,6 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
-          - MHWS (3.801) < MHW (3.822)
+          - MLWS (3.609) > MLW (3.498)
+          - MHWS (3.801) < MHW (3.873)
           - Superseded by noaa/9500966, its operator's own record

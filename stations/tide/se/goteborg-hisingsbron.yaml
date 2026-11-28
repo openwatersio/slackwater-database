@@ -23,6 +23,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (0.077) > MLW (0.068)
+          - MHWS (0.251) < MHW (0.259)
           - "Seasonal curve peak (0.151m) exceeds the principal tide M2+S2+K1+O1 (0.112m): the yearly swing exceeds the daily one"
     ticon/goteborghisingsbron-got-swe-cmems:
       position: [57.714901, 11.9687]
@@ -41,4 +43,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (0.077) > MLW (0.048)
+          - MHWS (0.251) < MHW (0.27)
           - "Seasonal curve peak (0.150m) exceeds the principal tide M2+S2+K1+O1 (0.112m): the yearly swing exceeds the daily one"

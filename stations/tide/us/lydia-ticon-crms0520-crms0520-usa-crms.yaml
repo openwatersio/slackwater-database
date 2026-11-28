@@ -9,7 +9,7 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: range
+        reason: datum
         score: 0
         factors:
           epoch: 0.909
@@ -19,4 +19,5 @@ computed:
           amplitude: 1
           coverage: 0.069
         issues:
-          - Tidal range 0.70cm < 2cm threshold
+          - MHWS (0.235) < MHW (0.337)
+          - MSL (0.203) <= MLW (0.22)

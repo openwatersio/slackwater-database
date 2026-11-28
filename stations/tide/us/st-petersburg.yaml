@@ -38,8 +38,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (1.336) > MLW (1.334)
-          - MHWS (1.756) < MHW (1.772)
+          - MLWS (1.263) > MLW (1.242)
+          - MHWS (1.683) < MHW (1.707)
           - Superseded by noaa/8726520, its operator's own record
     ticon/st_petersburg_fl-759a-usa-uhslc_rq:
       position: [27.76, -82.627]
@@ -57,4 +57,6 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
+          - MLWS (1.281) > MLW (1.262)
+          - MHWS (1.711) < MHW (1.73)
           - Superseded by noaa/8726520, its operator's own record

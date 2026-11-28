@@ -21,7 +21,9 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.111) > MLW (0.105)
+          - MHHW (0.178) < MHW (0.183)
+          - MLWS (0.109) > MLW (0.098)
+          - MHWS (0.131) < MHW (0.183)
           - "Seasonal curve peak (0.134m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"
     ticon/marviken-mar-swe-cmems:
       position: [58.5536, 16.8372]
@@ -40,5 +42,7 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.111) > MLW (0.105)
+          - MHHW (0.178) < MHW (0.183)
+          - MLWS (0.109) > MLW (0.098)
+          - MHWS (0.131) < MHW (0.183)
           - "Seasonal curve peak (0.134m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"

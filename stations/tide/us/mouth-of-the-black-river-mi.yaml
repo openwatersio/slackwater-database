@@ -9,18 +9,19 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/mouth_of_the_black_river_mi-9014090-usa-noaa
+        reason: range
         seasonal_dominant: true
-        score: 64
+        score: 0
         factors:
           epoch: 0.062
           recency: 0.83
           source: 0.96
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 1
         issues:
-          - MLWS (175.998) > MLW (175.994)
-          - MHWS (176.018) < MHW (176.032)
+          - MLW (175.945) < MLLW (175.952)
+          - MLWS (175.998) > MLW (175.945)
+          - MHWS (176.018) < MHW (176.033)
+          - Modeled tidal range 1.70cm < 2cm threshold
           - "Seasonal curve peak (0.183m) exceeds the principal tide M2+S2+K1+O1 (0.014m): the yearly swing exceeds the daily one"

@@ -19,6 +19,9 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.001
+        issues:
+          - MLWS (5.007) > MLW (4.965)
+          - MHWS (5.107) < MHW (5.156)
     ticon/marienleuchtetg-mar-deu-cmems:
       position: [54.4967, 11.2383]
       coastline: unverifiable
@@ -35,4 +38,5 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
-          - MLWS (0.021) > MLW (0)
+          - MLWS (0.021) > MLW (-0.028)
+          - MHWS (0.125) < MHW (0.175)

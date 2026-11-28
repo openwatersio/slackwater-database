@@ -59,10 +59,8 @@ class Station internal constructor(
      * swing exceeds the daily one: a Great Lakes gauge, a river reach, a Baltic
      * bodden.
      *
-     * Accepted rather than rejected: the predictions are correct and only the
-     * frame is wrong. A view quoting a high and a low should read this and say
-     * what the water is, because an entire day can sit below the annual mean
-     * and read as a broken tide table.
+     * The quality gates determine acceptance independently of this label.
+     * The quality issues give both heights.
      */
     val seasonalDominant: Boolean get() = raw.quality?.seasonalDominant ?: false
 

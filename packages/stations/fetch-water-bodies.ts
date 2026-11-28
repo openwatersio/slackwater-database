@@ -28,7 +28,7 @@ import {
 import { dirname, join } from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { simplify } from "@slackwater/datums";
+import { simplify } from "@slackwater/datum-data";
 import KDBush from "kdbush";
 import {
   areaKm2,

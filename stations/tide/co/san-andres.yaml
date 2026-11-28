@@ -20,7 +20,8 @@ computed:
           amplitude: 1
           coverage: 1
         issues:
-          - MLWS (2.303) > MLW (2.297)
+          - MLWS (2.303) > MLW (2.285)
+          - MHWS (2.471) < MHW (2.487)
     ticon/san_andres-737a-col-uhslc_rq:
       position: [12.57, -81.702]
       coastline: unverifiable
@@ -37,4 +38,5 @@ computed:
           amplitude: 1
           coverage: 1
         issues:
-          - MLWS (2.306) > MLW (2.297)
+          - MLWS (2.306) > MLW (2.285)
+          - MHWS (2.468) < MHW (2.487)

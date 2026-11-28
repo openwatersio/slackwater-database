@@ -39,5 +39,6 @@ computed:
           amplitude: 1
           coverage: 0.038
         issues:
-          - MHWS (1.451) < MHW (1.492)
+          - MLWS (1.309) > MLW (1.157)
+          - MHWS (1.451) < MHW (1.588)
           - M2 here (0.055 m, 85.4°) differs from (0.059 m, 271.9°) by -4 mm and 359 min later in ticon/progreso_yuc-721b-mex-uhslc_rq, which this duplicates

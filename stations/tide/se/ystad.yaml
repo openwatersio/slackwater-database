@@ -21,7 +21,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.095) > MLW (0.082)
+          - MLWS (0.094) > MLW (0.029)
+          - MHWS (0.128) < MHW (0.192)
           - "Seasonal curve peak (0.104m) exceeds the principal tide M2+S2+K1+O1 (0.047m): the yearly swing exceeds the daily one"
     ticon/ystad-yst-swe-cmems:
       position: [55.416698, 13.8167]
@@ -40,5 +41,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.095) > MLW (0.082)
+          - MLWS (0.094) > MLW (0.029)
+          - MHWS (0.128) < MHW (0.192)
           - "Seasonal curve peak (0.104m) exceeds the principal tide M2+S2+K1+O1 (0.047m): the yearly swing exceeds the daily one"

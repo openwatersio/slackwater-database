@@ -17,7 +17,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { countryByIso } from "./country.ts";
-import { simplify } from "@slackwater/datums";
+import { simplify } from "@slackwater/datum-data";
 import { readStationFiles } from "./station-files.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");

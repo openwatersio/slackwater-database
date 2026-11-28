@@ -23,7 +23,9 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.137) > MLW (0.127)
+          - MHHW (0.195) < MHW (0.197)
+          - MLWS (0.128) > MLW (0.113)
+          - MHWS (0.152) < MHW (0.197)
           - "Seasonal curve peak (0.136m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"
     ticon/stockholm-sto-swe-cmems:
       position: [59.3242, 18.081699]
@@ -42,5 +44,7 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.137) > MLW (0.127)
+          - MHHW (0.195) < MHW (0.197)
+          - MLWS (0.128) > MLW (0.113)
+          - MHWS (0.152) < MHW (0.197)
           - "Seasonal curve peak (0.136m) exceeds the principal tide M2+S2+K1+O1 (0.025m): the yearly swing exceeds the daily one"

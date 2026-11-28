@@ -37,8 +37,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (10.575) > MLW (10.553)
-          - MHWS (10.615) < MHW (10.657)
+          - MLWS (10.574) > MLW (10.482)
+          - MHWS (10.614) < MHW (10.697)
           - Superseded by noaa/9751401, its operator's own record
     ticon/limetree_bay-254a-usa-uhslc_rq:
       position: [17.697, -64.753]
@@ -56,6 +56,6 @@ computed:
           amplitude: 1
           coverage: 0.005
         issues:
-          - MLWS (1.415) > MLW (1.4)
-          - MHWS (1.455) < MHW (1.486)
+          - MLWS (1.415) > MLW (1.333)
+          - MHWS (1.455) < MHW (1.529)
           - Superseded by noaa/9751401, its operator's own record

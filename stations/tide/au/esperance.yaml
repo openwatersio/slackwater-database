@@ -20,6 +20,8 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.012
+        issues:
+          - MLWS (0.577) > MLW (0.572)
     ticon/esperance-176a-aus-uhslc_rq:
       position: [-33.87, 121.897]
       coastline: unverifiable
@@ -35,3 +37,5 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.004
+        issues:
+          - MLWS (0.556) > MLW (0.546)

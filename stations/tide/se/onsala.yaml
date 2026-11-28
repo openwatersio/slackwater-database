@@ -21,6 +21,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (-0.008) > MLW (-0.022)
+          - MHWS (0.126) < MHW (0.136)
           - "Seasonal curve peak (0.114m) exceeds the principal tide M2+S2+K1+O1 (0.093m): the yearly swing exceeds the daily one"
     ticon/onsala-ons-swe-cmems:
       position: [57.391998, 11.919]
@@ -39,4 +41,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (0.025) > MLW (0.006)
+          - MHWS (0.159) < MHW (0.167)
           - "Seasonal curve peak (0.115m) exceeds the principal tide M2+S2+K1+O1 (0.093m): the yearly swing exceeds the daily one"

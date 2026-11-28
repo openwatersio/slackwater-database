@@ -20,7 +20,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (0.174) < MHW (0.19)
+          - MLWS (-0.074) > MLW (-0.147)
+          - MHWS (0.128) < MHW (0.185)
     ticon/rmn_ancona-rmn-ita-cmems:
       position: [43.624802, 13.5065]
       coastline: unverifiable
@@ -37,4 +38,5 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (0.054) < MHW (0.055)
+          - MLWS (-0.149) > MLW (-0.208)
+          - MHWS (0.055) < MHW (0.101)

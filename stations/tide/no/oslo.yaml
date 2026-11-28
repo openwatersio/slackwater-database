@@ -36,6 +36,9 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0
+        issues:
+          - MLWS (0.543) > MLW (0.536)
+          - MHWS (0.873) < MHW (0.897)
     ticon/oslotg-osl-nor-cmems:
       position: [59.908558, 10.73451]
       coastline: unverifiable
@@ -51,3 +54,6 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0
+        issues:
+          - MLWS (-0.185) > MLW (-0.194)
+          - MHWS (0.161) < MHW (0.189)

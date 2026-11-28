@@ -35,4 +35,6 @@ computed:
           amplitude: 1
           coverage: 0.002
         issues:
+          - MLWS (1.401) > MLW (1.382)
+          - MHWS (1.555) < MHW (1.562)
           - Superseded by jma/SZ, its operator's own record

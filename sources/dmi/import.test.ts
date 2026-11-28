@@ -1,3 +1,5 @@
+import { computeDatums } from "@slackwater/datums";
+import { mergeHarmonicDatums } from "../../packages/stations/regenerate-harmonic-datums.ts";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
@@ -95,7 +97,6 @@ test("keeps existing records when a refresh is empty or would drop a station", a
       [{ name: "M2", amplitude: 0.1, phase: 15 }],
       0,
       { note: "NOTE: dry out at low waters" },
-      { MHW: 0.1, MLW: -0.1, MSL: 0 },
     );
     await expect(writeStations([data], out)).rejects.toThrow(/drop/i);
     expect(await readFile(join(out, "old.json"), "utf8")).toBe("original\n");
@@ -111,7 +112,6 @@ test("writes derived harmonics with source credit, source LAT and a representabl
     [{ name: "M2", amplitude: 0.1, phase: 15 }],
     -0.002,
     { note: "NOTE: dry out at low waters" },
-    { MHW: 0.1, MLW: -0.1, MSL: 0, LAT: -0.12 },
   );
   expect(data).toMatchObject({
     country: "Faroe Islands",
@@ -126,6 +126,20 @@ test("writes derived harmonics with source credit, source LAT and a representabl
     datums: { LAT: -0.279, MLWS: -0.152, MSL: 0 },
     datums_source: "harmonic",
   });
+  const unshifted = buildStation(
+    station,
+    [{ name: "M2", amplitude: 0.1, phase: 15 }],
+    0,
+    { note: "" },
+  );
+  expect(data.datums["MHW"]! - unshifted.datums["MHW"]!).toBeCloseTo(-0.002, 6);
+  expect(
+    mergeHarmonicDatums(
+      "dmi",
+      data,
+      computeDatums(data.harmonic_constituents).datums,
+    ),
+  ).toEqual(data.datums);
   expect(data.epoch).toBeUndefined();
   expect(data.harmonic_constituents).toContainEqual({
     name: "Zo",
@@ -156,7 +170,6 @@ test("a crash lock outside data refuses a second import without becoming a sourc
     [{ name: "M2", amplitude: 0.1, phase: 15 }],
     0,
     { note: "" },
-    { MSL: 0 },
   );
   try {
     await mkdir(out, { recursive: true });
@@ -183,11 +196,13 @@ test("publishes a synthesized HAT only when the fit contains an annual constitue
       ],
       0,
       { note: "" },
-      { HAT: 0.3, MSL: 0 },
     );
   expect(make(0).datums["HAT"]).toBeUndefined();
   expect(make(0).datums["LAT"]).toBe(station.lat);
-  expect(make(0.001).datums["HAT"]).toBe(0.3);
+  const seasonal = make(0.001);
+  expect(seasonal.datums["HAT"]).toBe(
+    computeDatums(seasonal.harmonic_constituents).datums["HAT"],
+  );
 });
 
 test("rejects corrupt cached downloads instead of silently using them", async () => {

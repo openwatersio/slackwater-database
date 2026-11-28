@@ -41,8 +41,8 @@ computed:
           amplitude: 1
           coverage: 0.106
         issues:
-          - MLWS (3.786) > MLW (3.758)
-          - MHWS (4.126) < MHW (4.142)
+          - MLWS (3.744) > MLW (3.684)
+          - MHWS (4.084) < MHW (4.162)
           - Superseded by noaa/1840000, its operator's own record
     ticon/chuuk-054a-fsm-uhslc_rq:
       position: [7.45, 151.85]
@@ -60,6 +60,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (0.922) > MLW (0.877)
+          - MHWS (1.264) < MHW (1.315)
           - Superseded by noaa/1840000, its operator's own record
     ticon/chuuk-1840000-usa-noaa:
       position: [7.44667, 151.847]
@@ -77,4 +79,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (0.923) > MLW (0.878)
+          - MHWS (1.265) < MHW (1.316)
           - Superseded by noaa/1840000, its operator's own record

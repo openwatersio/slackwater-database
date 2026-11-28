@@ -18,25 +18,26 @@
     "url": "https://creativecommons.org/licenses/by-nc/4.0/",
     "notes": "Upstream GESLA data provider restricts commercial use. See https://gesla787883612.wordpress.com/license/"
   },
-  "disclaimers": "No obvious issues Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering.",
+  "disclaimers": "No obvious issues Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights. Datums use the shared Slackwater calculator.",
   "datums": {
-    "MSL": 0.178,
-    "MHHW": 0.337,
-    "MHW": 0.271,
-    "MTL": 0.18,
-    "MLW": 0.089,
-    "MLLW": 0.015,
-    "HAT": 0.434,
-    "LAT": -0.105,
-    "MHWS": 0.284,
-    "MLWS": 0.072
+    "MSL": 0.17,
+    "MHHW": 0.335,
+    "MHW": 0.28,
+    "MTL": 0.164,
+    "MLW": 0.049,
+    "MLLW": -0.005,
+    "HAT": 0.426,
+    "LAT": -0.113,
+    "MHWS": 0.276,
+    "MLWS": 0.064
   },
   "datums_source": "observed",
+  "harmonic_mean_range": 0.186,
   "datum_frame": "gauge",
   "datum_coverage": {
     "months": 12,
-    "observed_hours": 8784,
-    "inferred_hours": 0
+    "observed_hours": 8736,
+    "inferred_hours": 24
   },
   "chart_datum": "MSL",
   "type": "reference",
@@ -293,8 +294,8 @@
     }
   ],
   "datum_epoch": {
-    "start": "2020-01-01",
-    "end": "2020-12-31"
+    "start": "2021-07-01",
+    "end": "2022-06-30"
   },
   "epoch": {
     "start": "1991-12-09",

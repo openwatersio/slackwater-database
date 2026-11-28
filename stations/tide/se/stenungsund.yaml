@@ -20,7 +20,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (0.152) < MHW (0.159)
+          - MLWS (-0.11) > MLW (-0.118)
+          - MHWS (0.152) < MHW (0.154)
     ticon/stenungsund-ste-swe-cmems:
       position: [58.0933, 11.8325]
       coastline: unverifiable
@@ -37,4 +38,5 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (0.152) < MHW (0.16)
+          - MLWS (-0.11) > MLW (-0.118)
+          - MHWS (0.152) < MHW (0.154)

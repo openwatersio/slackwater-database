@@ -129,6 +129,10 @@ export interface StationData {
   // Astronomical bounds can be synthesized even when the means are observed.
   datums_source?: "observed" | "harmonic";
 
+  // Modeled MHW minus MLW in metres for TICON records with observed datums.
+  // Source JSON metadata used at build time by the quality gate.
+  harmonic_mean_range?: number;
+
   // Zero of the stored datum values; absence means the frame is unspecified.
   datum_frame?: "gauge" | "constituent";
   // Hourly bins in the observed reduction period, including model-assisted fills.
@@ -259,12 +263,9 @@ export interface StationQuality {
    * principal tide M2+S2+K1+O1 by more than 3 mm, so the yearly swing exceeds
    * the daily one.
    *
-   * Accepted rather than rejected: the predictions are correct and only the
-   * frame is wrong. A consumer quoting a high and a low should read this and
-   * say what the water is — a Great Lakes gauge, a river reach, a Baltic
-   * bodden — because an entire 24-hour window can sit below the annual mean,
-   * which is a true statement about the water and reads as a broken tide
-   * table. `issues` gives both heights.
+   * The quality gates determine acceptance independently of this label.
+   * Consumers can use the label to explain why an entire day can sit below
+   * the annual mean. `issues` gives both heights.
    */
   seasonal_dominant?: boolean;
 }
@@ -277,7 +278,7 @@ export interface AstronomicalBounds {
   hat: number;
 }
 
-export interface Station extends StationData {
+export interface Station extends Omit<StationData, "harmonic_mean_range"> {
   id: string;
   country_code: string;
   kind: "tide" | "current";

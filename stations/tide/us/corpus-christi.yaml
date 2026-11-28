@@ -38,7 +38,8 @@ computed:
           amplitude: 1
           coverage: 0.002
         issues:
-          - MHWS (6.943) < MHW (6.955)
+          - MLWS (6.727) > MLW (6.614)
+          - MHWS (6.911) < MHW (7.002)
           - Superseded by noaa/8775870, its operator's own record
     ticon/corpus_cristi_tx-770a-usa-uhslc_rq:
       position: [27.58, -97.217]
@@ -56,5 +57,6 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
-          - MHWS (6.835) < MHW (6.851)
+          - MLWS (6.635) > MLW (6.526)
+          - MHWS (6.835) < MHW (6.916)
           - Superseded by noaa/8775870, its operator's own record

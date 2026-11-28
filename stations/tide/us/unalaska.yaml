@@ -42,7 +42,8 @@ computed:
           amplitude: 1
           coverage: 0.004
         issues:
-          - MHWS (1.713) < MHW (1.766)
+          - MLWS (1.125) > MLW (1.079)
+          - MHWS (1.713) < MHW (1.777)
           - Superseded by noaa/9462620, its operator's own record
     ticon/dutch_harbor_ak-041a-usa-uhslc_rq:
       position: [53.88, -166.537]
@@ -60,7 +61,8 @@ computed:
           amplitude: 1
           coverage: 0.005
         issues:
-          - MHWS (1.949) < MHW (2.015)
+          - MLWS (1.369) > MLW (1.302)
+          - MHWS (1.949) < MHW (2.031)
           - Superseded by noaa/9462620, its operator's own record
     ticon/dutch_harbor_ak-041b-usa-uhslc_rq:
       position: [53.88, -166.537]
@@ -78,7 +80,8 @@ computed:
           amplitude: 1
           coverage: 0.005
         issues:
-          - MHWS (1.711) < MHW (1.762)
+          - MLWS (1.121) > MLW (1.077)
+          - MHWS (1.711) < MHW (1.772)
           - Superseded by noaa/9462620, its operator's own record
     ticon/unalaska-9462620-usa-noaa:
       position: [53.879194, -166.540306]
@@ -96,5 +99,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (1.715) < MHW (1.791)
+          - MLWS (1.146) > MLW (1.112)
+          - MHWS (1.734) < MHW (1.79)
           - Superseded by noaa/9462620, its operator's own record

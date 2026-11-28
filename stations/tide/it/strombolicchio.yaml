@@ -19,6 +19,10 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0
+        issues:
+          - HAT (0.27) < MHHW (0.274)
+          - MLWS (-0.179) > MLW (-0.252)
+          - MHWS (0.141) < MHW (0.216)
     ticon/rmn_strombolicchio-rmn-ita-cmems:
       position: [38.817299, 15.2517]
       coastline: unverifiable

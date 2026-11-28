@@ -591,10 +591,8 @@ public struct Station: Identifiable, @unchecked Sendable {
   /// swing exceeds the daily one — a Great Lakes gauge, a river reach, a
   /// Baltic bodden.
   ///
-  /// Accepted rather than rejected: the predictions are correct and only the
-  /// frame is wrong. A view quoting a high and a low should read this and say
-  /// what the water is, because an entire day can sit below the annual mean and
-  /// read as a broken tide table. `quality.issues` gives both heights.
+  /// The quality gates determine acceptance independently of this label.
+  /// `quality.issues` gives both heights.
   public var seasonalDominant: Bool { raw.quality?.seasonalDominant ?? false }
 
   // MARK: Typed metadata

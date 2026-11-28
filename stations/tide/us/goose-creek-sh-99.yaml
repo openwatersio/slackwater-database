@@ -19,5 +19,6 @@ computed:
           amplitude: 1
           coverage: 0.071
         issues:
-          - MHWS (0.416) < MHW (0.463)
+          - MLWS (0.29) > MLW (0.178)
+          - MHWS (0.416) < MHW (0.529)
           - "Clock error in source hct: runs 23 to 71 minutes behind every NOAA and USGS gauge near it"

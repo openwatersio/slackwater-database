@@ -38,7 +38,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (1.887) < MHW (1.917)
+          - MLWS (1.585) > MLW (1.567)
+          - MHWS (1.887) < MHW (1.925)
           - Superseded by noaa/8728690, its operator's own record
     ticon/apalachicola_fl-760a-usa-uhslc_rq:
       position: [29.727, -84.982]
@@ -56,5 +57,6 @@ computed:
           amplitude: 1
           coverage: 0.006
         issues:
-          - MHWS (1.835) < MHW (1.857)
+          - MLWS (1.533) > MLW (1.529)
+          - MHWS (1.835) < MHW (1.866)
           - Superseded by noaa/8728690, its operator's own record

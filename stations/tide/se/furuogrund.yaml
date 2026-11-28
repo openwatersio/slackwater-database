@@ -11,7 +11,7 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: datum
+        reason: range
         seasonal_dominant: true
         score: 0
         factors:
@@ -22,15 +22,17 @@ computed:
           amplitude: 1
           coverage: 1
         issues:
-          - MLWS (0.11) > MLW (0.088)
-          - MHW (0.112) <= MSL (0.113)
+          - MHHW (0.246) < MHW (0.249)
+          - MLWS (0.119) > MLW (0.064)
+          - MHWS (0.125) < MHW (0.249)
+          - Modeled tidal range 1.70cm < 2cm threshold
           - "Seasonal curve peak (0.156m) exceeds the principal tide M2+S2+K1+O1 (0.015m): the yearly swing exceeds the daily one"
     ticon/furuogrund-fur-swe-cmems:
       position: [64.915802, 21.2306]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: datum
+        reason: range
         seasonal_dominant: true
         score: 0
         factors:
@@ -41,6 +43,8 @@ computed:
           amplitude: 1
           coverage: 1
         issues:
-          - MLWS (0.11) > MLW (0.087)
-          - MHW (0.112) <= MSL (0.113)
+          - MHHW (0.246) < MHW (0.248)
+          - MLWS (0.119) > MLW (0.063)
+          - MHWS (0.125) < MHW (0.248)
+          - Modeled tidal range 1.70cm < 2cm threshold
           - "Seasonal curve peak (0.156m) exceeds the principal tide M2+S2+K1+O1 (0.015m): the yearly swing exceeds the daily one"

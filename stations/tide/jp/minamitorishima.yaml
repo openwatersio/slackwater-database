@@ -59,6 +59,8 @@ computed:
           amplitude: 1
           coverage: 0.044
         issues:
+          - MLWS (1.824) > MLW (1.809)
+          - MHWS (2.076) < MHW (2.078)
           - Superseded by jma/MC, its operator's own record
     ticon/minamitorishima-ma70-jpn-jodc_jma:
       position: [24.2911, 153.9775]
@@ -76,4 +78,5 @@ computed:
           amplitude: 1
           coverage: 0.017
         issues:
+          - MLWS (1.82) > MLW (1.809)
           - Superseded by jma/MC, its operator's own record

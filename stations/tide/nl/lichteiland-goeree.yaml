@@ -21,6 +21,8 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.003
+        issues:
+          - MHWS (1.096) < MHW (1.13)
     ticon/lichteiland_goeree-lichtelgre-nld-rws_hist:
       position: [51.925833, 3.669722]
       coastline: unverifiable
@@ -36,6 +38,7 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MHWS (1.117) < MHW (1.139)
           - "Superseded source: rws_hist"
     ticon/lichteilandgoeree2tg-lic-nld-cmems:
       position: [51.925835, 3.669722]

@@ -37,6 +37,7 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MHWS (0.866) < MHW (0.874)
           - Superseded by kartverket/OSC, its operator's own record
     ticon/oscarsborgtg-osc-nor-cmems:
       position: [59.678074, 10.604861]
@@ -53,3 +54,5 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0
+        issues:
+          - MHWS (0.163) < MHW (0.173)

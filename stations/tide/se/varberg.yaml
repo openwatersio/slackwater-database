@@ -21,6 +21,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (0.005) > MLW (-0.027)
+          - MHWS (0.111) < MHW (0.115)
           - "Seasonal curve peak (0.123m) exceeds the principal tide M2+S2+K1+O1 (0.079m): the yearly swing exceeds the daily one"
     ticon/varberg1-var-swe-cmems:
       position: [57.099998, 12.2167]
@@ -39,4 +41,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (-0.082) > MLW (-0.115)
+          - MHWS (0.024) < MHW (0.027)
           - "Seasonal curve peak (0.123m) exceeds the principal tide M2+S2+K1+O1 (0.079m): the yearly swing exceeds the daily one"
