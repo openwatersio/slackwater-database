@@ -16,14 +16,18 @@ function countries(): CountryRegistry {
   return registry;
 }
 
-function countryInfo(result: ConversionResult) {
+function currentCountry(result: ConversionResult) {
   const usable = (candidate: typeof result.source.preferred) =>
     candidate &&
     (candidate.applicability === "active" ||
       (candidate.applicability === "uncertain" && candidate.tentative));
   const target = result.target.preferred;
-  if (!usable(result.source.preferred) || !usable(target) || !target)
-    return null;
+  return usable(result.source.preferred) && usable(target) ? target : undefined;
+}
+
+function countryInfo(result: ConversionResult) {
+  const target = currentCountry(result);
+  if (!target) return null;
   return {
     iso2: target.value,
     country: target.name,
@@ -39,13 +43,41 @@ function lookup(value: string, from: Namespace) {
 export function countryByName(name: string) {
   return lookup(name, "name");
 }
-export function countryByIso(input: string) {
+function resolveIso(input: string) {
   const code = input.trim();
-  if (/^[a-z]{2}$/i.test(code)) return lookup(code, "iso-alpha2");
-  if (/^[a-z]{3}$/i.test(code)) return lookup(code, "iso-alpha3");
+  if (/^[a-z]{2}$/i.test(code))
+    return countries().convert(code, { from: "iso-alpha2", to: "iso-alpha2" });
+  if (/^[a-z]{3}$/i.test(code))
+    return countries().convert(code, { from: "iso-alpha3", to: "iso-alpha2" });
   if (/^\d{1,3}$/.test(code))
-    return lookup(code.padStart(3, "0"), "iso-numeric");
-  return null;
+    return countries().convert(code.padStart(3, "0"), {
+      from: "iso-numeric",
+      to: "iso-alpha2",
+    });
+  return undefined;
+}
+
+export function countryByIso(input: string) {
+  const result = resolveIso(input);
+  return result ? countryInfo(result) : null;
+}
+
+/** Current names other than the display name, for searching by ISO country identity. */
+export function countryAliases(input: string): readonly string[] {
+  const result = resolveIso(input);
+  const country = result && currentCountry(result);
+  if (!country) return [];
+  const names = countries().assignments(country.id, { namespace: "name" });
+  return [
+    ...new Set(
+      names.candidates
+        .filter(
+          (name) =>
+            name.applicability === "active" && name.value !== country.name,
+        )
+        .map((name) => name.value),
+    ),
+  ];
 }
 
 // Exact display labels from country-code-lookup 0.2.1 retain only their original ISO identity.
