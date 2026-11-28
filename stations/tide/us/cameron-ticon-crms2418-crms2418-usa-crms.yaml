@@ -8,8 +8,9 @@ computed:
       position: [29.87526, -93.16682]
       coastline: unverifiable
       quality:
-        accepted: true
-        score: 77
+        accepted: false
+        reason: timing
+        score: 0
         factors:
           epoch: 0.956
           recency: 0.99
@@ -20,3 +21,4 @@ computed:
         issues:
           - MLWS (0.169) > MLW (0.092)
           - MHWS (0.205) < MHW (0.312)
+          - "Suspected timing error: phases consistent with nearby timing outliers (issue #444)"

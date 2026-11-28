@@ -8,8 +8,9 @@ computed:
       position: [38.0984, -122.4873]
       coastline: unverifiable
       quality:
-        accepted: true
-        score: 47
+        accepted: false
+        reason: timing
+        score: 0
         factors:
           epoch: 0.321
           recency: 0.98
@@ -17,3 +18,5 @@ computed:
           quality: 0
           amplitude: 1
           coverage: 0.049
+        issues:
+          - "Suspected timing error: phases consistent with nearby timing outliers (issue #444)"
