@@ -24,10 +24,12 @@ export const LOCAL_TIME_SOURCES: Record<
   rws: { zone: "Europe/Amsterdam", shiftHours: 1 },
 };
 
-// UHSLC stamps its Hong Kong hourly heights one hour early: the height it
-// labels T was measured at T + 1 h UTC. Each gauge's value is the hours to add.
-// See #360.
+// These gauges stamp heights earlier than they were measured. Each value is
+// the hours to add before fitting UTC-referenced harmonic phases. UHSLC's Hong
+// Kong records are one hour early (#360). Venezia ISPRA is 50 minutes early
+// against the overlapping City of Venice record of the same gauge (#461).
 export const EARLY_GAUGES: Record<string, number> = {
+  "venezia-ven-ita-ispra": 5 / 6,
   "hong_kong-329-hkg-uhslc_fd": 1,
   "hong_kong-329a-hkg-uhslc_rq": 1,
   "hong_kong-329b-hkg-uhslc_rq": 1,
