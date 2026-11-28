@@ -79,7 +79,7 @@ export function countrySpecificDatum(countryCode: string): string | undefined {
 }
 
 /**
- * Drop country-specific datums (LLWLT/TLT/NLLW/ALLW) from stations that don't
+ * Drop country-specific datums (HHWLT/LLWLT/TLT/NLLW/ALLW) from stations that don't
  * use them as their chart datum, so a UK station never carries a stray TLT.
  */
 export function pruneDatums(

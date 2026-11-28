@@ -28,7 +28,7 @@ export interface Sample {
  * Parse GESLA-4 water levels, interpreting each timestamp as wall-clock time in
  * `tz` (an IANA zone) and converting to a true UTC instant. Use this for
  * sources whose files are mislabeled UTC; for correctly-labeled files use the
- * header-honoring `parseGeslaSamples` in datum.ts instead.
+ * header-honoring `parseGeslaSamples` in `packages/datums/gesla.ts` instead.
  */
 export function parseGeslaSamplesInZone(text: string, tz: string): Sample[] {
   const fmt = new Intl.DateTimeFormat("en-US", {

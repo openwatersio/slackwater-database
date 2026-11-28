@@ -7,6 +7,7 @@ import { computeDatums, toFixed, type Datums } from "@slackwater/datums";
 import {
   HARMONIC_KEYS,
   HARMONIC_REDUCTION_NOTICE,
+  DATUM_CALCULATOR_NOTICE,
   OBSERVED_KEYS,
   storedDatumNotice,
 } from "../../sources/ticon/datums.ts";
@@ -155,18 +156,15 @@ export async function regenerateDirectory(
   let changed = 0;
   for (const { source, path, station, addCountryCode } of records) {
     const { datums: computed } = computeDatums(
-      source === "dmi"
-        ? station.harmonic_constituents.filter(
-            ({ name }) => !/^z[0o]$/i.test(name),
-          )
-        : station.harmonic_constituents,
+      station.harmonic_constituents,
       {},
       predictionOptions(station),
     );
     const datums = mergeHarmonicDatums(source, station, computed);
     const disclaimers =
       source === "ticon" &&
-      !station.disclaimers?.includes(HARMONIC_REDUCTION_NOTICE)
+      !station.disclaimers?.includes(HARMONIC_REDUCTION_NOTICE) &&
+      !station.disclaimers?.includes(DATUM_CALCULATOR_NOTICE)
         ? `${station.disclaimers} ${HARMONIC_REDUCTION_NOTICE}`
         : station.disclaimers;
     if (

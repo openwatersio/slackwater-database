@@ -335,7 +335,7 @@ async function getDatums(
     harmonic_constituents,
     harmonic.datums,
     obsEpoch,
-    options,
+    { ...options, sourceId: id },
   );
   return {
     datums,

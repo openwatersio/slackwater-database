@@ -17,27 +17,22 @@
     "commercial_use": true,
     "url": "https://creativecommons.org/licenses/by/4.0/"
   },
-  "disclaimers": "No obvious issues Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering. Datums use the shared Slackwater calculator.",
+  "disclaimers": "No obvious issues Datums derived from harmonic prediction; measured observations do not support a mean-datum reduction over twelve continuous whole months. Datum values carry higher uncertainty. Complete prepared observations do not cover every calendar month of the year for a balanced gauge mean; datums remain in the constituent frame (MSL = 0). Datums use the shared Slackwater calculator.",
   "datums": {
-    "MSL": 1.561,
-    "MHHW": 2.099,
-    "MHW": 2.042,
-    "MTL": 1.577,
-    "MLW": 1.112,
-    "MLLW": 0.811,
-    "HAT": 2.45,
-    "LAT": 0.311,
-    "MHWS": 2.173,
-    "MLWS": 0.949,
-    "NLLW": 0.519
+    "HAT": 0.889,
+    "MHHW": 0.529,
+    "MHW": 0.479,
+    "MSL": 0,
+    "MTL": 0.014,
+    "MLW": -0.45,
+    "MLLW": -0.713,
+    "LAT": -1.25,
+    "MHWS": 0.612,
+    "MLWS": -0.612,
+    "NLLW": -1.042
   },
-  "datums_source": "observed",
-  "datum_frame": "gauge",
-  "datum_coverage": {
-    "months": 36,
-    "observed_hours": 26218,
-    "inferred_hours": 86
-  },
+  "datums_source": "harmonic",
+  "datum_frame": "constituent",
   "chart_datum": "NLLW",
   "type": "reference",
   "harmonic_constituents": [
@@ -292,10 +287,6 @@
       "phase": 209.50867
     }
   ],
-  "datum_epoch": {
-    "start": "2006-03-01",
-    "end": "2009-02-28"
-  },
   "epoch": {
     "start": "1960-07-07",
     "end": "2024-12-30"

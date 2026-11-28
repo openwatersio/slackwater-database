@@ -20,9 +20,9 @@ Each station in this dataset contains harmonic constituents (amplitude and phase
 
 TICON-4 does not publish tidal datums, so we derive first-reduction estimates from the original GESLA-4 water-level measurements using NOAA CO-OPS datum definitions ([Computational Techniques for Tidal Datums Handbook](https://tidesandcurrents.noaa.gov/publications/Computational_Techniques_for_Tidal_Datums_handbook.pdf)). See [docs/datums.md](../../docs/datums.md) for datum definitions, the pinned 19-year datum epoch, and how `chart_datum` is selected per country.
 
-- The water-level record is binned to hourly heights. Bounded gaps of up to three missing hours are reconstructed from the harmonic tide plus a cubic fit to four real residual anchors, matching each bin’s actual sampling-time moments. Longer or unsupported gaps remain missing. See [the preparation rules](../../docs/datums.md#datum-epoch).
-- **MSL, MHHW, MHW, MTL, MLW, MLLW** use one continuous observation window: the longest whole-year window of complete UTC months in the most recent ≤19 years, with at least twelve months and the latest window winning equal-length ties. Each high-water and low-water pair shares its eligible complete tidal days; MSL is the mean of all hourly heights in that period, including inferred heights. The values remain in the gauge's native frame.
-- **HAT, LAT, LLWLT, TLT** are astronomical extremes ([IHO definition](https://iho.int/uploads/user/pubs/standards/m-3/M-3_e3.3.0_Repertory_Aug20_2020_FINAL.pdf)) and **MHWS, MLWS, NLLW, ALLW** are amplitude-derived — all taken from the harmonic side rather than observations, since observed extremes include storm surge. They are predicted over the pinned datum epoch in the constituent frame (MSL = 0), then shifted into the observed gauge frame by adding the observed MSL.
+- The shared calculator bins water levels to hourly heights and can fill up to 23 missing hours at a time, with a monthly cap of 72 inferred hours. The fill uses the station's harmonic model and nearby measured heights. JODC Coast Guard relays use measured hours only. See the [observed reduction rules](https://github.com/openwatersio/slackwater/tree/main/packages/datums#observed-reduction).
+- **MSL, MHHW, MHW, MTL, MLW, MLLW** use the longest whole-year window of complete UTC months, with the most recent window winning ties. The calculator finds highs and lows using NOAA TADC tabulation. Hourly or sparser samples can miss the true extrema. MSL averages the selected hourly heights, including inferred heights, in the native gauge frame.
+- **HAT, LAT, HHWLT, LLWLT** come from the pinned harmonic prediction epoch. **MHWS, MLWS, NLLW, ALLW** use constituent amplitudes, and **TLT** uses Vladimirsky's method. The importer shifts these levels into the gauge frame using its MSL when available.
 - Country-specific datums are pruned and `chart_datum` is assigned during import per the country policy in [docs/datums.md](../../docs/datums.md).
 
 UHSLC research-quality records (`uhslc_rq`) are reduced from the live [UHSLC hourly Research Quality Data](https://uhslc.soest.hawaii.edu/erddap/tabledap/global_hourly_rqds.html) instead of GESLA-4 when that record runs later than its GESLA-4 copy. It is the same record on the same station zero, so the datum frame does not change. Downloads are cached in `tmp/UHSLC/`; delete that directory to pick up newer UHSLC releases. UHSLC asks users to cite the center and publishes its data without warranty; see the [UHSLC data information page](https://uhslc.soest.hawaii.edu/datainfo/).
@@ -39,7 +39,7 @@ All 31 `jodc_jcg` records (30 in Japan plus Syowa in Antarctica) contain at leas
 
 Under the complete-month rule, all 31 relays use the constituent frame (MSL = 0), including 11 accepted relay records. This is a model zero, not a measured gauge zero. Recovering the original final-day hours can change which observation windows and gauge offsets qualify.
 
-This pattern points to truncation when daily source rows are expanded or annual files are assembled, rather than a physical station outage. The responsible upstream conversion code has not been identified. Other month-end day-31 observations are present. JODC's [hourly format](https://www.jodc.go.jp/data_format/sea-level-format.html) supplies all 24 heights per date in JST (UTC+9); Syowa is the documented UTC+3 exception. The 23-hour omissions exceed the reconstruction limit. The importer currently leaves them missing. Restoring them requires original-source ingestion with time, gauge-zero, overlapping-height and QC checks, rather than increasing the interpolation bound or overriding excluded observations.
+This pattern points to truncation when daily source rows are expanded or annual files are assembled, rather than a physical station outage. The responsible upstream conversion code has not been identified. Other month-end day-31 observations are present. JODC's [hourly format](https://www.jodc.go.jp/data_format/sea-level-format.html) supplies all 24 heights per date in JST (UTC+9); Syowa is the documented UTC+3 exception. The importer prepares JODC Coast Guard observations with gap filling disabled. The annual omissions remain missing. Restoring them requires original-source ingestion with time, gauge-zero, overlapping-height and QC checks.
 
 ## Regenerating
 
@@ -50,7 +50,7 @@ npm run refresh:harmonic-datums -w packages/stations
 npm run stations
 ```
 
-This preserves observed means, their reduction windows and coverage. It stamps the complete-turn harmonic method notice required by the cache. A rollback can remove that notice; rolling forward then recomputes the observation reduction unless the offline command restores it.
+This preserves observed means, their reduction windows and coverage. A harmonic-only refresh cannot certify an observed reduction from the shared calculator. If a rollback writes the legacy harmonic notice onto a shared reduction, the importer recomputes it from observations on roll-forward.
 
 For changes to observation reduction or refreshed raw observations, regenerate from GESLA-4 (downloaded on demand and not committed):
 
@@ -60,7 +60,7 @@ FORCE_DATUMS=1 npm run import -w sources/ticon
 
 Legacy reductions without the current period/method notices and matching frame and coverage metadata are recomputed. Otherwise, without `FORCE_DATUMS`, the importer reuses each station's cached datums when its constituents match, and recomputes the derived metadata (`chart_datum`, pruning, disclaimers). When a reusable cache is missing the harmonic datum owned by its country, the importer calculates that datum in the stored vertical frame using the cached MSL. If that MSL is unavailable, it recomputes the reduction. Constituent changes also recompute the observation reduction because inferred heights depend on the model. `FORCE_DATUMS` also accepts a comma-separated list of source suffixes to recompute only those sources, for example `FORCE_DATUMS=uhslc_rq`.
 
-Refreshing raw observations alone does not invalidate an otherwise valid datum cache. Use `FORCE_DATUMS` after replacing GESLA or refreshing UHSLC data. An engine upgrade that changes predictions doesn't invalidate it either, though inferred heights come from the model, so use `FORCE_DATUMS` after one too. The `uhslc_rq` observed means were last reduced with engine 1.0.0-beta.13: forcing them also takes in the UHSLC data released since. Under beta.14 the other observed means moved at the stored millimetre only at Koper, by at most 4 mm.
+Refreshing raw observations alone does not invalidate an otherwise valid datum cache. Use `FORCE_DATUMS` after replacing GESLA or refreshing UHSLC data. Use FORCE_DATUMS after a calculator or engine upgrade that changes reductions or the predictions used to fill gaps.
 
 The importer runs one process per core, each taking every nth station. Set `SHARDS` to change the count; `SHARDS=1` runs a single process.
 

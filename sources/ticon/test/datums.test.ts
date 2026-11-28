@@ -10,6 +10,7 @@ import {
   restoreCachedCountryDatum,
   OBSERVED_DATUM_NOTICE,
   HARMONIC_DATUM_NOTICE,
+  MEASURED_ONLY_HARMONIC_DATUM_NOTICE,
   HARMONIC_REDUCTION_NOTICE,
   DATUM_CALCULATOR_NOTICE,
   storedDatumNotice,
@@ -32,6 +33,15 @@ test("restores a missing cached China TLT in the stored gauge frame", () => {
   ).toBeUndefined();
 });
 
+test("restores Canadian HHWLT independently of an existing LLWLT", () => {
+  const cached = { MSL: 2, LLWLT: 1 };
+  const hh = computeDatums(constituents).datums["HHWLT"]!;
+  expect(restoreCachedCountryDatum("CA", cached, constituents)).toEqual({
+    ...cached,
+    HHWLT: toFixed(hh + 2, 3),
+  });
+});
+
 const harmonic = {
   MSL: 0,
   MHHW: 1.2,
@@ -48,6 +58,21 @@ const fitEpoch = {
 const start = Date.UTC(2020, 0, 1);
 
 describe("TICON datum composition", () => {
+  test("invalidates a shared reduction after the legacy harmonic refresh runs", () => {
+    const station = {
+      datums_source: "harmonic" as const,
+      datum_frame: "constituent" as const,
+      disclaimers: `${HARMONIC_DATUM_NOTICE} ${CONSTITUENT_FRAME_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
+    };
+    expect(cachedDatumNotice(station)).toBe(station.disclaimers);
+    expect(
+      cachedDatumNotice({
+        ...station,
+        disclaimers: `${station.disclaimers} ${HARMONIC_REDUCTION_NOTICE}`,
+      }),
+    ).toBeUndefined();
+  });
+
   test("invalidates legacy reductions without complete period and method provenance", () => {
     expect(cachedDatumNotice({ datums_source: "observed" })).toBeUndefined();
     expect(
@@ -67,22 +92,18 @@ describe("TICON datum composition", () => {
           observed_hours: 8760,
           inferred_hours: 24,
         },
-        disclaimers: `No obvious issues ${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
+        disclaimers: `No obvious issues ${OBSERVED_DATUM_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
       }),
-    ).toBe(
-      `${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
-    );
+    ).toBe(`${OBSERVED_DATUM_NOTICE} ${DATUM_CALCULATOR_NOTICE}`);
     for (const frame of [OBSERVED_OFFSET_NOTICE, CONSTITUENT_FRAME_NOTICE])
       expect(
         cachedDatumNotice({
           datums_source: "harmonic",
           datum_frame:
             frame === OBSERVED_OFFSET_NOTICE ? "gauge" : "constituent",
-          disclaimers: `No obvious issues ${HARMONIC_DATUM_NOTICE} ${frame} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
+          disclaimers: `No obvious issues ${HARMONIC_DATUM_NOTICE} ${frame} ${DATUM_CALCULATOR_NOTICE}`,
         }),
-      ).toBe(
-        `${HARMONIC_DATUM_NOTICE} ${frame} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
-      );
+      ).toBe(`${HARMONIC_DATUM_NOTICE} ${frame} ${DATUM_CALCULATOR_NOTICE}`);
   });
   test("accepts existing frame evidence for migration but rejects its prior harmonic reduction as a current cache", () => {
     const station = {
@@ -103,11 +124,9 @@ describe("TICON datum composition", () => {
     expect(
       cachedDatumNotice({
         ...station,
-        disclaimers: `${station.disclaimers} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
+        disclaimers: `${station.disclaimers} ${DATUM_CALCULATOR_NOTICE}`,
       }),
-    ).toBe(
-      `${station.disclaimers} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
-    );
+    ).toBe(`${station.disclaimers} ${DATUM_CALCULATOR_NOTICE}`);
   });
   test("invalidates cached datums whose frame is missing or contradicts their method notice", () => {
     for (const datum_frame of [undefined, "gauge"] as const) {
@@ -163,7 +182,7 @@ describe("TICON datum composition", () => {
     expect(result.epoch).toEqual({ start: "2000-01-01", end: "2010-12-31" });
     expect(result).not.toHaveProperty("datum_epoch");
     expect(result.datum_notice).toContain(OBSERVED_OFFSET_NOTICE);
-    expect(result.datum_notice).toContain(HARMONIC_REDUCTION_NOTICE);
+    expect(result.datum_notice).toContain(DATUM_CALCULATOR_NOTICE);
   });
 
   test("combines one supported empirical mean family with astronomical bounds in the same frame", () => {
@@ -174,7 +193,7 @@ describe("TICON datum composition", () => {
     });
     const result = reduceTiconDatums(samples, constituents, harmonic, fitEpoch);
     expect(result.datums_source).toBe("observed");
-    expect(result.datum_notice).toContain(HARMONIC_REDUCTION_NOTICE);
+    expect(result.datum_notice).toContain(DATUM_CALCULATOR_NOTICE);
     expect(result).toHaveProperty("datum_frame", "gauge");
     expect(result.datums["MSL"]).toBeCloseTo(7, 2);
     expect(result.datums["MHW"]).toBeCloseTo(8, 2);
@@ -182,6 +201,12 @@ describe("TICON datum composition", () => {
     expect(result.datums["HAT"]).toBeCloseTo(8.5, 2);
     expect(result.datums["LAT"]).toBeCloseTo(5.5, 2);
     expect(result.datums).not.toHaveProperty("LLWLT");
+    const jodc = reduceTiconDatums(samples, constituents, harmonic, fitEpoch, {
+      sourceId: "monbetsu-hd01-jpn-jodc_jcg",
+    });
+    expect(jodc.datums_source).toBe("observed");
+    expect(jodc.datum_coverage?.inferred_hours).toBe(0);
+
     expect(result.epoch).toEqual({ start: "2000-01-01", end: "2010-12-31" });
     expect(result.datum_epoch).toEqual({
       start: "2020-02-01",
@@ -227,6 +252,16 @@ describe("TICON datum composition", () => {
       inferred_hours: 144,
     });
     expect(result.datums["MSL"]).toBeCloseTo(7, 2);
+
+    const jodc = reduceTiconDatums(samples, constituents, harmonic, fitEpoch, {
+      sourceId: "monbetsu-hd01-jpn-jodc_jcg",
+    });
+    expect(jodc.datums_source).toBe("harmonic");
+    expect(jodc.datum_frame).toBe("constituent");
+    expect(jodc.datum_notice).toContain(MEASURED_ONLY_HARMONIC_DATUM_NOTICE);
+    expect(cachedDatumNotice({ ...jodc, disclaimers: jodc.datum_notice })).toBe(
+      jodc.datum_notice,
+    );
   });
 
   test("does not invent an observation-frame offset when no record supports one", () => {
