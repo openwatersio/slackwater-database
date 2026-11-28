@@ -122,6 +122,8 @@ TICON estimates that family's gauge offset only from complete prepared months co
 Reconstruction cannot correct an undetected gauge datum shift or a bad
 harmonic model, and stored millimetres are rounding precision, not accuracy.
 
+TICON source JSON also stores `harmonic_mean_range` for records with observed means. The [tidal range gate](quality-evaluation.md#tidal-range) uses this modeled range for prediction eligibility. The database continues to expose the observed MHW and MLW.
+
 ## Chart datum by country
 
 The per-country mapping follows the IHO Resolution (adopt **Lowest Astronomical

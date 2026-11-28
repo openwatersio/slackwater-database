@@ -26,6 +26,8 @@ import {
   exceeds,
 } from "../filtering.js";
 import { readStationFiles, storedQuality } from "../station-files.ts";
+import { checkTidalRange } from "../evaluate-quality.ts";
+import { load } from "../station.ts";
 import { sourceMetadata } from "../sources.ts";
 
 const {
@@ -235,7 +237,14 @@ tideStations.forEach((station) => {
         }
       });
 
-      test("has tidal range >= 2cm (MHW - MLW)", () => {
+      test("meets the 2 cm range gate", async () => {
+        if (station.datums_source === "observed") {
+          const raw = await load("ticon", station.source.id);
+          expect(
+            checkTidalRange({ ...raw, id: station.id }, new Map()),
+          ).toBeNull();
+          return;
+        }
         if (!station.datums) return;
         const mhw = station.datums["MHW"];
         const mlw = station.datums["MLW"];
@@ -793,6 +802,14 @@ describe("seasonal dominance", () => {
     expect(belle?.quality?.issues?.join(" ")).toContain("yearly swing");
     expect(belle!.datums["MHW"]! - belle!.datums["MLW"]!).toBeCloseTo(0.075);
     expect(tideStations.some((s) => s.id === id)).toBe(false);
+
+    const gavle = tideStations.find(
+      (s) => s.id === "ticon/gavle_hamn-35236-swe-smhi",
+    );
+    expect(gavle?.quality).toMatchObject({
+      accepted: true,
+      seasonal_dominant: true,
+    });
 
     // Seattle is the control: a real tide, no label, and the field reads back
     // undefined rather than false so it behaves like every other optional.

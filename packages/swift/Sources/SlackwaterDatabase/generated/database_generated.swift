@@ -1364,9 +1364,8 @@ public struct Slackwater_Quality: FlatBufferObject, Verifiable {
   ///  The peak of the seasonal curve (SA and SSA with their phases) exceeds the
   ///  principal tide M2+S2+K1+O1 by more than 3 mm, so the yearly swing exceeds
   ///  the daily one — a Great Lakes gauge, a river reach, a Baltic bodden.
-  ///  Accepted, not rejected: the predictions are right and only the framing is
-  ///  wrong, so a consumer quoting a high and a low reads this first and says
-  ///  what the water is. `issues` gives both heights.
+  ///  The quality gates determine acceptance independently of this label.
+  ///  `issues` gives both heights.
   public var seasonalDominant: Bool { let o = _accessor.offset(VTOFFSET.seasonalDominant.v); return o == 0 ? false : _accessor.readBuffer(of: Bool.self, at: o) }
   public static func startQuality(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 5) }
   public static func add(factors: Slackwater_QualityFactors?, _ fbb: inout FlatBufferBuilder) { guard let factors = factors else { return }; fbb.create(struct: factors, position: VTOFFSET.factors.p) }

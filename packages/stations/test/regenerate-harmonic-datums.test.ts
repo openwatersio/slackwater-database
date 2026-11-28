@@ -277,7 +277,8 @@ test.each([false, true])(
       const input = station({
         disclaimers: `Provider legal notice. ${OBSERVED_DATUM_NOTICE}${shared ? ` ${DATUM_CALCULATOR_NOTICE}` : ""}`,
       });
-      await writeFile(join(root, "ticon", "a.json"), JSON.stringify(input));
+      const stored = shared ? { ...input, harmonic_mean_range: 0.005 } : input;
+      await writeFile(join(root, "ticon", "a.json"), JSON.stringify(stored));
       await writeFile(
         join(root, "noaa", "a.json"),
         "NOAA must never be read or rewritten",

@@ -238,14 +238,6 @@ const LAT_ABOVE_CHART_DATUM = new Set([
   "linz/058", // Riverton
   "linz/141", // Waihopai River Entrance
   "noaa/1778000", // APIA (Observatory), Upolu Island — 0.93 m
-  "ticon/cote_ste_catherine-15450-can-meds",
-  "ticon/pointe_claire-15330-can-meds",
-  "ticon/tecumseh_ontario-11975-can-meds",
-  "ticon/la_prairie-15470-can-meds",
-  "ticon/belle_river_ontario-11965-can-meds",
-  "ticon/port_lambton_ontario-11950-can-meds",
-  "ticon/cobourg_ontario-13590-can-meds",
-  "ticon/gamebridge_ontario-16500-can-meds",
   "ticon/xiamen-376a-chn-uhslc_rq",
 ]);
 
