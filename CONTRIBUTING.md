@@ -91,6 +91,8 @@ CI runs Gradle on JDK 25; the JDK 17 toolchain compiles the code and runs the te
 
 ## Releases
 
+Follow the shared [release preparation checklist](https://github.com/openwatersio/.github/blob/main/docs/agents/releases.md#release-preparation-checklist) before publication.
+
 A release is cut entirely by dispatching the workflow. Nothing is tagged or versioned by hand:
 
 ```sh
