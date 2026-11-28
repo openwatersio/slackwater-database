@@ -10,39 +10,41 @@ computed:
       position: [62.3333, 17.4667]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: range
         seasonal_dominant: true
-        score: 78
+        score: 0
         factors:
           epoch: 1
           recency: 0.43
           source: 0.919
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 1
         issues:
           - MHHW (0.463) < MHW (0.464)
           - MLWS (0.381) > MLW (0.357)
           - MHWS (0.397) < MHW (0.464)
+          - Modeled tidal range 1.50cm < 2cm threshold
           - "Seasonal curve peak (0.150m) exceeds the principal tide M2+S2+K1+O1 (0.020m): the yearly swing exceeds the daily one"
     ticon/draghallan-dra-swe-cmems:
       position: [62.333302, 17.4667]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/draghallan-2062-swe-smhi
+        reason: range
         seasonal_dominant: true
-        score: 60
+        score: 0
         factors:
           epoch: 1
           recency: 0.43
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 1
         issues:
           - MHHW (0.463) < MHW (0.464)
           - MLWS (0.381) > MLW (0.357)
           - MHWS (0.397) < MHW (0.464)
+          - Modeled tidal range 1.50cm < 2cm threshold
           - "Seasonal curve peak (0.150m) exceeds the principal tide M2+S2+K1+O1 (0.020m): the yearly swing exceeds the daily one"

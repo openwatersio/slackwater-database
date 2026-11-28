@@ -8,19 +8,19 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/skagsudde-2321-swe-smhi
+        reason: range
         seasonal_dominant: true
-        score: 81
+        score: 0
         factors:
           epoch: 0.869
           recency: 0.99
           source: 0.919
           quality: 1
           amplitude: 1
-          coverage: 0.001
+          coverage: 1
         issues:
           - MHHW (0.164) < MHW (0.17)
           - MLWS (0.058) > MLW (0.043)
           - MHWS (0.068) < MHW (0.17)
+          - Modeled tidal range 1.30cm < 2cm threshold
           - "Seasonal curve peak (0.144m) exceeds the principal tide M2+S2+K1+O1 (0.015m): the yearly swing exceeds the daily one"

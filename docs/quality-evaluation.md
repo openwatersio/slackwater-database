@@ -101,7 +101,9 @@ NOAA’s published mean datums receive the observed-mean bound allowance even wh
 
 **Threshold.** A mean range under 2 cm. This is an engineering choice, twice the 10 mm accuracy that GLOSS asks of a tide gauge (IOC, 2002). The IHO treats a range under about 0.30 m as negligible for charting, which calls for mean sea level as the datum rather than for rejecting the record (IHO, M-3, Resolution 3/1919).
 
-**Limitations.** In strongly diurnal water the great diurnal range (MHHW − MLLW) is the more natural measure, though the two converge there. A subordinate is judged on its reference station's range, not on the range after its own height differences, so a subordinate with a small height ratio can pass on its reference's range. Water with a tiny tide and a large seasonal swing can clear the floor by millimeters; Cobourg, on Lake Ontario, is one example. The seasonal label below exists for such water.
+For TICON records with observed datums, the gate uses `harmonic_mean_range`, the difference between modeled MHW and MLW over the datum epoch. Wind and other non-tidal effects can widen the observed range at weak-tide stations. The station still publishes its observed MHW and MLW. Older records without the cached range calculate it from their stored constituents.
+
+**Limitations.** In strongly diurnal water the great diurnal range (MHHW − MLLW) is the more natural measure, though the two converge there. A subordinate is judged on its reference station's range, so a subordinate with a small height ratio can pass on its reference's range. A large seasonal swing can coexist with a modeled tide above the floor. The seasonal label below measures that swing separately.
 
 ### Superseded relay
 

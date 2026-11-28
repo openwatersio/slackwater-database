@@ -129,6 +129,10 @@ export interface StationData {
   // Astronomical bounds can be synthesized even when the means are observed.
   datums_source?: "observed" | "harmonic";
 
+  // Modeled MHW minus MLW in metres for TICON records with observed datums.
+  // Used by the source-record quality gate.
+  harmonic_mean_range?: number;
+
   // Zero of the stored datum values; absence means the frame is unspecified.
   datum_frame?: "gauge" | "constituent";
   // Hourly bins in the observed reduction period, including model-assisted fills.

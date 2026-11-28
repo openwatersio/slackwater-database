@@ -71,7 +71,7 @@ The shared table alone changes no prediction. A source with its own definitions 
 
 ## Non-goals
 
-- Fitting gauges with no tide to speak of. NOAA predicts no tides on the Great Lakes, and the source profiles leave those gauges out. The 2 cm tidal range gate in [quality-evaluation.md](../quality-evaluation.md) isn't enough by itself: seiches and seasonal swings let a lake gauge such as Cobourg clear it by millimeters.
+- Fitting gauges with no tide to speak of. NOAA predicts no tides on the Great Lakes, and the source profiles leave those gauges out. The [tidal range gate](../quality-evaluation.md) uses modeled range for TICON records with observed datums. At Cobourg, the 4 mm modeled range falls below the 20 mm threshold.
 - Nonstationary river-tide models such as NS_TIDE ([Matte, Jay and Zaron 2013](https://doi.org/10.1175/JTECH-D-12-00016.1)). Upper-estuary gauges get a stationary fit, a stated limitation, and HRoI where it applies.
 - Replacing constants an agency publishes itself, for now. NOAA, Kartverket, JMA and the rest stay as they are, and their gauges serve as calibration for this pipeline (see [Calibration](#calibration)). Where calibration shows our fit beats an agency's published constants on held-out observations, for instance where NOAA's analysis is decades old, replacing them becomes worth considering later.
 

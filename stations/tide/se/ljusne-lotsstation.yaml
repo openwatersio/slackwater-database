@@ -8,19 +8,19 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/ljusne_sjov-35127-swe-smhi
+        reason: range
         seasonal_dominant: true
-        score: 52
+        score: 0
         factors:
           epoch: 0.322
           recency: 0.99
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 1
         issues:
           - MHHW (0.265) < MHW (0.269)
           - MLWS (0.186) > MLW (0.154)
           - MHWS (0.208) < MHW (0.269)
+          - Modeled tidal range 1.80cm < 2cm threshold
           - "Seasonal curve peak (0.140m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"

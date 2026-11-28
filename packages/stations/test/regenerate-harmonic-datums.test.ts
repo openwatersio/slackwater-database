@@ -26,6 +26,7 @@ import {
   parseShard,
   regenerateDirectory,
 } from "../regenerate-harmonic-datums.ts";
+import { predictionOptions } from "../sources.ts";
 
 type Overrides = { [K in keyof StationData]?: StationData[K] | undefined };
 const station = (overrides: Overrides = {}): StationData => {
@@ -285,11 +286,21 @@ test.each([false, true])(
       const result = JSON.parse(
         await readFile(join(root, "ticon", "a.json"), "utf8"),
       ) as StationData;
+      const { harmonic_mean_range, ...updated } = result;
+      const { datums: modeled } = computeDatums(
+        input.harmonic_constituents,
+        {},
+        predictionOptions(input),
+      );
+      expect(harmonic_mean_range).toBeCloseTo(
+        modeled["MHW"]! - modeled["MLW"]!,
+        9,
+      );
       expect(result.disclaimers).toBe(
         `Provider legal notice. ${OBSERVED_DATUM_NOTICE} ${shared ? DATUM_CALCULATOR_NOTICE : HARMONIC_REDUCTION_NOTICE}`,
       );
       expect({
-        ...result,
+        ...updated,
         country_code: undefined,
         datums: input.datums,
         disclaimers: input.disclaimers,

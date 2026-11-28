@@ -10,37 +10,39 @@ computed:
       position: [63.1906, 19.0125]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: range
         seasonal_dominant: true
-        score: 83
+        score: 0
         factors:
           epoch: 1
           recency: 0.92
           source: 0.919
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 1
         issues:
           - MLWS (0.114) > MLW (0.088)
           - MHWS (0.12) < MHW (0.217)
+          - Modeled tidal range 0.70cm < 2cm threshold
           - "Seasonal curve peak (0.133m) exceeds the principal tide M2+S2+K1+O1 (0.009m): the yearly swing exceeds the daily one"
     ticon/skagsudde-ska-swe-cmems:
       position: [63.190601, 19.012501]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/skagsudde-2321-swe-smhi
+        reason: range
         seasonal_dominant: true
-        score: 65
+        score: 0
         factors:
           epoch: 1
           recency: 0.92
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 1
         issues:
           - MLWS (0.114) > MLW (0.088)
           - MHWS (0.12) < MHW (0.217)
+          - Modeled tidal range 0.80cm < 2cm threshold
           - "Seasonal curve peak (0.133m) exceeds the principal tide M2+S2+K1+O1 (0.009m): the yearly swing exceeds the daily one"

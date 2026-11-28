@@ -12,7 +12,7 @@ import {
   storedDatumNotice,
 } from "../../sources/ticon/datums.ts";
 import { countryForRecord } from "./country.ts";
-import { DATA_DIR, pruneDatums } from "./station.ts";
+import { DATA_DIR, meanTidalRange, pruneDatums } from "./station.ts";
 import { predictionOptions } from "./sources.ts";
 
 export type HarmonicDatumSource = "ticon" | "dmi" | "linz" | "jhod" | "jma";
@@ -161,6 +161,10 @@ export async function regenerateDirectory(
       predictionOptions(station),
     );
     const datums = mergeHarmonicDatums(source, station, computed);
+    const range =
+      source === "ticon" && station.datums_source === "observed"
+        ? meanTidalRange(computed)
+        : undefined;
     const disclaimers =
       source === "ticon" &&
       !station.disclaimers?.includes(HARMONIC_REDUCTION_NOTICE) &&
@@ -169,6 +173,7 @@ export async function regenerateDirectory(
         : station.disclaimers;
     if (
       isDeepStrictEqual(datums, station.datums) &&
+      range === station.harmonic_mean_range &&
       disclaimers === station.disclaimers &&
       !addCountryCode
     )
@@ -177,7 +182,18 @@ export async function regenerateDirectory(
       path,
       JSON.stringify(
         {
-          ...station,
+          ...Object.fromEntries(
+            Object.entries(station).flatMap(([key, value]) =>
+              key === "harmonic_mean_range"
+                ? []
+                : key === "datums_source" && range !== undefined
+                  ? [
+                      [key, value],
+                      ["harmonic_mean_range", range],
+                    ]
+                  : [[key, value]],
+            ),
+          ),
           datums,
           ...(disclaimers !== undefined ? { disclaimers } : {}),
         },

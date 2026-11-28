@@ -10,38 +10,40 @@ computed:
       position: [63.9861, 20.895]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: range
         seasonal_dominant: true
-        score: 83
+        score: 0
         factors:
           epoch: 1
           recency: 0.99
           source: 0.919
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 1
         issues:
           - MHHW (0.23) < MHW (0.231)
           - MLWS (0.111) > MLW (0.064)
           - MHWS (0.119) < MHW (0.231)
+          - Modeled tidal range 1.90cm < 2cm threshold
           - "Seasonal curve peak (0.156m) exceeds the principal tide M2+S2+K1+O1 (0.018m): the yearly swing exceeds the daily one"
     ticon/ratan-rat-swe-cmems:
       position: [63.986099, 20.895]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/ratan-2056-swe-smhi
+        reason: range
         seasonal_dominant: true
-        score: 65
+        score: 0
         factors:
           epoch: 1
           recency: 0.99
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 1
         issues:
           - MLWS (0.132) > MLW (0.087)
           - MHWS (0.14) < MHW (0.254)
+          - Modeled tidal range 1.90cm < 2cm threshold
           - "Seasonal curve peak (0.156m) exceeds the principal tide M2+S2+K1+O1 (0.018m): the yearly swing exceeds the daily one"
