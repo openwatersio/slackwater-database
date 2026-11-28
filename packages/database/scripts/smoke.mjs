@@ -25,6 +25,10 @@ globalThis.fetch = async (url, init) => {
 };
 
 function check(db, api, label) {
+  assert.ok(
+    api.countryAliases("TR").includes("Türkiye"),
+    `${label}: registry alias`,
+  );
   for (const station of db.all) {
     assert.ok(
       api.credits?.has(station.source.name),

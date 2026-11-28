@@ -2,6 +2,7 @@ import { describe, test, expect, expectTypeOf, vi } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { countryAliases } from "../src/index.ts";
 import {
   countryByIso,
   countryByName,
@@ -18,6 +19,17 @@ import {
 import { Root, Kind, DatumFrame } from "../src/generated/fbs/slackwater.ts";
 import type { ChsFitData, Station, StationInput } from "../src/types.ts";
 import { definedNames } from "./definitions.ts";
+
+test("exposes current registry aliases by ISO identity", () => {
+  const aliases = countryAliases("TR");
+  expect(aliases).toEqual(expect.arrayContaining(["Türkiye", "Turkiye"]));
+  expect(aliases).not.toContain(countryByIso("TR")?.country);
+  expect(countryAliases(" tur ")).toEqual(aliases);
+  expect(countryAliases("792")).toEqual(aliases);
+  expect(countryAliases("CV")).toContain("Cabo Verde");
+  expect(countryAliases("AN")).toEqual([]);
+  expect(countryAliases("ZZ")).toEqual([]);
+});
 
 // The fixtures' sources carry no credit of their own.
 const build = (

@@ -64,6 +64,8 @@ The geographic and text indexes initialize on first use. Bundled data uses prebu
 
 `db.qualityMap` lazily builds the full map of stored quality evaluations, and `db.datums` lists the datum names available in the file. `qualityFilter(station)` checks acceptance and is a direct export.
 
+Use `countryAliases(code)` to add current country spellings to a client search index. It accepts ISO alpha-2, alpha-3 and numeric codes. The aliases come from the pinned country registry and can be shared by more than one country.
+
 ### Migrating from module-level exports
 
 | Previous API               | Instance API                        |
