@@ -19,6 +19,9 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.012
+        issues:
+          - MLWS (0.666) > MLW (0.641)
+          - MHWS (0.854) < MHW (0.885)
     ticon/cristobal-266-pan-uhslc_fd:
       position: [9.35, -79.9]
       coastline: unverifiable
@@ -34,3 +37,6 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.037
+        issues:
+          - MLWS (0.608) > MLW (0.583)
+          - MHWS (0.796) < MHW (0.827)

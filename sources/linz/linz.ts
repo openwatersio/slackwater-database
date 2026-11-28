@@ -1,7 +1,9 @@
-import { normalize } from "@slackwater/stations";
+import { normalize, predictionOptions } from "@slackwater/stations";
 import { computeDatums, toFixed } from "@slackwater/datums";
 import type { StationData } from "@slackwater/database";
 import { constituents as catalogue } from "@slackwater/engine";
+
+const SOURCE_NAME = "Toitū Te Whenua Land Information New Zealand";
 
 export type LinzHarmonics = {
   id: string;
@@ -175,7 +177,14 @@ export function siteId(fileName: string) {
 export function buildStation(harmonics: LinzHarmonics): StationData {
   // Synthesised over the pinned datum epoch in the MSL = 0 frame, then lifted
   // by LINZ's observed MSL above chart datum, the zero of its predictions.
-  const { datums } = computeDatums(harmonics.constituents, {});
+  const { datums } = computeDatums(
+    harmonics.constituents,
+    {},
+    predictionOptions({
+      source: { name: SOURCE_NAME },
+      latitude: harmonics.latitude,
+    }),
+  );
   const shifted = Object.fromEntries(
     Object.entries(datums).map(([key, value]) => [
       key,
@@ -191,7 +200,7 @@ export function buildStation(harmonics: LinzHarmonics): StationData {
     type: "reference",
     chart_datum: "CD",
     source: {
-      name: "Toitū Te Whenua Land Information New Zealand",
+      name: SOURCE_NAME,
       id: harmonics.id,
       published_harmonics: true,
       url: LINZ_SOURCE,

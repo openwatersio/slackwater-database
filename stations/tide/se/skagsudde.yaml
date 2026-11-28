@@ -21,8 +21,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.107) > MLW (0.094)
-          - MHWS (0.113) < MHW (0.117)
+          - MLWS (0.114) > MLW (0.088)
+          - MHWS (0.12) < MHW (0.217)
           - "Seasonal curve peak (0.133m) exceeds the principal tide M2+S2+K1+O1 (0.009m): the yearly swing exceeds the daily one"
     ticon/skagsudde-ska-swe-cmems:
       position: [63.190601, 19.012501]
@@ -41,6 +41,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.107) > MLW (0.094)
-          - MHWS (0.113) < MHW (0.117)
+          - MLWS (0.114) > MLW (0.088)
+          - MHWS (0.12) < MHW (0.217)
           - "Seasonal curve peak (0.133m) exceeds the principal tide M2+S2+K1+O1 (0.009m): the yearly swing exceeds the daily one"

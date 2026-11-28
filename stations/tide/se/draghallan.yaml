@@ -21,8 +21,9 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.381) > MLW (0.378)
-          - MHWS (0.397) < MHW (0.399)
+          - MHHW (0.463) < MHW (0.464)
+          - MLWS (0.381) > MLW (0.357)
+          - MHWS (0.397) < MHW (0.464)
           - "Seasonal curve peak (0.150m) exceeds the principal tide M2+S2+K1+O1 (0.020m): the yearly swing exceeds the daily one"
     ticon/draghallan-dra-swe-cmems:
       position: [62.333302, 17.4667]
@@ -41,6 +42,7 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.381) > MLW (0.378)
-          - MHWS (0.397) < MHW (0.399)
+          - MHHW (0.463) < MHW (0.464)
+          - MLWS (0.381) > MLW (0.357)
+          - MHWS (0.397) < MHW (0.464)
           - "Seasonal curve peak (0.150m) exceeds the principal tide M2+S2+K1+O1 (0.020m): the yearly swing exceeds the daily one"

@@ -20,6 +20,8 @@ computed:
           amplitude: 1
           coverage: 0.082
         issues:
-          - MLWS (-0.177) > MLW (-0.189)
+          - MHHW (-0.057) < MHW (-0.051)
+          - MLWS (-0.177) > MLW (-0.235)
+          - MHWS (-0.157) < MHW (-0.051)
           - "P1 amplitude (0.0129) exceeds K1 (0.0032): inconsistent with the gravitational tide"
           - "Seasonal curve peak (0.585m) exceeds the principal tide M2+S2+K1+O1 (0.014m): the yearly swing exceeds the daily one"

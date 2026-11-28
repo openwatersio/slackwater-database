@@ -3,7 +3,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import * as engine from "@slackwater/engine";
-import { ensureGeslaData, parseGeslaSamples } from "@slackwater/datums";
+import { ensureGeslaData, parseGeslaSamples } from "@slackwater/datum-data";
 import { hasMislabeledClock } from "../../sources/ticon/samples.ts";
 import type { HarmonicConstituent } from "./index.ts";
 

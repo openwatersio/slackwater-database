@@ -18,21 +18,26 @@
     "url": "https://creativecommons.org/licenses/by-nc/4.0/",
     "notes": "Upstream GESLA data provider restricts commercial use. See https://gesla787883612.wordpress.com/license/"
   },
-  "disclaimers": "No obvious issues Datums derived from harmonic prediction; observations do not support a mean-datum reduction over twelve continuous whole months after bounded short-gap reconstruction. Datum values carry higher uncertainty. A calendar-balanced mean of complete prepared observation months supplies the vertical offset; the months may span a different period from the pinned prediction. Harmonic datums retain every predicted turning point without prominence filtering.",
+  "disclaimers": "No obvious issues Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights. Harmonic datums retain every predicted turning point without prominence filtering. Datums use the shared Slackwater calculator.",
   "datums": {
-    "HAT": 2.23,
-    "MHHW": 1.376,
-    "MHW": 1.237,
-    "MSL": 0.057,
-    "MTL": 0.063,
-    "MLW": -1.111,
-    "MLLW": -1.203,
-    "LAT": -2.1,
-    "MHWS": 1.588,
-    "MLWS": -1.474
+    "MSL": 0.068,
+    "MHHW": 1.422,
+    "MHW": 1.278,
+    "MTL": 0.074,
+    "MLW": -1.13,
+    "MLLW": -1.214,
+    "HAT": 2.241,
+    "LAT": -2.089,
+    "MHWS": 1.599,
+    "MLWS": -1.463
   },
-  "datums_source": "harmonic",
+  "datums_source": "observed",
   "datum_frame": "gauge",
+  "datum_coverage": {
+    "months": 12,
+    "observed_hours": 8748,
+    "inferred_hours": 12
+  },
   "chart_datum": "LAT",
   "type": "reference",
   "harmonic_constituents": [
@@ -287,6 +292,10 @@
       "phase": 195.278279
     }
   ],
+  "datum_epoch": {
+    "start": "2016-04-01",
+    "end": "2017-03-31"
+  },
   "epoch": {
     "start": "2008-05-01",
     "end": "2025-02-19"

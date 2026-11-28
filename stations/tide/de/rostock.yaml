@@ -16,3 +16,7 @@ computed:
           quality: 0
           amplitude: 1
           coverage: 0.204
+        issues:
+          - HAT (0.341) < MHHW (0.345)
+          - MLWS (0.104) > MLW (0.057)
+          - MHWS (0.228) < MHW (0.291)

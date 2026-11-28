@@ -8,10 +8,9 @@ computed:
       position: [30.301316, -83.979608]
       coastline: unverifiable
       quality:
-        accepted: false
-        reason: datum
+        accepted: true
         seasonal_dominant: true
-        score: 0
+        score: 74
         factors:
           epoch: 0.566
           recency: 0.99
@@ -20,7 +19,7 @@ computed:
           amplitude: 1
           coverage: 0.388
         issues:
-          - MLWS (8.051) > MLW (8.043)
-          - MHW (8.048) <= MSL (8.052)
-          - Tidal range 0.50cm < 2cm threshold
+          - MHHW (8.151) < MHW (8.155)
+          - MLWS (8.064) > MLW (8.048)
+          - MHWS (8.066) < MHW (8.155)
           - "Seasonal curve peak (0.099m) exceeds the principal tide M2+S2+K1+O1 (0.002m): the yearly swing exceeds the daily one"

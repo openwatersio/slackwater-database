@@ -15,7 +15,7 @@
  *   dHi = MHW  − MSL
  *   dLo = MSL  − MLLW
  *
- * Run after the GESLA download (@slackwater/datums), or set GESLA_ARCHIVE to
+ * Run after the GESLA download (@slackwater/datum-data), or set GESLA_ARCHIVE to
  * read entries directly from a ZIP. Reads GESLA independently of the import.
  * Different observation and agency datum periods, hourly sampling, and weather
  * can all contribute to these residuals; they are not interpolation error alone.
@@ -27,11 +27,13 @@ import { join, basename } from "path";
 import {
   computeDatums,
   computeDatumsFromObservations,
+  type Datums,
+} from "@slackwater/datums";
+import {
   ensureGeslaData,
   parseGeslaSamples,
   GESLA_DIR,
-  type Datums,
-} from "@slackwater/datums";
+} from "@slackwater/datum-data";
 import { DATA_DIR } from "./station.ts";
 import { predictionOptions } from "./sources.ts";
 import type { StationData } from "@slackwater/database";

@@ -37,6 +37,8 @@ computed:
           amplitude: 1
           coverage: 0.016
         issues:
+          - MLWS (1.732) > MLW (1.692)
+          - MHWS (1.832) < MHW (1.887)
           - Superseded by noaa/9751639, its operator's own record
     ticon/charlotte_amalie-9751639-usa-noaa:
       position: [18.347222, -64.925833]
@@ -54,4 +56,6 @@ computed:
           amplitude: 1
           coverage: 0.037
         issues:
+          - MLWS (1.732) > MLW (1.691)
+          - MHWS (1.834) < MHW (1.889)
           - Superseded by noaa/9751639, its operator's own record

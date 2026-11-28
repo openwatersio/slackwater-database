@@ -41,6 +41,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (9.885) > MLW (9.856)
+          - MHWS (11.209) < MHW (11.22)
           - Superseded by noaa/9444090, its operator's own record
     ticon/port_angeles_wa-584a-usa-uhslc_rq:
       position: [48.125, -123.44]
@@ -58,4 +60,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (1.882) > MLW (1.874)
+          - MHWS (3.206) < MHW (3.208)
           - Superseded by noaa/9444090, its operator's own record

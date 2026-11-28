@@ -12,16 +12,17 @@ import {
   getSourceSuffix,
   NON_COMMERCIAL_SOURCES,
   roundConstituents,
+  predictionOptions,
   type PartialStationData,
 } from "@slackwater/stations";
+import { computeDatums } from "@slackwater/datums";
 import {
-  computeDatums,
   ensureGeslaData,
   loadRqdSamples,
   parseRqdId,
   rqdEnd,
   GESLA_DIR,
-} from "@slackwater/datums";
+} from "@slackwater/datum-data";
 import {
   parseTiconSamples,
   shiftEarlyGauge,
@@ -179,6 +180,7 @@ async function main() {
         countryCode,
         epoch,
         harmonic_constituents,
+        lat,
       );
       const disclaimers = [rows[0].record_quality, datum_notice]
         .filter(Boolean)
@@ -251,7 +253,9 @@ async function getDatums(
   countryCode: string,
   obsEpoch: { start: Date; end: Date },
   harmonic_constituents: PartialStationData["harmonic_constituents"],
+  latitude: number,
 ) {
+  const options = predictionOptions({ source: { name: "TICON-4" }, latitude });
   if (!forceDatums(id)) {
     let existing: Awaited<ReturnType<typeof load>> | undefined;
     try {
@@ -289,6 +293,7 @@ async function getDatums(
             countryCode,
             existing.datums,
             harmonic_constituents,
+            options,
           );
           if (datums) return { datums, ...cached, datum_notice };
         }
@@ -299,7 +304,7 @@ async function getDatums(
   // Harmonic baseline: supplies astronomical HAT/LAT and the short-record
   // fallback. Predicted over the pinned DATUM_EPOCH, not the record period, so
   // regeneration is deterministic and annual statistics see only full years.
-  const harmonic = computeDatums(harmonic_constituents, {});
+  const harmonic = computeDatums(harmonic_constituents, {}, options);
 
   // Every TICON station has a GESLA-4 file (100% join), so read it directly — a
   // missing file is a data-prep error and should throw, not silently degrade.
@@ -330,6 +335,7 @@ async function getDatums(
     harmonic_constituents,
     harmonic.datums,
     obsEpoch,
+    options,
   );
   return {
     datums,

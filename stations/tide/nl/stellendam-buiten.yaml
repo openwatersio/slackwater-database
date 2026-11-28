@@ -19,6 +19,8 @@ computed:
           quality: 0
           amplitude: 1
           coverage: 0.252
+        issues:
+          - MHWS (1.323) < MHW (1.547)
     ticon/stellendam_buiten-stelldbtn-nld-rws_hist:
       position: [51.827026, 4.033445]
       coastline: unverifiable
@@ -34,4 +36,5 @@ computed:
           amplitude: 1
           coverage: 0.252
         issues:
+          - MHWS (1.231) < MHW (1.31)
           - "Superseded source: rws_hist"

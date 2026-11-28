@@ -21,7 +21,9 @@ computed:
           amplitude: 1
           coverage: 0.953
         issues:
-          - MLWS (5.085) > MLW (5.081)
+          - MLW (5.05) < MLLW (5.053)
+          - MLWS (5.085) > MLW (5.05)
+          - MHWS (5.119) < MHW (5.163)
           - "Seasonal curve peak (0.135m) exceeds the principal tide M2+S2+K1+O1 (0.027m): the yearly swing exceeds the daily one"
           - M2 here (0.012 m, 18.5°) differs from (0.013 m, 351.3°) by -2 mm and 56 min later in ticon/wladyslawowo-wla-pol-cmems, a duplicate
     ticon/wladyslawowo-wla-pol-cmems:

@@ -12,14 +12,14 @@ computed:
       coastline: unverifiable
       quality:
         accepted: true
-        score: 85
+        score: 84
         factors:
           epoch: 1
           recency: 0.75
           source: 1
           quality: 1
           amplitude: 1
-          coverage: 0.146
+          coverage: 0.121
     ticon/port_manatee-8726384-usa-noaa:
       position: [27.638333, -82.5625]
       coastline: unverifiable
@@ -36,5 +36,6 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
-          - MHWS (0.789) < MHW (0.791)
+          - MLWS (0.373) > MLW (0.318)
+          - MHWS (0.789) < MHW (0.829)
           - Superseded by noaa/8726384, its operator's own record

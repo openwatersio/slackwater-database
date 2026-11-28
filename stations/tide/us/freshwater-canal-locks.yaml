@@ -12,14 +12,14 @@ computed:
       coastline: unverifiable
       quality:
         accepted: true
-        score: 84
+        score: 83
         factors:
           epoch: 1
           recency: 0.75
           source: 1
           quality: 1
           amplitude: 1
-          coverage: 0.114
+          coverage: 0.043
     ticon/freshwater_canal_locks-8766072-usa-noaa:
       position: [29.551694, -92.305194]
       coastline: unverifiable
@@ -36,4 +36,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (6.752) > MLW (6.7)
+          - MHWS (7.098) < MHW (7.147)
           - Superseded by noaa/8766072, its operator's own record

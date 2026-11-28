@@ -22,8 +22,8 @@ computed:
           amplitude: 1
           coverage: 0.009
         issues:
-          - MLWS (0.583) > MLW (0.512)
-          - MHWS (0.829) < MHW (0.886)
+          - MLWS (0.583) > MLW (0.446)
+          - MHWS (0.829) < MHW (0.964)
     ticon/honiara-009a-slb-uhslc_rq:
       position: [-9.425, 159.957]
       coastline: unverifiable
@@ -40,8 +40,8 @@ computed:
           amplitude: 1
           coverage: 0.009
         issues:
-          - MLWS (0.782) > MLW (0.721)
-          - MHWS (1.026) < MHW (1.085)
+          - MLWS (0.782) > MLW (0.643)
+          - MHWS (1.026) < MHW (1.167)
     ticon/honiara-009b-slb-uhslc_rq:
       position: [-9.422, 159.955]
       coastline: unverifiable
@@ -58,5 +58,5 @@ computed:
           amplitude: 1
           coverage: 0.015
         issues:
-          - MLWS (0.577) > MLW (0.508)
-          - MHWS (0.821) < MHW (0.882)
+          - MLWS (0.577) > MLW (0.438)
+          - MHWS (0.821) < MHW (0.958)

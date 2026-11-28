@@ -19,6 +19,9 @@ computed:
           quality: 0
           amplitude: 1
           coverage: 0
+        issues:
+          - MLWS (-0.03) > MLW (-0.044)
+          - MHWS (0.106) < MHW (0.11)
     ticon/rmn_messina-rmn-ita-cmems:
       position: [38.196301, 15.5635]
       coastline: unverifiable

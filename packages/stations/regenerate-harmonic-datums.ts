@@ -155,12 +155,13 @@ export async function regenerateDirectory(
   let changed = 0;
   for (const { source, path, station, addCountryCode } of records) {
     const { datums: computed } = computeDatums(
-      station.harmonic_constituents,
+      source === "dmi"
+        ? station.harmonic_constituents.filter(
+            ({ name }) => !/^z[0o]$/i.test(name),
+          )
+        : station.harmonic_constituents,
       {},
-      {
-        ...predictionOptions(station),
-        ...(source === "dmi" ? { offset: false } : {}),
-      },
+      predictionOptions(station),
     );
     const datums = mergeHarmonicDatums(source, station, computed);
     const disclaimers =

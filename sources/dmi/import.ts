@@ -22,6 +22,7 @@ import { computeDatums } from "@slackwater/datums";
 import {
   DATA_DIR,
   normalize,
+  predictionOptions,
   withPublishedPrecision,
 } from "@slackwater/stations";
 import {
@@ -434,19 +435,14 @@ async function run() {
         if (!heightGate(committedHeight, fit.stabilityRms)) storedFailures++;
       }
       if (fit.accepted && !validate) {
-        const terms = [
-          ...constituents,
-          ...(fit.offset === 0
-            ? []
-            : [
-                {
-                  name: "Zo",
-                  amplitude: Math.abs(fit.offset),
-                  phase: fit.offset < 0 ? 180 : 0,
-                },
-              ]),
-        ];
-        const datums = computeDatums(terms, {}, { offset: false }).datums;
+        const { datums } = computeDatums(
+          constituents,
+          {},
+          predictionOptions({
+            source: { name: SOURCE },
+            latitude: station.latitude,
+          }),
+        );
         records.push(
           buildStation(station, constituents, fit.offset, origin, datums),
         );

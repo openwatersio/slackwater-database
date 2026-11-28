@@ -1,5 +1,6 @@
 import { describe, test, expect } from "vitest";
-import { computeDatums, isBaltic } from "@slackwater/datums";
+import { computeDatums } from "@slackwater/datums";
+import { isBaltic } from "@slackwater/datum-data";
 import {
   getChartDatum,
   pruneDatums,
@@ -7,6 +8,7 @@ import {
   type PartialStationData,
 } from "../station.js";
 import { loadStations } from "@slackwater/database";
+import { hasObservedMeanDatums } from "../filtering.js";
 
 import type { Station } from "@slackwater/database";
 
@@ -143,10 +145,18 @@ describe("getChartDatum", () => {
 });
 
 describe("pruneDatums", () => {
-  const full = { MSL: 0, MLWS: -1.3, LLWLT: -1.5, TLT: -1.55, NLLW: -1.6 };
+  const full = {
+    MSL: 0,
+    MLWS: -1.3,
+    HHWLT: 1.5,
+    LLWLT: -1.5,
+    TLT: -1.55,
+    NLLW: -1.6,
+  };
   test("keeps standard datums, drops other countries' bespoke datums", () => {
     const canada = pruneDatums("CA", full);
     expect(canada["LLWLT"]).toBeDefined();
+    expect(canada["HHWLT"]).toBeDefined();
     expect(canada["MLWS"]).toBeDefined();
     expect(canada["TLT"]).toBeUndefined();
     expect(canada["NLLW"]).toBeUndefined();
@@ -156,6 +166,7 @@ describe("pruneDatums", () => {
     expect(uk["MSL"]).toBeDefined();
     expect(uk["MLWS"]).toBeDefined();
     expect(uk["LLWLT"]).toBeUndefined();
+    expect(uk["HHWLT"]).toBeUndefined();
     expect(uk["TLT"]).toBeUndefined();
     expect(uk["NLLW"]).toBeUndefined();
   });
@@ -301,28 +312,49 @@ describe("astronomical extremes across the database", () => {
     expect(inverted.map((s) => s.id)).toEqual([]);
   });
 
-  test("LAT is at or below the chart datum, bar known upstream defects", () => {
+  test("LAT above chart datum requires a known provider exception or rejected observed means", () => {
     const offenders = references
       .filter((s) => s.datums[s.chart_datum] !== undefined)
       .map((s) => ({
         id: s.id,
+        station: s,
         over: s.datums["LAT"]! - s.datums[s.chart_datum]!,
       }))
       .filter((s) => s.over > DATUM_ROUNDING_M)
       .filter((s) => !LAT_ABOVE_CHART_DATUM.has(s.id))
       .filter(
         (s) => !(s.id.startsWith("linz/") && s.over <= LINZ_LAT_ABOVE_CD_M),
+      )
+      .filter(
+        ({ station }) =>
+          !(
+            station.chart_datum === "MLLW" &&
+            hasObservedMeanDatums(station) &&
+            station.quality?.accepted === false &&
+            station.quality.issues?.some((issue) =>
+              /^MLW .* < LAT /.test(issue),
+            )
+          ),
       );
 
-    expect(offenders).toEqual([]);
+    expect(offenders.map(({ id, over }) => ({ id, over }))).toEqual([]);
   });
 
-  test("HAT is at or above MHHW, bar the same rounding", () => {
+  test("HAT below MHHW beyond rounding requires a rejected observed reduction", () => {
     const offenders = references
       .filter((s) => s.datums["MHHW"] !== undefined)
-      .map((s) => ({ id: s.id, under: s.datums["MHHW"]! - s.datums["HAT"]! }))
-      .filter((s) => s.under > DATUM_ROUNDING_M);
+      .filter((s) => s.datums["MHHW"]! - s.datums["HAT"]! > DATUM_ROUNDING_M)
+      .filter(
+        (station) =>
+          !(
+            hasObservedMeanDatums(station) &&
+            station.quality?.accepted === false &&
+            station.quality.issues?.some((issue) =>
+              /^HAT .* < MHHW /.test(issue),
+            )
+          ),
+      );
 
-    expect(offenders.length).toBeLessThan(20);
+    expect(offenders.map(({ id }) => id)).toEqual([]);
   });
 });

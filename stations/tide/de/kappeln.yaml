@@ -20,8 +20,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (5.032) > MLW (5.012)
-          - MHWS (5.102) < MHW (5.122)
+          - MLWS (5.032) > MLW (4.969)
+          - MHWS (5.102) < MHW (5.168)
     ticon/kappelntg-kap-deu-cmems:
       position: [54.664398, 9.9381]
       coastline: unverifiable
@@ -37,3 +37,6 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0
+        issues:
+          - MLWS (0.05) > MLW (-0.011)
+          - MHWS (0.122) < MHW (0.195)

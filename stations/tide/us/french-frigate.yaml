@@ -22,7 +22,8 @@ computed:
           amplitude: 1
           coverage: 0.25
         issues:
-          - MLWS (0.727) > MLW (0.726)
+          - MLWS (0.727) > MLW (0.706)
+          - MHWS (0.979) < MHW (1.003)
     ticon/french_frigate-014a-usa-uhslc_rq:
       position: [23.868, -166.288]
       coastline: unverifiable
@@ -38,6 +39,9 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.249
+        issues:
+          - MLWS (0.597) > MLW (0.571)
+          - MHWS (0.839) < MHW (0.872)
     ticon/french_frigate-014b-usa-uhslc_rq:
       position: [23.868, -166.288]
       coastline: unverifiable
@@ -54,4 +58,5 @@ computed:
           amplitude: 1
           coverage: 0.249
         issues:
-          - MLWS (0.604) > MLW (0.599)
+          - MLWS (0.604) > MLW (0.574)
+          - MHWS (0.86) < MHW (0.902)

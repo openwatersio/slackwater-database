@@ -22,7 +22,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (0.13) < MHW (0.139)
+          - MLWS (-0.126) > MLW (-0.128)
+          - MHWS (0.134) < MHW (0.142)
     ticon/smogen-smo-swe-cmems:
       position: [58.3536, 11.2178]
       coastline: unverifiable
@@ -39,4 +40,5 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (0.13) < MHW (0.139)
+          - MLWS (-0.126) > MLW (-0.128)
+          - MHWS (0.134) < MHW (0.142)

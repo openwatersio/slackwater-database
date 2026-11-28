@@ -21,7 +21,9 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.347) > MLW (0.336)
+          - MHHW (0.434) < MHW (0.435)
+          - MLWS (0.347) > MLW (0.321)
+          - MHWS (0.363) < MHW (0.435)
           - "Seasonal curve peak (0.150m) exceeds the principal tide M2+S2+K1+O1 (0.017m): the yearly swing exceeds the daily one"
     ticon/bjorn-bjo-swe-cmems:
       position: [60.633301, 17.9667]
@@ -40,5 +42,7 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.347) > MLW (0.336)
+          - MHHW (0.434) < MHW (0.435)
+          - MLWS (0.347) > MLW (0.321)
+          - MHWS (0.363) < MHW (0.435)
           - "Seasonal curve peak (0.150m) exceeds the principal tide M2+S2+K1+O1 (0.017m): the yearly swing exceeds the daily one"

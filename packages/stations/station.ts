@@ -4,7 +4,7 @@ import { countryForRecord } from "./country.ts";
 import { join, dirname } from "path";
 import { mkdir, writeFile, readFile } from "fs/promises";
 import sortObject from "sort-object-keys";
-import { isBaltic } from "@slackwater/datums";
+import { isBaltic } from "@slackwater/datum-data";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 export const DATA_DIR = join(__dirname, "..", "..", "data");
@@ -88,7 +88,7 @@ export function pruneDatums(
 ): Record<string, number> {
   const out: Record<string, number> = {};
   for (const [name, value] of Object.entries(datums)) {
-    const owner = COUNTRY_SPECIFIC_DATUMS[name];
+    const owner = name === "HHWLT" ? "CA" : COUNTRY_SPECIFIC_DATUMS[name];
     if (owner && owner !== countryCode) continue;
     out[name] = value;
   }

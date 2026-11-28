@@ -11,6 +11,7 @@ import {
   OBSERVED_DATUM_NOTICE,
   HARMONIC_DATUM_NOTICE,
   HARMONIC_REDUCTION_NOTICE,
+  DATUM_CALCULATOR_NOTICE,
   storedDatumNotice,
 } from "../datums.ts";
 
@@ -66,18 +67,22 @@ describe("TICON datum composition", () => {
           observed_hours: 8760,
           inferred_hours: 24,
         },
-        disclaimers: `No obvious issues ${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE}`,
+        disclaimers: `No obvious issues ${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
       }),
-    ).toBe(`${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE}`);
+    ).toBe(
+      `${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
+    );
     for (const frame of [OBSERVED_OFFSET_NOTICE, CONSTITUENT_FRAME_NOTICE])
       expect(
         cachedDatumNotice({
           datums_source: "harmonic",
           datum_frame:
             frame === OBSERVED_OFFSET_NOTICE ? "gauge" : "constituent",
-          disclaimers: `No obvious issues ${HARMONIC_DATUM_NOTICE} ${frame} ${HARMONIC_REDUCTION_NOTICE}`,
+          disclaimers: `No obvious issues ${HARMONIC_DATUM_NOTICE} ${frame} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
         }),
-      ).toBe(`${HARMONIC_DATUM_NOTICE} ${frame} ${HARMONIC_REDUCTION_NOTICE}`);
+      ).toBe(
+        `${HARMONIC_DATUM_NOTICE} ${frame} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
+      );
   });
   test("accepts existing frame evidence for migration but rejects its prior harmonic reduction as a current cache", () => {
     const station = {
@@ -94,7 +99,15 @@ describe("TICON datum composition", () => {
         ...station,
         disclaimers: `${station.disclaimers} ${HARMONIC_REDUCTION_NOTICE}`,
       }),
-    ).toBe(`${station.disclaimers} ${HARMONIC_REDUCTION_NOTICE}`);
+    ).toBeUndefined();
+    expect(
+      cachedDatumNotice({
+        ...station,
+        disclaimers: `${station.disclaimers} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
+      }),
+    ).toBe(
+      `${station.disclaimers} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
+    );
   });
   test("invalidates cached datums whose frame is missing or contradicts their method notice", () => {
     for (const datum_frame of [undefined, "gauge"] as const) {
@@ -190,6 +203,30 @@ describe("TICON datum composition", () => {
       observed_hours: 2928,
       inferred_hours: 5856,
     });
+  });
+
+  test("stores the inclusive coverage of an observed year with predictable 12-hour gaps", () => {
+    const predictor = createTidePredictor(constituents);
+    const year = (Date.UTC(2021, 0, 1) - start) / 3600000;
+    const samples = Array.from({ length: year }, (_, h) => {
+      const time = new Date(start + h * 3600000);
+      return { time, level: 7 + predictor.getWaterLevelAtTime({ time }).level };
+    }).filter(
+      ({ time }) => time.getUTCDate() !== 11 || time.getUTCHours() < 12,
+    );
+
+    const result = reduceTiconDatums(samples, constituents, harmonic, fitEpoch);
+    expect(result.datums_source).toBe("observed");
+    expect(result.datum_epoch).toEqual({
+      start: "2020-01-01",
+      end: "2020-12-31",
+    });
+    expect(result.datum_coverage).toEqual({
+      months: 12,
+      observed_hours: year - 144,
+      inferred_hours: 144,
+    });
+    expect(result.datums["MSL"]).toBeCloseTo(7, 2);
   });
 
   test("does not invent an observation-frame offset when no record supports one", () => {

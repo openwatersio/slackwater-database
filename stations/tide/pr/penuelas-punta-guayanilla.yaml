@@ -37,8 +37,8 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
-          - MLWS (2.839) > MLW (2.816)
-          - MHWS (2.873) < MHW (2.913)
+          - MLWS (2.839) > MLW (2.754)
+          - MHWS (2.873) < MHW (2.962)
           - Superseded by noaa/9758053, its operator's own record
     ticon/penuelas_punta_guayanilla-9758053-usa-noaa:
       position: [17.972528, -66.7618]
@@ -56,6 +56,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (-0.017) > MLW (-0.085)
-          - MHWS (0.017) < MHW (0.09)
+          - MLWS (9.846) > MLW (9.76)
+          - MHWS (9.88) < MHW (9.971)
           - Superseded by noaa/9758053, its operator's own record

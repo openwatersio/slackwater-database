@@ -8,7 +8,7 @@
     "refresh:uhslc": "node fetch-uhslc-metadata.ts"
   },
   "dependencies": {
-    "@slackwater/datums": "*",
+    "@slackwater/datum-data": "*",
     "@slackwater/harmonic-analysis": "*",
     "@slackwater/stations": "*",
     "yaml": "^2.9.0"

@@ -7,6 +7,7 @@ import {
   computeDatumsFromObservations,
   observedMeanLevel,
   toFixed,
+  type DatumModelOptions,
   type Datums,
   type Sample,
 } from "@slackwater/datums";
@@ -15,6 +16,7 @@ export const HARMONIC_KEYS = [
   "HAT",
   "LAT",
   "LLWLT",
+  "HHWLT",
   "MHWS",
   "MLWS",
   "NLLW",
@@ -25,6 +27,9 @@ export const OBSERVED_KEYS = ["MSL", "MHHW", "MHW", "MTL", "MLW", "MLLW"];
 
 export const HARMONIC_REDUCTION_NOTICE =
   "Harmonic datums retain every predicted turning point without prominence filtering.";
+
+export const DATUM_CALCULATOR_NOTICE =
+  "Datums use the shared Slackwater calculator.";
 
 export const OBSERVED_DATUM_NOTICE =
   "Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights.";
@@ -50,9 +55,18 @@ export function reduceTiconDatums(
   constituents: PartialStationData["harmonic_constituents"],
   harmonic: Datums,
   fitEpoch: { start: Date; end: Date },
+  options: DatumModelOptions = {},
 ): TiconDatumResult {
-  const observed = computeDatumsFromObservations(samples, constituents);
-  if (observed) {
+  const observed = computeDatumsFromObservations(
+    samples,
+    constituents,
+    options,
+  );
+  if (
+    observed &&
+    OBSERVED_KEYS.every((key) => Number.isFinite(observed.datums[key]))
+  ) {
+    const lastDay = new Date(+observed.end - 1).toISOString().slice(0, 10);
     return {
       datums: {
         ...Object.fromEntries(
@@ -70,17 +84,17 @@ export function reduceTiconDatums(
       },
       datum_epoch: {
         start: observed.start.toISOString().slice(0, 10),
-        end: observed.end.toISOString().slice(0, 10),
+        end: lastDay,
       },
       datum_coverage: {
         months: observed.coverage.months,
         observed_hours: observed.coverage.observedHours,
         inferred_hours: observed.coverage.inferredHours,
       },
-      datum_notice: `${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE}`,
+      datum_notice: `${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
     };
   }
-  const observedOffset = observedMeanLevel(samples, constituents);
+  const observedOffset = observedMeanLevel(samples, constituents, options);
   const offset = observedOffset ?? 0;
   return {
     datums: Object.fromEntries(
@@ -95,7 +109,7 @@ export function reduceTiconDatums(
       start: fitEpoch.start.toISOString().slice(0, 10),
       end: fitEpoch.end.toISOString().slice(0, 10),
     },
-    datum_notice: `${HARMONIC_DATUM_NOTICE} ${observedOffset === undefined ? CONSTITUENT_FRAME_NOTICE : OBSERVED_OFFSET_NOTICE} ${HARMONIC_REDUCTION_NOTICE}`,
+    datum_notice: `${HARMONIC_DATUM_NOTICE} ${observedOffset === undefined ? CONSTITUENT_FRAME_NOTICE : OBSERVED_OFFSET_NOTICE} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
   };
 }
 
@@ -111,8 +125,10 @@ export function cachedDatumNotice(
   >,
 ): string | undefined {
   const notice = storedDatumNotice(station);
-  return notice && station.disclaimers?.includes(HARMONIC_REDUCTION_NOTICE)
-    ? `${notice} ${HARMONIC_REDUCTION_NOTICE}`
+  return notice &&
+    station.disclaimers?.includes(HARMONIC_REDUCTION_NOTICE) &&
+    station.disclaimers.includes(DATUM_CALCULATOR_NOTICE)
+    ? `${notice} ${HARMONIC_REDUCTION_NOTICE} ${DATUM_CALCULATOR_NOTICE}`
     : undefined;
 }
 
@@ -120,12 +136,13 @@ export function restoreCachedCountryDatum(
   countryCode: string,
   datums: Datums,
   constituents: PartialStationData["harmonic_constituents"],
+  options: DatumModelOptions = {},
 ): Datums | undefined {
   const datum = countrySpecificDatum(countryCode);
   if (!datum || Number.isFinite(datums[datum])) return datums;
   const msl = datums["MSL"];
   if (msl === undefined || !Number.isFinite(msl)) return undefined;
-  const harmonic = computeDatums(constituents, {}).datums[datum];
+  const harmonic = computeDatums(constituents, {}, options).datums[datum];
   return harmonic === undefined
     ? datums
     : { ...datums, ...shiftHarmonicDatums({ [datum]: harmonic }, msl) };

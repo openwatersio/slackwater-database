@@ -708,8 +708,8 @@ describe("seasonal dominance", () => {
   });
 
   test("labels independently of the rejection verdict", () => {
-    expect(labelled.filter((q) => q.accepted)).toHaveLength(507);
-    expect(labelled.filter((q) => !q.accepted)).toHaveLength(495);
+    expect(labelled.filter((q) => q.accepted)).toHaveLength(659);
+    expect(labelled.filter((q) => !q.accepted)).toHaveLength(343);
   });
 
   test("is a different question from the contamination gate", () => {
@@ -720,17 +720,17 @@ describe("seasonal dominance", () => {
     // catches water that has no real tide and keeps it.
     //
     // The two overlap without either implying the other, and this pins that:
-    // the gate rejects 6 stations, exactly 5 of which are also labelled. A
+    // the gate rejects 7 stations, exactly 6 of which are also labelled. A
     // change that collapsed the two concepts would move both numbers.
     const contaminated = quality.filter(
       (q) => (q as { reason?: string }).reason === "seasonal",
     );
-    expect(contaminated.length).toBe(6);
+    expect(contaminated.length).toBe(7);
     expect(
       contaminated.filter(
         (q) => (q as { seasonal_dominant?: boolean }).seasonal_dominant,
       ).length,
-    ).toBe(5);
+    ).toBe(6);
   });
 
   test("leaves no subordinate behind its labelled reference", () => {

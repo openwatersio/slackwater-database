@@ -54,44 +54,44 @@ How the values are produced differs by source:
 
 ## The datums
 
-Computed by `packages/datums/datum.ts`:
+The database uses the published [`@slackwater/datums`](https://github.com/openwatersio/slackwater/tree/main/packages/datums) calculator.
 
-| Datum           | Definition                                                                                                                                                                                                                       | Method                             |
-| :-------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| **HAT / LAT**   | Highest/Lowest Astronomical Tide                                                                                                                                                                                                 | extremes of a harmonic prediction  |
-| **MHHW**        | Mean Higher High Water                                                                                                                                                                                                           | mean of daily higher highs         |
-| **MHW / MLW**   | Mean High/Low Water                                                                                                                                                                                                              | mean of all highs/lows             |
-| **MSL**         | Mean Sea Level (mean of hourly heights, NOAA CO-OPS handbook §3.1)                                                                                                                                                               | mean of series                     |
-| **MTL**         | Mean Tide Level, `(MHW + MLW) / 2`                                                                                                                                                                                               | derived                            |
-| **MLLW**        | Mean Lower Low Water                                                                                                                                                                                                             | mean of daily lower lows           |
-| **MHWS / MLWS** | Mean High/Low Water Springs, Admiralty approximation `MSL ± (H_M2 + H_S2)`                                                                                                                                                       | constituent amplitudes             |
-| **NLLW / ALLW** | Indian Spring Low Water, `MSL − (H_M2 + H_S2 + H_K1 + H_O1)`; the same value under Japan's and South Korea's national labels                                                                                                     | constituent amplitudes             |
-| **LLWLT**       | Lower Low Water, Large Tide (Canada): mean of the annual lowest low waters                                                                                                                                                       | harmonic prediction, annual minima |
-| **TLT**         | Theoretical Lowest Tide (China), approximated as the astronomical minimum of the Vladimirsky 13-constituent subset. Not the official Vladimirsky tabular calculation — expect cm-level differences from published Chinese values | restricted harmonic prediction     |
+| Datum             | Definition                                                                                                                   | Method                                        |
+| :---------------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| **HAT / LAT**     | Highest/Lowest Astronomical Tide                                                                                             | extremes of a harmonic prediction             |
+| **MHHW**          | Mean Higher High Water                                                                                                       | mean of daily higher highs                    |
+| **MHW / MLW**     | Mean High/Low Water                                                                                                          | mean of all highs/lows                        |
+| **MSL**           | Mean Sea Level (mean of hourly heights, NOAA CO-OPS handbook §3.1)                                                           | mean of series                                |
+| **MTL**           | Mean Tide Level, `(MHW + MLW) / 2`                                                                                           | derived                                       |
+| **MLLW**          | Mean Lower Low Water                                                                                                         | mean of daily lower lows                      |
+| **MHWS / MLWS**   | Mean High/Low Water Springs, Admiralty approximation `MSL ± (H_M2 + H_S2)`                                                   | constituent amplitudes                        |
+| **NLLW / ALLW**   | Indian Spring Low Water, `MSL − (H_M2 + H_S2 + H_K1 + H_O1)`; the same value under Japan's and South Korea's national labels | constituent amplitudes                        |
+| **HHWLT / LLWLT** | Higher High Water and Lower Low Water, Large Tide (Canada): mean of the annual highest high and lowest low waters            | harmonic prediction, annual extremes          |
+| **TLT**           | Theoretical Lowest Tide (China), Vladimirsky’s method under GB 12327-2022, Appendix J                                        | constituent phases and tabulated node factors |
 
 Mean datums follow the NOAA CO-OPS "first reduction" ([Computational Techniques
 for Tidal Datums Handbook](https://tidesandcurrents.noaa.gov/publications/Computational_Techniques_for_Tidal_Datums_handbook.pdf))
 when observations are available; apart from JHOD's published NLLW, the astronomical/amplitude datums come
 from the harmonic side, since observed extremes include storm surge. Datums
-specific to one country (LLWLT, TLT, NLLW, ALLW) are pruned from stations that
+specific to one country (HHWLT, LLWLT, TLT, NLLW, ALLW) are pruned from stations that
 don't use them (`pruneDatums` in `packages/stations/station.ts`), so a UK station never
 carries a stray TLT.
 
-Harmonic reductions use every mathematical turning point of the predicted tide, with the engine's prominence threshold set to zero, including for the restricted TLT prediction. An amplitude cutoff can remove small daily tides while retaining seasonal or monthly turns, biasing the means toward the longer-period envelope. The same complete-turn rule applies at every amplitude; a full prediction with no turning points remains invalid, while a TLT subset without turning points supplies no TLT. These model-derived reductions do not reproduce NOS's six-minute observation tabulation and analyst verification. MHW/MLW average all retained highs/lows; MHHW/MLLW average one higher high/lower low per eligible tidal day. Days can contain different numbers of turns, so the two averaging populations need not preserve their usual ordering. Seasonal terms still affect the predicted curve; removing the prominence filter removes selection by display amplitude, not the seasonal contribution itself.
+Harmonic reductions use every mathematical turning point of the predicted tide. Each source supplies its constituent definitions and nodal corrections to the calculator. See the shared [harmonic and observed methods](https://github.com/openwatersio/slackwater/tree/main/packages/datums#the-datums) for the populations behind the means and the calculations for each datum.
 
 ## Regenerating harmonic datums
 
 `npm run refresh:harmonic-datums -w packages/stations` recomputes derived values from committed constituents and existing vertical offsets, without downloading observations or refitting harmonics. `SHARD=i/n` selects a deterministic partition for parallel runs. Run `npm run stations` afterward to reevaluate quality and regenerate station files, then `PUBLISHED_REF=origin/main npm run check`.
 
-The command preserves TICON's observed means, observation window and coverage; its harmonic-only records retain their recorded gauge offset or constituent frame. TICON's method notice marks complete-turn reductions, and the importer declines cached datums without that notice. DMI retains published MSL, LAT and MLWS; LINZ retains published MSL and chart zero; JHOD retains published MSL and NLLW; JMA retains MSL zero and its published CD offset. Only derived datum values and the TICON method notice change. Both the complete-turn rule and numerical changes in engine beta.7 can contribute to datum differences. Each shard validates its selected inputs before writing; synthesis or I/O failure can still leave it partially updated, so rerun failed shards and review the complete diff before committing.
+The command preserves TICON's observed means, observation window and coverage; its harmonic-only records retain their recorded gauge offset or constituent frame. TICON’s import recalculates cached reductions that lack the shared calculator’s method notice. DMI retains published MSL, LAT and MLWS; LINZ retains published MSL and chart zero; JHOD retains published MSL and NLLW; JMA retains MSL zero and its published CD offset. Only derived datum values and the TICON method notice change. Each shard validates its selected inputs before writing; synthesis or I/O failure can still leave it partially updated, so rerun failed shards and review the complete diff before committing.
 
 NOAA records mix published means with published or synthesized LAT/HAT without per-field provenance. The offline command leaves them untouched. Recomputing an existing NOAA bound requires evidence that it was synthesized, such as the original backfill diff and confirmation that NOAA supplies no value. Matching a prediction or the presence of MHW does not establish ownership. The regular NOAA import and LAT/HAT backfill remain the maintained source-update path.
 
 ## Datum epoch
 
-The synthetic (harmonic-prediction) datums — HAT, LAT, LLWLT, TLT, and the
+The synthetic (harmonic-prediction) datums — HAT, LAT, HHWLT, LLWLT, and the
 amplitude-derived MHWS/MLWS/NLLW/ALLW — are computed over a **pinned epoch of 19
-full calendar years** (`DATUM_EPOCH` in `packages/datums/datum.ts`, currently
+full calendar years** (`DATUM_EPOCH` in `@slackwater/datums`, currently
 2007-01-01 → 2026-01-01), following the convention of NOAA's National Tidal
 Datum Epoch and the Canadian Hydrographic Service. Why this shape:
 
@@ -116,21 +116,8 @@ over that period, without a control-station correction to the 19-year datum
 epoch. Twelve months is this project's minimum coverage rule, not a claim of
 equivalence to a national datum.
 
-Before reducing observations, finite measurements are averaged into hourly
-bins. Up to three consecutive missing bins can be reconstructed: four real
-observations must bracket the gap, with no more than four hours between any
-adjacent anchors. The station's harmonic model supplies the tidal shape, with a cubic fit to the observed-minus-predicted residual averages. The fit uses the first three sampling-time moments of each anchor bin, so both predictions and a changing residual use the actual sampling instants. Anchor predictions are averaged at the actual sampling instants within each hourly bin, matching the observed bin mean. An inferred bin uses its nearer real anchor's sampling profile. This also
-resamples regular three-hour observations. Inferred heights never serve as
-anchors, and there is no extrapolation or bridging of longer gaps. Without a
-harmonic model, only already continuous hourly observations qualify. The
-[NOAA handbook, §2.6](https://tidesandcurrents.noaa.gov/publications/Computational_Techniques_for_Tidal_Datums_handbook.pdf)
-describes repairing supported gaps before tide tabulation; these bounds and
-this interpolation are project choices, rather than a reproduction of NOAA's
-six-minute processing.
+The shared [observed reduction](https://github.com/openwatersio/slackwater/tree/main/packages/datums#observed-reduction) fills bounded gaps using the station’s harmonic model and tabulates highs and lows with NOAA’s Tidal Analysis Datum Calculator method. The database stores the last included day of the reduction and tracks measured and inferred hourly bins separately. A station without a complete family of observed means uses the harmonic datum family.
 
-MHW/MHHW share eligible high-water days, and MLW/MLLW share eligible low-water days, excluding incomplete boundary days in both predicted and observed series. A complete tidal day need not contain both a high and a low, so the high and low families can use different days within the same continuous period. MSL uses every hourly height in
-the selected continuous period; MTL is derived from MHW and MLW. A station
-without a supported observation window uses the whole harmonic datum family.
 TICON estimates that family's gauge offset only from complete prepared months covering every calendar month of the year. It averages the available January means, February means, and so on, giving the twelve calendar-month categories equal weight. These months can be non-contiguous and come from different years, so they support a calendar-balanced offset rather than an observed high/low reduction or a single datum epoch. If any month category is missing, the fallback retains the constituent frame (MSL = 0). `datums_source` identifies the reduction method independently of `datum_frame`: both observed reductions and calendar-balanced harmonic offsets use `gauge`; unsupported harmonic offsets use `constituent`. `disclaimers` describe the fallback uncertainty.
 Reconstruction cannot correct an undetected gauge datum shift or a bad
 harmonic model, and stored millimetres are rounding precision, not accuracy.

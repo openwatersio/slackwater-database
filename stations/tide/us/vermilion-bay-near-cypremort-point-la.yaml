@@ -20,6 +20,6 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
-          - MLWS (0.125) > MLW (0.11)
-          - MHWS (0.339) < MHW (0.373)
+          - MLWS (0.125) > MLW (0.04)
+          - MHWS (0.339) < MHW (0.443)
           - M2 here (0.082 m, 349.1°) differs from (0.070 m, 356.7°) by +12 mm and 16 min earlier in noaa/8765251, which this duplicates
