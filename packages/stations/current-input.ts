@@ -74,7 +74,6 @@ export function currentInputs(bundle: CurrentBundle): CurrentStationInput[] {
       timezone,
       country: "United States",
       country_code: "US",
-      continent: "Americas",
       harmonic_constituents:
         station.type === "harmonic" ? station.constituents : [],
       current,

@@ -50,7 +50,9 @@ const predictor = createTidePredictor(station.harmonic_constituents, {
 });
 ```
 
-`node_corrections` is `"iho"`, `"schureman"` or `"foreman"`. Foreman's formulas take a latitude, `node_corrections_latitude`: the station's own, or its reference's for a tide subordinate. It is undefined for the other sets, which the engine refuses a latitude with. Predicting with `"foreman"` needs an `@slackwater/engine` with Foreman prediction ([slackwater#564](https://github.com/openwatersio/slackwater/pull/564)); an older engine throws on it. `constituent_definitions` is undefined for a file written before definitions were stored. See [constituent definitions](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md#constituent-definitions).
+`node_corrections` is `"iho"`, `"schureman"` or `"foreman"`. Foreman's formulas take a latitude, `node_corrections_latitude`: the station's own, or its reference's for a tide subordinate. It is undefined for the other sets, which the engine refuses a latitude with. Predicting with `"foreman"` needs `@slackwater/engine` 1.0.0-beta.15 or later. `constituent_definitions` is undefined for a file written before definitions were stored. See [constituent definitions](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md#constituent-definitions).
+
+Use `@slackwater/engine` 1.0.0-beta.14 or later for the stored M1 constants. The package declares this baseline as an optional peer dependency. The stored definitions do not carry the engine's M1 nodal correction. See [format version](https://github.com/openwatersio/slackwater-database/blob/main/docs/database-format.md#format-version).
 
 The loader also accepts a source:
 
@@ -78,6 +80,8 @@ The geographic and text indexes initialize on first use. Bundled data uses prebu
 | Route and search functions | Methods with the same names on `db` |
 
 Pure helpers such as `qualityFilter`, `routePath`, `positionToPoint`, attribution helpers, `credits`, and `buildDatabase` remain direct exports.
+
+The TypeScript `buildDatabase` validates country codes against the pinned Slackwater country corpus. Valid ISO countries outside that corpus are unsupported and require a dataset expansion; see [country resolution](../../docs/country-resolver.md).
 
 Each station has separate `locality`, `region`, and `country` display fields. `country_code` is an ISO 3166-1 alpha-2 code; `region_code`, when available, is an ISO 3166-2 subdivision code. Consumers can therefore omit country or region text when the surrounding page already supplies it.
 
@@ -192,7 +196,7 @@ console.log("US harbor stations:", usStations);
 // Combine multiple filters
 const referenceStations = db.search("island", {
   filter: (station) =>
-    station.type === "reference" && station.continent === "Americas",
+    station.type === "reference" && station.continent === "North America",
   maxResults: 20,
 });
 console.log("Reference stations:", referenceStations);
@@ -226,13 +230,14 @@ The module reads a single [FlatBuffers](https://flatbuffers.dev) file built from
 
 - All code in this package is licensed under the [MIT License](./LICENSE).
 - The `license` field of each station specifies the license for that station's data, as a `type`, a `url`, and a `commercial_use` flag you can filter on.
-- Unless otherwise noted, all other data is licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license. Some stations are CC BY-NC 4.0 and are marked `commercial_use: false`.
+- Unless otherwise noted, all other data is licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) license. Some stations are CC BY-NC 4.0 and are marked `commercial_use: false`. The location fields and `context` keep their sources' credits, listed in [NOTICE](./NOTICE).
+- Because the package mixes these licenses, its npm `license` field is `SEE LICENSE IN NOTICE`. [NOTICE](./NOTICE) lists each license and the credits the bundled GeoNames, OpenStreetMap and Marine Regions data require.
 
 ## Attribution
 
 Most stations are CC BY, so displaying or redistributing them carries an obligation to the original source, not only to this project. Every station carries the notice that satisfies it as `attribution`, already assembled.
 
-**Display the station's `attribution`.** That is the whole of the rule. Nothing here needs its own table of sources, or its own reading of what a licence requires.
+**Display the station's `attribution`.** That covers the station's source. Nothing here needs its own table of sources, or its own reading of what a licence requires. The geocoded location fields and `context` also draw on GeoNames, OpenStreetMap and Marine Regions; credit them once wherever the data is shown, such as an app's credits screen, with the lines in [NOTICE](./NOTICE).
 
 ```typescript
 import { loadStations } from "@slackwater/database";
@@ -250,7 +255,7 @@ console.log(db.byId("ticon/newlyn-new-gbr-bodc")?.attribution);
 What the string contains, and why that is sufficient:
 
 - **The creator credit.** For TICON-4 stations, the citation its authors ask for; for Kartverket, LINZ, JHOD, JMA and DMI, the publishing agency. JHOD and JMA also carry their source editing notices. A source that requires no credit, such as public-domain NOAA data, contributes nothing here.
-- **The licence and its URI**, taken from the station rather than its source. Licence varies within a single source — the TICON stations relayed from CMEMS are CC BY-NC while the rest are CC BY — so the notice names the one that actually applies to the station in hand.
+- **The licence and its URI**, taken from the station rather than its source. Licence varies within a single source — the TICON stations from CMEMS and two other GESLA sources that restrict commercial use are CC BY-NC while the rest are CC BY — so the notice names the one that actually applies to the station in hand.
 - **An indication that the material was modified**, pointing at [what this project changes](https://github.com/openwatersio/slackwater-database#modifications-to-source-data): derived datums, normalized names, geocoded location fields, re-fit phases for two GESLA sources and three Hong Kong gauges whose clock is one hour early, UHSLC's positions for four TICON gauges that TICON places 17 to 49 km away, and harmonics fitted from DMI predictions.
 
 JHOD stations name the Government Standard Terms of Use 2.0 and link the publisher's terms. JMA stations use the CC BY 4.0 option explicitly permitted by Public Data License 1.0; their credit includes the JMA source URL and editing notice.

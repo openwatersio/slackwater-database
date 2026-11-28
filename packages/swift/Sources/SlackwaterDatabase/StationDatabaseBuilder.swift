@@ -35,7 +35,7 @@ public struct StationInput: Sendable, Equatable {
   public var source: StationSource?
   public var license: StationLicense?
   public var disclaimers: String?
-  /// The complete notice. Nil composes one at build time from `license` and
+  /// The source's notice. Nil composes one at build time from `license` and
   /// the source's entry in `build`'s `credits`. A given notice must start with
   /// the project credit and carry the licence clause `license` requires (none
   /// for a licence `StationAttribution.licenseNames` doesn't list), and then:
@@ -938,7 +938,7 @@ private func requireIdentity(_ station: StationInput) throws {
       "Station \(id) has invalid country_code \"\(station.countryCode)\"")
   }
   // builder.ts also checks country against country_code with the JS-only
-  // country-code-lookup package; this package carries no country table, so it skips that match.
+  // c5y-n8r country dataset; this package carries no country table, so it skips that match.
   if let regionCode = station.regionCode, !regionCode.isEmpty,
     !isRegionCode(regionCode) || !regionCode.hasPrefix("\(station.countryCode)-")
   {

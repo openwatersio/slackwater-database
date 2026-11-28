@@ -1,6 +1,25 @@
 @slackwater/database
-Copyright (c) Sailing Naturali
-Licensed under the MIT License (see LICENSE).
+
+This package holds code and data under different licenses.
+
+The code is licensed under the MIT License. See LICENSE for the license and
+its copyright holders.
+
+The station data is licensed per station, not by LICENSE as a whole. Each
+station carries its license in its `license` field: public domain, CC BY 4.0,
+Japan's Government Standard Terms of Use 2.0 or CC BY-NC 4.0 from its source,
+or MIT, the license this project gives its own registry records and the
+Canadian Hydrographic Service station identities. Stations under CC BY-NC 4.0 are
+marked `commercial_use: false`. The readers return them like any other station,
+so a commercial use has to filter them out. Each station's `attribution` field
+holds the credit its source requires; display it wherever the station's data is
+shown. The release's .tcd file has no such fields: each station names its
+license in its `restriction` field, "CC BY-NC 4.0" for the non-commercial
+ones, and carries any credit it needs in its notes.
+
+The location fields and `context` are derived from GeoNames, the OpenStreetMap
+water bodies and Marine Regions, credited below. Pass those credits on wherever
+the data is shown, for example in an app's credits screen.
 
 This repository uses GeoNames cities500 data under CC BY 4.0 to derive station
 location fields. This product includes data created by GeoNames
@@ -21,3 +40,10 @@ metadata/maritime-zones.geojson, an extract of the Marine Regions Maritime
 Boundaries Geodatabase (Exclusive Economic Zones) by the Flanders Marine
 Institute (marineregions.org), licensed under CC BY 4.0:
 https://creativecommons.org/licenses/by/4.0/
+
+Country names and continent metadata derive from the pinned c5y-n8r binary,
+using Wikidata structured data under CC0 1.0:
+https://www.wikidata.org/wiki/Wikidata:Licensing
+The npm distribution includes countries.crdb, country-evidence.json and
+country-release.json under dist/generated/, with the upstream data terms
+and MIT code license in COUNTRY_DATA_LICENSE.md and C5Y_N8R_LICENSE.

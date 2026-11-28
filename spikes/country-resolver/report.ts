@@ -4,7 +4,7 @@ import type { Result } from "@openwaters/c5y-n8r";
 import { loadSources } from "../../packages/stations/sources.ts";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
-import { countryByName as baselineCountryByName } from "../../packages/stations/country.ts";
+import { baselineCountryByName } from "./baseline.ts";
 
 import { countryInfo } from "./lookup.ts";
 import { resolutionCounts } from "./report-summary.ts";

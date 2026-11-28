@@ -5,7 +5,12 @@ import { join } from "node:path";
 import { createTidePredictor } from "@slackwater/engine";
 import { DATA_DIR } from "@slackwater/stations";
 import type { StationData } from "@slackwater/database";
-import { verifySnapshot, FIXTURES_DIR, stationIds } from "./import.ts";
+import {
+  verifySnapshot,
+  FIXTURES_DIR,
+  PREDICTION_STATIONS,
+  stationIds,
+} from "./import.ts";
 import { parsePredictions } from "./jma.ts";
 export async function validate(dir = FIXTURES_DIR, dataDir = DATA_DIR) {
   const { harmonics, contents } = await verifySnapshot(dir);
@@ -59,8 +64,8 @@ export async function validate(dir = FIXTURES_DIR, dataDir = DATA_DIR) {
       );
     results.push({ path, points: points.length, rmse, maximum });
   }
-  if (results.length !== 16)
-    throw new Error("Expected four seasonal comparisons for four stations");
+  if (results.length !== 4 * PREDICTION_STATIONS.length)
+    throw new Error("Expected four seasonal comparisons for each station");
   return results;
 }
 if (process.argv[1] === fileURLToPath(import.meta.url))

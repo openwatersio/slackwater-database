@@ -55,7 +55,17 @@ function checkWithdrawals(
     );
 }
 
-export async function verifySnapshot(dir = FIXTURES_DIR) {
+/**
+ * Stations with pinned hourly predictions: Wakkanai, Tokyo, Naha and Nagoya
+ * across the regimes, and Uno and Takamatsu for their large MP1, which shows
+ * the phase constant the engine reads it against.
+ */
+export const PREDICTION_STATIONS = ["WN", "TK", "NH", "NG", "UN", "TA"];
+
+export async function verifySnapshot(
+  dir = FIXTURES_DIR,
+  predictionStations = PREDICTION_STATIONS,
+) {
   const manifest = JSON.parse(
     await readFile(join(dir, "manifest.json"), "utf8"),
   ) as Manifest;
@@ -89,7 +99,7 @@ export async function verifySnapshot(dir = FIXTURES_DIR) {
     parseHarmonics(required(`${gauge.id}-constants.html`), gauge),
   );
   required("license.html");
-  for (const id of ["WN", "TK", "NH", "NG"])
+  for (const id of predictionStations)
     for (const month of ["01", "04", "07", "10"]) {
       const page = required(`${id}-${month}-predictions.html`);
       const gauge = gauges.find((g) => g.id === id);
@@ -193,7 +203,7 @@ export async function refreshSnapshot(
       );
       for (const gauge of gauges)
         await get(`${gauge.id}-constants.html`, constantsUrl(gauge.id));
-      for (const id of ["WN", "TK", "NH", "NG"])
+      for (const id of PREDICTION_STATIONS)
         for (const month of [1, 4, 7, 10]) {
           const url = new URL(
             `suisan.php?stn=${id}&ys=${YEAR}&ms=${month}&ds=1&ye=${YEAR}&me=${month}&de=7&S_HOUR=on&LV=DL`,
@@ -215,7 +225,9 @@ export async function refreshSnapshot(
       const next = await verifySnapshot(stage);
       const previousPaths: string[] = [];
       if (existsSync(join(dir, "manifest.json"))) {
-        const previous = await verifySnapshot(dir);
+        // The previous snapshot supplies only the inventory, so it may predate a
+        // prediction station added since.
+        const previous = await verifySnapshot(dir, []);
         previousPaths.push(...previous.contents.keys());
         checkWithdrawals(
           previous.harmonics.map((h) => h.id),

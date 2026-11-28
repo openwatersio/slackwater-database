@@ -208,13 +208,13 @@ describe("search", () => {
       filter: (station) =>
         station.type === "reference" &&
         station.country === "United States" &&
-        station.continent === "Americas",
+        station.continent === "North America",
     });
     expect(results.length).toBeGreaterThan(0);
     results.forEach((station) => {
       expect(station.type).toBe("reference");
       expect(station.country).toBe("United States");
-      expect(station.continent).toBe("Americas");
+      expect(station.continent).toBe("North America");
     });
   });
 

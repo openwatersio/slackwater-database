@@ -1,5 +1,12 @@
 import { describe, test, expect, expectTypeOf, vi } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  countryByIso,
+  countryByName,
+  countryMatchesCode,
+} from "../src/country.ts";
 import * as flatbuffers from "flatbuffers";
 import { buildDatabase } from "../src/database/builder.ts";
 import { loadStations } from "../src/load-stations.ts";
@@ -398,6 +405,37 @@ describe("buildDatabase", () => {
     ).toThrow(/test\/nameless has no name/);
   });
 
+  test("accepts old display labels with their explicit country identity", () => {
+    const { region_code: _region, ...base } = inputs[0]!;
+    for (const [country, country_code] of [
+      ["China", "CN"],
+      ["Virgin Islands", "VI"],
+      ["Saint Helena", "SH"],
+      ["Falkland Islands (Islas Malvinas)", "FK"],
+      ["Reunion", "RE"],
+      ["Saint Martin", "MF"],
+      ["Åland Islands", "AX"],
+      ["Bonaire", "BQ"],
+    ]) {
+      expect(() =>
+        build([{ ...base, country: country!, country_code: country_code! }]),
+      ).not.toThrow();
+      expect(() =>
+        build([{ ...base, country: country!, country_code: "US" }]),
+      ).toThrow(/does not match/);
+    }
+    expect(() =>
+      build([{ ...base, country: "Virgin Islands", country_code: "VG" }]),
+    ).toThrow(/does not match/);
+  });
+
+  test("identifies country codes outside the pinned corpus clearly", () => {
+    const { region_code: _region, ...base } = inputs[0]!;
+    expect(() =>
+      build([{ ...base, country: "Afghanistan", country_code: "AF" }]),
+    ).toThrow(/unsupported country_code AF in the pinned country dataset/);
+  });
+
   test("rejects missing, unknown, and mismatched country codes by station id", () => {
     const missing = { ...inputs[0]!, id: "test/missing" };
     delete missing.country_code;
@@ -758,4 +796,36 @@ describe("format version", () => {
       }) as UnsupportedStationDatabaseError,
     );
   });
+});
+
+test("the builder accepts every cached source country label with its stored identity", () => {
+  const root = fileURLToPath(new URL("../../../data/", import.meta.url));
+  let checked = 0;
+  for (const path of readdirSync(root, { recursive: true, encoding: "utf8" })) {
+    if (!path.endsWith(".json")) continue;
+    const record = JSON.parse(readFileSync(join(root, path), "utf8"));
+    if (typeof record.country !== "string") continue;
+    expect(countryMatchesCode(record.country, record.country_code), path).toBe(
+      true,
+    );
+    checked++;
+  }
+  expect(checked).toBeGreaterThan(0);
+}, 30_000);
+
+test("every supported current ISO identity round-trips its own display label", () => {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let checked = 0;
+  for (const a of alphabet)
+    for (const b of alphabet) {
+      const code = a + b;
+      const country = countryByIso(code);
+      if (!country) continue;
+      expect(
+        countryByName(country.country)?.iso2,
+        `${code}: ${country.country}`,
+      ).toBe(code);
+      checked++;
+    }
+  expect(checked).toBeGreaterThan(0);
 });

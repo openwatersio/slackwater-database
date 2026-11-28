@@ -3,7 +3,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { loadProductionCatalogue } from "../load-catalogue.ts";
 import { readFileSync } from "node:fs";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
+import * as currentInput from "../current-input.ts";
+import * as chsInput from "../chs-input.ts";
+import * as geocode from "../geocode.ts";
+import * as maritimeZones from "../maritime-zones.ts";
+import * as waterBodies from "../water-bodies.ts";
 import { normalize } from "../station.ts";
 import { mergeHarmonicDatums } from "../regenerate-harmonic-datums.ts";
 import { winsOnAuthority } from "../filtering.ts";
@@ -108,6 +113,22 @@ test("regeneration refuses an unresolved country before silently pruning TLT", (
 
 test("catalogue loading retains a coded source's identity when its display label differs", async () => {
   const root = await mkdtemp(join(tmpdir(), "country-catalogue-"));
+  // This fixture checks source identity; worldwide currents and geography
+  // are covered by the production catalogue build and their own suites.
+  const mocks = [
+    vi.spyOn(currentInput, "currentInputs").mockReturnValue([]),
+    vi.spyOn(chsInput, "chsInputs").mockReturnValue([]),
+    vi.spyOn(geocode, "loadGeocoder").mockResolvedValue({
+      nearest: () => null,
+      near: () => [],
+    }),
+    vi.spyOn(maritimeZones, "loadMaritimeZones").mockResolvedValue({
+      country: () => undefined,
+    }),
+    vi
+      .spyOn(waterBodies, "loadWaterBodies")
+      .mockResolvedValue({ at: () => [] }),
+  ];
   try {
     await mkdir(join(root, "data", "ticon"), { recursive: true });
     const id = "ticon/test-china";
@@ -125,6 +146,7 @@ test("catalogue loading retains a coded source's identity when its display label
       [],
       new Map([[id, { id, accepted: true, score: 100 }]]),
     );
+    expect(catalogue.stations).toHaveLength(1);
     expect(
       catalogue.stations.find((station) => station.id === id),
     ).toMatchObject({
@@ -133,6 +155,7 @@ test("catalogue loading retains a coded source's identity when its display label
       datums: { TLT: dalian.datums.TLT },
     });
   } finally {
+    for (const mock of mocks) mock.mockRestore();
     await rm(root, { recursive: true, force: true });
   }
 });

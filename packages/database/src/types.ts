@@ -293,7 +293,8 @@ export interface Station extends StationData {
   astronomical_bounds?: AstronomicalBounds;
   /**
    * The credit to display when showing or redistributing this station, ready
-   * to render as-is. Derived from `source`; see src/attribution.ts.
+   * to render as-is. Derived from `source`; see src/attribution.ts. The
+   * GeoNames, OpenStreetMap and Marine Regions credits in NOTICE apply too.
    */
   attribution: string;
   /**

@@ -45,6 +45,8 @@ A subordinate tide station's record holds no constituents or datums of its own, 
 
 `station.constituentDefinitions` is the line behind each constituent name the station stores, and behind every member a compound names, as `Station.ConstituentDefinition` values that map field for field to the engine's `ConstituentDefinition`. A source can define a name its own way, such as a different phase constant, and its stations read that definition in place of the shared one. `station.nodeCorrections` is the nodal correction formulas the source's constants were analyzed with, `IHO`, `SCHUREMAN` or `FOREMAN`. Foreman's take a latitude, `station.nodeCorrectionsLatitude`, which is null for the other sets. Pass them to the engine (its `definitions` and node-correction options, `NodeCorrections.Foreman(latitude)` for Foreman's) so predictions match the analysis. A tide subordinate reads its reference's, latitude included. `constituentDefinitions` is null for a file written before definitions, which leaves every name to the engine's own catalog.
 
+Predict with an engine that counts M1's lunar perigee once and takes MP1's phase constant from its members, as the TypeScript `@slackwater/engine` does from 1.0.0-beta.14. The stored M1 and MP1 constants follow those conventions, and the definitions cannot carry M1's nodal correction. See [format version](../../docs/database-format.md#format-version).
+
 `station.disclaimers` is free text from the station's source record: caveats such as a gauge that dries out at low water, notes on how its datums were derived, and for some sources a credit that `attribution` already carries. Read it when deciding what to tell a user about a station.
 
 Get the database file from the [latest release](https://github.com/openwatersio/slackwater-database/releases) and bundle it with your app, or fetch it at runtime.
@@ -69,7 +71,7 @@ Opening checks the file identifier and format version, and nothing else. Bytes w
 
 Most stations are CC BY, so showing them carries an obligation to the original source, not only to this project. `station.attribution` is that notice, assembled in the database file itself, so this library keeps no table of sources and neither does your app.
 
-**Display `station.attribution`.** That is the whole of the rule. The [Swift reader's README](../swift/README.md#attribution) shows a complete notice and explains what it carries. To make a decision in code rather than show a string, read `station.license` for `type`, `url`, and `commercialUse`.
+**Display `station.attribution`.** That covers the station's source. The geocoded location fields and `context` also draw on GeoNames, OpenStreetMap and Marine Regions; credit them once wherever the data is shown, such as an app's credits screen, with the lines in [NOTICE](../database/NOTICE). The [Swift reader's README](../swift/README.md#attribution) shows a complete notice and explains what it carries. To make a decision in code rather than show a string, read `station.license` for `type`, `url`, and `commercialUse`.
 
 ## Use from source
 
