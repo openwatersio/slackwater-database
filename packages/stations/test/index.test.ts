@@ -26,7 +26,21 @@ import {
   exceeds,
 } from "../filtering.js";
 import { readStationFiles, storedQuality } from "../station-files.ts";
-import { checkTidalRange } from "../evaluate-quality.ts";
+import {
+  measureClocks,
+  sourceTimings,
+  timingShowsClockError,
+} from "../clock.ts";
+import {
+  checkConstituents,
+  checkTidalRange,
+  loadAllStations,
+} from "../evaluate-quality.ts";
+import {
+  CLOCK_ERROR_SOURCES,
+  OBSERVATION_ERROR_SOURCES,
+  SOURCE_CLOCK_SHIFT,
+} from "../filtering.ts";
 import { load } from "../station.ts";
 import { sourceMetadata } from "../sources.ts";
 
@@ -476,10 +490,75 @@ describe("gauge deduplication", () => {
       expect(countries.has(country), country).toBe(true);
   });
 
-  test("rejects Harris County's records for their clock error", () => {
-    const hct = quality.filter((r) => r.id.endsWith("-hct"));
-    expect(hct).toHaveLength(17);
-    expect(hct.every((r) => !r.accepted && r.reason === "timing")).toBe(true);
+  test.each([
+    ["Harris County", "-hct", 17],
+    ["South Florida Water Management District", "-sfwmd", 43],
+    ["TICON's California contributor", "-cm", 12],
+  ])("rejects %s's records for their clock error", (_, suffix, count) => {
+    const records = quality.filter((r) => r.id.endsWith(suffix));
+    expect(records).toHaveLength(count);
+    expect(records.every((r) => !r.accepted && r.reason === "timing")).toBe(
+      true,
+    );
+  });
+
+  test("rejects CRMS's records, whose constants miss their own gauges", () => {
+    const records = quality.filter((r) => r.id.endsWith("-crms"));
+    expect(records).toHaveLength(328);
+    expect(
+      records.every((r) => !r.accepted && r.reason === "observations"),
+    ).toBe(true);
+  });
+
+  describe("clock timing of every source", async () => {
+    const records = await loadAllStations();
+    const timings = [
+      ...sourceTimings(
+        records,
+        measureClocks(records, (s) => !checkConstituents(s)),
+      ).values(),
+    ];
+
+    test("lists each source whose timing shows a clock error", () => {
+      // A source found here belongs in CLOCK_ERROR_SOURCES, with its evidence.
+      const unlisted = timings.filter(
+        (t) =>
+          timingShowsClockError(t) &&
+          !(t.ticon && CLOCK_ERROR_SOURCES[t.source]) &&
+          !(t.ticon && OBSERVATION_ERROR_SOURCES[t.source]),
+      );
+      expect(unlisted.map((t) => t.source)).toEqual([]);
+    });
+
+    test("still times each listed source as off", () => {
+      // A listed source that times as right needs its listing looked at again.
+      const cleared = timings.filter(
+        (t) =>
+          t.ticon &&
+          CLOCK_ERROR_SOURCES[t.source] &&
+          Math.abs(t.median) < SOURCE_CLOCK_SHIFT,
+      );
+      expect(cleared.map((t) => t.source)).toEqual([]);
+    });
+  });
+
+  test("rejects USGS's Puerto Rico records kept in local time", () => {
+    const timing = quality.filter(
+      (r) => r.id.endsWith("-usgs") && r.reason === "timing",
+    );
+    expect(timing.map((r) => r.id)).toEqual([
+      "ticon/cano_boqueron_no3_at_boqueron_cabo_rojo_pr-50129935-usa-usgs",
+      "ticon/laguna_bahia_mosquito_no1_vieques_pr-50231500-usa-usgs",
+    ]);
+  });
+
+  test("finds no clock error in a source that publishes on UTC", () => {
+    const timing = quality.filter(
+      (r) =>
+        r.reason === "timing" &&
+        /-(noaa|uhslc_fd|uhslc_rq|jodc_jma|cmems|nhs)$/.test(r.id),
+    );
+    expect(timing.map((r) => r.id)).toEqual([]);
   });
 
   test("points every duplicate at a published record", () => {
@@ -720,8 +799,8 @@ describe("seasonal dominance", () => {
   });
 
   test("labels independently of the rejection verdict", () => {
-    expect(labelled.filter((q) => q.accepted)).toHaveLength(481);
-    expect(labelled.filter((q) => !q.accepted)).toHaveLength(521);
+    expect(labelled.filter((q) => q.accepted)).toHaveLength(387);
+    expect(labelled.filter((q) => !q.accepted)).toHaveLength(615);
   });
 
   test("is a different question from the contamination gate", () => {

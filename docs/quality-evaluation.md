@@ -44,7 +44,8 @@ These checks are pass or fail. A record that fails any of them is rejected and g
 | Check                  | Rejects a record when                                        | Basis                    |
 | ---------------------- | ------------------------------------------------------------ | ------------------------ |
 | Position               | it sits at the (0°, 0°) placeholder                          | Engineering choice       |
-| Clock error            | its source's times are off by a measured amount              | Measured on this data    |
+| Observed tide          | its source's constants miss its gauges' own observations     | Measured on this data    |
+| Clock error            | it or its source runs off nearby authoritative gauges        | Measured on this data    |
 | Datum consistency      | its datums contradict their definitions                      | NOAA and IHO definitions |
 | Tidal range            | its mean range is under 2 cm, modeled for observed TICON     | Engineering choice       |
 | Superseded relay       | it relays a gauge whose operator publishes its own constants | Editorial choice         |
@@ -59,17 +60,53 @@ These checks are pass or fail. A record that fails any of them is rejected and g
 
 **Limitations.** It catches only that one placeholder. Swapped latitude and longitude, a dropped sign, or a coarse rounding all pass. Whether a position is in water is checked separately, against the coastline, and is not part of this evaluation.
 
+### Observed tide
+
+**What it catches.** A source whose constants don't predict its own gauges. Constants analyzed from the wrong series, or analyzed wrongly, put the wrong tide at the gauge, early or late and too large or too small.
+
+**Rejected** when a TICON record comes from a source listed in `OBSERVATION_ERROR_SOURCES`, with the measurement that put it there:
+
+- Louisiana's Coastwide Reference Monitoring System (`crms`). For each gauge, one time shift is fitted, as under [Clock error](#clock-error), between TICON's constants and a fit of a year of the gauge's own hourly values from [Stillwell](https://github.com/openwatersio/stillwell), which keeps CPRA's records in UTC. Of the 111 records whose M2, S2, K1 and O1 amount to 5 cm or more and whose gauge has a 2015 series, 13 come within 25% of the gauge's own tide, as a vector difference across those four. The rest are off in amplitude by up to a factor of 100 and in time from 13 hours early to 11 hours late, within 30 minutes of the same shift against 2015 and 2019 at 82 of the 87 with K1 of 5 cm or more. The times TICON was given are right: GESLA's CRMS series, which TICON analyzed, are CPRA's values at the same UTC hours, winter and summer, at 38 of the 45 gauges both hold for 2015. TICON's USGS records of the same coast's marshes, by the same comparison, agree in amplitude within 20% at 41 of 49 gauges and run a median 6 minutes late.
+
+**Basis.** A comparison against each gauge's own observations. A source is listed by hand, from that comparison. The 13 CRMS records that come close to their own gauges are rejected with the rest: where CRMS's amplitudes agree, its constants still run about 50 minutes early.
+
+**Limitations.** Only a source someone has compared with its observations is listed, and the comparison runs outside this repository. A source that fails it at some gauges and not others is listed whole.
+
 ### Clock error
 
-**What it catches.** A source whose record times are wrong. A harmonic analysis of records stamped in the wrong time zone, or in local time that shifts with daylight saving, fits the right tide at the wrong time, and its predictions put high and low water early or late by that amount.
+**What it catches.** Records whose times are wrong. A harmonic analysis of records stamped in the wrong time zone, or in local time that shifts with daylight saving, fits the right tide at the wrong time, and its predictions put high and low water early or late by that amount. A clock error shifts every constituent by the same minutes and leaves the amplitudes alone, which is how it differs from a tide delayed by the water it travels through.
 
-**Rejected** when a TICON record comes from a source listed in `CLOCK_ERROR_SOURCES`, with the measurement that put it there:
+**Measured** by timing each record that is not from an authoritative source against the authoritative gauges within 10 km whose M2 and K1 amplitudes are each at least 80% of the larger of the pair. Against each gauge, one time shift is fitted across M2, S2, N2, K1 and O1, on a one-minute grid out to 13 hours either way, weighting each constituent by its amplitude. The diurnal constituents keep a half-day error, which a semidiurnal tide hides, from passing as none. A pair whose phases the shift leaves more than 12° from explaining, as an amplitude-weighted root mean square, times nothing, and an authoritative record that fails the [essential constituents](#essential-constituents) check times nothing. A record's shift is the median over the gauges timing it.
 
-- Harris County Flood Control District (`hct`). Against the nearest NOAA or USGS gauge within 5 km, its 9 comparable records run a median 44 minutes late on M2 (23 to 71 minutes) and about 30 minutes late on K1 and O1. USGS (591 pairs) and California's Department of Water Resources (97 pairs) run within a minute by the same comparison. The other 8 Harris County records have no NOAA or USGS gauge within 5 km to compare with and are rejected with their source. Every Harris County record has a NOAA harmonic station within 15 km with about the same range.
+**Rejected** when any of these holds:
 
-**Basis.** A comparison against independent gauges on this data. A source is listed by hand, from evidence such as the flags described under [Disagreeing duplicates](#disagreeing-duplicates).
+- **Its source's clock is measured as off.** The source is listed in `CLOCK_ERROR_SOURCES`, with its measurement, or at least 3 of its gauges are timed and at least two-thirds of them run off by 20 minutes or more in the direction of their median. The records of one TICON gauge count as one gauge, at their median. Every record of the source is rejected, timed or not. A source is a TICON contributor, or a source imported directly, kept apart where the two share a name. A source listed under [Observed tide](#observed-tide) isn't judged here: its wrong constants run off its neighbors with no clock to blame, as CRMS's do at 5 of its 7 timed gauges.
+- **It keeps local time.** The record runs off by 2 hours or more, within an hour of its time zone's standard offset from UTC.
 
-**Limitations.** A clock error in a single record, rather than a whole source, is caught only when it is merged with a record that has the right time, and the flag does not say which of the two is wrong.
+On this data, the sources with timed gauges show:
+
+| Source                       | Timed gauges | Median shift | Off by 20 min or more the same way |
+| ---------------------------- | -----------: | -----------: | ---------------------------------: |
+| South Florida WMD (`sfwmd`)  |           26 |     −277 min |                               100% |
+| Harris County FCD (`hct`)    |           11 |      +38 min |                               100% |
+| Louisiana CRMS (`crms`)      |            7 |      −68 min |                                71% |
+| NC DEM (`ncdem`)             |            8 |       +2 min |                                38% |
+| California DWR (`cdwr`)      |           51 |      +12 min |                                29% |
+| USGS (`usgs`)                |          227 |       +3 min |                                23% |
+| `cm`, California             |            2 |     −444 min |                               100% |
+| NOAA, UHSLC, JMA, CMEMS, NHS |          831 |  0 to +1 min |                           1 of 831 |
+
+The sources in `CLOCK_ERROR_SOURCES` are listed with their measurements in [packages/stations/filtering.ts](../packages/stations/filtering.ts): Harris County, South Florida, whose records also run Eastern Standard Time against their own gauges' observations, and `cm`, whose two timed records run near Pacific Standard Time and whose others run hours early against USGS and California DWR gauges. A listed source stays rejected if the gauges that timed it are withdrawn, and its records' issues add its timing against the gauges near it as the check measures it at each run. `npm test` fails when a source's timing shows a clock error and the source isn't listed, or when a listed source's timing no longer runs off, so each listing is made, and looked at again, by hand with its evidence. CRMS is rejected under [Observed tide](#observed-tide). USGS's Vieques (247 min early) and Boquerón (226 min early) gauges in Puerto Rico, on Atlantic Standard Time (UTC−4), are its only records rejected for local time.
+
+**Basis.** The thresholds are this project's definitions, set from these measurements. Every pair from a source with a measured clock error is explained within 6.4°, and 99% of pairs from NOAA, UHSLC, JMA, CMEMS and NHS records within 11.3°. Among sources with neither a clock error nor wrong constants, real delays up creeks and marshes put at most 38% of a source's gauges past 20 minutes the same way. Of the records not known to have a clock error or wrong constants, the largest shift is 96 minutes either way: USGS's Manatee Bay Creek late, and TICON's analysis of NOAA's Lake Worth Pier early.
+
+**Limitations.**
+
+- Only a record with an authoritative gauge within 10 km carrying the same tide, and with all five of M2, S2, N2, K1 and O1, is timed. An untimed record from a source with no measured clock error passes, as does the City of Venice record described under [Disagreeing duplicates](#disagreeing-duplicates), which has only relays to compare with.
+- The authoritative gauges are assumed right. A clock error in one would show as every record near it running off.
+- A source with fewer than 3 timed gauges is judged only by a listing. The evidence a listing adds to the timing, such as South Florida's own observations or `cm`'s comparison with USGS and California DWR gauges, is measured outside this repository. `cm`'s other records, at Goleta, Watsonville, Los Osos, Morro Bay and Rowland Bridge, are rejected with their source, untimed.
+- A single record's clock error is caught only as local time. One that is off by less than 2 hours, or far from its time zone's offset, passes: UHSLC's Apia 401a runs 115 minutes late (#290) and is withheld only as a duplicate of Apia 401. Local time labeled UTC can't be caught within 2 hours of UTC, from the Azores to Central Europe and West Africa, nor beyond 13 hours, in Kiribati's Line Islands.
+- A real delay of hours that lands near a record's standard offset would read as local time. Of the records from sources with no measured clock error, the nearest to that rule, NHS's Stavanger, would have to run another 116 minutes off.
 
 ### Datum consistency
 
@@ -266,7 +303,7 @@ The distance between two records is the shortest between any of the positions re
 
 Two merged reference stations can still disagree. When their M2 constants differ, as a vector, by more than 15% of the larger amplitude and by more than the amplitude tolerance, both records name the other in `issues` and give the difference as time. The 15% is the 95th percentile of the difference between NOAA's own M2 and TICON's reanalysis of the same gauge across 447 NOAA gauges, so a larger difference is more than one gauge analyzed twice shows. It is this project's definition, derived from those pairs.
 
-The pair stays merged. Where the difference is the same time offset in M2, S2, K1 and O1, one record's clock is off, and publishing both would show a wrong answer beside the right one. The City of Venice record runs 46 minutes from ISPRA's and Copernicus's, which agree with each other. The Harris County Flood Control District records (`hct`) run 23 to 71 minutes behind every NOAA and USGS gauge near them, where USGS and California's records run within a minute; the [clock error](#clock-error) check rejects them. The flag does not say which record is wrong; that takes a third, independent record. Nor is an even lag proof of a clock error: a gauge moved behind a breakwater lags too. At Settlement Point, Grand Bahama, UHSLC moved its gauge in 2002 from NOAA's open-coast site into the Bootle Bay basin 2.6 km away, and its record runs about 90 minutes behind NOAA's. There the semidiurnal amplitudes are 17% lower and M4 six times larger, which a basin does and a clock cannot, so both records are right for their own water and both are published. A clock error shifts every constituent by the same minutes and leaves amplitudes and M4 alone, as at Harris County's Houston Ship Channel gauge, 0.4 km from NOAA's Lynchburg Landing.
+The pair stays merged. Where the difference is the same time offset in M2, S2, K1 and O1, one record's clock is off, and publishing both would show a wrong answer beside the right one. The City of Venice record runs 46 minutes from ISPRA's and Copernicus's, which agree with each other. The Harris County Flood Control District records (`hct`) run 26 to 72 minutes behind the NOAA gauges near them, where USGS's run a median 3 minutes late; the [clock error](#clock-error) check rejects them. The flag does not say which record is wrong; that takes a third, independent record. Nor is an even lag proof of a clock error: a gauge moved behind a breakwater lags too. At Settlement Point, Grand Bahama, UHSLC moved its gauge in 2002 from NOAA's open-coast site into the Bootle Bay basin 2.6 km away, and its record runs about 90 minutes behind NOAA's. There the semidiurnal amplitudes are 17% lower and M4 six times larger, which a basin does and a clock cannot, so both records are right for their own water and both are published. A clock error shifts every constituent by the same minutes and leaves amplitudes and M4 alone, as at Harris County's Houston Ship Channel gauge, 0.4 km from NOAA's Lynchburg Landing.
 
 **Limitations.** A real difference across a short distance is flagged the same way: on the Loxahatchee River, two docks 356 m apart differ by about 22 minutes, and the record not kept is lost. The record kept is still the better-ranked one, and score rewards record length, so a long analysis that ended decades ago can win over a short recent one that disagrees with it.
 
@@ -299,7 +336,7 @@ npm run report:quality -w packages/stations
 | Field               | Meaning                                                                                                                                        |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `accepted`          | Whether the record is published.                                                                                                               |
-| `reason`            | `coordinates`, `timing`, `datum`, `range`, `superseded`, `constituents`, `seasonal`, or `duplicate`. Absent when accepted.                     |
+| `reason`            | `coordinates`, `observations`, `timing`, `datum`, `range`, `superseded`, `constituents`, `seasonal`, or `duplicate`. Absent when accepted.     |
 | `redundant`         | For a duplicate, or a relay superseded by its operator's record, the id of the record published for its gauge.                                 |
 | `seasonal_dominant` | `true` for the seasonal label.                                                                                                                 |
 | `score`             | The composite score. 0 for a record rejected by a check; a duplicate keeps the score it was compared on.                                       |
@@ -309,13 +346,14 @@ npm run report:quality -w packages/stations
 ### Order of operations
 
 1. `loadAllStations` reads every JSON file under `data/`, sorting directories and file names, so records are processed in record-id order.
-2. `checkGates` runs `checkCoordinates`, `checkTiming`, `checkDatumOrdering`, `checkTidalRange`, `checkConstituents` and `checkSeasonalContamination` on every record. `checkSuperseded` then runs on each relay, using those results for the operator's record, and takes its place after the range check. The first failure sets `reason`, and every failure's message goes into `issues`. Then `checkSeasonalDominance` and five factors are computed.
-3. `scoreCoverage` runs once every record has been checked, against the records that passed.
-4. `computeCompositeScore` sets the score of each record that passed the checks.
-5. `countSubordinates` counts each reference's accepted subordinates. The count is not updated as duplicates are rejected.
-6. `deduplicateByGauge` merges TICON records by `gaugeKey`, keeping the first record of each group in `precedence` order. The key strips the provider suffix and segment letter, and corrects Roseau's mislabeled country code.
-7. `deduplicate` ranks the survivors by `precedence`, and each record still accepted absorbs the later records that `areDuplicates` matches to it.
-8. `resolveRedundant` points each duplicate at the record published for its gauge.
+2. `clockErrors` times each record that isn't authoritative against the authoritative gauges near it.
+3. `checkGates` runs `checkCoordinates`, `checkObservations`, the clock errors, `checkDatumOrdering`, `checkTidalRange`, `checkConstituents` and `checkSeasonalContamination` on every record. `checkSuperseded` then runs on each relay, using those results for the operator's record, and takes its place after the range check. The first failure sets `reason`, and every failure's message goes into `issues`. Then `checkSeasonalDominance` and five factors are computed.
+4. `scoreCoverage` runs once every record has been checked, against the records that passed.
+5. `computeCompositeScore` sets the score of each record that passed the checks.
+6. `countSubordinates` counts each reference's accepted subordinates. The count is not updated as duplicates are rejected.
+7. `deduplicateByGauge` merges TICON records by `gaugeKey`, keeping the first record of each group in `precedence` order. The key strips the provider suffix and segment letter, and corrects Roseau's mislabeled country code.
+8. `deduplicate` ranks the survivors by `precedence`, and each record still accepted absorbs the later records that `areDuplicates` matches to it.
+9. `resolveRedundant` points each duplicate at the record published for its gauge.
 
 ### Constants
 
@@ -343,7 +381,18 @@ npm run report:quality -w packages/stations
 | `MAX_OFFSET_HEIGHT_DELTA`             | 0.1                                                                | Duplicate subordinates                              |
 | `MAX_OFFSET_TIME_DELTA`               | 10 min                                                             | Duplicate subordinates                              |
 | `MAX_PROVENANCE_KM`                   | 10 km                                                              | Superseded relay, merge report                      |
-| `CLOCK_ERROR_SOURCES`                 | `hct`                                                              | Clock error                                         |
+| `OBSERVATION_ERROR_SOURCES`           | `crms`                                                             | Observed tide                                       |
+| `CLOCK_ERROR_SOURCES`                 | `cm`, `hct`, `sfwmd`                                               | Clock error                                         |
+| `CLOCK_CONSTITUENTS`                  | M2, S2, N2, K1, O1                                                 | Clock error                                         |
+| `CLOCK_MAX_SHIFT`                     | 13 h                                                               | Clock error                                         |
+| `CLOCK_MAX_RESIDUAL`                  | 12°                                                                | Clock error                                         |
+| `CLOCK_NEIGHBOR_KM`                   | 10 km                                                              | Clock error                                         |
+| `CLOCK_AMPLITUDE_RATIO`               | 0.8                                                                | Clock error                                         |
+| `SOURCE_CLOCK_SHIFT`                  | 20 min                                                             | Clock error                                         |
+| `SOURCE_CLOCK_SHARE`                  | 2/3                                                                | Clock error                                         |
+| `SOURCE_CLOCK_GAUGES`                 | 3                                                                  | Clock error                                         |
+| `RECORD_CLOCK_SHIFT`                  | 120 min                                                            | Clock error                                         |
+| `ZONE_CLOCK_WINDOW`                   | 60 min                                                             | Clock error                                         |
 | `jurisdiction` (in `metadata.yaml`)   | NOAA: US and its territories                                       | Choosing the record to keep                         |
 | `SAME_GAUGE_M2_DIFFERENCE`            | 0.15                                                               | Disagreeing duplicates                              |
 
