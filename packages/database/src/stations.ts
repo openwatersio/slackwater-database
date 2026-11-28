@@ -36,6 +36,20 @@ const CHS_FIT_TIER_NAMES: Record<number, ChsFitData["tier"]> = {
   [ChsFitTier.Online]: "online",
 };
 
+/** A set this reader doesn't know reads as IHO's, as readers released before it did. */
+function nodeCorrectionsOf(
+  value: FbsNodeCorrections | undefined,
+): Station["node_corrections"] {
+  switch (value) {
+    case FbsNodeCorrections.Schureman:
+      return "schureman";
+    case FbsNodeCorrections.Foreman:
+      return "foreman";
+    default:
+      return "iho";
+  }
+}
+
 export function qualityFilter(station: Station): boolean {
   return station.quality?.accepted ?? true;
 }
@@ -159,10 +173,9 @@ export function createStationReader(db: Root) {
         { length: source.constituentDefinitionsLength() },
         (_, j) => toDefinition(source.constituentDefinitions(j)!),
       );
+      const formulas = nodeCorrectionsOf(source.nodeCorrections());
       sources.set(name, {
-        ...(source.nodeCorrections() === FbsNodeCorrections.Schureman
-          ? { node_corrections: "schureman" as const }
-          : {}),
+        ...(formulas !== "iho" ? { node_corrections: formulas } : {}),
         ...(own.length ? { constituent_definitions: own } : {}),
       });
     }
@@ -170,10 +183,14 @@ export function createStationReader(db: Root) {
   }
 
   function readNodeCorrections(index: number): Station["node_corrections"] {
-    const nodeCorrections = db.stations(index)!.source()?.nodeCorrections();
-    return nodeCorrections === FbsNodeCorrections.Schureman
-      ? "schureman"
-      : "iho";
+    return nodeCorrectionsOf(db.stations(index)!.source()?.nodeCorrections());
+  }
+
+  function readNodeCorrectionsLatitude(index: number): number | undefined {
+    const record = db.stations(index)!;
+    return nodeCorrectionsOf(record.source()?.nodeCorrections()) === "foreman"
+      ? record.latitude()
+      : undefined;
   }
 
   const indexCache = new Map<string, number>();
@@ -633,6 +650,11 @@ export function createStationReader(db: Root) {
         enumerable: true,
         configurable: true,
         get: () => readNodeCorrections(dataIndex(station)),
+      },
+      node_corrections_latitude: {
+        enumerable: true,
+        configurable: true,
+        get: () => readNodeCorrectionsLatitude(dataIndex(station)),
       },
     });
 

@@ -358,6 +358,20 @@ class StationDatabaseTest {
     }
 
     @Test
+    fun readsForemanCorrectionsWithTheLatitudeOfTheStationWhoseConstantsArePredicted() {
+        assertNull(db.require("test/reference").nodeCorrectionsLatitude)
+        val foreman = StationDatabase.open(File(System.getProperty("foremanFixture")))
+        val reference = foreman.require("test/reference")
+        assertEquals(Station.NodeCorrections.FOREMAN, reference.nodeCorrections)
+        assertEquals(47.6, assertNotNull(reference.nodeCorrectionsLatitude), 1e-9)
+        // A subordinate takes its reference's latitude, not its own.
+        val subordinate = foreman.require("test/subordinate")
+        assertEquals(47.7, subordinate.latitude, 1e-9)
+        assertEquals(Station.NodeCorrections.FOREMAN, subordinate.nodeCorrections)
+        assertEquals(47.6, assertNotNull(subordinate.nodeCorrectionsLatitude), 1e-9)
+    }
+
+    @Test
     fun readsAFileWrittenBeforeDefinitionsAsLeavingThemToTheEngine() {
         val old = StationDatabase.open(File(System.getProperty("preMinorFixture")))
         assertNull(old.require("test/current").constituentDefinitions)

@@ -176,6 +176,119 @@ describe("constituent definitions", () => {
     expect(db.byId("b/1")!.node_corrections).toBe("schureman");
   });
 
+  test("Foreman's corrections read with the latitude of the station whose constants are predicted", async () => {
+    const sub = {
+      type: "subordinate" as const,
+      latitude: 61,
+      offsets: {
+        reference: "k/ref",
+        height: { high: 1, low: 1, type: "ratio" as const },
+        time: { high: 0, low: 0 },
+      },
+    };
+    const constituents = {
+      ...shared,
+      sources: new Map([
+        ["Kartverket", { node_corrections: "foreman" as const }],
+      ]),
+    };
+    const db = await loadStations(
+      build(
+        [
+          station("k/ref", "Kartverket", ["M2"], { latitude: 60.4 }),
+          station("k/sub", "Kartverket", [], sub),
+          station("n/sub", "NOAA", [], sub),
+          station("n/1", "NOAA", ["M2"], { latitude: 47 }),
+        ],
+        constituents,
+      ),
+    );
+    for (const id of ["k/ref", "k/sub", "n/sub"]) {
+      expect(db.byId(id)!.node_corrections).toBe("foreman");
+      expect(db.byId(id)!.node_corrections_latitude).toBe(60.4);
+    }
+    expect(db.byId("n/1")!.node_corrections).toBe("iho");
+    expect(db.byId("n/1")!.node_corrections_latitude).toBeUndefined();
+    expect(db.constituents.sources?.get("Kartverket")).toEqual({
+      node_corrections: "foreman",
+    });
+    expect(db.constituents.sources?.get("NOAA")).toEqual({});
+
+    const rebuilt = await loadStations(
+      buildDatabase(db.all, {
+        credits: new Map([
+          ["Kartverket", null],
+          ["NOAA", null],
+        ]),
+        constituents: db.constituents,
+      }),
+    );
+    expect(rebuilt.byId("k/sub")!.node_corrections).toBe("foreman");
+    expect(rebuilt.byId("k/sub")!.node_corrections_latitude).toBe(60.4);
+  });
+
+  test("a Foreman subordinate is refused without its reference, whose latitude it takes", async () => {
+    const db = await loadStations(
+      build(
+        [
+          station("k/ref", "Kartverket", ["M2"], { latitude: 60.4 }),
+          station("k/sub", "Kartverket", [], {
+            type: "subordinate",
+            latitude: 61,
+            offsets: {
+              reference: "k/ref",
+              height: { high: 1, low: 1, type: "ratio" },
+              time: { high: 0, low: 0 },
+            },
+          }),
+        ],
+        {
+          ...shared,
+          sources: new Map([
+            ["Kartverket", { node_corrections: "foreman" as const }],
+          ]),
+        },
+      ),
+    );
+    expect(() =>
+      buildDatabase(
+        db.all.filter((s) => s.id === "k/sub"),
+        {
+          credits: new Map([["Kartverket", null]]),
+          constituents: db.constituents,
+        },
+      ),
+    ).toThrow(
+      "k/sub: its reference k/ref is left out, and Foreman's nodal corrections take the reference's latitude",
+    );
+  });
+
+  test("a current subordinate of a Foreman source is refused", () => {
+    expect(() =>
+      build(
+        [
+          station("k/ref", "Kartverket", ["M2"], { latitude: 60.4 }),
+          station("k/cur", "Kartverket", [], {
+            latitude: 61,
+            current: {
+              flood_direction: 90,
+              ebb_direction: 270,
+              offsets: { reference: "k/ref", flood_speed_ratio: 0.8 },
+            },
+          }),
+        ],
+        {
+          ...shared,
+          sources: new Map([
+            ["Kartverket", { node_corrections: "foreman" as const }],
+          ]),
+        },
+      ),
+    ).toThrow(
+      "k/cur: a current subordinate can't take its reference's latitude, which Foreman's nodal corrections need",
+    );
+  });
+
   test("a file written before definitions has none to read", async () => {
     const db = await loadStations(
       new Uint8Array(

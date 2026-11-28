@@ -33,6 +33,7 @@ import {
   type Datums,
 } from "@slackwater/datums";
 import { DATA_DIR } from "./station.ts";
+import { predictionOptions } from "./sources.ts";
 import type { StationData } from "@slackwater/database";
 
 const TICON_DIR = join(DATA_DIR, "ticon");
@@ -129,7 +130,11 @@ async function main() {
     pairs++;
 
     // Harmonic (old method) — synthesize from the station's constituents.
-    const harmonic = computeDatums(station.harmonic_constituents, {});
+    const harmonic = computeDatums(
+      station.harmonic_constituents,
+      {},
+      predictionOptions(station),
+    );
     const hRels = relationships(harmonic.datums);
     const published = relationships(station.datums);
     if (hRels)
@@ -158,6 +163,7 @@ async function main() {
       const obs = computeDatumsFromObservations(
         parseGeslaSamples(text),
         station.harmonic_constituents,
+        predictionOptions(station),
       );
       const oRels = obs && relationships(obs.datums);
       if (oRels && hRels) {
@@ -222,10 +228,15 @@ async function main() {
       console.log(`${id}: missing`);
       continue;
     }
-    const harmonic = computeDatums(station.harmonic_constituents, {});
+    const harmonic = computeDatums(
+      station.harmonic_constituents,
+      {},
+      predictionOptions(station),
+    );
     const obs = computeDatumsFromObservations(
       parseGeslaSamples(text),
       station.harmonic_constituents,
+      predictionOptions(station),
     );
     const fmt = (d?: Datums | null) =>
       d

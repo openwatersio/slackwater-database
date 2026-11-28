@@ -5,3 +5,8 @@ authoritative: true
 # Kartverket's terms ask for "©Kartverket" with a link to kartverket.no. Keep in
 # step with the README's Attribution section.
 credit: "Source: © Kartverket / Norwegian Mapping Authority, Hydrographic Service, https://www.kartverket.no"
+# Kartverket analyzes with t_tide/UTide, whose nodal corrections are Foreman's,
+# taken at each gauge's latitude. Against Kartverket's own predictions, hourly
+# RMS is 0.5 to 6.8 mm with Foreman's and 5.0 to 10.3 mm with IHO's
+# (npm run validate -w sources/kartverket).
+node_corrections: foreman

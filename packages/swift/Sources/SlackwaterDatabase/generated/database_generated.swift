@@ -71,14 +71,17 @@ public enum Slackwater_DatumFrame: UInt8, Enum, Verifiable {
 
 
 ///  The nodal correction formulas a source's constants were analyzed with.
+///  Foreman's take the latitude of the station whose constants are predicted:
+///  a subordinate's reference, otherwise the station itself.
 public enum Slackwater_NodeCorrections: UInt8, Enum, Verifiable {
   public typealias T = UInt8
   public static var byteSize: Int { return MemoryLayout<UInt8>.size }
   public var value: UInt8 { return self.rawValue }
   case iho = 0
   case schureman = 1
+  case foreman = 2
 
-  public static var max: Slackwater_NodeCorrections { return .schureman }
+  public static var max: Slackwater_NodeCorrections { return .foreman }
   public static var min: Slackwater_NodeCorrections { return .iho }
 }
 

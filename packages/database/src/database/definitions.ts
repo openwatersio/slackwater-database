@@ -20,6 +20,7 @@ import type {
 export const NODE_CORRECTIONS: Record<NodeCorrections, FbsNodeCorrections> = {
   iho: FbsNodeCorrections.IHO,
   schureman: FbsNodeCorrections.Schureman,
+  foreman: FbsNodeCorrections.Foreman,
 };
 
 /** Every name the definitions mention, so the name table can index them. */
@@ -38,8 +39,9 @@ export function definitionNames(constituents: DatabaseConstituents): string[] {
 }
 
 /**
- * Whether a source some station uses has its own definitions or Schureman's
- * formulas, which change its predictions. Sources no station uses don't count.
+ * Whether a source some station uses has its own definitions or formulas
+ * other than IHO's, which change its predictions. Sources no station uses
+ * don't count.
  */
 export function sourcesChangePredictions(
   stations: StationInput[],
@@ -106,10 +108,31 @@ export function checkDefinitions(
     shared.size > 0 || sourcesChangePredictions(stations, constituents);
   const ids = new Set(stations.map((s) => s.id));
   for (const s of stations) {
+    // Readers don't resolve a current subordinate's reference, so Foreman's
+    // formulas would take its own latitude rather than its reference's.
+    if (
+      s.current?.offsets &&
+      constituents.sources?.get(s.source?.name ?? "")?.node_corrections ===
+        "foreman"
+    )
+      throw new Error(
+        `${s.id}: a current subordinate can't take its reference's latitude, which Foreman's nodal corrections need`,
+      );
     // Readers take a subordinate's constituents from its reference when the
     // reference is in the file, so its own record is never read for them.
     if (s.type === "subordinate" && s.offsets && ids.has(s.offsets.reference))
       continue;
+    // Without its reference, a subordinate predicts from its own record, at
+    // its own latitude rather than the one the constants were analyzed at.
+    if (
+      s.type === "subordinate" &&
+      s.offsets &&
+      constituents.sources?.get(s.source?.name ?? "")?.node_corrections ===
+        "foreman"
+    )
+      throw new Error(
+        `${s.id}: its reference ${s.offsets.reference} is left out, and Foreman's nodal corrections take the reference's latitude; keep the reference in the file`,
+      );
     const own = s.source ? sources.get(s.source.name) : undefined;
     const stored = [
       ...(s.harmonic_constituents ?? []),

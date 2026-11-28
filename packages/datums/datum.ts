@@ -5,6 +5,7 @@ import {
 } from "@slackwater/engine";
 import {
   prepareDatumObservations,
+  type GapPredictionOptions,
   type PreparedDatumObservations,
 } from "./observations.ts";
 
@@ -386,8 +387,9 @@ export interface ObservedTidalDatumsResult extends TidalDatumsResult {
 export function computeDatumsFromObservations(
   samples: Sample[],
   constituents: HarmonicConstituent[] = [],
+  options: GapPredictionOptions = {},
 ): ObservedTidalDatumsResult | null {
-  const prepared = prepareDatumObservations(samples, constituents);
+  const prepared = prepareDatumObservations(samples, constituents, options);
   if (!prepared) return null;
   const observedMSL = mean(prepared.samples.map((p) => p.level));
   const datums = computeDatumsFromExtremes(prepared.samples, observedMSL);

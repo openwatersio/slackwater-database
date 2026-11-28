@@ -37,7 +37,8 @@ const station = (overrides: Overrides = {}): StationData => {
     type: "reference",
     chart_datum: "LLWLT",
     source: {
-      name: "Test",
+      // A declared source: regeneration predicts with its metadata's formulas.
+      name: "TICON-4",
       id: "test",
       url: "https://example.com",
       published_harmonics: true,

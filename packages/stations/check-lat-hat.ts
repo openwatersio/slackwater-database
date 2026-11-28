@@ -13,8 +13,9 @@
 
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
-import { computeDatums } from "@slackwater/datums";
+import { computeDatums, toFixed } from "@slackwater/datums";
 import { DATA_DIR } from "./station.ts";
+import { predictionOptions } from "./sources.ts";
 import type { StationData } from "@slackwater/database";
 
 const NOAA_DIR = join(DATA_DIR, "noaa");
@@ -60,20 +61,32 @@ async function main() {
   );
 
   const errors = { LAT: [] as number[], HAT: [] as number[] };
+  let backfilled = 0;
   const worst: { name: string; lat: number; hat: number }[] = [];
 
   for (const station of sample) {
     const d = station.datums!;
+    // Predicted the way the backfill predicts, with the source's own set.
     const { datums: computed } = computeDatums(
       station.harmonic_constituents,
       {},
+      predictionOptions(station),
     );
     if (computed["LAT"] === undefined || computed["HAT"] === undefined)
       continue;
     const lat = computed["LAT"] + d["MSL"]! - d["LAT"]!;
     const hat = computed["HAT"] + d["MSL"]! - d["HAT"]!;
-    errors.LAT.push(Math.abs(lat));
-    errors.HAT.push(Math.abs(hat));
+    // Nothing in a record marks a backfilled value, but the backfill
+    // reproduces its own to the stored millimetre, which NOAA's doesn't. It
+    // can fill one of the two, so each is judged on its own.
+    const ours = (key: "LAT" | "HAT") =>
+      toFixed(computed[key]! + d["MSL"]!, 3) === d[key];
+    if (ours("LAT") && ours("HAT")) {
+      backfilled++;
+      continue;
+    }
+    if (!ours("LAT")) errors.LAT.push(Math.abs(lat));
+    if (!ours("HAT")) errors.HAT.push(Math.abs(hat));
     worst.push({ name: station.name, lat, hat });
   }
 
@@ -89,7 +102,9 @@ async function main() {
     );
   }
 
-  console.log("");
+  console.log(
+    `\nLeft out ${backfilled} whose pair the backfill wrote, and any single value it wrote.`,
+  );
   for (const key of ["LAT", "HAT"] as const) {
     const e = errors[key];
     console.log(

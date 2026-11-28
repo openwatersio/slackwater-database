@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { useStation, type Station } from "@slackwater/engine";
+import { sourceMetadata } from "@slackwater/stations";
 import {
   FIXTURES_DIR,
   refreshSnapshot,
@@ -232,6 +233,10 @@ export async function validate(fixtures = FIXTURES_DIR) {
       ),
     );
     const predictor = useStation({ ...station, id: `kartverket/${code}` });
+    // The formulas the source declares, as an app reading the database passes them.
+    const { node_corrections: nodeCorrections } = sourceMetadata(
+      station.source.name,
+    );
     const errors: { error: number }[] = [];
     const extremes: { timeErrorMinutes: number; heightError: number }[] = [];
     const check = (label: string, fn: () => unknown) => {
@@ -257,13 +262,18 @@ export async function validate(fixtures = FIXTURES_DIR) {
         start: new Date(request.window.start),
         end: new Date(request.window.end),
         datum: "MSL",
+        ...(nodeCorrections ? { nodeCorrections } : {}),
       };
       const label = request.window.start.slice(0, 10);
       if (request.datatype === "pre") {
         const points = compareSeries(
           provider,
           provider.map(({ time }) =>
-            predictor.getWaterLevelAtTime({ time, datum: "MSL" }),
+            predictor.getWaterLevelAtTime({
+              time,
+              datum: "MSL",
+              ...(nodeCorrections ? { nodeCorrections } : {}),
+            }),
           ),
         );
         const timeline = compareSeries(

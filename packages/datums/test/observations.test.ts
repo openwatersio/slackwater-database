@@ -89,6 +89,32 @@ describe("datum observation preparation", () => {
     for (const p of result.samples)
       expect(p.level).toBeCloseTo(expected[(+p.time - start) / 3600000]!, 9);
   });
+  test("fills gaps with the source's nodal formulas when given them", () => {
+    const options = { nodeCorrections: "schureman" as const };
+    const model = createTidePredictor(constituents, options);
+    const series = truth.map(({ time }) => ({
+      time,
+      level: 5 + model.getWaterLevelAtTime({ time }).level,
+    }));
+    // A three-hour gap every five days.
+    const masked = series.filter((p) => {
+      const h = Math.floor((+p.time - start) / 3600000);
+      return h % 120 < 24 || h % 120 >= 27;
+    });
+    const expected = new Map(series.map((p) => [+p.time, p.level]));
+    const error = (result: ReturnType<typeof prepareDatumObservations>) =>
+      Math.max(
+        ...result!.samples.map((p) =>
+          Math.abs(p.level - expected.get(+p.time)!),
+        ),
+      );
+    expect(
+      error(prepareDatumObservations(masked, constituents, options)),
+    ).toBeLessThan(1e-9);
+    expect(
+      error(prepareDatumObservations(masked, constituents)),
+    ).toBeGreaterThan(1e-6);
+  });
   test("reconstructs short gaps at the larger tides without selecting only smaller tides", () => {
     const masked = truth.filter(
       (p, i) =>

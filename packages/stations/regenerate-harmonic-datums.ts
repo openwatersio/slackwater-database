@@ -12,6 +12,7 @@ import {
 } from "../../sources/ticon/datums.ts";
 import { countryForRecord } from "./country.ts";
 import { DATA_DIR, pruneDatums } from "./station.ts";
+import { predictionOptions } from "./sources.ts";
 
 export type HarmonicDatumSource = "ticon" | "dmi" | "linz" | "jhod" | "jma";
 const SOURCES: HarmonicDatumSource[] = ["dmi", "jhod", "jma", "linz", "ticon"];
@@ -156,7 +157,10 @@ export async function regenerateDirectory(
     const { datums: computed } = computeDatums(
       station.harmonic_constituents,
       {},
-      source === "dmi" ? { offset: false } : {},
+      {
+        ...predictionOptions(station),
+        ...(source === "dmi" ? { offset: false } : {}),
+      },
     );
     const datums = mergeHarmonicDatums(source, station, computed);
     const disclaimers =

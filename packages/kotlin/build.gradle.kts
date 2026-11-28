@@ -28,10 +28,13 @@ tasks.test {
     // Declared as inputs as well as passed as paths, so a regenerated file
     // reruns the tests instead of leaving them up to date.
     val fixture = file("src/test/fixture.tcdb") // written by `npm run test:kotlin -w kotlin`'s pretest
+    val foremanFixture = file("src/test/fixture-foreman.tcdb") // written with the fixture
     val preMinorFixture = file("../database/test/fixtures/pre-minor-current.tcdb")
     inputs.file(fixture).withPropertyName("fixture")
+    inputs.file(foremanFixture).withPropertyName("foremanFixture")
     inputs.file(preMinorFixture).withPropertyName("preMinorFixture")
     systemProperty("fixture", fixture.absolutePath)
+    systemProperty("foremanFixture", foremanFixture.absolutePath)
     systemProperty("preMinorFixture", preMinorFixture.absolutePath)
     System.getenv("SLACKWATER_TCDB")?.let {
         inputs.file(it).withPropertyName("shippedDatabase")

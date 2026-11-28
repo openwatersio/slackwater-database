@@ -253,3 +253,22 @@ const out =
   );
 writeFileSync(out, bytes);
 console.log(`generated ${out}: ${bytes.length} bytes`);
+
+// The reference and its subordinate again, from a source with Foreman's nodal
+// corrections, which take the reference's latitude.
+const foremanStations = stations.filter((s) =>
+  ["test/reference", "test/subordinate"].includes(s.id),
+);
+const foreman = buildDatabase(foremanStations, {
+  credits: new Map([["Test Source", null]]),
+  constituents: databaseConstituents(foremanStations, (name) => ({
+    name,
+    authoritative: false,
+    credit: null,
+    node_corrections: "foreman",
+  })),
+  version: "0.0.0-fixture",
+});
+const foremanOut = out.replace(/\.tcdb$/, "-foreman.tcdb");
+writeFileSync(foremanOut, foreman);
+console.log(`generated ${foremanOut}: ${foreman.length} bytes`);

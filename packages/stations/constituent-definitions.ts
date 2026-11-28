@@ -1,6 +1,6 @@
 import {
   constituents as catalog,
-  defineConstituents,
+  createTidePredictor,
 } from "@slackwater/engine";
 import type {
   Coefficients,
@@ -23,7 +23,7 @@ import { sourceMetadata, type SourceMetadata } from "./sources.ts";
  * catalog line is stored once, under the catalog's name, with every alias the
  * catalog gives it, so a source's own definition of any spelling replaces it
  * whichever other stations the file holds. Throws on a name nothing defines, and
- * on a station whose definitions the engine would refuse.
+ * on a station whose definitions or nodal formulas the engine would refuse.
  */
 export function databaseConstituents(
   stations: StationInput[],
@@ -85,8 +85,11 @@ export function databaseConstituents(
         if (!mine.has(member)) needShared(member, d.name);
   }
 
-  // What each station's reader hands the engine, merged onto its catalog as
-  // the predictor does. One check per distinct set.
+  // What each station's reader hands the engine, with its source's nodal
+  // formulas, as an app predicts it. One check per distinct set. The engine
+  // refuses a catalog line Foreman's formulas don't cover only when the line
+  // comes from its own catalog, not from a copy passed as a definition, so
+  // the formulas are checked again with only the source's own definitions.
   const sharedIndex = definitionIndex(
     [...shared.values()],
     "shared definitions",
@@ -94,18 +97,37 @@ export function databaseConstituents(
   const checked = new Set<string>();
   for (const station of stations) {
     const names = [...new Set(stored(station))].sort();
-    const key = `${station.source?.name}\0${names.join("\0")}`;
+    const mine = station.source ? own.get(station.source.name)! : new Map();
+    const nodeCorrections = station.source
+      ? sources.get(station.source.name)!.node_corrections
+      : undefined;
+    // Foreman's formulas also depend on the latitude.
+    const key = `${station.source?.name}\0${names.join("\0")}${nodeCorrections === "foreman" ? `\0${station.latitude}` : ""}`;
     if (checked.has(key)) continue;
     checked.add(key);
-    const mine = station.source ? own.get(station.source.name)! : new Map();
+    const formulas = {
+      ...(nodeCorrections ? { nodeCorrections } : {}),
+      ...(nodeCorrections === "foreman" ? { latitude: station.latitude } : {}),
+    };
+    const constituents = names.map((name) => ({
+      name,
+      amplitude: 1,
+      phase: 0,
+    }));
     try {
-      defineConstituents(stationDefinitions(names, mine, sharedIndex), catalog);
+      createTidePredictor(constituents, {
+        definitions: stationDefinitions(names, mine, sharedIndex),
+        ...formulas,
+      });
+      if (nodeCorrections && nodeCorrections !== "iho")
+        createTidePredictor(constituents, {
+          definitions: [...new Set(mine.values())],
+          ...formulas,
+        });
     } catch (error) {
       throw new Error(
-        `${station.id}: the engine refuses its constituent definitions`,
-        {
-          cause: error,
-        },
+        `${station.id}: the engine refuses its constituent definitions or nodal formulas`,
+        { cause: error },
       );
     }
   }

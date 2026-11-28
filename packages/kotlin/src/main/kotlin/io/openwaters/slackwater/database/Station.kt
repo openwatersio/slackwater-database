@@ -200,8 +200,12 @@ class Station internal constructor(
         data class Member(val name: String, val factor: Double)
     }
 
-    /** The nodal correction formulas a source's constants were analyzed with. */
-    enum class NodeCorrections { IHO, SCHUREMAN }
+    /**
+     * The nodal correction formulas a source's constants were analyzed with.
+     * Foreman's take the latitude of the station whose constants are
+     * predicted, [nodeCorrectionsLatitude].
+     */
+    enum class NodeCorrections { IHO, SCHUREMAN, FOREMAN }
 
     /**
      * The definitions to hand the prediction engine for this station's
@@ -255,11 +259,20 @@ class Station internal constructor(
      * subordinate reports its reference's.
      */
     val nodeCorrections: NodeCorrections
-        get() = if (predictionSource.raw.source?.nodeCorrections == Slackwater.NodeCorrections.Schureman) {
-            NodeCorrections.SCHUREMAN
-        } else {
-            NodeCorrections.IHO
+        get() = when (predictionSource.raw.source?.nodeCorrections) {
+            Slackwater.NodeCorrections.Schureman -> NodeCorrections.SCHUREMAN
+            Slackwater.NodeCorrections.Foreman -> NodeCorrections.FOREMAN
+            // A set this reader doesn't know reads as IHO's, as readers released before it did.
+            else -> NodeCorrections.IHO
         }
+
+    /**
+     * The latitude Foreman's formulas take: the station's own, or its
+     * reference's for a tide subordinate, whose constants it predicts with.
+     * Null unless [nodeCorrections] is [NodeCorrections.FOREMAN].
+     */
+    val nodeCorrectionsLatitude: Double?
+        get() = if (nodeCorrections == NodeCorrections.FOREMAN) predictionSource.latitude else null
 
     /**
      * Vertical datums in metres above the station's zero, keyed by name
