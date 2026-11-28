@@ -1,4 +1,4 @@
-import countryLookup from "country-code-lookup";
+import { countryByNameOrCode } from "./country.ts";
 
 export interface CleanNameResult {
   name: string;
@@ -229,8 +229,7 @@ export function cleanName(
   preserveCase = false,
 ): CleanNameResult {
   const original = raw;
-  if (/^[A-Z]{2,3}$/.test(country))
-    country = countryLookup.byIso(country)?.country ?? country;
+  const countryCode = countryByNameOrCode(country)?.iso2;
   let name = raw;
   let region: string | undefined;
 
@@ -257,9 +256,9 @@ export function cleanName(
   // ("SavannahGa", "WadhamsBC"). Splitting joined words waits for step 4, so
   // the joined form is matched here or the code would be left in the name.
   const validRegions =
-    country === "United States"
+    countryCode === "US"
       ? US_STATES
-      : country === "Canada"
+      : countryCode === "CA"
         ? CA_PROVINCES
         : undefined;
   const regionMatch = name.match(/(?:([_ ])|(?<=[a-z]))([A-Za-z]{2})$/);

@@ -30,8 +30,11 @@ export interface ConstituentDefinition {
   aliases?: string[];
 }
 
-/** The nodal correction formulas a source's constants were analyzed with. */
-export type NodeCorrections = "iho" | "schureman";
+/**
+ * The nodal correction formulas a source's constants were analyzed with.
+ * Foreman's take the latitude of the station whose constants are predicted.
+ */
+export type NodeCorrections = "iho" | "schureman" | "foreman";
 
 /** How a source's constants differ from the database's shared definitions. */
 export interface SourceConstituents {
@@ -125,6 +128,10 @@ export interface StationData {
   // Mean-datum method: prepared water-level observations or harmonic synthesis.
   // Astronomical bounds can be synthesized even when the means are observed.
   datums_source?: "observed" | "harmonic";
+
+  // Modeled MHW minus MLW in metres for TICON records with observed datums.
+  // Source JSON metadata used at build time by the quality gate.
+  harmonic_mean_range?: number;
 
   // Zero of the stored datum values; absence means the frame is unspecified.
   datum_frame?: "gauge" | "constituent";
@@ -256,12 +263,9 @@ export interface StationQuality {
    * principal tide M2+S2+K1+O1 by more than 3 mm, so the yearly swing exceeds
    * the daily one.
    *
-   * Accepted rather than rejected: the predictions are correct and only the
-   * frame is wrong. A consumer quoting a high and a low should read this and
-   * say what the water is — a Great Lakes gauge, a river reach, a Baltic
-   * bodden — because an entire 24-hour window can sit below the annual mean,
-   * which is a true statement about the water and reads as a broken tide
-   * table. `issues` gives both heights.
+   * The quality gates determine acceptance independently of this label.
+   * Consumers can use the label to explain why an entire day can sit below
+   * the annual mean. `issues` gives both heights.
    */
   seasonal_dominant?: boolean;
 }
@@ -274,7 +278,7 @@ export interface AstronomicalBounds {
   hat: number;
 }
 
-export interface Station extends StationData {
+export interface Station extends Omit<StationData, "harmonic_mean_range"> {
   id: string;
   country_code: string;
   kind: "tide" | "current";
@@ -290,7 +294,8 @@ export interface Station extends StationData {
   astronomical_bounds?: AstronomicalBounds;
   /**
    * The credit to display when showing or redistributing this station, ready
-   * to render as-is. Derived from `source`; see src/attribution.ts.
+   * to render as-is. Derived from `source`; see src/attribution.ts. The
+   * GeoNames, OpenStreetMap and Marine Regions credits in NOTICE apply too.
    */
   attribution: string;
   /**
@@ -303,6 +308,13 @@ export interface Station extends StationData {
   constituent_definitions?: ConstituentDefinition[];
   /** The nodal correction formulas to predict with: `@slackwater/engine`'s `nodeCorrections` option. */
   node_corrections: NodeCorrections;
+  /**
+   * The latitude Foreman's formulas take, `@slackwater/engine`'s `latitude`
+   * option: the station's own, or its reference's for a tide subordinate,
+   * whose constants it predicts with. Present only when `node_corrections` is
+   * `"foreman"`, since the engine refuses a latitude with another set.
+   */
+  node_corrections_latitude?: number;
 }
 
 // The light fields the search/geo/list paths need. Used at build time to

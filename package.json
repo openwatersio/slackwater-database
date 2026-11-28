@@ -17,10 +17,11 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@slackwater/engine": "1.0.0-beta.14"
+    "@slackwater/datums": "0.1.0-beta.1",
+    "@slackwater/engine": "1.0.0-beta.16"
   },
   "devDependencies": {
-    "@types/node": "^26.6.6",
+    "@types/node": "^26.6.10",
     "prettier": "^3.10.1",
     "typescript": "^7.0.2"
   }

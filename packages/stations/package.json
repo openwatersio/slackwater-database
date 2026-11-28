@@ -26,14 +26,13 @@
     "report:country-resolver": "node ../../spikes/country-resolver/report.ts"
   },
   "dependencies": {
-    "@slackwater/datums": "*",
+    "@slackwater/datum-data": "*",
     "@turf/boolean-point-in-polygon": "^7.4.0",
     "@turf/helpers": "^7.4.0",
-    "country-code-lookup": "^0.2.1",
     "geo-tz": "^8.1.11",
     "geokdbush": "^2.0.1",
     "kdbush": "^4.0.2",
-    "make-fetch-happen": "^16.0.0",
+    "make-fetch-happen": "^16.0.2",
     "sort-object-keys": "^2.0.1",
     "yaml": "^2.9.0"
   },

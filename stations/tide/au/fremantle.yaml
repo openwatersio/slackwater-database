@@ -19,6 +19,9 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.018
+        issues:
+          - MLWS (0.74) > MLW (0.648)
+          - MHWS (0.94) < MHW (1.045)
     ticon/fremantle-175a-aus-uhslc_rq:
       position: [-32.05, 115.733]
       coastline: unverifiable
@@ -34,3 +37,6 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0.018
+        issues:
+          - MLWS (0.712) > MLW (0.615)
+          - MHWS (0.912) < MHW (1.024)

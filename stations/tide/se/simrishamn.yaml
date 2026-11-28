@@ -21,8 +21,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.165) > MLW (0.155)
-          - MHWS (0.183) < MHW (0.192)
+          - MLWS (0.168) > MLW (0.098)
+          - MHWS (0.186) < MHW (0.253)
           - "Seasonal curve peak (0.099m) exceeds the principal tide M2+S2+K1+O1 (0.033m): the yearly swing exceeds the daily one"
     ticon/simrishamn-sim-swe-cmems:
       position: [55.557499, 14.3578]
@@ -41,6 +41,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.148) > MLW (0.14)
-          - MHWS (0.166) < MHW (0.176)
+          - MLWS (0.148) > MLW (0.078)
+          - MHWS (0.166) < MHW (0.231)
           - "Seasonal curve peak (0.100m) exceeds the principal tide M2+S2+K1+O1 (0.033m): the yearly swing exceeds the daily one"

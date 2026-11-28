@@ -18,12 +18,15 @@ import {
   OBSERVED_DATUM_NOTICE,
   OBSERVED_OFFSET_NOTICE,
   HARMONIC_REDUCTION_NOTICE,
+  DATUM_CALCULATOR_NOTICE,
+  cachedDatumNotice,
 } from "../../../sources/ticon/datums.ts";
 import {
   mergeHarmonicDatums,
   parseShard,
   regenerateDirectory,
 } from "../regenerate-harmonic-datums.ts";
+import { predictionOptions } from "../sources.ts";
 
 type Overrides = { [K in keyof StationData]?: StationData[K] | undefined };
 const station = (overrides: Overrides = {}): StationData => {
@@ -37,7 +40,8 @@ const station = (overrides: Overrides = {}): StationData => {
     type: "reference",
     chart_datum: "LLWLT",
     source: {
-      name: "Test",
+      // A declared source: regeneration predicts with its metadata's formulas.
+      name: "TICON-4",
       id: "test",
       url: "https://example.com",
       published_harmonics: true,
@@ -263,42 +267,57 @@ test("regenerates selected sorted files only, preserving other fields and unchan
   }
 });
 
-test("marks migrated TICON reductions once while leaving NOAA and observation provenance untouched", async () => {
-  const root = await mkdtemp(join(tmpdir(), "harmonic-provenance-"));
-  try {
-    for (const source of ["dmi", "jhod", "jma", "linz", "ticon", "noaa"])
-      await mkdir(join(root, source));
-    const input = station({
-      disclaimers: `Provider legal notice. ${OBSERVED_DATUM_NOTICE}`,
-    });
-    await writeFile(join(root, "ticon", "a.json"), JSON.stringify(input));
-    await writeFile(
-      join(root, "noaa", "a.json"),
-      "NOAA must never be read or rewritten",
-    );
-    expect(await regenerateDirectory(root)).toBe(1);
-    const result = JSON.parse(
-      await readFile(join(root, "ticon", "a.json"), "utf8"),
-    ) as StationData;
-    expect(result.disclaimers).toBe(
-      `Provider legal notice. ${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE}`,
-    );
-    expect({
-      ...result,
-      country_code: undefined,
-      datums: input.datums,
-      disclaimers: input.disclaimers,
-    }).toEqual(input);
-    expect(result.datums["MSL"]).toBe(2.1234);
-    expect(result.datums["MHW"]).toBe(3.5);
-    expect(await regenerateDirectory(root)).toBe(0);
-    expect(await readFile(join(root, "noaa", "a.json"), "utf8")).toBe(
-      "NOAA must never be read or rewritten",
-    );
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
-});
+test.each([false, true])(
+  "preserves observed provenance and the shared cache marker when present (%s)",
+  async (shared) => {
+    const root = await mkdtemp(join(tmpdir(), "harmonic-provenance-"));
+    try {
+      for (const source of ["dmi", "jhod", "jma", "linz", "ticon", "noaa"])
+        await mkdir(join(root, source));
+      const input = station({
+        disclaimers: `Provider legal notice. ${OBSERVED_DATUM_NOTICE}${shared ? ` ${DATUM_CALCULATOR_NOTICE}` : ""}`,
+      });
+      const stored = shared ? { ...input, harmonic_mean_range: 0.005 } : input;
+      await writeFile(join(root, "ticon", "a.json"), JSON.stringify(stored));
+      await writeFile(
+        join(root, "noaa", "a.json"),
+        "NOAA must never be read or rewritten",
+      );
+      expect(await regenerateDirectory(root)).toBe(1);
+      const result = JSON.parse(
+        await readFile(join(root, "ticon", "a.json"), "utf8"),
+      ) as StationData;
+      const { harmonic_mean_range, ...updated } = result;
+      const { datums: modeled } = computeDatums(
+        input.harmonic_constituents,
+        {},
+        predictionOptions(input),
+      );
+      expect(harmonic_mean_range).toBeCloseTo(
+        modeled["MHW"]! - modeled["MLW"]!,
+        9,
+      );
+      expect(result.disclaimers).toBe(
+        `Provider legal notice. ${OBSERVED_DATUM_NOTICE} ${shared ? DATUM_CALCULATOR_NOTICE : HARMONIC_REDUCTION_NOTICE}`,
+      );
+      expect({
+        ...updated,
+        country_code: undefined,
+        datums: input.datums,
+        disclaimers: input.disclaimers,
+      }).toEqual(input);
+      expect(result.datums["MSL"]).toBe(2.1234);
+      expect(result.datums["MHW"]).toBe(3.5);
+      expect(Boolean(cachedDatumNotice(result))).toBe(shared);
+      expect(await regenerateDirectory(root)).toBe(0);
+      expect(await readFile(join(root, "noaa", "a.json"), "utf8")).toBe(
+        "NOAA must never be read or rewritten",
+      );
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+);
 
 test("regenerates JMA's derived NLLW and preserves MSL zero", async () => {
   const root = await mkdtemp(join(tmpdir(), "jma-datums-"));

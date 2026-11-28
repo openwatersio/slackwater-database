@@ -1,6 +1,6 @@
 {
   "name": "@slackwater/database",
-  "version": "1.0.3-beta.0",
+  "version": "1.0.4-beta.0",
   "description": "A public database of tide and current stations",
   "keywords": [
     "tides",
@@ -17,7 +17,7 @@
     "url": "git+https://github.com/openwatersio/slackwater-database.git",
     "directory": "packages/database"
   },
-  "license": "MIT",
+  "license": "SEE LICENSE IN NOTICE",
   "author": "Brandon Keepers <brandon@openwaters.io>",
   "type": "module",
   "main": "./dist/node/index.js",
@@ -66,9 +66,10 @@
     }
   },
   "devDependencies": {
+    "@openwaters/c5y-n8r": "git+https://github.com/openwatersio/c5y-n8r.git#f0587eaf0f5a14997f829f89bd1752fcd293a2f8",
     "@slackwater/stations": "*",
     "@types/geokdbush": "^2.1.0",
-    "@types/node": "^26.6.6",
+    "@types/node": "^26.6.10",
     "tsdown": "^0.23.7",
     "typescript": "^7.0.2",
     "unplugin-macros": "^0.23.4",

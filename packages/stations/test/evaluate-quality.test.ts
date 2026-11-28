@@ -14,6 +14,7 @@ import {
   deduplicateByGauge,
 } from "../evaluate-quality.ts";
 import { exceeds, seasonalTerms } from "../filtering.ts";
+import { load } from "../station.ts";
 
 type Station = Parameters<typeof checkConstituents>[0];
 type Constituent = { amplitude: number; phase?: number };
@@ -111,6 +112,41 @@ describe("observed means and astronomical bounds", () => {
 });
 
 describe("checkTidalRange", () => {
+  test("rejects Belle River's weak modeled tide even when the observed range clears the floor", async () => {
+    const id = "belle_river_ontario-11965-can-meds";
+    const { harmonic_mean_range, ...record } = await load("ticon", id);
+    const legacy = { ...record, id: `ticon/${id}` };
+    expect(legacy.datums_source).toBe("observed");
+    expect(legacy.datums["MHW"]! - legacy.datums["MLW"]!).toBeCloseTo(0.075);
+    expect(harmonic_mean_range).toBe(0.003);
+    expect(checkTidalRange(legacy, new Map())).toContain("0.30cm");
+    expect(
+      checkTidalRange({ ...legacy, harmonic_mean_range: -1 }, new Map()),
+    ).toContain("0.30cm");
+    expect(
+      checkTidalRange(
+        { ...legacy, harmonic_mean_range: harmonic_mean_range! },
+        new Map(),
+      ),
+    ).toContain("0.30cm");
+  });
+
+  test("accepts the observed coastal Halifax record", async () => {
+    const id = "halifax-275-can-uhslc_fd";
+    const s = { ...(await load("ticon", id)), id: `ticon/${id}` };
+    expect(s.datums_source).toBe("observed");
+    expect(s.harmonic_mean_range).toBeGreaterThan(1);
+    expect(checkTidalRange(s, new Map())).toBeNull();
+  });
+
+  test("accepts the exact modeled boundary even when the observed range falls short", () => {
+    const s = station(BASE);
+    s.datums_source = "observed";
+    s.datums = { MHW: 0.01, MLW: 0 };
+    s.harmonic_mean_range = 0.02;
+    expect(checkTidalRange(s, new Map())).toBeNull();
+  });
+
   test.each([
     [0.142, 0.122],
     [0.036, 0.016],

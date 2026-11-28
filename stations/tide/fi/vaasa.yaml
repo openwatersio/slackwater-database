@@ -8,18 +8,19 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/vaasa_vaskiluoto-134223-fin-fmi
+        reason: range
         seasonal_dominant: true
-        score: 65
+        score: 0
         factors:
           epoch: 1
           recency: 0.99
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0.004
+          coverage: 1
         issues:
-          - MLWS (0.029) > MLW (0.01)
-          - MHWS (0.041) < MHW (0.045)
+          - MHHW (0.12) < MHW (0.129)
+          - MLWS (0.026) > MLW (0.011)
+          - MHWS (0.038) < MHW (0.129)
+          - Modeled tidal range 1.90cm < 2cm threshold
           - "Seasonal curve peak (0.168m) exceeds the principal tide M2+S2+K1+O1 (0.021m): the yearly swing exceeds the daily one"

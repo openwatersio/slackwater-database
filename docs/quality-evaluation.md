@@ -47,7 +47,7 @@ These checks are pass or fail. A record that fails any of them is rejected and g
 | Observed tide          | its source's constants miss its gauges' own observations     | Measured on this data    |
 | Clock error            | it or its source runs off nearby authoritative gauges        | Measured on this data    |
 | Datum consistency      | its datums contradict their definitions                      | NOAA and IHO definitions |
-| Tidal range            | its mean range is under 2 cm                                 | Engineering choice       |
+| Tidal range            | its mean range is under 2 cm, modeled for observed TICON     | Engineering choice       |
 | Superseded relay       | it relays a gauge whose operator publishes its own constants | Editorial choice         |
 | Essential constituents | it lacks M2, S2, K1 or O1, or a resolved P1 exceeds K1       | Equilibrium tide         |
 | Seasonal contamination | its annual term is five times that of comparable neighbors   | Seasonal cycle physics   |
@@ -138,7 +138,9 @@ NOAA’s published mean datums receive the observed-mean bound allowance even wh
 
 **Threshold.** A mean range under 2 cm. This is an engineering choice, twice the 10 mm accuracy that GLOSS asks of a tide gauge (IOC, 2002). The IHO treats a range under about 0.30 m as negligible for charting, which calls for mean sea level as the datum rather than for rejecting the record (IHO, M-3, Resolution 3/1919).
 
-**Limitations.** In strongly diurnal water the great diurnal range (MHHW − MLLW) is the more natural measure, though the two converge there. A subordinate is judged on its reference station's range, not on the range after its own height differences, so a subordinate with a small height ratio can pass on its reference's range. Water with a tiny tide and a large seasonal swing can clear the floor by millimeters; Cobourg, on Lake Ontario, is one example. The seasonal label below exists for such water.
+For TICON records with observed datums, the gate uses `harmonic_mean_range`, the difference between modeled MHW and MLW over the fixed harmonic prediction period (`DATUM_EPOCH`). Both modeled levels are rounded to the millimetre before subtraction, so the range can differ from the unrounded result by up to 1 mm. Wind and other non-tidal effects can widen the observed range at weak-tide stations. The station still publishes its observed MHW and MLW. Older records without the cached range calculate it from their stored constituents.
+
+**Limitations.** In strongly diurnal water the great diurnal range (MHHW − MLLW) is the more natural measure, though the two converge there. A subordinate is judged on its reference station's range, so a subordinate with a small height ratio can pass on its reference's range. A large seasonal swing can coexist with a modeled tide above the floor. The seasonal label below measures that swing separately.
 
 ### Superseded relay
 
@@ -237,7 +239,7 @@ An agency not in the ranking scores about 0.5.
 
 UHSLC's two series rank equally. Its research-quality series has had UHSLC's full quality control and replaces the fast-delivery series as it becomes available, while the fast-delivery series is more recent (UHSLC, n.d.). With source equal, record length and recency decide, which matches GESLA's advice to use the longest and then the most recent record of a gauge (Haigh et al., 2023).
 
-A TICON relay of a NOAA gauge reaches this ranking only when NOAA's record does not supersede it (see [Superseded relay](#superseded-relay)), most often because NOAA publishes no constants for the gauge, as for most Great Lakes gauges. The data are NOAA's, but the analysis is TICON's, so it ranks with the national services.
+A TICON relay of a NOAA gauge can reach this ranking when it passes the quality gates and NOAA's record does not supersede it (see [Superseded relay](#superseded-relay)). NOAA publishes no constants for most Great Lakes gauges, so the range gate can reject a relay even where there is no direct NOAA prediction. Eligible relays use NOAA's water levels and TICON's analysis, and rank with the national services.
 
 ### Provider quality flag
 
@@ -321,7 +323,7 @@ Duplicates are resolved best record first. The best remaining record absorbs eve
 
 ## Implementation
 
-The evaluation is [packages/stations/evaluate-quality.ts](../packages/stations/evaluate-quality.ts). Its thresholds and helper functions are in [packages/stations/filtering.ts](../packages/stations/filtering.ts), the nodal-cycle length (`NODAL_CYCLE_DAYS` = 6798.383 days) and datum epoch (`DATUM_EPOCH`, 2007-01-01 to 2026-01-01) are in [packages/datums/datum.ts](../packages/datums/datum.ts), and each source's `authoritative` flag is in `sources/<name>/metadata.yaml`, read by [packages/stations/sources.ts](../packages/stations/sources.ts).
+The evaluation is [packages/stations/evaluate-quality.ts](../packages/stations/evaluate-quality.ts). Its thresholds and helper functions are in [packages/stations/filtering.ts](../packages/stations/filtering.ts), the nodal-cycle length (`NODAL_CYCLE_DAYS` = 6798.383 days) and datum epoch (`DATUM_EPOCH`, 2007-01-01 to 2026-01-01) are in [`@slackwater/datums`](https://github.com/openwatersio/slackwater/tree/main/packages/datums#datum-epoch), and each source's `authoritative` flag is in `sources/<name>/metadata.yaml`, read by [packages/stations/sources.ts](../packages/stations/sources.ts).
 
 `npm run stations` runs the evaluation and writes each result into the station file that lists the record, under `computed.sources.<id>.quality` (see [stations/README.md](../stations/README.md)). A record whose `accepted` is false is still published at its route and in the database, with its evaluation, but a route lists accepted records first and the database's `stations` export leaves rejected ones out. `npm run report:merges -w packages/stations` reads `redundant` to propose folding duplicate stations together; a link on proximity alone waits for review. To print a summary without writing anything:
 

@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import KDBush from "kdbush";
 import { around, distance } from "geokdbush";
-import countryLookup from "country-code-lookup";
+import { countryByIso } from "./country.ts";
 
 const PLACES_URL = new URL("../../metadata/places.json", import.meta.url);
 
@@ -60,7 +60,7 @@ export async function loadGeocoder(): Promise<Geocoder> {
     return ids.map((id) => {
       const place = places[id];
       if (!place) throw new Error(`Invalid place index: ${id}`);
-      const country = countryLookup.byIso(place.countryCode);
+      const country = countryByIso(place.countryCode);
       return {
         place,
         distance: distance(lon, lat, place.longitude, place.latitude),

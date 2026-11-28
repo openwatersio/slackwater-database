@@ -12,27 +12,35 @@ on:
         default: false
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   noaa:
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.changes.outputs.has_changes }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Setup mise (flatc)
-        uses: jdx/mise-action@v5
+        uses: jdx/mise-action@v5.3.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: "24"
 
+      - name: Check country pin ancestry
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/fetch-country-build-lock.mjs "$RUNNER_TEMP/country-build/package-lock.json"
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run NOAA stations update
         env:
@@ -65,7 +73,7 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
-          if [[ -n $(git status --porcelain data/ stations/) ]]; then
+          if [[ -n $(git status --porcelain data/noaa/ stations/) ]]; then
             echo "has_changes=true" >> $GITHUB_OUTPUT
             echo "Changes detected in station data or station files"
           else
@@ -73,11 +81,55 @@ jobs:
             echo "No changes detected"
           fi
 
-      - name: Create Pull Request
+      - name: Prepare review summary
         if: steps.changes.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v8
+        run: cp /tmp/noaa-summary.md noaa-summary.md
+
+      - uses: actions/upload-artifact@v7.0.2
+        if: steps.changes.outputs.has_changes == 'true'
         with:
+          name: noaa-refresh
+          path: |
+            data/noaa/
+            stations/
+            noaa-summary.md
+          if-no-files-found: error
+
+  write:
+    needs: noaa
+    if: needs.noaa.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download refresh data
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: gh run download "$RUN_ID" --name noaa-refresh --dir incoming
+
+      - name: Restore refresh data
+        run: |
+          test -z "$(find incoming -type l -print -quit)"
+          rsync -r --delete --exclude=.git incoming/data/noaa/ data/noaa/
+          rsync -r --delete --exclude=.git incoming/stations/ stations/
+          cp incoming/noaa-summary.md "$RUNNER_TEMP/noaa-summary.md"
+          rm -rf incoming
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8.1.3
+        with:
+          add-paths: |
+            data/noaa/
+            stations/
           commit-message: "chore: update NOAA tide station data"
           title: "Update NOAA Stations"
-          body-path: /tmp/noaa-summary.md
+          body-path: ${{ runner.temp }}/noaa-summary.md
           branch: update-noaa-stations-${{ github.run_number }}

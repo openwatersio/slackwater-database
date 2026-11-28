@@ -40,7 +40,8 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
-          - MHWS (1.818) < MHW (1.836)
+          - MLWS (1.594) > MLW (1.542)
+          - MHWS (1.818) < MHW (1.849)
           - Superseded by noaa/8771450, its operator's own record
     ticon/galveston_pier_21-775a-usa-uhslc_rq:
       position: [29.31, -94.793]
@@ -58,7 +59,8 @@ computed:
           amplitude: 1
           coverage: 0.001
         issues:
-          - MHWS (1.819) < MHW (1.836)
+          - MLWS (1.593) > MLW (1.542)
+          - MHWS (1.819) < MHW (1.849)
           - Superseded by noaa/8771450, its operator's own record
     ticon/galveston_pier_21-8771450-usa-noaa:
       position: [29.31, -94.793306]
@@ -76,5 +78,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (1.901) < MHW (1.931)
+          - MLWS (1.677) > MLW (1.596)
+          - MHWS (1.901) < MHW (1.948)
           - Superseded by noaa/8771450, its operator's own record

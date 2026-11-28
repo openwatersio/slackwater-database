@@ -121,6 +121,30 @@ describe("databaseConstituents", () => {
       ),
     ).toThrow("a/1: the engine refuses its constituent definitions");
   });
+
+  test("a station is checked with its source's nodal formulas and latitude", () => {
+    const kv = (names: string[]) => ({
+      ...station("k/1", "K", names),
+      latitude: 60,
+    });
+    const foreman = metadata({ node_corrections: "foreman" });
+    // Foreman's formulas don't cover the catalog's Sa; t_tide's is SA_KV.
+    expect(() => databaseConstituents([kv(["M2", "Sa"])], foreman)).toThrow(
+      expect.objectContaining({
+        message:
+          "k/1: the engine refuses its constituent definitions or nodal formulas",
+        cause: expect.objectContaining({
+          message: expect.stringContaining("notForemanLine: Sa"),
+        }),
+      }),
+    );
+    expect(() =>
+      databaseConstituents([kv(["M2", "SA_KV"])], foreman),
+    ).not.toThrow();
+    expect(() =>
+      databaseConstituents([kv(["M2", "Sa"])], metadata()),
+    ).not.toThrow();
+  });
 });
 
 test("a source's own definition replaces the catalog line under any of its spellings", () => {

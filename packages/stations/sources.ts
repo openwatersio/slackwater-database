@@ -20,7 +20,10 @@ export interface SourceMetadata {
   /** The ISO alpha-2 countries whose gauges an authoritative
    *  provider operates. Absent means everywhere it publishes. */
   jurisdiction?: string[];
-  /** The nodal correction formulas the provider's constants were analyzed with. Absent means IHO. */
+  /**
+   * The nodal correction formulas the provider's constants were analyzed
+   * with. Absent means IHO. Foreman's take each station's latitude.
+   */
   node_corrections?: NodeCorrections;
   /**
    * Lines the provider means by a name that differ from `@slackwater/engine`'s
@@ -66,9 +69,12 @@ export function loadSources(dir = SOURCES_DIR): Map<string, SourceMetadata> {
     if (
       source.node_corrections !== undefined &&
       source.node_corrections !== "iho" &&
-      source.node_corrections !== "schureman"
+      source.node_corrections !== "schureman" &&
+      source.node_corrections !== "foreman"
     )
-      throw new Error(`${path}: node_corrections must be iho or schureman`);
+      throw new Error(
+        `${path}: node_corrections must be iho, schureman or foreman`,
+      );
     if (
       source.constituent_definitions !== undefined &&
       !Array.isArray(source.constituent_definitions)
@@ -94,4 +100,30 @@ export function sourceMetadata(name: string | undefined): SourceMetadata {
       `no sources/*/metadata.yaml declares source ${JSON.stringify(name)}`,
     );
   return source;
+}
+
+/**
+ * The engine options that predict a station's constants as its source
+ * analyzed them: the source's own definitions over the engine's catalog, its
+ * nodal formulas, and the latitude Foreman's take. A subordinate's constants
+ * are its reference's, so pass the reference.
+ */
+export function predictionOptions(station: {
+  source: { name: string };
+  latitude: number;
+}): {
+  definitions?: ConstituentDefinition[];
+  nodeCorrections?: NodeCorrections;
+  latitude?: number;
+} {
+  const { node_corrections, constituent_definitions } = sourceMetadata(
+    station.source.name,
+  );
+  return {
+    ...(constituent_definitions?.length
+      ? { definitions: constituent_definitions }
+      : {}),
+    ...(node_corrections ? { nodeCorrections: node_corrections } : {}),
+    ...(node_corrections === "foreman" ? { latitude: station.latitude } : {}),
+  };
 }

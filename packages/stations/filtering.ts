@@ -476,11 +476,8 @@ export const SEASONAL_OUTLIER_RATIO = 5;
 // contamination gate deliberately excludes these by comparing only within a
 // tidal regime, so nothing else in the pass sees them.
 //
-// It labels rather than rejects. The predictions are correct — the annual
-// cycle is really the dominant signal — so the record is not faulty and a
-// consumer that knows what the water is can say so. Cobourg on Lake Ontario
-// carries SA 0.289 m against a principal tide of 0.004 m and
-// passes every other gate, including the 2 cm range floor.
+// The quality gates determine acceptance independently of the label.
+// Cobourg on Lake Ontario is labelled and fails the range gate at 4 mm.
 
 /** The principal tidal constituents. Their amplitudes sum to the tide's
  *  height above mean level when spring and tropic tides coincide, an upper

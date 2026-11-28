@@ -20,7 +20,9 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (0.229) < MHW (0.23)
+          - HAT (0.314) < MHHW (0.318)
+          - MLWS (0.141) > MLW (0.097)
+          - MHWS (0.229) < MHW (0.267)
     ticon/skanor-ska-swe-cmems:
       position: [55.416698, 12.8294]
       coastline: unverifiable
@@ -37,4 +39,6 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (0.229) < MHW (0.23)
+          - HAT (0.314) < MHHW (0.317)
+          - MLWS (0.141) > MLW (0.097)
+          - MHWS (0.229) < MHW (0.267)

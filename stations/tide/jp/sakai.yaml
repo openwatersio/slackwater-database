@@ -39,5 +39,7 @@ computed:
           amplitude: 1
           coverage: 0.005
         issues:
+          - MLWS (1.386) > MLW (1.382)
+          - MHWS (1.538) < MHW (1.542)
           - Superseded by jma/SK, its operator's own record
           - "Seasonal curve peak (0.193m) exceeds the principal tide M2+S2+K1+O1 (0.170m): the yearly swing exceeds the daily one"

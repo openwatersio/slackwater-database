@@ -25,6 +25,10 @@ globalThis.fetch = async (url, init) => {
 };
 
 function check(db, api, label) {
+  assert.ok(
+    api.countryAliases("TR").includes("Türkiye"),
+    `${label}: registry alias`,
+  );
   for (const station of db.all) {
     assert.ok(
       api.credits?.has(station.source.name),
@@ -88,7 +92,9 @@ async function checkEntry(bundle, label) {
     globalThis.atob = realAtob;
   }
   const db = await api.loadStations();
-  globalThis.fetch = fetchForLoading;
+  globalThis.fetch = () => {
+    throw new Error(`${label}: fetch during lookup or rebuild`);
+  };
   const station = db.byId("noaa/9447130");
   assert.ok(station, `${label}: individual lookup`);
   assert.equal(db.byId(station.id), station, `${label}: cached identity`);
@@ -96,7 +102,11 @@ async function checkEntry(bundle, label) {
     db.all.find((s) => s.id === station.id),
     station,
   );
-  check(db, api, label);
+  try {
+    check(db, api, label);
+  } finally {
+    globalThis.fetch = fetchForLoading;
+  }
 }
 
 await checkEntry("node", "node ESM");
@@ -113,6 +123,17 @@ check(await nodeApi.loadStations(), nodeApi, "node require");
 // bundled load to prove neither calls it, since the database ships inside.
 await checkEntry("worker", "worker ESM");
 globalThis.fetch = realFetch;
+
+for (const bundle of ["node", "browser", "worker"]) {
+  const src = readFileSync(
+    fileURLToPath(new URL(`${bundle}/index.js`, dist)),
+    "utf8",
+  );
+  assert.ok(
+    !src.includes("@openwaters/c5y-n8r"),
+    `${bundle} bundle must embed the development-only country dependency`,
+  );
+}
 
 for (const bundle of ["browser", "worker"]) {
   const src = readFileSync(

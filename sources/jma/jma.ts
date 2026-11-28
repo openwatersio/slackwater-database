@@ -1,6 +1,10 @@
 import { constituents as catalogue } from "@slackwater/engine";
 import { computeDatums, toFixed } from "@slackwater/datums";
-import { normalize, sourceMetadata } from "@slackwater/stations";
+import {
+  normalize,
+  predictionOptions,
+  sourceMetadata,
+} from "@slackwater/stations";
 import type { StationData } from "@slackwater/database";
 import names from "./names.json" with { type: "json" };
 import { resolveConstituent } from "../jhod/jhod.ts";
@@ -154,7 +158,11 @@ export function parseHarmonics(html: string, gauge: Gauge): Harmonics {
   };
 }
 export function buildStation(h: Harmonics): StationData {
-  const { datums } = computeDatums(h.constituents, {});
+  const { datums } = computeDatums(
+    h.constituents,
+    {},
+    predictionOptions({ source: { name: SOURCE_NAME }, latitude: h.latitude }),
+  );
 
   return normalize({
     name: (names as Record<string, string>)[h.id]!,

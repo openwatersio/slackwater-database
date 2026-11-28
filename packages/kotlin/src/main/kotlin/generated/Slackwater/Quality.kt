@@ -90,9 +90,8 @@ internal class Quality : Table() {
      * The peak of the seasonal curve (SA and SSA with their phases) exceeds the
      * principal tide M2+S2+K1+O1 by more than 3 mm, so the yearly swing exceeds
      * the daily one — a Great Lakes gauge, a river reach, a Baltic bodden.
-     * Accepted, not rejected: the predictions are right and only the framing is
-     * wrong, so a consumer quoting a high and a low reads this first and says
-     * what the water is. `issues` gives both heights.
+     * The quality gates determine acceptance independently of this label.
+     * `issues` gives both heights.
      */
     val seasonalDominant : Boolean
         get() {

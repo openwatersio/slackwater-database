@@ -20,6 +20,7 @@
 
 import { computeDatums, toFixed } from "@slackwater/datums";
 import type { StationData } from "@slackwater/database";
+import { predictionOptions } from "./sources.ts";
 
 /** Solar annual and semi-annual — the seasonal envelope, under either casing. */
 const SEASONAL = new Set(["SA", "SSA"]);
@@ -65,7 +66,12 @@ export function backfillLatHat(station: StationData): LatHatBackfill {
     };
   }
 
-  const { datums: computed } = computeDatums(station.harmonic_constituents, {});
+  // Predicted as the source analyzed its constants.
+  const { datums: computed } = computeDatums(
+    station.harmonic_constituents,
+    {},
+    predictionOptions(station),
+  );
   if (computed["LAT"] === undefined || computed["HAT"] === undefined) {
     return { station, filled: false, skipped: "predictor returned no LAT/HAT" };
   }

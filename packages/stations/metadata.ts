@@ -1,5 +1,4 @@
-import countryLookup from "country-code-lookup";
-import { countryByName, countryForRecord } from "./country.ts";
+import { countryByIso, countryByName, countryForRecord } from "./country.ts";
 import { find as findTimezone } from "geo-tz/all";
 import { parse } from "yaml";
 import type { ChsFitData, StationInput } from "@slackwater/database";
@@ -279,7 +278,7 @@ function validateLocation(
   ) {
     if (
       !/^[A-Z]{2}$/.test(location.countryCode) ||
-      !countryLookup.byIso(location.countryCode)
+      !countryByIso(location.countryCode)
     )
       problems.push(
         `${id}: location.countryCode must be a recognized ISO 3166-1 alpha-2 code`,
@@ -354,16 +353,29 @@ export function resolveMetadata(
     throw new Error(
       `${station.id}: no ISO country code for ${explicitLocation.country}`,
     );
+  const zoneIdentity = zoneCountry ? countryByIso(zoneCountry) : null;
+  const hasSourceCountry =
+    Boolean(station.country) || station.country_code !== undefined;
+  if (
+    !explicitCountry &&
+    !explicitLocation?.countryCode &&
+    zoneCountry &&
+    !zoneIdentity &&
+    !hasSourceCountry
+  )
+    throw new Error(
+      `${station.id}: unsupported maritime-zone country code ${zoneCountry}`,
+    );
   const country =
     explicitCountry ??
     (explicitLocation?.countryCode
       ? countryForRecord({ country_code: explicitLocation.countryCode })
       : null) ??
-    (zoneCountry ? countryLookup.byIso(zoneCountry) : null) ??
-    (station.country || station.country_code !== undefined
+    zoneIdentity ??
+    (hasSourceCountry
       ? countryForRecord(station)
       : nearest
-        ? countryLookup.byIso(nearest.place.countryCode)
+        ? countryByIso(nearest.place.countryCode)
         : null);
   if (!country?.iso2)
     throw new Error(
@@ -410,7 +422,7 @@ export function resolveMetadata(
         : undefined));
   const cleaned = cleanName(
     station.name ?? registry?.name ?? "",
-    country.country,
+    country.iso2,
     authoritativeRegionCode ??
       (isTicon ? station.region : (placeRegionCode ?? station.region)),
     station.source?.name === "Canadian Hydrographic Service",
@@ -456,10 +468,7 @@ export function resolveMetadata(
   setOptional(
     result,
     "continent",
-    explicitLocation?.continent ??
-      station.continent ??
-      place?.continent ??
-      country.continent,
+    explicitLocation?.continent ?? country.continent,
   );
   setOptional(
     result,

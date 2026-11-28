@@ -15,7 +15,7 @@
  *   dHi = MHW  − MSL
  *   dLo = MSL  − MLLW
  *
- * Run after the GESLA download (@slackwater/datums), or set GESLA_ARCHIVE to
+ * Run after the GESLA download (@slackwater/datum-data), or set GESLA_ARCHIVE to
  * read entries directly from a ZIP. Reads GESLA independently of the import.
  * Different observation and agency datum periods, hourly sampling, and weather
  * can all contribute to these residuals; they are not interpolation error alone.
@@ -27,12 +27,15 @@ import { join, basename } from "path";
 import {
   computeDatums,
   computeDatumsFromObservations,
+  type Datums,
+} from "@slackwater/datums";
+import {
   ensureGeslaData,
   parseGeslaSamples,
   GESLA_DIR,
-  type Datums,
-} from "@slackwater/datums";
+} from "@slackwater/datum-data";
 import { DATA_DIR } from "./station.ts";
+import { predictionOptions } from "./sources.ts";
 import type { StationData } from "@slackwater/database";
 
 const TICON_DIR = join(DATA_DIR, "ticon");
@@ -129,7 +132,11 @@ async function main() {
     pairs++;
 
     // Harmonic (old method) — synthesize from the station's constituents.
-    const harmonic = computeDatums(station.harmonic_constituents, {});
+    const harmonic = computeDatums(
+      station.harmonic_constituents,
+      {},
+      predictionOptions(station),
+    );
     const hRels = relationships(harmonic.datums);
     const published = relationships(station.datums);
     if (hRels)
@@ -158,6 +165,7 @@ async function main() {
       const obs = computeDatumsFromObservations(
         parseGeslaSamples(text),
         station.harmonic_constituents,
+        predictionOptions(station),
       );
       const oRels = obs && relationships(obs.datums);
       if (oRels && hRels) {
@@ -222,10 +230,15 @@ async function main() {
       console.log(`${id}: missing`);
       continue;
     }
-    const harmonic = computeDatums(station.harmonic_constituents, {});
+    const harmonic = computeDatums(
+      station.harmonic_constituents,
+      {},
+      predictionOptions(station),
+    );
     const obs = computeDatumsFromObservations(
       parseGeslaSamples(text),
       station.harmonic_constituents,
+      predictionOptions(station),
     );
     const fmt = (d?: Datums | null) =>
       d

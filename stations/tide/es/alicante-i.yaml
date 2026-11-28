@@ -17,5 +17,7 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (6.661) > MLW (6.633)
+          - MHWS (6.715) < MHW (6.745)
           - M2 here (0.017 m, 23.4°) differs from (0.018 m, 59.8°) by -1 mm and 75 min earlier in ticon/alicante2tg-ali-esp-cmems, a duplicate
           - M2 here (0.017 m, 23.4°) differs from (0.018 m, 60.3°) by -1 mm and 76 min earlier in ticon/alicantetg-ali-esp-cmems, a duplicate

@@ -19,6 +19,9 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 1
+        issues:
+          - MLWS (1.702) > MLW (1.643)
+          - MHWS (2.292) < MHW (2.335)
     ticon/pisco-683a-per-uhslc_rq:
       position: [-13.417, -76.133]
       coastline: unverifiable

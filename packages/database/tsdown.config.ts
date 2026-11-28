@@ -24,6 +24,7 @@ const base = {
   entry: ["./src/index.ts"],
   dts: true,
   minify: true,
+  noExternal: ["@openwaters/c5y-n8r"],
   sourcemap: true,
   target: "es2020",
   plugins: [macros({ runner: unrunRunner() })],

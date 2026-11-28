@@ -20,5 +20,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MHHW (0.224) < MHW (0.225)
+          - MLWS (0.144) > MLW (0.121)
+          - MHWS (0.2) < MHW (0.225)
           - "Seasonal curve peak (0.091m) exceeds the principal tide M2+S2+K1+O1 (0.086m): the yearly swing exceeds the daily one"
           - M2 here (0.018 m, 60.3°) differs from (0.017 m, 23.4°) by +1 mm and 76 min later in ticon/alicante_i-ali-esp-da_mm, which this duplicates

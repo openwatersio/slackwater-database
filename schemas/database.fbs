@@ -93,7 +93,9 @@ table ConstituentDefinition {
 }
 
 /// The nodal correction formulas a source's constants were analyzed with.
-enum NodeCorrections : ubyte { IHO = 0, Schureman = 1 }
+/// Foreman's take the latitude of the station whose constants are predicted:
+/// a subordinate's reference, otherwise the station itself.
+enum NodeCorrections : ubyte { IHO = 0, Schureman = 1, Foreman = 2 }
 
 struct Datum {
   name: ushort;      // index into Root.datum_names
@@ -228,9 +230,8 @@ table Quality {
   /// The peak of the seasonal curve (SA and SSA with their phases) exceeds the
   /// principal tide M2+S2+K1+O1 by more than 3 mm, so the yearly swing exceeds
   /// the daily one — a Great Lakes gauge, a river reach, a Baltic bodden.
-  /// Accepted, not rejected: the predictions are right and only the framing is
-  /// wrong, so a consumer quoting a high and a low reads this first and says
-  /// what the water is. `issues` gives both heights.
+  /// The quality gates determine acceptance independently of this label.
+  /// `issues` gives both heights.
   seasonal_dominant: bool;
 }
 

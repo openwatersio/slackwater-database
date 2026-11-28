@@ -36,4 +36,6 @@ computed:
           amplitude: 1
           coverage: 0.003
         issues:
+          - MLWS (1.629) > MLW (1.625)
+          - MHWS (1.917) < MHW (1.918)
           - Superseded by noaa/8575512, its operator's own record

@@ -20,7 +20,8 @@ computed:
           amplitude: 1
           coverage: 1
         issues:
-          - MLWS (0.544) > MLW (0.536)
+          - MLWS (0.544) > MLW (0.52)
+          - MHWS (0.698) < MHW (0.745)
     ticon/punta_cana-776a-dom-uhslc_rq:
       position: [18.505, -68.375]
       coastline: unverifiable
@@ -37,4 +38,5 @@ computed:
           amplitude: 1
           coverage: 1
         issues:
-          - MLWS (0.534) > MLW (0.517)
+          - MLWS (0.533) > MLW (0.511)
+          - MHWS (0.685) < MHW (0.728)

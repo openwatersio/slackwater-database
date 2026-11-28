@@ -18,4 +18,7 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - Tidal range 1.60cm < 2cm threshold
+          - MHHW (0.08) < MHW (0.081)
+          - MLWS (0.058) > MLW (0.057)
+          - MHWS (0.078) < MHW (0.081)
+          - Modeled tidal range 1.60cm < 2cm threshold

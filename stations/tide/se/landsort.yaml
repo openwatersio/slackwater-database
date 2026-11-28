@@ -10,35 +10,41 @@ computed:
       position: [58.75, 17.8667]
       coastline: unverifiable
       quality:
-        accepted: true
+        accepted: false
+        reason: datum
         seasonal_dominant: true
-        score: 81
+        score: 0
         factors:
           epoch: 1
           recency: 0.8
           source: 0.919
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 0.043
         issues:
-          - MHWS (0.17) < MHW (0.174)
+          - MHHW (0.235) < MHW (0.244)
+          - MHWS (0.171) < MHW (0.244)
+          - MSL (0.162) <= MLW (0.165)
+          - Modeled tidal range 1.70cm < 2cm threshold
           - "Seasonal curve peak (0.144m) exceeds the principal tide M2+S2+K1+O1 (0.020m): the yearly swing exceeds the daily one"
     ticon/landsort1-lan-swe-cmems:
       position: [58.75, 17.866699]
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/landsort-2073-swe-smhi
+        reason: datum
         seasonal_dominant: true
-        score: 63
+        score: 0
         factors:
           epoch: 1
           recency: 0.8
           source: 0.02
           quality: 1
           amplitude: 1
-          coverage: 0
+          coverage: 0.043
         issues:
-          - MHWS (0.017) < MHW (0.022)
+          - MHHW (0.079) < MHW (0.088)
+          - MHWS (0.017) < MHW (0.088)
+          - MSL (0.008) <= MLW (0.009)
+          - Modeled tidal range 1.70cm < 2cm threshold
           - "Seasonal curve peak (0.143m) exceeds the principal tide M2+S2+K1+O1 (0.020m): the yearly swing exceeds the daily one"

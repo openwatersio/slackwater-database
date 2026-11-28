@@ -4,7 +4,6 @@ import { readFile } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import {
-  countryByNameOrCode,
   parseCSV,
   groupBy,
   normalize,
@@ -13,16 +12,19 @@ import {
   getSourceSuffix,
   NON_COMMERCIAL_SOURCES,
   roundConstituents,
+  meanTidalRange,
+  isValidHarmonicRange,
+  predictionOptions,
   type PartialStationData,
 } from "@slackwater/stations";
+import { computeDatums } from "@slackwater/datums";
 import {
-  computeDatums,
   ensureGeslaData,
   loadRqdSamples,
   parseRqdId,
   rqdEnd,
   GESLA_DIR,
-} from "@slackwater/datums";
+} from "@slackwater/datum-data";
 import {
   parseTiconSamples,
   shiftEarlyGauge,
@@ -35,7 +37,7 @@ import {
 import {
   checkCorrections,
   correctPosition,
-  correctCountry,
+  ticonCountryCodes,
   matchMetadata,
   type TiconMetaRow,
 } from "./meta.ts";
@@ -65,6 +67,7 @@ const metadata = matchMetadata(
   positions,
 );
 checkCorrections(positions);
+const countryCodes = ticonCountryCodes(gauges);
 // FORCE_DATUMS=1 recomputes every station's datums; a comma-separated list of
 // source suffixes (e.g. FORCE_DATUMS=uhslc_rq) recomputes only those sources.
 const FORCE_DATUMS = process.env["FORCE_DATUMS"] ?? "";
@@ -168,14 +171,7 @@ async function main() {
       end: dayMonthYearToDate(rows[0].end_date),
     };
 
-    const country = correctCountry(id, rows[0].country);
-    const countryCode = countryByNameOrCode(country)?.iso2;
-    if (!countryCode) {
-      console.error(`\nError processing ${id}: Unknown country: ${country}`);
-      errors++;
-      process.stdout.write("x");
-      continue;
-    }
+    const countryCode = countryCodes.get(id)!;
 
     // Refit gauges whose published phases are not UTC-referenced.
     const harmonic_constituents = await getHarmonics(id, csvHarmonics);
@@ -186,6 +182,7 @@ async function main() {
         countryCode,
         epoch,
         harmonic_constituents,
+        lat,
       );
       const disclaimers = [rows[0].record_quality, datum_notice]
         .filter(Boolean)
@@ -193,7 +190,7 @@ async function main() {
 
       const candidate: PartialStationData = {
         name: gesla["SITE NAME"],
-        country,
+        country: countryCode,
         country_code: countryCode,
         latitude: lat,
         longitude: lon,
@@ -258,7 +255,13 @@ async function getDatums(
   countryCode: string,
   obsEpoch: { start: Date; end: Date },
   harmonic_constituents: PartialStationData["harmonic_constituents"],
+  latitude: number,
 ) {
+  const options = predictionOptions({ source: { name: "TICON-4" }, latitude });
+  const publishedConstituents = roundConstituents(
+    "ticon",
+    harmonic_constituents,
+  );
   if (!forceDatums(id)) {
     let existing: Awaited<ReturnType<typeof load>> | undefined;
     try {
@@ -286,18 +289,32 @@ async function getDatums(
       // parsed ones at that precision too, or float noise reads as a change.
       if (
         datum_notice &&
-        sameConstituents(
-          existing.harmonic_constituents,
-          roundConstituents("ticon", harmonic_constituents),
-        )
+        sameConstituents(existing.harmonic_constituents, publishedConstituents)
       ) {
         if (existing.datums) {
           const datums = restoreCachedCountryDatum(
             countryCode,
             existing.datums,
             harmonic_constituents,
+            options,
           );
-          if (datums) return { datums, ...cached, datum_notice };
+          if (datums) {
+            const cachedRange = existing.harmonic_mean_range;
+            const range =
+              existing.datums_source === "observed"
+                ? isValidHarmonicRange(cachedRange)
+                  ? cachedRange
+                  : meanTidalRange(
+                      computeDatums(publishedConstituents, {}, options).datums,
+                    )
+                : undefined;
+            return {
+              datums,
+              ...cached,
+              datum_notice,
+              ...(range === undefined ? {} : { harmonic_mean_range: range }),
+            };
+          }
         }
       }
     }
@@ -306,7 +323,7 @@ async function getDatums(
   // Harmonic baseline: supplies astronomical HAT/LAT and the short-record
   // fallback. Predicted over the pinned DATUM_EPOCH, not the record period, so
   // regeneration is deterministic and annual statistics see only full years.
-  const harmonic = computeDatums(harmonic_constituents, {});
+  const harmonic = computeDatums(publishedConstituents, {}, options);
 
   // Every TICON station has a GESLA-4 file (100% join), so read it directly — a
   // missing file is a data-prep error and should throw, not silently degrade.
@@ -337,10 +354,14 @@ async function getDatums(
     harmonic_constituents,
     harmonic.datums,
     obsEpoch,
+    { ...options, sourceId: id },
   );
+  const range =
+    datums_source === "observed" ? meanTidalRange(harmonic.datums) : undefined;
   return {
     datums,
     datums_source,
+    ...(range === undefined ? {} : { harmonic_mean_range: range }),
     datum_frame,
     ...(datum_coverage ? { datum_coverage } : {}),
     epoch,

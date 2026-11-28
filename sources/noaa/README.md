@@ -41,8 +41,8 @@ Unlike TICON stations, datum values here are **published by NOAA** (computed on 
 NOAA publishes LAT and HAT for most, but not all, of its reference stations. For the
 remainder, [`packages/stations/backfill-lat-hat.ts`](../../packages/stations/backfill-lat-hat.ts) synthesizes the
 two from the station's own harmonic constituents over the pinned `DATUM_EPOCH` — the same
-method [`packages/datums/datum.ts`](../../packages/datums/datum.ts) already uses for TICON and IOC — and shifts
-the result onto NOAA's scale by the station's published MSL. 59 stations are filled this way. Every other datum in those
+method [`@slackwater/datums`](https://github.com/openwatersio/slackwater/tree/main/packages/datums) already uses for TICON and IOC — and shifts
+the result onto NOAA's scale by the station's published MSL. The prediction uses NOAA's own nodal corrections and definitions from [`metadata.yaml`](metadata.yaml), which declares Schureman's formulas and defines SIGMA1. Every other datum in those
 records stays exactly as NOAA published it, so the `datums` object is mixed: observed means,
 synthesized extremes. `datums_source` remains absent on NOAA stations under the published-source convention; it must not be set to `harmonic` for the whole table. Where a source supplies that flag, it describes the mean-datum family rather than every key in a mixed table. Quality checks recognize NOAA’s published means as observed despite that absent flag, and apply the same 5 cm cross-period bound allowance as other observed reductions.
 
@@ -58,10 +58,9 @@ the envelope is narrowed by whatever the season contributes. A narrowed envelope
 "the lowest this station ever gets" is worse than no answer, so those stations are skipped.
 
 [`packages/stations/check-lat-hat.ts`](../../packages/stations/check-lat-hat.ts) cross-checks the method against the
-references that publish LAT/HAT already. Over a 200-station sample the median disagreement is
-**0.5 cm for both LAT and HAT** — the harmonics essentially _are_ the definition of these
-two datums. The outliers are river stations, Longview on the Columbia and Threemile Slough in
-the Delta, where NOAA's observed datums carry freshwater discharge no harmonic set reproduces.
+references that publish LAT/HAT already, predicting the way the backfill does. Over a 200-station sample the median disagreement is
+**0.6 cm for LAT and 0.5 cm for HAT** — the harmonics essentially _are_ the definition of these
+two datums. The check leaves out values the backfill wrote, which it reproduces to the millimetre: 13 of the 200 LAT values and 9 HAT values in this sample. The largest disagreements are at Bings Landing on the Matanzas River (16.6 cm in HAT) and Blackslough Landing (12.6 cm); their cause hasn't been established.
 
 #### Subordinate stations and datums
 

@@ -38,8 +38,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (8.426) > MLW (8.415)
-          - MHWS (8.506) < MHW (8.54)
+          - MLWS (8.436) > MLW (8.358)
+          - MHWS (8.516) < MHW (8.591)
           - Superseded by noaa/9751364, its operator's own record
     ticon/christiansted_vi-258a-usa-uhslc_rq:
       position: [17.75, -64.705]
@@ -57,5 +57,6 @@ computed:
           amplitude: 1
           coverage: 0.015
         issues:
-          - MHWS (1.48) < MHW (1.496)
+          - MLWS (1.4) > MLW (1.341)
+          - MHWS (1.48) < MHW (1.534)
           - Superseded by noaa/9751364, its operator's own record

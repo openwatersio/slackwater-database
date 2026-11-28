@@ -19,6 +19,9 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0
+        issues:
+          - MLWS (0.449) > MLW (0.412)
+          - MHWS (0.575) < MHW (0.614)
     ticon/saintmartintg_60minute-sai-fra-cmems:
       position: [18.08333, -63.08543]
       coastline: unverifiable
@@ -34,3 +37,6 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0
+        issues:
+          - MLWS (0.449) > MLW (0.412)
+          - MHWS (0.575) < MHW (0.614)

@@ -20,9 +20,9 @@ computed:
           amplitude: 1
           coverage: 0.36
         issues:
-          - MHHW (0.28) < MHW (0.292)
-          - MHWS (0.274) < MHW (0.292)
+          - MHWS (0.274) < MHW (0.456)
           - "Constants of source crms don't match their gauges' observations: against a year of each gauge's own hourly observations in Stillwell, 13 of the 111 records with a tide whose gauge has a 2015 series come within 25% of the gauge's M2, S2, K1 and O1; the rest run from 13 hours early to 11 hours late, with amplitudes off by up to a factor of 100, and 82 of the 87 with a diurnal tide of 5 cm or more run within 30 min of the same shift against 2019"
-          - MSL (0.274) <= MLW (0.288)
-          - Tidal range 0.40cm < 2cm threshold
+          - MSL (0.274) <= MLW (0.301)
+          - HAT (0.303) < MHHW (0.461)
+          - Modeled tidal range 0.10cm < 2cm threshold
           - "Seasonal curve peak (0.035m) exceeds the principal tide M2+S2+K1+O1 (0.001m): the yearly swing exceeds the daily one"

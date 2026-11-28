@@ -591,10 +591,8 @@ public struct Station: Identifiable, @unchecked Sendable {
   /// swing exceeds the daily one — a Great Lakes gauge, a river reach, a
   /// Baltic bodden.
   ///
-  /// Accepted rather than rejected: the predictions are correct and only the
-  /// frame is wrong. A view quoting a high and a low should read this and say
-  /// what the water is, because an entire day can sit below the annual mean and
-  /// read as a broken tide table. `quality.issues` gives both heights.
+  /// The quality gates determine acceptance independently of this label.
+  /// `quality.issues` gives both heights.
   public var seasonalDominant: Bool { raw.quality?.seasonalDominant ?? false }
 
   // MARK: Typed metadata
@@ -607,7 +605,7 @@ public struct Station: Identifiable, @unchecked Sendable {
         constituentDefinitions: (0..<source.constituentDefinitionsCount).compactMap { index in
           source.constituentDefinitions(at: index).flatMap { ConstituentDefinition(raw: $0, root: root) }
         },
-        nodeCorrections: source.nodeCorrections == .schureman ? .schureman : .iho)
+        nodeCorrections: NodeCorrections(source.nodeCorrections))
     }
   }
 
@@ -820,9 +818,29 @@ public struct Station: Identifiable, @unchecked Sendable {
   }
 
   /// The nodal correction formulas a source's constants were analyzed with.
+  /// Foreman's take the latitude of the station whose constants are
+  /// predicted, `nodeCorrectionsLatitude`.
   public enum NodeCorrections: Hashable, Sendable {
     case iho
     case schureman
+    case foreman
+
+    /// A set this reader doesn't know reads as IHO's, as readers released before it did.
+    init(_ raw: Slackwater_NodeCorrections) {
+      switch raw {
+      case .schureman: self = .schureman
+      case .foreman: self = .foreman
+      default: self = .iho
+      }
+    }
+
+    var raw: Slackwater_NodeCorrections {
+      switch self {
+      case .iho: .iho
+      case .schureman: .schureman
+      case .foreman: .foreman
+      }
+    }
   }
 
   /// The definitions to hand the prediction engine for this station's
@@ -876,7 +894,14 @@ public struct Station: Identifiable, @unchecked Sendable {
   /// with, from its source; IHO when the file does not say. A subordinate
   /// reports its reference's.
   public var nodeCorrections: NodeCorrections {
-    predictionSource.raw.source?.nodeCorrections == .schureman ? .schureman : .iho
+    NodeCorrections(predictionSource.raw.source?.nodeCorrections ?? .iho)
+  }
+
+  /// The latitude Foreman's formulas take: the station's own, or its
+  /// reference's for a subordinate, whose constants it predicts with. Nil
+  /// unless `nodeCorrections` is `.foreman`.
+  public var nodeCorrectionsLatitude: Double? {
+    nodeCorrections == .foreman ? predictionSource.latitude : nil
   }
 
   var storedConstituents: [Constituent] {
@@ -912,10 +937,12 @@ public struct Station: Identifiable, @unchecked Sendable {
 
   // MARK: Attribution
 
-  /// The complete notice to display when showing or redistributing this
+  /// The source's notice to display when showing or redistributing this
   /// station: the creator credit and, where a Creative Commons licence
-  /// applies, the licence and a pointer to what was modified. Displaying it is
-  /// the whole of the obligation. Written into the file by the builder, so
+  /// applies, the licence and a pointer to what was modified. Displaying it
+  /// covers the station's source; the location fields and `context` also need
+  /// the GeoNames, OpenStreetMap and Marine Regions credits in the database
+  /// package's NOTICE. Written into the file by the builder, so
   /// this package keeps no table of sources; a file predating the field falls
   /// back to the project credit.
   public var attribution: String {

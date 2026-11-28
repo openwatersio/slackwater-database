@@ -19,6 +19,8 @@ computed:
           quality: 0
           amplitude: 1
           coverage: 0.057
+        issues:
+          - MHWS (1.248) < MHW (1.38)
     ticon/rotterdam-rottdm-nld-rws_hist:
       position: [51.920018, 4.499762]
       coastline: unverifiable
@@ -34,4 +36,5 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MHWS (1.153) < MHW (1.283)
           - "Superseded source: rws_hist"

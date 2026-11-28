@@ -38,8 +38,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (8.961) > MLW (8.948)
-          - MHWS (9.073) < MHW (9.086)
+          - MLWS (8.961) > MLW (8.912)
+          - MHWS (9.073) < MHW (9.147)
           - Superseded by noaa/9751381, its operator's own record
     ticon/lameshur_bay_vi-214a-usa-uhslc_rq:
       position: [18.317, -64.723]
@@ -57,5 +57,6 @@ computed:
           amplitude: 1
           coverage: 0.004
         issues:
-          - MLWS (1.952) > MLW (1.951)
+          - MLWS (1.952) > MLW (1.918)
+          - MHWS (2.062) < MHW (2.111)
           - Superseded by noaa/9751381, its operator's own record

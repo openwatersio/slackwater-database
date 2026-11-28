@@ -19,8 +19,14 @@
 
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
-import { DATA_DIR } from "./station.ts";
-import { DATUM_EPOCH, M2_SPEED, NODAL_CYCLE_DAYS } from "@slackwater/datums";
+import { DATA_DIR, isValidHarmonicRange, meanTidalRange } from "./station.ts";
+import {
+  computeDatums,
+  DATUM_EPOCH,
+  M2_SPEED,
+  NODAL_CYCLE_DAYS,
+} from "@slackwater/datums";
+import { predictionOptions } from "./sources.ts";
 import {
   distance,
   authoritativeDuplicateWinner,
@@ -111,9 +117,15 @@ function resolveDatums(
   station: Station,
   stationMap: Map<string, Station>,
 ): Record<string, number> {
-  const datums = station.datums ?? {};
-  if (Object.keys(datums).length > 0) return datums;
-  return stationMap.get(station.offsets?.reference ?? "")?.datums ?? {};
+  return datumRecord(station, stationMap)?.datums ?? {};
+}
+
+function datumRecord(
+  station: Station,
+  stationMap: Map<string, Station>,
+): Station | undefined {
+  if (Object.keys(station.datums ?? {}).length > 0) return station;
+  return stationMap.get(station.offsets?.reference ?? "");
 }
 
 /** Get a constituent amplitude by name, or 0 if not present. */
@@ -231,13 +243,30 @@ export function checkTidalRange(
   station: Station,
   stationMap: Map<string, Station>,
 ): string | null {
-  const datums = resolveDatums(station, stationMap);
-  const high = datums["MHW"];
-  const low = datums["MLW"];
-  if (high === undefined || low === undefined) return null; // can't evaluate
-  const range = Number((high - low).toFixed(9));
+  const record = datumRecord(station, stationMap);
+  if (!record) return null;
+  const modeled =
+    record.id.startsWith("ticon/") && record.datums_source === "observed";
+  let range = modeled
+    ? record.harmonic_mean_range
+    : meanTidalRange(record.datums);
+  if (modeled && !isValidHarmonicRange(range)) {
+    try {
+      range = meanTidalRange(
+        computeDatums(
+          record.harmonic_constituents,
+          {},
+          predictionOptions(record),
+        ).datums,
+      );
+    } catch (error) {
+      return `Modeled tidal range unavailable: ${error instanceof Error ? error.message : String(error)}`;
+    }
+  }
+  if (range === undefined)
+    return modeled ? "Modeled tidal range unavailable" : null;
   if (range < MIN_TIDAL_RANGE) {
-    return `Tidal range ${(range * 100).toFixed(2)}cm < ${MIN_TIDAL_RANGE * 100}cm threshold`;
+    return `${modeled ? "Modeled tidal range" : "Tidal range"} ${(range * 100).toFixed(2)}cm < ${MIN_TIDAL_RANGE * 100}cm threshold`;
   }
   return null;
 }

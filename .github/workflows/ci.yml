@@ -14,16 +14,17 @@ permissions:
 
 jobs:
   npm:
+    needs: lockfile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Setup mise (flatc)
-        uses: jdx/mise-action@v5
+        uses: jdx/mise-action@v5.3.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: "24"
 
@@ -37,7 +38,7 @@ jobs:
         run: npx pkg-pr-new publish ./packages/database
 
       - name: Upload npm build artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: npm-dist
           path: "*.tgz"
@@ -68,16 +69,17 @@ jobs:
         run: npm run report:chs-fit-age -w packages/stations
 
   tcd:
+    needs: lockfile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Setup mise (flatc)
-        uses: jdx/mise-action@v5
+        uses: jdx/mise-action@v5.3.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: "24"
 
@@ -94,29 +96,30 @@ jobs:
         run: npm run test:docker -w packages/tcd
 
       - name: Upload TCD artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: tcd
           path: packages/tcd/dist/
 
   swift:
+    needs: lockfile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Setup mise (flatc)
-        uses: jdx/mise-action@v5
+        uses: jdx/mise-action@v5.3.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: "24"
 
-      # The Swift tests need only the fixture generator, which imports the
-      # builder source; skip the root package's prepare build.
+      # The fixture builder imports the Git-pinned country reader, which
+      # needs its prepare lifecycle before Swift fixtures can be generated.
       - name: Install dependencies
-        run: npm install --ignore-scripts
+        run: npm ci
 
       # The generated Swift is committed (SwiftPM consumers can't run flatc),
       # so fail when it drifts from the schema.
@@ -131,26 +134,27 @@ jobs:
           SLACKWATER_TCDB: ${{ github.workspace }}/packages/database/src/generated/slackwater.tcdb
 
   kotlin:
+    needs: lockfile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Setup mise (flatc)
-        uses: jdx/mise-action@v5
+        uses: jdx/mise-action@v5.3.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: "24"
 
       # gradle-wrapper.jar is a binary reviewers can't read; check it against
       # Gradle's published checksums before anything runs it.
       - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v6
+        uses: gradle/actions/wrapper-validation@v6.4.1
 
       - name: Setup Java
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@v6.3.0
         with:
           distribution: temurin
           java-version: |
@@ -161,10 +165,10 @@ jobs:
             packages/kotlin/**/*.gradle.kts
             packages/kotlin/gradle/wrapper/gradle-wrapper.properties
 
-      # The Kotlin tests need only the fixture generator, which imports the
-      # builder source; skip the root package's prepare build.
+      # The fixture builder imports the Git-pinned country reader, which
+      # needs its prepare lifecycle before Kotlin fixtures can be generated.
       - name: Install dependencies
-        run: npm install --ignore-scripts
+        run: npm ci
 
       # The generated Kotlin is committed (a composite build can't run flatc),
       # so fail when it drifts from the schema.
@@ -193,16 +197,17 @@ jobs:
         run: JAVA_HOME="${JAVA_HOME_17_X64:-${JAVA_HOME_17_ARM64:?JDK 17 not installed}}" ./gradlew -p smoke run --rerun-tasks --args="$PWD/src/test/fixture.tcdb"
 
   lint:
+    needs: lockfile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Setup mise (flatc)
-        uses: jdx/mise-action@v5
+        uses: jdx/mise-action@v5.3.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: "24"
 
@@ -219,10 +224,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .mise.toml
 
@@ -232,5 +237,17 @@ jobs:
           npm install --package-lock-only --ignore-scripts
           git diff --exit-code -- package-lock.json
 
-      - name: Check every package resolves from the npm registry
-        run: npx -y lockfile-lint@5.0.1 --path package-lock.json --allowed-hosts npm --validate-https --validate-integrity --validate-package-names
+      - name: Test the immutable country dependency exception
+        run: node --test .github/scripts/*.test.mjs
+
+      - name: Check the country reader's build dependencies
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node .github/scripts/fetch-country-build-lock.mjs "$RUNNER_TEMP/country-build/package-lock.json"
+          npx -y lockfile-lint@5.0.1 --path "$RUNNER_TEMP/country-build/package-lock.json" --allowed-hosts npm --validate-https --validate-integrity --validate-package-names
+
+      - name: Check registry packages and the pinned country dependency
+        run: |
+          country_url="$(node .github/scripts/country-dependency-url.mjs)"
+          npx -y lockfile-lint@5.0.1 --path package-lock.json --allowed-hosts npm --allowed-urls "$country_url" --allowed-schemes https: git+https: git+ssh: --validate-integrity --validate-package-names

@@ -214,6 +214,11 @@
       "enum": ["observed", "harmonic"],
       "description": "Mean-datum method: 'observed' from prepared water-level measurements, or 'harmonic' synthesized from constituents. Other datum keys can use different methods."
     },
+    "harmonic_mean_range": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Modeled MHW minus MLW in metres for TICON records with observed datums. Used for prediction eligibility."
+    },
     "datum_frame": {
       "type": "string",
       "enum": ["gauge", "constituent"],

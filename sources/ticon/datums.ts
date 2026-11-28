@@ -1,5 +1,6 @@
 import {
   countrySpecificDatum,
+  getSourceSuffix,
   type PartialStationData,
 } from "@slackwater/stations";
 import {
@@ -7,6 +8,7 @@ import {
   computeDatumsFromObservations,
   observedMeanLevel,
   toFixed,
+  type DatumModelOptions,
   type Datums,
   type Sample,
 } from "@slackwater/datums";
@@ -15,6 +17,7 @@ export const HARMONIC_KEYS = [
   "HAT",
   "LAT",
   "LLWLT",
+  "HHWLT",
   "MHWS",
   "MLWS",
   "NLLW",
@@ -26,10 +29,15 @@ export const OBSERVED_KEYS = ["MSL", "MHHW", "MHW", "MTL", "MLW", "MLLW"];
 export const HARMONIC_REDUCTION_NOTICE =
   "Harmonic datums retain every predicted turning point without prominence filtering.";
 
+export const DATUM_CALCULATOR_NOTICE =
+  "Datums use the shared Slackwater calculator.";
+
 export const OBSERVED_DATUM_NOTICE =
   "Mean datums use one continuous observation window of whole years. Short gaps may contain model-assisted inferred hourly heights.";
 export const HARMONIC_DATUM_NOTICE =
   "Datums derived from harmonic prediction; observations do not support a mean-datum reduction over twelve continuous whole months after bounded short-gap reconstruction. Datum values carry higher uncertainty.";
+export const MEASURED_ONLY_HARMONIC_DATUM_NOTICE =
+  "Datums derived from harmonic prediction; measured observations do not support a mean-datum reduction over twelve continuous whole months. Datum values carry higher uncertainty.";
 export const OBSERVED_OFFSET_NOTICE =
   "A calendar-balanced mean of complete prepared observation months supplies the vertical offset; the months may span a different period from the pinned prediction.";
 export const CONSTITUENT_FRAME_NOTICE =
@@ -50,9 +58,17 @@ export function reduceTiconDatums(
   constituents: PartialStationData["harmonic_constituents"],
   harmonic: Datums,
   fitEpoch: { start: Date; end: Date },
+  { sourceId, ...options }: DatumModelOptions & { sourceId?: string } = {},
 ): TiconDatumResult {
-  const observed = computeDatumsFromObservations(samples, constituents);
-  if (observed) {
+  const measuredOnly =
+    sourceId !== undefined && getSourceSuffix(sourceId) === "jodc_jcg";
+  const gapModel = measuredOnly ? [] : constituents;
+  const observed = computeDatumsFromObservations(samples, gapModel, options);
+  if (
+    observed &&
+    OBSERVED_KEYS.every((key) => Number.isFinite(observed.datums[key]))
+  ) {
+    const lastDay = new Date(+observed.end - 1).toISOString().slice(0, 10);
     return {
       datums: {
         ...Object.fromEntries(
@@ -70,17 +86,17 @@ export function reduceTiconDatums(
       },
       datum_epoch: {
         start: observed.start.toISOString().slice(0, 10),
-        end: observed.end.toISOString().slice(0, 10),
+        end: lastDay,
       },
       datum_coverage: {
         months: observed.coverage.months,
         observed_hours: observed.coverage.observedHours,
         inferred_hours: observed.coverage.inferredHours,
       },
-      datum_notice: `${OBSERVED_DATUM_NOTICE} ${HARMONIC_REDUCTION_NOTICE}`,
+      datum_notice: `${OBSERVED_DATUM_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
     };
   }
-  const observedOffset = observedMeanLevel(samples, constituents);
+  const observedOffset = observedMeanLevel(samples, gapModel, options);
   const offset = observedOffset ?? 0;
   return {
     datums: Object.fromEntries(
@@ -95,7 +111,7 @@ export function reduceTiconDatums(
       start: fitEpoch.start.toISOString().slice(0, 10),
       end: fitEpoch.end.toISOString().slice(0, 10),
     },
-    datum_notice: `${HARMONIC_DATUM_NOTICE} ${observedOffset === undefined ? CONSTITUENT_FRAME_NOTICE : OBSERVED_OFFSET_NOTICE} ${HARMONIC_REDUCTION_NOTICE}`,
+    datum_notice: `${measuredOnly ? MEASURED_ONLY_HARMONIC_DATUM_NOTICE : HARMONIC_DATUM_NOTICE} ${observedOffset === undefined ? CONSTITUENT_FRAME_NOTICE : OBSERVED_OFFSET_NOTICE} ${DATUM_CALCULATOR_NOTICE}`,
   };
 }
 
@@ -111,8 +127,10 @@ export function cachedDatumNotice(
   >,
 ): string | undefined {
   const notice = storedDatumNotice(station);
-  return notice && station.disclaimers?.includes(HARMONIC_REDUCTION_NOTICE)
-    ? `${notice} ${HARMONIC_REDUCTION_NOTICE}`
+  return notice &&
+    station.disclaimers?.includes(DATUM_CALCULATOR_NOTICE) &&
+    !station.disclaimers.includes(HARMONIC_REDUCTION_NOTICE)
+    ? `${notice} ${DATUM_CALCULATOR_NOTICE}`
     : undefined;
 }
 
@@ -120,22 +138,35 @@ export function restoreCachedCountryDatum(
   countryCode: string,
   datums: Datums,
   constituents: PartialStationData["harmonic_constituents"],
+  options: DatumModelOptions = {},
 ): Datums | undefined {
   const datum = countrySpecificDatum(countryCode);
-  if (!datum || Number.isFinite(datums[datum])) return datums;
+  if (!datum) return datums;
+  const names = datum === "LLWLT" ? [datum, "HHWLT"] : [datum];
+  const missing = names.filter((name) => !Number.isFinite(datums[name]));
+  if (!missing.length) return datums;
   const msl = datums["MSL"];
   if (msl === undefined || !Number.isFinite(msl)) return undefined;
-  const harmonic = computeDatums(constituents, {}).datums[datum];
-  return harmonic === undefined
-    ? datums
-    : { ...datums, ...shiftHarmonicDatums({ [datum]: harmonic }, msl) };
+  const harmonic = computeDatums(constituents, {}, options).datums;
+  const restored = shiftHarmonicDatums(
+    Object.fromEntries(
+      missing
+        .filter((name) => harmonic[name] !== undefined)
+        .map((name) => [name, harmonic[name]!]),
+    ),
+    msl,
+  );
+  return Object.keys(restored).length ? { ...datums, ...restored } : datums;
 }
 
 export function storedDatumNotice(
   station: Parameters<typeof cachedDatumNotice>[0],
 ): string | undefined {
   const observed = station.disclaimers?.includes(OBSERVED_DATUM_NOTICE);
-  const harmonic = station.disclaimers?.includes(HARMONIC_DATUM_NOTICE);
+  const harmonic = [
+    HARMONIC_DATUM_NOTICE,
+    MEASURED_ONLY_HARMONIC_DATUM_NOTICE,
+  ].find((notice) => station.disclaimers?.includes(notice));
   const gauge = station.disclaimers?.includes(OBSERVED_OFFSET_NOTICE);
   const constituent = station.disclaimers?.includes(CONSTITUENT_FRAME_NOTICE);
   if (
@@ -152,12 +183,13 @@ export function storedDatumNotice(
   )
     return OBSERVED_DATUM_NOTICE;
   if (
+    harmonic &&
     station.datums_source === "harmonic" &&
     !station.datum_epoch &&
     !station.datum_coverage
   )
     for (const frame of [OBSERVED_OFFSET_NOTICE, CONSTITUENT_FRAME_NOTICE]) {
-      const notice = `${HARMONIC_DATUM_NOTICE} ${frame}`;
+      const notice = `${harmonic} ${frame}`;
       const expectedFrame =
         frame === OBSERVED_OFFSET_NOTICE ? "gauge" : "constituent";
       if (

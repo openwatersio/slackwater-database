@@ -19,6 +19,9 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0
+        issues:
+          - MLWS (0.06) > MLW (0.047)
+          - MHWS (0.228) < MHW (0.239)
     ticon/barseback-bar-swe-cmems:
       position: [55.756401, 12.9033]
       coastline: unverifiable
@@ -34,3 +37,6 @@ computed:
           quality: 1
           amplitude: 1
           coverage: 0
+        issues:
+          - MLWS (0.055) > MLW (0.041)
+          - MHWS (0.223) < MHW (0.234)

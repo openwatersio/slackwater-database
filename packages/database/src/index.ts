@@ -20,3 +20,4 @@ export {
   stationDefinitions,
 } from "./constituent-definitions.js";
 export type * from "./types.js";
+export { countryAliases } from "./country.ts";

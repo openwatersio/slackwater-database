@@ -40,6 +40,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
+          - MLWS (1.271) > MLW (1.215)
+          - MHWS (1.609) < MHW (1.659)
           - Superseded by noaa/8771510, its operator's own record
     ticon/galveston_ppier-767-usa-uhslc_fd:
       position: [29.285, -94.788]
@@ -57,6 +59,8 @@ computed:
           amplitude: 1
           coverage: 0.003
         issues:
+          - MLWS (1.26) > MLW (1.191)
+          - MHWS (1.598) < MHW (1.657)
           - Superseded by noaa/8771510, its operator's own record
     ticon/galveston_ppier-767a-usa-uhslc_rq:
       position: [29.287, -94.79]
@@ -74,4 +78,6 @@ computed:
           amplitude: 1
           coverage: 0.004
         issues:
+          - MLWS (1.26) > MLW (1.191)
+          - MHWS (1.598) < MHW (1.657)
           - Superseded by noaa/8771510, its operator's own record

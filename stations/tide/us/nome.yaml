@@ -41,7 +41,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MHWS (1.566) < MHW (1.577)
+          - MLWS (1.313) > MLW (1.265)
+          - MHWS (1.567) < MHW (1.593)
           - Superseded by noaa/9468756, its operator's own record
     ticon/nome_ak-595-usa-uhslc_fd:
       position: [64.5, -165.43]
@@ -59,7 +60,8 @@ computed:
           amplitude: 1
           coverage: 0.015
         issues:
-          - MHWS (1.537) < MHW (1.56)
+          - MLWS (1.283) > MLW (1.251)
+          - MHWS (1.537) < MHW (1.563)
           - Superseded by noaa/9468756, its operator's own record
     ticon/nome_ak-595a-usa-uhslc_rq:
       position: [64.5, -165.43]
@@ -77,5 +79,6 @@ computed:
           amplitude: 1
           coverage: 0.015
         issues:
-          - MHWS (1.537) < MHW (1.56)
+          - MLWS (1.283) > MLW (1.251)
+          - MHWS (1.537) < MHW (1.563)
           - Superseded by noaa/9468756, its operator's own record

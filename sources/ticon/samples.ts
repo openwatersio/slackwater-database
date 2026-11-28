@@ -3,7 +3,8 @@ import {
   roundConstituents,
   type PartialStationData,
 } from "@slackwater/stations";
-import { parseGeslaSamples, type Sample } from "@slackwater/datums";
+import { parseGeslaSamples } from "@slackwater/datum-data";
+import type { Sample } from "@slackwater/datums";
 import { selectConstituents } from "@slackwater/engine";
 import {
   parseGeslaSamplesInZone,

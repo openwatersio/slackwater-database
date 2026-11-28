@@ -8,10 +8,9 @@ computed:
       coastline: unverifiable
       quality:
         accepted: false
-        reason: duplicate
-        redundant: ticon/simpevarp_sjov-35200-swe-smhi
+        reason: range
         seasonal_dominant: true
-        score: 52
+        score: 0
         factors:
           epoch: 0.322
           recency: 0.99
@@ -20,5 +19,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.115) > MLW (0.108)
+          - MHHW (0.216) < MHW (0.225)
+          - MLWS (0.148) > MLW (0.133)
+          - MHWS (0.164) < MHW (0.225)
+          - Modeled tidal range 1.90cm < 2cm threshold
           - "Seasonal curve peak (0.111m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"

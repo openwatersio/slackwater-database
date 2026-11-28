@@ -24,17 +24,18 @@ on:
         type: boolean
         default: false
 permissions:
-  contents: write
-  # The workflow pushes a branch and files an issue carrying the review material plus
-  # a one-click compare link.
-  issues: write
+  contents: read
 jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    outputs:
+      changed: ${{ steps.prepare.outputs.changed }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .mise.toml
 
@@ -58,6 +59,20 @@ jobs:
             echo "Station list unchanged and not a forced run — nothing to do."
           fi
 
+      - name: Setup mise (flatc)
+        if: steps.decide.outputs.run == 'true'
+        uses: jdx/mise-action@v5.3.0
+
+      - name: Check country pin ancestry
+        if: steps.decide.outputs.run == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/fetch-country-build-lock.mjs "$RUNNER_TEMP/country-build/package-lock.json"
+
+      - name: Install dependencies
+        if: steps.decide.outputs.run == 'true'
+        run: npm ci
+
       - name: Full extraction
         if: steps.decide.outputs.run == 'true'
         run: |
@@ -78,36 +93,77 @@ jobs:
         if: steps.decide.outputs.run == 'true'
         env:
           STATIONS_RETIRE: ${{ inputs.retire && '1' || '' }}
-        run: |
-          npm ci --ignore-scripts
-          npm run -s stations
+        run: npm run -s stations
 
-      - name: Push the branch and file a review issue if anything changed
+      - name: Prepare refresh data
+        id: prepare
         if: steps.decide.outputs.run == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        # An explicit `bash` runs with pipefail, so a failed `gh api` listing
-        # fails the step instead of quietly leaving superseded issues open.
         shell: bash
         run: |
-          # `generated` timestamps change on every run; ignore them when deciding
-          # whether there is a real change to review.
           if git diff --quiet -- sources/noaa-current/currents.json sources/noaa-current/stations.lock.json; then
             echo "No changes."; exit 0
           fi
-          CHANGED=$(git diff --numstat -- sources/noaa-current/currents.json | awk '{print $1" added, "$2" removed"}')
-          if [ "$(git diff --numstat -- sources/noaa-current/currents.json sources/noaa-current/stations.lock.json | wc -l)" -gt 0 ] && \
-             [ -z "$(git diff -U0 -- sources/noaa-current/currents.json sources/noaa-current/stations.lock.json | grep '^[+-]' | grep -v '^[+-][+-]' | grep -v '"generated"')" ]; then
+          if [ -z "$(git diff -U0 -- sources/noaa-current/currents.json sources/noaa-current/stations.lock.json | grep '^[+-]' | grep -v '^[+-][+-]' | grep -v '"generated"')" ]; then
             echo "Only the generated timestamp changed — nothing to review."; exit 0
           fi
+          npm run -s validate -w sources/noaa-current > validation.txt 2>&1
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
+      - uses: actions/upload-artifact@v7.0.2
+        if: steps.prepare.outputs.changed == 'true'
+        with:
+          name: currents-refresh
+          path: |
+            sources/noaa-current/currents.json
+            sources/noaa-current/stations.lock.json
+            stations/
+            drift.txt
+            validation.txt
+          if-no-files-found: error
+
+  write:
+    needs: update
+    if: needs.update.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download refresh data
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: gh run download "$RUN_ID" --name currents-refresh --dir incoming
+
+      # Copy only data into the clean checkout; no scripts from extraction run
+      # in the job that holds the branch and issue credentials.
+      - name: Restore refresh data
+        run: |
+          test -z "$(find incoming -type l -print -quit)"
+          cp incoming/sources/noaa-current/currents.json sources/noaa-current/currents.json
+          cp incoming/sources/noaa-current/stations.lock.json sources/noaa-current/stations.lock.json
+          rsync -r --delete --exclude=.git incoming/stations/ stations/
+
+      - name: Push the branch and file a review issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          CHANGED=$(git diff --numstat -- sources/noaa-current/currents.json | awk '{print $1" added, "$2" removed"}')
           BRANCH="noaa-station-update-$(date +%Y%m%d)"
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
           git add sources/noaa-current/currents.json sources/noaa-current/stations.lock.json stations/
-          git commit -m "data: refresh NOAA current-station bundle"
-          git push -q origin "$BRANCH"
+          git -c core.hooksPath=/dev/null commit -m "data: refresh NOAA current-station bundle"
+          gh auth setup-git
+          git -c core.hooksPath=/dev/null push -q origin "$BRANCH"
 
           COMPARE="${{ github.server_url }}/${{ github.repository }}/compare/main...$BRANCH?expand=1"
 
@@ -118,14 +174,14 @@ jobs:
             echo "**[→ Open the pull request]($COMPARE)**"
             echo
             echo '```'
-            npm run -s validate -w sources/noaa-current 2>&1
+            cat incoming/validation.txt
             echo '```'
             echo
             echo "Bundle diff: $CHANGED lines."
             echo
-            if [ -s drift.txt ]; then
+            if [ -s incoming/drift.txt ]; then
               echo "<details><summary>Station-list drift</summary>"
-              echo; echo '```'; cat drift.txt; echo '```'; echo "</details>"
+              echo; echo '```'; cat incoming/drift.txt; echo '```'; echo "</details>"
             else
               echo "The station *list* is unchanged — this is an in-place revision of"
               echo "existing station data, which only a bundle diff can catch."
@@ -154,7 +210,7 @@ jobs:
             if [ "$OLD_BRANCH" != "$BRANCH" ]; then
               REMOTE_REF=$(git ls-remote --heads origin "refs/heads/$OLD_BRANCH")
               if [ -n "$REMOTE_REF" ]; then
-                git push origin --delete "$OLD_BRANCH"
+                git -c core.hooksPath=/dev/null push origin --delete "$OLD_BRANCH"
               fi
             fi
           done <<< "$OLD_ISSUES"

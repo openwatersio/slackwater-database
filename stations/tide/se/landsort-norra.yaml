@@ -21,7 +21,8 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.117) > MLW (0.113)
+          - MHHW (0.189) < MHW (0.195)
+          - MHWS (0.141) < MHW (0.195)
           - "Seasonal curve peak (0.134m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"
     ticon/landsortnorra-lan-swe-cmems:
       position: [58.768902, 17.8589]
@@ -40,5 +41,7 @@ computed:
           amplitude: 1
           coverage: 0
         issues:
-          - MLWS (0.117) > MLW (0.113)
+          - MHHW (0.189) < MHW (0.194)
+          - MLWS (0.117) > MLW (0.116)
+          - MHWS (0.141) < MHW (0.194)
           - "Seasonal curve peak (0.134m) exceeds the principal tide M2+S2+K1+O1 (0.023m): the yearly swing exceeds the daily one"

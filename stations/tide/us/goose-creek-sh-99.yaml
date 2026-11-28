@@ -19,5 +19,6 @@ computed:
           amplitude: 1
           coverage: 0.071
         issues:
-          - MHWS (0.416) < MHW (0.463)
+          - MLWS (0.29) > MLW (0.178)
+          - MHWS (0.416) < MHW (0.529)
           - "Clock error in source hct: against the nearest NOAA or USGS gauge within 5 km, its 9 comparable records run a median 44 min late on M2 and about 30 on K1 and O1; 11 of its 11 gauges timed against authoritative gauges within 10 km run 20 min or more late, a median 38 min late; this record runs 38 min late"

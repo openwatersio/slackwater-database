@@ -31,12 +31,17 @@ import {
   sourceTimings,
   timingShowsClockError,
 } from "../clock.ts";
-import { checkConstituents, loadAllStations } from "../evaluate-quality.ts";
+import {
+  checkConstituents,
+  checkTidalRange,
+  loadAllStations,
+} from "../evaluate-quality.ts";
 import {
   CLOCK_ERROR_SOURCES,
   OBSERVATION_ERROR_SOURCES,
   SOURCE_CLOCK_SHIFT,
 } from "../filtering.ts";
+import { load } from "../station.ts";
 import { sourceMetadata } from "../sources.ts";
 
 const {
@@ -246,7 +251,14 @@ tideStations.forEach((station) => {
         }
       });
 
-      test("has tidal range >= 2cm (MHW - MLW)", () => {
+      test("meets the 2 cm range gate", async () => {
+        if (station.datums_source === "observed") {
+          const raw = await load("ticon", station.source.id);
+          expect(
+            checkTidalRange({ ...raw, id: station.id }, new Map()),
+          ).toBeNull();
+          return;
+        }
         if (!station.datums) return;
         const mhw = station.datums["MHW"];
         const mlw = station.datums["MLW"];
@@ -341,16 +353,19 @@ describe("seasonal-contamination gate", () => {
 });
 
 describe("gauge deduplication", () => {
-  test("keeps NOAA-derived lake gauges without a direct replacement", () => {
-    for (const id of [
-      "ticon/alpena_mi-9075065-usa-noaa",
-      "ticon/calumet_harbor_il-9087044-usa-noaa",
-    ]) {
+  test.each([
+    ["ticon/alpena_mi-9075065-usa-noaa", { accepted: false, reason: "range" }],
+    ["ticon/calumet_harbor_il-9087044-usa-noaa", { accepted: true }],
+  ])(
+    "uses the range gate for %s without a direct replacement",
+    (id, verdict) => {
       const station = allTideStations.find((s) => s.id === id);
-      expect(station?.quality?.accepted, id).toBe(true);
-      expect(station?.quality?.seasonal_dominant, id).toBe(true);
-    }
-  });
+      expect(station?.quality).toMatchObject({
+        ...verdict,
+        seasonal_dominant: true,
+      });
+    },
+  );
 
   test("only supersedes NOAA-derived rows with a direct harmonic replacement", () => {
     for (const q of quality.filter((q) => q.reason === "superseded")) {
@@ -784,8 +799,8 @@ describe("seasonal dominance", () => {
   });
 
   test("labels independently of the rejection verdict", () => {
-    expect(labelled.filter((q) => q.accepted)).toHaveLength(436);
-    expect(labelled.filter((q) => !q.accepted)).toHaveLength(566);
+    expect(labelled.filter((q) => q.accepted)).toHaveLength(387);
+    expect(labelled.filter((q) => !q.accepted)).toHaveLength(615);
   });
 
   test("is a different question from the contamination gate", () => {
@@ -796,17 +811,17 @@ describe("seasonal dominance", () => {
     // catches water that has no real tide and keeps it.
     //
     // The two overlap without either implying the other, and this pins that:
-    // the gate rejects 6 stations, exactly 5 of which are also labelled. A
+    // the gate rejects 7 stations, exactly 6 of which are also labelled. A
     // change that collapsed the two concepts would move both numbers.
     const contaminated = quality.filter(
       (q) => (q as { reason?: string }).reason === "seasonal",
     );
-    expect(contaminated.length).toBe(6);
+    expect(contaminated.length).toBe(7);
     expect(
       contaminated.filter(
         (q) => (q as { seasonal_dominant?: boolean }).seasonal_dominant,
       ).length,
-    ).toBe(5);
+    ).toBe(6);
   });
 
   test("leaves no subordinate behind its labelled reference", () => {
@@ -856,15 +871,24 @@ describe("seasonal dominance", () => {
   });
 
   test("reaches the reader through the database, not just the station files", () => {
-    // Cobourg on Lake Ontario: SA 0.289 m against a principal tide of
-    // 0.004 m, and it passes the 2 cm range floor by 5 mm, so nothing else
-    // in the pass catches it.
-    const cobourg = allTideStations.find(
-      (s) => s.id === "ticon/cobourg_ontario-13590-can-meds",
+    const id = "ticon/belle_river_ontario-11965-can-meds";
+    const belle = allTideStations.find((s) => s.id === id);
+    expect(belle?.quality).toMatchObject({
+      seasonal_dominant: true,
+      accepted: false,
+      reason: "range",
+    });
+    expect(belle?.quality?.issues?.join(" ")).toContain("yearly swing");
+    expect(belle!.datums["MHW"]! - belle!.datums["MLW"]!).toBeCloseTo(0.075);
+    expect(tideStations.some((s) => s.id === id)).toBe(false);
+
+    const gavle = tideStations.find(
+      (s) => s.id === "ticon/gavle_hamn-35236-swe-smhi",
     );
-    expect(cobourg?.quality?.seasonal_dominant).toBe(true);
-    expect(cobourg?.quality?.accepted).toBe(true);
-    expect(cobourg?.quality?.issues?.join(" ")).toContain("yearly swing");
+    expect(gavle?.quality).toMatchObject({
+      accepted: true,
+      seasonal_dominant: true,
+    });
 
     // Seattle is the control: a real tide, no label, and the field reads back
     // undefined rather than false so it behaves like every other optional.

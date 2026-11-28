@@ -22,6 +22,7 @@ import { computeDatums } from "@slackwater/datums";
 import {
   DATA_DIR,
   normalize,
+  predictionOptions,
   withPublishedPrecision,
 } from "@slackwater/stations";
 import {
@@ -286,7 +287,6 @@ export function buildStation(
   harmonics: StationData["harmonic_constituents"],
   offset: number,
   origin: { note: string },
-  computed: Record<string, number>,
 ): StationData {
   const terms = [
     ...harmonics,
@@ -300,6 +300,11 @@ export function buildStation(
           },
         ]),
   ];
+  const { datums: computed } = computeDatums(
+    terms,
+    {},
+    predictionOptions({ source: { name: SOURCE }, latitude: station.latitude }),
+  );
   const data = withPublishedPrecision(
     "dmi",
     normalize({
@@ -434,22 +439,7 @@ async function run() {
         if (!heightGate(committedHeight, fit.stabilityRms)) storedFailures++;
       }
       if (fit.accepted && !validate) {
-        const terms = [
-          ...constituents,
-          ...(fit.offset === 0
-            ? []
-            : [
-                {
-                  name: "Zo",
-                  amplitude: Math.abs(fit.offset),
-                  phase: fit.offset < 0 ? 180 : 0,
-                },
-              ]),
-        ];
-        const datums = computeDatums(terms, {}, { offset: false }).datums;
-        records.push(
-          buildStation(station, constituents, fit.offset, origin, datums),
-        );
+        records.push(buildStation(station, constituents, fit.offset, origin));
       }
       report.push({
         id: station.id,

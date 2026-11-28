@@ -59,10 +59,8 @@ class Station internal constructor(
      * swing exceeds the daily one: a Great Lakes gauge, a river reach, a Baltic
      * bodden.
      *
-     * Accepted rather than rejected: the predictions are correct and only the
-     * frame is wrong. A view quoting a high and a low should read this and say
-     * what the water is, because an entire day can sit below the annual mean
-     * and read as a broken tide table.
+     * The quality gates determine acceptance independently of this label.
+     * The quality issues give both heights.
      */
     val seasonalDominant: Boolean get() = raw.quality?.seasonalDominant ?: false
 
@@ -200,8 +198,12 @@ class Station internal constructor(
         data class Member(val name: String, val factor: Double)
     }
 
-    /** The nodal correction formulas a source's constants were analyzed with. */
-    enum class NodeCorrections { IHO, SCHUREMAN }
+    /**
+     * The nodal correction formulas a source's constants were analyzed with.
+     * Foreman's take the latitude of the station whose constants are
+     * predicted, [nodeCorrectionsLatitude].
+     */
+    enum class NodeCorrections { IHO, SCHUREMAN, FOREMAN }
 
     /**
      * The definitions to hand the prediction engine for this station's
@@ -255,11 +257,20 @@ class Station internal constructor(
      * subordinate reports its reference's.
      */
     val nodeCorrections: NodeCorrections
-        get() = if (predictionSource.raw.source?.nodeCorrections == Slackwater.NodeCorrections.Schureman) {
-            NodeCorrections.SCHUREMAN
-        } else {
-            NodeCorrections.IHO
+        get() = when (predictionSource.raw.source?.nodeCorrections) {
+            Slackwater.NodeCorrections.Schureman -> NodeCorrections.SCHUREMAN
+            Slackwater.NodeCorrections.Foreman -> NodeCorrections.FOREMAN
+            // A set this reader doesn't know reads as IHO's, as readers released before it did.
+            else -> NodeCorrections.IHO
         }
+
+    /**
+     * The latitude Foreman's formulas take: the station's own, or its
+     * reference's for a tide subordinate, whose constants it predicts with.
+     * Null unless [nodeCorrections] is [NodeCorrections.FOREMAN].
+     */
+    val nodeCorrectionsLatitude: Double?
+        get() = if (nodeCorrections == NodeCorrections.FOREMAN) predictionSource.latitude else null
 
     /**
      * Vertical datums in metres above the station's zero, keyed by name
@@ -287,10 +298,12 @@ class Station internal constructor(
     // Attribution
 
     /**
-     * The complete notice to display when showing or redistributing this
+     * The source's notice to display when showing or redistributing this
      * station: the creator credit and, where a Creative Commons licence
      * applies, the licence and a pointer to what was modified. Displaying it
-     * is the whole of the obligation. Written into the file by the builder, so
+     * covers the station's source; the location fields and `context` also
+     * need the GeoNames, OpenStreetMap and Marine Regions credits in the
+     * database package's NOTICE. Written into the file by the builder, so
      * this package keeps no table of sources; a file predating the field falls
      * back to the project credit.
      */

@@ -2,7 +2,7 @@ import { access, mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import createFetch from "make-fetch-happen";
-import { resolveEpoch, type Sample } from "./datum.ts";
+import { resolveEpoch, type Sample } from "@slackwater/datums";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

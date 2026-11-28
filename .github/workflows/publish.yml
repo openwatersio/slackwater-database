@@ -4,22 +4,29 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      packages: write
-      id-token: write
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Setup mise (flatc)
-        uses: jdx/mise-action@v5
+        uses: jdx/mise-action@v5.3.0
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: "24"
+
+      - name: Check country pin ancestry
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/fetch-country-build-lock.mjs "$RUNNER_TEMP/country-build/package-lock.json"
 
       - run: npm ci
 
@@ -28,9 +35,10 @@ jobs:
       # replaces that segment with today's date — 1.0.1-beta.20261103 from a
       # prerelease, 1.0.20261115 from a stable.
       - name: Set version
+        id: version
         run: |
           CURRENT_VERSION=$(node -p "require('./packages/database/package.json').version")
-          RELEASE_VERSION="${CURRENT_VERSION%.*}.$(date +%Y%m%d)"
+          RELEASE_VERSION="${CURRENT_VERSION%.*}.$(date -u +%Y%m%d)"
           # A prerelease floor must derive a prerelease — the date replaces the
           # floor's final `.0`, so a floor like 1.0.1-beta (no .0) would derive
           # a stable version and publish it to `latest`. Refuse instead.
@@ -40,7 +48,8 @@ jobs:
             exit 1
           fi
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> "$GITHUB_ENV"
-          echo "ASSET_DATE=$(date +%Y%m%d)" >> "$GITHUB_ENV"
+          echo "version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "ASSET_DATE=$(date -u +%Y%m%d)" >> "$GITHUB_ENV"
           npm version "$RELEASE_VERSION" --no-git-tag-version -w packages/database
 
       - name: Validate station metadata
@@ -67,24 +76,61 @@ jobs:
       - name: Build and test TCD harmonics files
         run: npm run test:docker -w packages/tcd
 
-      # Prereleases go out under the beta dist-tag so `latest` only ever moves
-      # on a stable publish.
-      - name: Publish to npm
-        run: npm publish --ignore-scripts -w packages/database ${{ contains(env.RELEASE_VERSION, '-') && '--tag beta' || '' }}
-
-      # Assets are named by data vintage, not npm version, so the file names
-      # hold across prerelease and stable publishes.
-      - name: Rename TCD files for release
+      - name: Prepare release artifact
         run: |
-          mv packages/tcd/dist/harmonics.tcd "packages/tcd/dist/slackwater-${ASSET_DATE}.tcd"
+          mkdir release
+          npm pack --ignore-scripts -w packages/database --pack-destination release
+          cp packages/tcd/dist/harmonics.tcd "release/slackwater-${ASSET_DATE}.tcd"
+          cp packages/database/dist/generated/slackwater.tcdb "release/slackwater-${ASSET_DATE}.tcdb"
+          cp packages/database/NOTICE packages/database/LICENSE release/
 
-      - name: Rename database file for release
-        run: cp packages/database/dist/generated/slackwater.tcdb "packages/database/dist/generated/slackwater-${ASSET_DATE}.tcdb"
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: prepared-release
+          path: release/
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+
+      # Download data only: this job never checks out source or runs package
+      # lifecycle scripts while it can request an npm publishing identity.
+      - name: Download prepared release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: gh run download "$RUN_ID" --name prepared-release --dir release
+
+      - name: Publish prepared package
+        env:
+          RELEASE_VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          shopt -s nullglob
+          # The ./ keeps npm from reading release/<file> as a GitHub owner/repo.
+          packages=(./release/*.tgz)
+          test "${#packages[@]}" -eq 1
+          if [[ "$RELEASE_VERSION" == *-* ]]; then
+            npm publish "${packages[0]}" --ignore-scripts --tag beta
+          else
+            npm publish "${packages[0]}" --ignore-scripts
+          fi
 
       - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.21.0
         with:
-          tag: v${{ env.RELEASE_VERSION }}
+          tag: v${{ needs.build.outputs.version }}
+          commit: ${{ github.sha }}
           generateReleaseNotes: true
-          prerelease: ${{ contains(env.RELEASE_VERSION, '-') }}
-          artifacts: "packages/tcd/dist/*.tcd,packages/database/dist/generated/slackwater-*.tcdb"
+          prerelease: ${{ contains(needs.build.outputs.version, '-') }}
+          artifacts: "release/*.tcd,release/*.tcdb,release/NOTICE,release/LICENSE"

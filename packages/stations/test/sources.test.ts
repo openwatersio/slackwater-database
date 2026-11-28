@@ -44,7 +44,7 @@ test("constituent definitions and node corrections are checked where they're dec
     return () => loadSources(dir);
   };
   expect(declare("node_corrections: doodson\n")).toThrow(
-    /node_corrections must be iho or schureman/,
+    /node_corrections must be iho, schureman or foreman/,
   );
   // coefficients left out, rather than null for a compound.
   expect(

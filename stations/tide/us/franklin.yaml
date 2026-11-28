@@ -17,8 +17,8 @@ computed:
           source: 0.586
           quality: 1
           amplitude: 1
-          coverage: 0.326
+          coverage: 0.151
         issues:
-          - MLWS (0.172) > MLW (0.086)
-          - MHWS (0.336) < MHW (0.34)
+          - MLWS (0.173) > MLW (0.069)
+          - MHWS (0.337) < MHW (0.426)
           - "Constants of source crms don't match their gauges' observations: against a year of each gauge's own hourly observations in Stillwell, 13 of the 111 records with a tide whose gauge has a 2015 series come within 25% of the gauge's M2, S2, K1 and O1; the rest run from 13 hours early to 11 hours late, with amplitudes off by up to a factor of 100, and 82 of the 87 with a diurnal tide of 5 cm or more run within 30 min of the same shift against 2019"
